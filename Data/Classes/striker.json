@@ -1,0 +1,16 @@
+{
+  "id": "striker",
+  "display_name": "Striker",
+  "description": "A swift damage dealer who excels at eliminating enemies quickly.",
+  "base_stats": {
+    "health": 80,
+    "attack": 14,
+    "defense": 5,
+    "speed": 12
+  },
+  "ability_a_id": "str_precise_strike",
+  "ability_b_id": "str_crippling_blow",
+  "passive_a_id": "str_killer_instinct",
+  "passive_b_id": "str_execute_momentum",
+  "weapon_types": ["sword", "dagger"]
+}

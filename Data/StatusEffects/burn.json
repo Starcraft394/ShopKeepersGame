@@ -1,0 +1,10 @@
+{
+  "id": "burn",
+  "display_name": "Burn",
+  "description": "Taking fire damage over time.",
+  "category": "dot",
+  "max_stacks": 5,
+  "base_duration": 3,
+  "base_value": 3,
+  "is_cleansable": true
+}

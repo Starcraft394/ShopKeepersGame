@@ -1,0 +1,13 @@
+{
+  "id": "human",
+  "display_name": "Human",
+  "description": "Versatile and adaptable, humans excel through determination and balance.",
+  "stat_modifiers": {
+    "health": 0,
+    "attack": 0,
+    "defense": 0,
+    "speed": 0
+  },
+  "passive_id": "",
+  "trait_tags": ["adaptable", "balanced"]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "basic_attack",
+  "display_name": "Basic Attack",
+  "description": "A standard melee attack dealing physical damage.",
+  "ability_type": "attack",
+  "damage_type": "physical",
+  "target_type": "single_enemy",
+  "base_damage": 10,
+  "cooldown": 0,
+  "status_effect_ids": []
+}

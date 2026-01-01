@@ -1,0 +1,9 @@
+{
+  "id": "blacksmith",
+  "display_name": "Blacksmith",
+  "description": "Forge weapons and armor from collected materials.",
+  "facility_type": "production",
+  "max_tier": 5,
+  "base_slots": 3,
+  "produces_item_types": ["weapon", "armor"]
+}

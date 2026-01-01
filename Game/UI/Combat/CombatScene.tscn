@@ -1,0 +1,142 @@
+[gd_scene load_steps=2 format=3 uid="uid://bxq6k8mj4qhfl"]
+
+[ext_resource type="Script" path="res://Game/UI/Combat/CombatScene.gd" id="1_script"]
+
+[node name="CombatScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12, 0.12, 0.15, 1)
+
+[node name="TopBar" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 40.0
+grow_horizontal = 2
+text = "Round 1 | Current Turn: ---"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TopBarBG" type="ColorRect" parent="TopBar"]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.2, 0.2, 0.25, 1)
+
+[node name="MainContent" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 45.0
+offset_bottom = -200.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PartyPanel" type="PanelContainer" parent="MainContent"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBox" type="VBoxContainer" parent="MainContent/PartyPanel"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="MainContent/PartyPanel/VBox"]
+layout_mode = 2
+text = "=== PARTY ==="
+horizontal_alignment = 1
+
+[node name="UnitList" type="VBoxContainer" parent="MainContent/PartyPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Spacer" type="Control" parent="MainContent"]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+
+[node name="EnemyPanel" type="PanelContainer" parent="MainContent"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBox" type="VBoxContainer" parent="MainContent/EnemyPanel"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="MainContent/EnemyPanel/VBox"]
+layout_mode = 2
+text = "=== ENEMIES ==="
+horizontal_alignment = 1
+
+[node name="UnitList" type="VBoxContainer" parent="MainContent/EnemyPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="BottomPanel" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -195.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="LogLabel" type="Label" parent="BottomPanel"]
+layout_mode = 2
+text = "Combat Log:"
+
+[node name="CombatLog" type="RichTextLabel" parent="BottomPanel"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+text = ""
+scroll_following = true
+
+[node name="ButtonRow" type="HBoxContainer" parent="BottomPanel"]
+layout_mode = 2
+alignment = 1
+
+[node name="StepButton" type="Button" parent="BottomPanel/ButtonRow"]
+custom_minimum_size = Vector2(100, 35)
+layout_mode = 2
+text = "Step Turn"
+
+[node name="AutoButton" type="Button" parent="BottomPanel/ButtonRow"]
+custom_minimum_size = Vector2(100, 35)
+layout_mode = 2
+text = "Auto"
+
+[node name="ResetButton" type="Button" parent="BottomPanel/ButtonRow"]
+custom_minimum_size = Vector2(100, 35)
+layout_mode = 2
+text = "Reset"
+
+[node name="DemoButtons" type="HBoxContainer" parent="BottomPanel"]
+layout_mode = 2
+alignment = 1
+
+[node name="StunButton" type="Button" parent="BottomPanel/DemoButtons"]
+custom_minimum_size = Vector2(120, 30)
+layout_mode = 2
+text = "Demo: Stun"
+
+[node name="DoomButton" type="Button" parent="BottomPanel/DemoButtons"]
+custom_minimum_size = Vector2(120, 30)
+layout_mode = 2
+text = "Demo: Doom"

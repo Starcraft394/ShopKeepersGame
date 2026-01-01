@@ -1,0 +1,12 @@
+{
+  "id": "def_iron_skin",
+  "display_name": "Iron Skin",
+  "description": "Hardened defenses grant +2 DEF.",
+  "passive_type": "stat_bonus",
+  "trigger": "always",
+  "effect": {
+    "stat": "defense",
+    "bonus": 2
+  },
+  "source_class_id": "defender"
+}

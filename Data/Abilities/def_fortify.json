@@ -1,0 +1,13 @@
+{
+  "id": "def_fortify",
+  "display_name": "Fortify",
+  "description": "Brace for impact, gaining temporary defense. Deals reduced damage but very reliable.",
+  "ability_type": "class_b",
+  "source_class_id": "defender",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 4,
+  "damage_type": "physical",
+  "attack_scaling": 0.5,
+  "cooldown": 3
+}

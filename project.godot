@@ -1,0 +1,22 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="ShopKeepersGame"
+run/main_scene="uid://cs62ali3tbiyn"
+config/features=PackedStringArray("4.5", "Forward Plus")
+config/icon="res://icon.svg"
+
+[autoload]
+
+DataRegistry="*res://Game/Core/DataRegistry.gd"
+GameContext="*res://Game/Core/GameContext.gd"
+SeededRng="*res://Game/Core/SeededRNG.gd"

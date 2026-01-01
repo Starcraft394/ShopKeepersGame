@@ -1,0 +1,16 @@
+{
+  "id": "defender",
+  "display_name": "Defender",
+  "description": "A stalwart protector who excels at absorbing damage and protecting allies.",
+  "base_stats": {
+    "health": 120,
+    "attack": 8,
+    "defense": 15,
+    "speed": 6
+  },
+  "ability_a_id": "def_shield_bash",
+  "ability_b_id": "def_fortify",
+  "passive_a_id": "def_iron_skin",
+  "passive_b_id": "def_front_line_bonus",
+  "weapon_types": ["sword", "axe"]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "str_killer_instinct",
+  "display_name": "Killer Instinct",
+  "description": "Deadly precision grants +2 ATK.",
+  "passive_type": "stat_bonus",
+  "trigger": "always",
+  "effect": {
+    "stat": "attack",
+    "bonus": 2
+  },
+  "source_class_id": "striker"
+}

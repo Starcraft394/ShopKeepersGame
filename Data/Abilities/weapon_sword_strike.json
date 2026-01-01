@@ -1,0 +1,12 @@
+{
+  "id": "weapon_sword_strike",
+  "display_name": "Sword Strike",
+  "description": "A powerful weapon attack dealing 150% damage.",
+  "ability_type": "attack",
+  "damage_type": "physical",
+  "target_type": "single_enemy",
+  "base_damage": 0,
+  "damage_multiplier": 1.5,
+  "cooldown": 3,
+  "status_effect_ids": []
+}

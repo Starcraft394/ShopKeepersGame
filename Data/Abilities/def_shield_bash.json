@@ -1,0 +1,15 @@
+{
+  "id": "def_shield_bash",
+  "display_name": "Shield Bash",
+  "description": "Bash the enemy with your shield, dealing damage and stunning for 1 turn.",
+  "ability_type": "class_a",
+  "source_class_id": "defender",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 6,
+  "damage_type": "physical",
+  "attack_scaling": 0.8,
+  "cooldown": 4,
+  "applies_status_id": "stun",
+  "status_stacks": 1
+}

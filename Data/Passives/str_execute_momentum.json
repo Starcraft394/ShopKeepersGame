@@ -1,0 +1,11 @@
+{
+  "id": "str_execute_momentum",
+  "display_name": "Execute Momentum",
+  "description": "On kill: reduce weapon ability cooldown by 1.",
+  "passive_type": "on_kill",
+  "trigger": "on_kill",
+  "effect": {
+    "reduce_weapon_cooldown": 1
+  },
+  "source_class_id": "striker"
+}

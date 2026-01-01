@@ -1,0 +1,20 @@
+{
+  "id": "warrior",
+  "class_id": "warrior",
+  "display_name": "Warrior",
+  "description": "A stalwart defender who excels in close combat with heavy weapons and armor.",
+  "unlock_region": 1,
+  "base_stats": {
+    "health": 120,
+    "attack": 12,
+    "defense": 10,
+    "speed": 8,
+    "crit_chance": 0.05,
+    "crit_damage": 1.5
+  },
+  "ability_a_id": "basic_attack",
+  "ability_b_id": "",
+  "passive_a_id": "",
+  "passive_b_id": "",
+  "weapon_types": ["sword", "axe", "mace"]
+}

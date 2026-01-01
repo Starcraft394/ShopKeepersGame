@@ -1,0 +1,2 @@
+# This folder contains obsolete duplicate scripts.
+# The .gdignore file prevents Godot from scanning this directory.

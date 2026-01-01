@@ -1,0 +1,12 @@
+{
+  "id": "basic_sword",
+  "display_name": "Basic Sword",
+  "description": "A simple but reliable iron sword.",
+  "item_type": "weapon",
+  "slot": "weapon",
+  "tier": 1,
+  "base_stats": {
+    "attack": 5
+  },
+  "base_value": 25
+}
