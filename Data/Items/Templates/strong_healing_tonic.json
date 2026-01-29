@@ -1,0 +1,22 @@
+{
+  "id": "strong_healing_tonic",
+  "display_name": "Strong Healing Tonic",
+  "description": "A potent healing draught that restores significant health.",
+  "item_type": "consumable",
+  "item_subtype": "potion",
+  "slot": "",
+  "tier": 2,
+  "min_quality": 1,
+  "max_quality": 5,
+  "base_stats": {},
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": false,
+  "max_refinement": 0,
+  "base_value": 25,
+  "icon_path": "",
+  "tags": ["region_1", "consumable", "healing", "crafted"]
+}

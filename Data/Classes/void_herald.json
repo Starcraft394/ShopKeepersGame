@@ -1,0 +1,24 @@
+{
+  "id": "void_herald",
+  "display_name": "Void Herald",
+  "description": "A harbinger of entropy who tears holes in reality, dealing devastating damage through unstable portals.",
+  "archetype": "dps",
+  "unlock_region": 7,
+  "base_stats": {
+    "health": 75,
+    "attack": 22,
+    "defense": 4,
+    "speed": 13
+  },
+  "stat_growth": {
+    "health": 6,
+    "attack": 7,
+    "defense": 1,
+    "speed": 3
+  },
+  "ability_a_id": "void_tear",
+  "ability_b_id": "entropy_blast",
+  "passive_a_id": "reality_warp",
+  "passive_b_id": "void_resonance",
+  "weapon_types": ["staff", "orb", "void_blade"]
+}

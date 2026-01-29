@@ -20,3 +20,8 @@ config/icon="res://icon.svg"
 DataRegistry="*res://Game/Core/DataRegistry.gd"
 GameContext="*res://Game/Core/GameContext.gd"
 SeededRng="*res://Game/Core/SeededRNG.gd"
+
+[display]
+
+window/size/viewport_width=960
+window/size/viewport_height=540

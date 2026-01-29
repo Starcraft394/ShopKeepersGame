@@ -1,0 +1,17 @@
+{
+  "id": "poisoned",
+  "display_name": "Poisoned",
+  "description": "Taking poison damage over time.",
+  "category": "dot",
+  "stacking_mode": "intensity",
+  "max_stacks": 3,
+  "base_duration": 3,
+  "base_value": 3,
+  "value_per_stack": 1,
+  "resolution_timing": "turn_start",
+  "is_cleansable": true,
+  "tags": ["dot", "poison"],
+  "ui_name": "Poison",
+  "ui_short": "PSN",
+  "ui_icon": "res://Assets/Icons/Status/icon_status_poisoned.png"
+}

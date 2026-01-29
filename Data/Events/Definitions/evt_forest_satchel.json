@@ -1,0 +1,46 @@
+{
+  "id": "evt_forest_satchel",
+  "title": "Lost Adventurer's Satchel",
+  "description": "Half-buried beneath rotting leaves, a leather satchel lies forgotten. Dark stains mark one side - blood or mud, you cannot tell. The brass buckles are tarnished but intact. Whoever owned this never came back for it.",
+  "kind": "choice",
+  "tags": ["forest", "loot", "exploration"],
+  "choices": [
+    {
+      "id": "search_thoroughly",
+      "label": "Search thoroughly",
+      "description": "Take time to check every pocket.",
+      "effects": [
+        { "type": "add_gold_range", "min": 5, "max": 12 },
+        { "type": "add_item", "item_id": "herb", "min_qty": 1, "max_qty": 2 }
+      ]
+    },
+    {
+      "id": "quick_check",
+      "label": "Quick grab and go",
+      "description": "Just take what's obvious.",
+      "effects": [
+        { "type": "add_gold_range", "min": 3, "max": 8 }
+      ]
+    },
+    {
+      "id": "check_hidden",
+      "label": "Check for hidden compartments",
+      "description": "Adventurers often hide their best finds.",
+      "effects": [
+        { "type": "add_gold_range", "min": 8, "max": 18 }
+      ],
+      "risk": {
+        "trap_chance": 0.15,
+        "damage_amount": 8
+      }
+    },
+    {
+      "id": "leave_it",
+      "label": "Leave it alone",
+      "description": "The stains make you uneasy.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

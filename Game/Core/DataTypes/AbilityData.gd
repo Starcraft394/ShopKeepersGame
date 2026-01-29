@@ -19,6 +19,13 @@ var range_min: int = 1
 var range_max: int = 1
 var requires_los: bool = true
 
+# Ability Targeting v1 - Data-driven targeting rules
+var target_team: String = "enemy"  # "enemy", "ally", "self"
+var target_rule: String = "any"  # "any", "lowest_hp_pct", "highest_atk", "lowest_hp_abs", "unbuffed"
+var requires_target_alive: bool = true
+var can_overheal: bool = false
+var allow_self_target: bool = false
+
 # Cost
 var cooldown: int = 0  # Turns before reuse
 var resource_cost: Dictionary = {}  # e.g., {"mana": 10}
@@ -33,13 +40,30 @@ var base_heal: int = 0
 var applies_status_id: String = ""
 var status_stacks: int = 1
 var status_chance: float = 1.0
+var applies_status_duration: int = 0  # Duration in rounds for Status Hooks v1 (0 = use stacks for legacy)
 
 # Scaling (flat values, not percentages)
 var attack_scaling: float = 1.0  # Multiplier applied to attack stat
 
+# Multi-hit abilities (e.g., twin_strike)
+var hit_count: int = 1  # Number of hits per use
+
+# Buff abilities (e.g., shadowstep, barkskin_blessing)
+var buff_stats: Dictionary = {}  # e.g., {"attack": 4, "speed": 3}
+var buff_duration: int = 0  # Turns the buff lasts (0 = permanent for combat)
+
 # Visual
 var icon_path: String = ""
 var animation_id: String = ""
+
+# Status UI v1.7 - Buff badge display metadata (optional, safe defaults)
+var ui_name: String = ""   # Display name for buff tooltips (fallback to display_name)
+var ui_short: String = ""  # Short label e.g. "ATK+", "DEF+", "BUFF"
+var ui_icon: String = ""   # Optional icon resource path for buff badge
+
+# Status UI v1.7.1 - Tag-driven sorting metadata (optional, safe defaults)
+var buff_tags: Array = []  # Tags for sort priority: "defense", "offense", "utility"
+var ui_category: String = ""  # Category hint: "buff", "debuff", "damage", etc.
 
 # Factory method
 static func from_dict(data: Dictionary) -> AbilityData:
@@ -55,6 +79,13 @@ static func from_dict(data: Dictionary) -> AbilityData:
 	instance.range_min = data.get("range_min", 1)
 	instance.range_max = data.get("range_max", 1)
 	instance.requires_los = data.get("requires_los", true)
+
+	# Ability Targeting v1 - Data-driven targeting rules (safe defaults)
+	instance.target_team = data.get("target_team", "enemy")
+	instance.target_rule = data.get("target_rule", "any")
+	instance.requires_target_alive = data.get("requires_target_alive", true)
+	instance.can_overheal = data.get("can_overheal", false)
+	instance.allow_self_target = data.get("allow_self_target", false)
 	instance.cooldown = data.get("cooldown", 0)
 	var resource_cost_val = data.get("resource_cost", {})
 	instance.resource_cost = resource_cost_val if resource_cost_val is Dictionary else {}
@@ -65,9 +96,24 @@ static func from_dict(data: Dictionary) -> AbilityData:
 	instance.applies_status_id = data.get("applies_status_id", "")
 	instance.status_stacks = data.get("status_stacks", 1)
 	instance.status_chance = data.get("status_chance", 1.0)
+	instance.applies_status_duration = data.get("applies_status_duration", 0)
 	instance.attack_scaling = data.get("attack_scaling", 1.0)
+	instance.hit_count = data.get("hit_count", 1)
+	var buff_stats_val = data.get("buff_stats", {})
+	instance.buff_stats = buff_stats_val if buff_stats_val is Dictionary else {}
+	instance.buff_duration = data.get("buff_duration", 0)
 	instance.icon_path = data.get("icon_path", "")
 	instance.animation_id = data.get("animation_id", "")
+
+	# Status UI v1.7 - Buff badge display metadata (safe defaults)
+	instance.ui_name = data.get("ui_name", "")
+	instance.ui_short = data.get("ui_short", "")
+	instance.ui_icon = data.get("ui_icon", "")
+
+	# Status UI v1.7.1 - Tag-driven sorting metadata (safe defaults)
+	var buff_tags_val = data.get("buff_tags", [])
+	instance.buff_tags = buff_tags_val if buff_tags_val is Array else []
+	instance.ui_category = data.get("ui_category", "")
 
 	return instance
 

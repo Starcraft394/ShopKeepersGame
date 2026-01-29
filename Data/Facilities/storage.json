@@ -1,0 +1,26 @@
+{
+  "id": "storage",
+  "display_name": "Storage",
+  "description": "A secure warehouse for materials and surplus goods.",
+  "facility_type": "storage",
+  "max_tier": 1,
+  "unlock_region": 1,
+
+  "slots_per_tier": {},
+
+  "upgrade_costs": {
+    "2": {
+      "wood_bundle": 20
+    }
+  },
+
+  "services_per_tier": {
+    "1": ["store_materials", "retrieve_materials"]
+  },
+
+  "produces_item_types": [],
+  "input_resource_types": [],
+
+  "allows_hero_assignment": false,
+  "max_assigned_heroes": 0
+}

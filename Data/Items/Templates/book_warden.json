@@ -1,0 +1,14 @@
+{
+  "id": "book_warden",
+  "display_name": "Warden's Codex",
+  "description": "An ancient tome illuminated with protective wards and restorative arts. Teaches the Warden class.",
+  "item_type": "consumable",
+  "rarity": "uncommon",
+  "use_effect_id": "learn_class_warden",
+  "base_stats": {},
+  "stat_scalars": {},
+  "allowed_affixes": [],
+  "allowed_socket_types": [],
+  "gold_value": 100,
+  "tags": ["book", "class_unlock", "warden"]
+}

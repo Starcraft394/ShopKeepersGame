@@ -1,0 +1,70 @@
+{
+  "id": "shop_timberfall",
+  "display_name": "General Store",
+  "description": "A humble shop selling basic supplies for adventurers. Browse potions, weapons, shields, and storage upgrades.",
+  "facility_type": "shop",
+  "max_tier": 2,
+  "unlock_region": 1,
+
+  "slots_per_tier": {},
+  "upgrade_costs": {
+    "2": {
+      "gold": 75,
+      "items": [
+        { "item_id": "iron_scrap", "qty": 4 }
+      ]
+    }
+  },
+  "services_per_tier": {
+    "1": ["buy_items", "stash_upgrade"],
+    "2": ["buy_items", "stash_upgrade", "buy_equipment"]
+  },
+
+  "produces_item_types": [],
+  "input_resource_types": [],
+
+  "allows_hero_assignment": false,
+  "max_assigned_heroes": 0,
+
+  "unlocks": [],
+
+  "shop_pool_id": "pool_region1_general",
+  "shop_rolls": {
+    "consumables": 2,
+    "weapons": 2,
+    "offhands": 1,
+    "books": 1
+  },
+
+  "shop_profile": {
+    "profile_id": "timberfall_general",
+    "category_weight_mult": {
+      "consumables": 0.9,
+      "weapons": 1.25,
+      "offhands": 1.2,
+      "books": 0.9
+    },
+    "rolls_override": {
+      "consumables": 1,
+      "weapons": 2,
+      "offhands": 2,
+      "books": 1
+    }
+  },
+
+  "shop_items_legacy": [
+    { "item_id": "healing_tonic", "price_gold": 25, "requires_unlock_group": "consumables_t1" },
+    { "item_id": "antidote", "price_gold": 20, "requires_unlock_group": "consumables_t1" },
+    { "item_id": "stamina_draught", "price_gold": 30, "requires_unlock_group": "consumables_t2" },
+    { "item_id": "rusty_sword", "price_gold": 35, "requires_unlock_group": "weapons_t1" },
+    { "item_id": "iron_dagger", "price_gold": 30, "requires_unlock_group": "weapons_t1" },
+    { "item_id": "rusty_shield", "price_gold": 40, "requires_unlock_group": "offhands_t1" },
+    { "item_id": "crude_sword", "price_gold": 40, "required_facility_tier": 2 },
+    { "item_id": "wooden_shield", "price_gold": 50, "required_facility_tier": 2 }
+  ],
+
+  "stash_upgrades": [
+    { "upgrade_id": "stash_capacity_1", "display_name": "+10 Stash Capacity", "price_gold": 50, "bonus_value": 10 },
+    { "upgrade_id": "stash_capacity_2", "display_name": "+20 Stash Capacity", "price_gold": 100, "bonus_value": 20 }
+  ]
+}

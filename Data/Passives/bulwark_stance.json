@@ -1,0 +1,13 @@
+{
+  "id": "bulwark_stance",
+  "display_name": "Bulwark Stance",
+  "description": "At combat start, gain DEF equal to (2 + hero level). A stalwart defender's resolve hardens with experience.",
+  "passive_type": "level_scaled_stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "defense",
+    "bonus": 2
+  },
+  "source_class_id": "defender",
+  "category": "class"
+}

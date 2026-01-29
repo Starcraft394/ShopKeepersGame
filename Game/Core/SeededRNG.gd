@@ -105,6 +105,35 @@ func get_rng_for_loot(region_id: String, floor_index: int, room_index: int, base
 	return create_rng(seed_val)
 
 
+## Get derived seed for dungeon room generation.
+static func dungeon_room_seed(dungeon_id: String, floor_index: int, base_seed: int) -> int:
+	var key = "dungeon_rooms:%s:%d" % [dungeon_id, floor_index]
+	return derive_seed(key, base_seed)
+
+
+## Get an RNG for dungeon room generation on current floor.
+## Uses GameContext for context if available.
+func get_dungeon_rng() -> RandomNumberGenerator:
+	# Get context from GameContext if available
+	var dungeon_id = ""
+	var floor_num = 1
+	var base_seed = 12345  # Default fallback
+
+	if Engine.has_singleton("GameContext"):
+		var ctx = Engine.get_singleton("GameContext")
+		dungeon_id = ctx.get_current_dungeon_id()
+		floor_num = ctx.get_current_floor()
+		base_seed = ctx.get_run_seed()
+	elif has_node("/root/GameContext"):
+		var ctx = get_node("/root/GameContext")
+		dungeon_id = ctx.get_current_dungeon_id() if ctx.has_method("get_current_dungeon_id") else ""
+		floor_num = ctx.get_current_floor() if ctx.has_method("get_current_floor") else 1
+		base_seed = ctx.get_run_seed() if ctx.has_method("get_run_seed") else 12345
+
+	var seed_val = dungeon_room_seed(dungeon_id, floor_num, base_seed)
+	return create_rng(seed_val)
+
+
 # ============================================================================
 # CONVENIENCE FUNCTIONS
 # ============================================================================
@@ -156,6 +185,35 @@ static func choose_weighted(entries: Array, rng: RandomNumberGenerator) -> Varia
 
 	# Fallback (shouldn't reach here)
 	return entries[entries.size() - 1].get("value")
+
+
+## Roll loot from a LootTableData using deterministic RNG.
+## Returns Array of { "item_id": String, "quantity": int }
+static func roll_loot_table(table: LootTableData, rng: RandomNumberGenerator) -> Array:
+	var results: Array = []
+	if table == null or table.entries.is_empty():
+		return results
+
+	var drop_count = rng.randi_range(table.min_drops, table.max_drops)
+
+	# Build weighted array for choose_weighted
+	var weighted: Array = []
+	for e in table.entries:
+		weighted.append({ "value": e, "weight": e.get("weight", 1.0) })
+
+	for i in range(drop_count):
+		var chosen = choose_weighted(weighted, rng)
+		if chosen == null:
+			continue
+		var item_id = chosen.get("item_id", "")
+		if item_id == "":
+			continue  # No-drop entry
+		var min_qty = chosen.get("min_qty", 1)
+		var max_qty = chosen.get("max_qty", 1)
+		var qty = rng.randi_range(min_qty, max_qty)
+		results.append({ "item_id": item_id, "quantity": qty })
+
+	return results
 
 
 ## Shuffle an array in place using Fisher-Yates algorithm.

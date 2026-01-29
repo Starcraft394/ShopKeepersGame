@@ -1,0 +1,22 @@
+{
+  "id": "wooden_shield",
+  "display_name": "Wooden Shield",
+  "description": "A simple wooden buckler reinforced with iron bands.",
+  "item_type": "armor",
+  "item_subtype": "shield",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 1,
+  "base_stats": {
+    "defense": 2
+  },
+  "stat_bonuses": {
+    "defense": 3,
+    "health": 5
+  },
+  "base_value": 25,
+  "buy_value": 0,
+  "can_refine": true,
+  "tags": ["offhand", "shield", "region_1", "crafted"]
+}

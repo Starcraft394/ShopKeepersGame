@@ -40,6 +40,14 @@ var _owner_id: String = ""
 func _init(owner_id: String = "") -> void:
 	_owner_id = owner_id
 
+
+## Helper to safely get DataRegistry autoload (avoids compile-time dependency).
+func _get_registry():
+	var main_loop = Engine.get_main_loop() as SceneTree
+	if main_loop and main_loop.root:
+		return main_loop.root.get_node_or_null("DataRegistry")
+	return null
+
 # ============================================================================
 # PUBLIC API - STATUS APPLICATION
 # ============================================================================
@@ -171,8 +179,9 @@ func process_turn_end() -> int:
 		print("[StatusRuntime] %s: Doom countdown: %d" % [_owner_id, doom.countdown])
 
 		if doom.countdown <= 0:
-			# DOOM triggers! Get base damage from DataRegistry
-			var doom_data = DataRegistry.get_status_effect("doom")
+			# DOOM triggers! Get base damage from DataRegistry (safe access)
+			var registry = _get_registry()
+			var doom_data = registry.get_status_effect("doom") if registry else null
 			var base_damage = 5  # Fallback
 			if doom_data != null:
 				base_damage = doom_data.base_value

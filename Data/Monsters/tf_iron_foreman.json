@@ -1,0 +1,18 @@
+{
+  "id": "tf_iron_foreman",
+  "display_name": "Iron Foreman",
+  "description": "The tyrannical overseer of Timberfall's cursed mills, armored in riveted plate and fury.",
+  "family": "humanoid",
+  "region_id": "region_1",
+  "tier": 3,
+  "ai_tier": 3,
+  "base_stats": { "health": 88, "attack": 16, "defense": 11, "speed": 11 },
+  "ability_ids": ["basic_attack"],
+  "passive_ids": [],
+  "loot_table_id": "lt_region1_boss",
+  "gold_drop_min": 45,
+  "gold_drop_max": 75,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": true
+}

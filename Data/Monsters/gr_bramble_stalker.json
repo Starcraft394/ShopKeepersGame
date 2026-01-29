@@ -1,0 +1,18 @@
+{
+  "id": "gr_bramble_stalker",
+  "display_name": "Bramble Stalker",
+  "description": "A thorny predator that moves silently through dense underbrush.",
+  "family": "beast",
+  "region_id": "region_1",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": { "health": 58, "attack": 12, "defense": 6, "speed": 14 },
+  "ability_ids": ["basic_attack"],
+  "passive_ids": [],
+  "loot_table_id": "lt_region1_uncommon",
+  "gold_drop_min": 18,
+  "gold_drop_max": 32,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false
+}

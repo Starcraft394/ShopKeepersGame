@@ -1,0 +1,18 @@
+{
+  "id": "bandage",
+  "display_name": "Bandage",
+  "description": "Simple cloth bandages. Use in camp to stop bleeding.",
+  "item_type": "consumable",
+  "category": "consumable",
+  "rarity": "common",
+  "base_stats": {},
+  "stat_scalars": {},
+  "allowed_affixes": [],
+  "allowed_socket_types": [],
+  "base_value": 8,
+  "buy_value": 15,
+  "stack_max": 20,
+  "use_effect": "cure_bleeding",
+  "use_value": 99,
+  "tags": ["consumable", "cure", "region_1"]
+}

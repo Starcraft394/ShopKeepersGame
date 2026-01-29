@@ -1,0 +1,18 @@
+{
+  "id": "antidote",
+  "display_name": "Antidote",
+  "description": "Cures poison. Use in camp to remove poison stacks from a hero.",
+  "item_type": "consumable",
+  "category": "consumable",
+  "rarity": "common",
+  "base_stats": {},
+  "stat_scalars": {},
+  "allowed_affixes": [],
+  "allowed_socket_types": [],
+  "base_value": 12,
+  "buy_value": 20,
+  "stack_max": 10,
+  "use_effect": "cure_poison",
+  "use_value": 99,
+  "tags": ["consumable", "cure", "potion", "region_1"]
+}

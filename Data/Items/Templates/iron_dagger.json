@@ -1,0 +1,23 @@
+{
+  "id": "iron_dagger",
+  "display_name": "Iron Dagger",
+  "description": "A short iron blade built for quick work.",
+  "item_type": "weapon",
+  "item_subtype": "dagger",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "base_stats": {
+    "attack": 3,
+    "speed": 2
+  },
+  "stat_bonuses": {
+    "attack": 3,
+    "speed": 2
+  },
+  "base_value": 35,
+  "buy_value": 0,
+  "can_refine": true,
+  "tags": ["region_1", "weapon", "melee", "dagger", "crafted", "tier_2"]
+}

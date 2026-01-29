@@ -1,3 +1,11 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+# Godot binaries (local dev tools only)
+*.exe
+
+# Build/test artifacts
+nul
+tests_full_output.txt
+DevTools/*.log

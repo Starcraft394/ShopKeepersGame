@@ -1,0 +1,17 @@
+{
+  "id": "focus_elixir",
+  "display_name": "Focus Elixir",
+  "description": "A shimmering brew that sharpens the mind and restores magical focus.",
+  "item_type": "consumable",
+  "item_subtype": "potion",
+  "slot": "",
+  "tier": 2,
+  "base_stats": {},
+  "use_effect": "restore_focus",
+  "use_value": 20,
+  "allowed_affixes": [],
+  "allowed_socket_types": [],
+  "can_refine": false,
+  "base_value": 28,
+  "tags": ["region_1", "consumable", "focus", "crafted"]
+}

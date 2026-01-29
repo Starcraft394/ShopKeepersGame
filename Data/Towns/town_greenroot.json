@@ -1,0 +1,25 @@
+{
+  "id": "town_greenroot",
+  "display_name": "Greenroot",
+  "description": "A quiet forest settlement nestled among ancient oaks. The first safe haven for new shopkeepers.",
+  "region_id": "region_1",
+  "dungeon_id": "dungeon_greenroot",
+  "facility_ids": [
+    "dungeon_greenroot",
+    "inn",
+    "shop_greenroot",
+    "blacksmith",
+    "leatherworker",
+    "woodsman",
+    "chef",
+    "alchemist",
+    "training_hall",
+    "storage"
+  ],
+  "unlock_region": 1,
+  "unlock": {
+    "type": "starter",
+    "region_required": 1,
+    "requires_town_id": ""
+  }
+}

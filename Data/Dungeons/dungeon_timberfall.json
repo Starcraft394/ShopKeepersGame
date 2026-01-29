@@ -1,0 +1,67 @@
+{
+  "id": "dungeon_timberfall",
+  "display_name": "Timberfall Depths",
+  "description": "Abandoned lumber operations overrun by corruption. The depths hide industrial horrors.",
+  "region_id": "region_1",
+  "town_id": "town_timberfall",
+  "floor_count": 4,
+  "rooms_per_floor": 1,
+  "boss_id": "tf_iron_foreman",
+  "min_rooms_per_floor": 3,
+  "max_rooms_per_floor": 5,
+  "choice_b_event_weight": 0.5,
+  "choice_b_elite_weight": 0.5,
+  "event_table_id": "et_region1_lumber",
+  "encounter_tags": ["lumber", "fungal", "industrial"],
+  "floor_theme": [
+    "Overgrown Logging Camp",
+    "Collapsed Sawmill",
+    "Rusted Machinery",
+    "The Forge Pit"
+  ],
+  "tier1_monster_ids": [
+    "bandit",
+    "bandit_elite",
+    "scarecrow",
+    "skeleton",
+    "zombie",
+    "cultist"
+  ],
+  "tier2_monster_ids": [
+    "tf_bandit_raider",
+    "tf_logsplitter_brute",
+    "tf_rustwood_construct",
+    "cultist_enforcer",
+    "skeleton_veteran",
+    "acid_slime"
+  ],
+  "elite_monster_ids": [
+    "tf_sawbone_enforcer",
+    "cultist_enforcer_elite",
+    "skeleton_veteran_elite"
+  ],
+  "tier1_by_floor": [
+    ["bandit", "scarecrow", "skeleton"],
+    ["bandit", "zombie", "cultist"],
+    ["bandit_elite", "skeleton", "zombie"],
+    ["cultist", "scarecrow", "bandit_elite"]
+  ],
+  "tier2_by_floor": [
+    ["tf_bandit_raider"],
+    ["tf_bandit_raider", "tf_logsplitter_brute"],
+    ["tf_rustwood_construct", "cultist_enforcer", "skeleton_veteran"],
+    ["tf_logsplitter_brute", "tf_rustwood_construct", "acid_slime"]
+  ],
+  "elite_by_floor": [
+    [],
+    ["skeleton_veteran_elite"],
+    ["cultist_enforcer_elite", "skeleton_veteran_elite"],
+    ["tf_sawbone_enforcer", "cultist_enforcer_elite"]
+  ],
+  "room_types_by_floor": [
+    ["combat"],
+    ["combat"],
+    ["combat"],
+    ["combat"]
+  ]
+}

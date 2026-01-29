@@ -1,8 +1,9 @@
 {
   "id": "warrior",
   "class_id": "warrior",
-  "display_name": "Warrior",
-  "description": "A stalwart defender who excels in close combat with heavy weapons and armor.",
+  "display_name": "Warrior (Legacy)",
+  "description": "A stalwart defender who excels in close combat with heavy weapons and armor. (Legacy class - not in GDD)",
+  "is_legacy": true,
   "unlock_region": 1,
   "base_stats": {
     "health": 120,

@@ -1,0 +1,14 @@
+{
+  "id": "wooden_sword",
+  "display_name": "Wooden Sword",
+  "description": "A simple practice blade carved from hardwood.",
+  "item_type": "weapon",
+  "rarity": "common",
+  "equip_slot": "weapon",
+  "base_stats": { "attack": 3 },
+  "stat_scalars": {},
+  "allowed_affixes": [],
+  "allowed_socket_types": [],
+  "gold_value": 10,
+  "tags": ["region_1", "weapon", "melee"]
+}

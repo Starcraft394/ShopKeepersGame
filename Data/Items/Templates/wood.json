@@ -1,0 +1,13 @@
+{
+  "id": "wood",
+  "display_name": "Wood",
+  "description": "Sturdy timber suitable for crafting.",
+  "item_type": "material",
+  "rarity": "common",
+  "base_stats": {},
+  "stat_scalars": {},
+  "allowed_affixes": [],
+  "allowed_socket_types": [],
+  "gold_value": 2,
+  "tags": ["material", "wood", "smithing"]
+}

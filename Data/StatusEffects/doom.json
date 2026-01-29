@@ -6,5 +6,9 @@
   "max_stacks": 5,
   "base_duration": 0,
   "base_value": 10,
-  "is_cleansable": true
+  "is_cleansable": true,
+  "tags": ["countdown"],
+  "ui_name": "Doom",
+  "ui_short": "DOOM",
+  "ui_icon": "res://Assets/Icons/Status/icon_status_doom.png"
 }

@@ -1,0 +1,13 @@
+{
+  "id": "living_bond",
+  "display_name": "Living Bond",
+  "description": "Your connection to nature grants +5 HP at combat start. Allies draw strength from your presence.",
+  "passive_type": "stat_bonus",
+  "trigger": "always",
+  "effect": {
+    "stat": "health",
+    "bonus": 5
+  },
+  "source_class_id": "warden",
+  "category": "class"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "aegis_slam",
+  "display_name": "Aegis Slam",
+  "description": "Slam your shield into the ground, dealing heavy damage and stunning the target for 1 round.",
+  "ability_type": "class_b",
+  "source_class_id": "defender",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 10,
+  "damage_type": "physical",
+  "attack_scaling": 1.0,
+  "cooldown": 4,
+  "applies_status_id": "stunned",
+  "applies_status_duration": 1,
+  "status_stacks": 0
+}

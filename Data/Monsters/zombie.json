@@ -1,0 +1,13 @@
+{
+  "id": "zombie",
+  "display_name": "Zombie",
+  "description": "Slow, stubborn, and hard to put down.",
+  "family": "undead",
+  "region_id": "region_1",
+  "tier": 1,
+  "base_stats": { "health": 30, "attack": 4, "defense": 3, "speed": 7 },
+  "ability_ids": ["basic_attack"],
+  "loot_table_id": "lt_region1_common",
+  "gold_drop_min": 4,
+  "gold_drop_max": 11
+}

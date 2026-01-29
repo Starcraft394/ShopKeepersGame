@@ -1,0 +1,15 @@
+{
+  "id": "tidelings",
+  "display_name": "Tidelings",
+  "description": "Amphibious people from coastal regions who draw power from the sea and storms. Fluid in combat and resilient against elemental forces.",
+  "unlock_region": 3,
+  "stat_modifiers": {
+    "health": 5,
+    "attack": 0,
+    "defense": 0,
+    "speed": 5
+  },
+  "racial_passive_id": "tideling_flow",
+  "xp_modifier": 1.0,
+  "trait_tags": ["aquatic", "elemental"]
+}

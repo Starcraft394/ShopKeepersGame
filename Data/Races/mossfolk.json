@@ -1,0 +1,15 @@
+{
+  "id": "mossfolk",
+  "display_name": "Mossfolk",
+  "description": "Plant-like beings born from the deep forests. Their connection to nature grants regenerative abilities and an affinity for fungi.",
+  "unlock_region": 2,
+  "stat_modifiers": {
+    "health": 15,
+    "attack": -2,
+    "defense": 5,
+    "speed": -5
+  },
+  "racial_passive_id": "mossfolk_regeneration",
+  "xp_modifier": 1.0,
+  "trait_tags": ["nature", "regenerative"]
+}

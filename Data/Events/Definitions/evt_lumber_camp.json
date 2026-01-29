@@ -1,0 +1,42 @@
+{
+  "id": "evt_lumber_camp",
+  "title": "Abandoned Workers' Camp",
+  "description": "Rotting canvas tents sag between rusted poles, marking where lumber crews once lived. Cookpots lie overturned, bedrolls molder in the damp. Whatever drove them out, they left in a hurry. A pile of cut lumber sits untouched nearby.",
+  "kind": "choice",
+  "tags": ["lumber", "loot", "exploration"],
+  "choices": [
+    {
+      "id": "search_tents",
+      "label": "Search the tents",
+      "description": "Workers sometimes hid savings.",
+      "effects": [
+        { "type": "add_gold_range", "min": 4, "max": 12 }
+      ]
+    },
+    {
+      "id": "check_lumber",
+      "label": "Take the cut lumber",
+      "description": "Pre-cut wood is valuable.",
+      "effects": [
+        { "type": "add_item", "item_id": "wood", "min_qty": 2, "max_qty": 4 }
+      ]
+    },
+    {
+      "id": "salvage_tools",
+      "label": "Look for abandoned tools",
+      "description": "Iron tools can be melted down.",
+      "effects": [
+        { "type": "add_item", "item_id": "iron_scrap", "min_qty": 1, "max_qty": 2 },
+        { "type": "add_gold_range", "min": 2, "max": 5 }
+      ]
+    },
+    {
+      "id": "move_on",
+      "label": "Keep moving",
+      "description": "This place feels wrong.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

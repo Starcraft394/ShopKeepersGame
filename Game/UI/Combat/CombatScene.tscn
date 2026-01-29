@@ -1,8 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://bxq6k8mj4qhfl"]
+[gd_scene load_steps=3 format=3 uid="uid://bxq6k8mj4qhfl"]
 
 [ext_resource type="Script" path="res://Game/UI/Combat/CombatScene.gd" id="1_script"]
+[ext_resource type="Theme" uid="uid://game_theme_001" path="res://Themes/game_theme.tres" id="2_theme"]
 
 [node name="CombatScene" type="Control"]
+theme = ExtResource("2_theme")
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -40,12 +42,24 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.2, 0.2, 0.25, 1)
 
+[node name="DungeonProgressLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 40.0
+offset_bottom = 60.0
+grow_horizontal = 2
+text = "Dungeon | Floor 0/0 | Room 0/0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="MainContent" type="HBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 45.0
+offset_top = 65.0
 offset_bottom = -200.0
 grow_horizontal = 2
 grow_vertical = 2

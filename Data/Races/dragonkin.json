@@ -1,0 +1,15 @@
+{
+  "id": "dragonkin",
+  "display_name": "Dragonkin",
+  "description": "Descendants of ancient dragons, blessed with scales and inner fire. They command respect through raw power and elemental fury.",
+  "unlock_region": 4,
+  "stat_modifiers": {
+    "health": 10,
+    "attack": 5,
+    "defense": 5,
+    "speed": -5
+  },
+  "racial_passive_id": "dragonkin_scales",
+  "xp_modifier": 0.9,
+  "trait_tags": ["draconic", "fire"]
+}

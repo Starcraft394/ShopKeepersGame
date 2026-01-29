@@ -1,0 +1,22 @@
+{
+  "id": "crude_sword",
+  "display_name": "Crude Sword",
+  "description": "A roughly forged iron blade. Basic but functional.",
+  "item_type": "weapon",
+  "item_subtype": "sword",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 1,
+  "base_stats": {
+    "attack": 4
+  },
+  "stat_bonuses": {
+    "attack": 4,
+    "speed": 1
+  },
+  "base_value": 20,
+  "buy_value": 0,
+  "can_refine": true,
+  "tags": ["weapon", "melee", "sword", "region_1", "crafted"]
+}

@@ -1,0 +1,15 @@
+{
+  "id": "elf",
+  "display_name": "Elf",
+  "description": "Agile and perceptive, elves have keen senses that reveal hidden paths. Their natural grace aids in precision work.",
+  "unlock_region": 1,
+  "stat_modifiers": {
+    "health": -5,
+    "attack": 0,
+    "defense": -2,
+    "speed": 3
+  },
+  "racial_passive_id": "elf_keen_sight",
+  "xp_modifier": 1.0,
+  "trait_tags": ["agile", "perceptive", "resist_bleed"]
+}

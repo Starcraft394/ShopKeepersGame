@@ -1,0 +1,56 @@
+{
+  "id": "evt_forest_shrine",
+  "title": "Moss-Covered Shrine",
+  "description": "Weathered stone rises from a carpet of emerald moss - an ancient shrine to forgotten forest spirits. Coins, dried flowers, and small trinkets lie scattered at its base. The air thrums with old power, and you feel unseen eyes upon you.",
+  "kind": "choice",
+  "tags": ["forest", "shrine", "magic"],
+  "choices": [
+    {
+      "id": "pray",
+      "label": "Kneel and pray",
+      "description": "Show reverence to the old spirits.",
+      "effects": [
+        { "type": "add_item", "item_id": "herb", "min_qty": 1, "max_qty": 2 }
+      ],
+      "modifier": {
+        "id": "blessing",
+        "label": "Spirit's Blessing",
+        "bonus_gold": 10
+      }
+    },
+    {
+      "id": "take_offerings",
+      "label": "Take the offerings",
+      "description": "The spirits won't miss a few coins...",
+      "effects": [
+        { "type": "add_gold_range", "min": 12, "max": 22 }
+      ],
+      "risk": {
+        "curse_chance": 0.35
+      },
+      "modifier": {
+        "id": "curse",
+        "label": "Spirit's Curse",
+        "enemy_spd_bonus": 4
+      }
+    },
+    {
+      "id": "leave_offering",
+      "label": "Leave an offering",
+      "description": "Pay 8 gold for the spirits' favor.",
+      "requires": { "gold": 8 },
+      "effects": [
+        { "type": "lose_gold", "min": 8, "max": 8 },
+        { "type": "add_item", "item_id": "mushroom", "min_qty": 2, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "pass_by",
+      "label": "Walk past quietly",
+      "description": "Best not to disturb old things.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

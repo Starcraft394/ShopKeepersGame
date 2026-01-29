@@ -1,0 +1,53 @@
+{
+  "id": "evt_forest_fae",
+  "title": "Fae Bargain",
+  "description": "A luminous sprite materializes from a swirl of golden motes, its form flickering between child and ancient thing. It speaks in riddles: 'Mortal! The forest remembers your tread. What will you offer for its secrets?' Its smile is too wide, its eyes too knowing.",
+  "kind": "choice",
+  "tags": ["forest", "fae", "magic", "gamble"],
+  "choices": [
+    {
+      "id": "offer_gold",
+      "label": "Offer gold tribute",
+      "description": "Pay 15 gold for the fae's favor.",
+      "requires": { "gold": 15 },
+      "effects": [
+        { "type": "lose_gold", "min": 15, "max": 15 },
+        { "type": "add_item", "item_id": "herb", "min_qty": 2, "max_qty": 3 },
+        { "type": "add_item", "item_id": "mushroom", "min_qty": 1, "max_qty": 2 }
+      ]
+    },
+    {
+      "id": "play_game",
+      "label": "Play its guessing game",
+      "description": "Risk your wits against fae cunning.",
+      "effects": [
+        { "type": "add_gold_range", "min": 0, "max": 25 }
+      ],
+      "risk": {
+        "trick_chance": 0.4,
+        "gold_loss": 10
+      }
+    },
+    {
+      "id": "polite_decline",
+      "label": "Bow and withdraw",
+      "description": "Show respect but make no deals.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    },
+    {
+      "id": "insult_fae",
+      "label": "Dismiss it rudely",
+      "description": "You have no time for tricksters.",
+      "effects": [
+        { "type": "nothing" }
+      ],
+      "modifier": {
+        "id": "fae_curse",
+        "label": "Fae's Spite",
+        "enemy_spd_bonus": 3
+      }
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "warden",
+  "display_name": "Warden",
+  "description": "A forest guardian with organic, grounded healing. Supports allies through nature magic and protective wards.",
+  "archetype": "warden",
+  "unlock_region": 1,
+  "base_stats": {
+    "health": 100,
+    "attack": 6,
+    "defense": 12,
+    "speed": 8
+  },
+  "stat_growth": {
+    "health": 10,
+    "attack": 1,
+    "defense": 2,
+    "speed": 2
+  },
+  "ability_a_id": "natures_grace",
+  "ability_b_id": "barkskin_blessing",
+  "passive_a_id": "living_bond",
+  "passive_b_id": "verdant_renewal",
+  "weapon_types": ["staff", "sword", "wand"]
+}

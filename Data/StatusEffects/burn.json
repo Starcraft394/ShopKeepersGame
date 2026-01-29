@@ -3,8 +3,15 @@
   "display_name": "Burn",
   "description": "Taking fire damage over time.",
   "category": "dot",
+  "stacking_mode": "intensity",
   "max_stacks": 5,
   "base_duration": 3,
   "base_value": 3,
-  "is_cleansable": true
+  "value_per_stack": 1,
+  "resolution_timing": "turn_start",
+  "is_cleansable": true,
+  "tags": ["dot", "fire"],
+  "ui_name": "Burn",
+  "ui_short": "BRN",
+  "ui_icon": "res://Assets/Icons/Status/icon_status_burn.png"
 }

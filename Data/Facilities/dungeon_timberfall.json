@@ -1,0 +1,22 @@
+{
+  "id": "dungeon_timberfall",
+  "display_name": "Dungeon Board",
+  "description": "Select a starting floor for the Timberfall Depths dungeon.",
+  "facility_type": "dungeon",
+  "max_tier": 1,
+  "unlock_region": 1,
+
+  "slots_per_tier": {},
+
+  "upgrade_costs": {},
+
+  "services_per_tier": {
+    "1": ["select_floor"]
+  },
+
+  "produces_item_types": [],
+  "input_resource_types": [],
+
+  "allows_hero_assignment": false,
+  "max_assigned_heroes": 0
+}

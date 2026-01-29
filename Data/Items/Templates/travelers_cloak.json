@@ -1,0 +1,22 @@
+{
+  "id": "travelers_cloak",
+  "display_name": "Traveler's Cloak",
+  "description": "A worn cloak that keeps the chill off.",
+  "item_type": "armor",
+  "item_subtype": "light_chest",
+  "slot": "chest",
+  "tier": 1,
+  "min_quality": 1,
+  "max_quality": 5,
+  "base_stats": { "defense": 1, "speed": 1 },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 15,
+  "icon_path": "",
+  "tags": ["region_1", "armor"]
+}

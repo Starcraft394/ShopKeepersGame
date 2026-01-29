@@ -1,0 +1,18 @@
+{
+  "id": "lt_region1_boss",
+  "display_name": "Region 1 Boss Loot",
+  "description": "Rewarding drops from region bosses with equipment chances.",
+  "min_drops": 3,
+  "max_drops": 5,
+  "entries": [
+    { "item_id": "iron_scrap", "weight": 20, "min_qty": 3, "max_qty": 5 },
+    { "item_id": "herb_sprig", "weight": 15, "min_qty": 3, "max_qty": 5 },
+    { "item_id": "minor_healing_tonic", "weight": 15, "min_qty": 2, "max_qty": 3 },
+    { "item_id": "leather_vest", "weight": 12, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "oak_staff", "weight": 10, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "tanned_leather_hood", "weight": 10, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "iron_dagger", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "simple_ring", "weight": 5, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 5, "min_qty": 0, "max_qty": 0 }
+  ]
+}

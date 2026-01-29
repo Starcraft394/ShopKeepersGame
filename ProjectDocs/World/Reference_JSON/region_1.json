@@ -1,0 +1,8 @@
+{
+  "id": "region_1",
+  "display_name": "Forest Haven",
+  "description": "A lush forest region with low-level threats. The starting area for new adventurers.",
+  "region_index": 1,
+  "dungeon_floor_count": 1,
+  "monster_families": ["beast"]
+}

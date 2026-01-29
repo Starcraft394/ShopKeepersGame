@@ -17,6 +17,7 @@ var category: String = ""  # "dot", "control", "buff", "debuff", "countdown"
 # Stack Behavior (per GDD 27.3, 39.4)
 var max_stacks: int = 1
 var stack_type: String = "linear"  # "linear", "threshold", "countdown_extension"
+var stacking_mode: String = "refresh"  # "refresh" | "intensity" (Status v1.4)
 
 # Duration
 var base_duration: int = -1  # -1 = permanent until removed
@@ -37,6 +38,14 @@ var dispel_type: String = "debuff"  # "buff", "debuff", "none"
 var icon_path: String = ""
 var color_category: String = "red"  # "red"=damage, "blue"=control, "green"=buff, "purple"=countdown
 
+# UI Display Metadata (Status v1.5)
+var ui_name: String = ""    # Full name for tooltips (fallback to display_name)
+var ui_short: String = ""   # Short code like "PSN", "BLD", "STN"
+var ui_icon: String = ""    # Optional resource path for icon
+
+# Tags for resist/immunity system (Status v1.3)
+var tags: Array[String] = []
+
 # Factory method
 static func from_dict(data: Dictionary) -> StatusEffectData:
 	var instance = StatusEffectData.new()
@@ -48,6 +57,7 @@ static func from_dict(data: Dictionary) -> StatusEffectData:
 	instance.category = data.get("category", "")
 	instance.max_stacks = data.get("max_stacks", 1)
 	instance.stack_type = data.get("stack_type", "linear")
+	instance.stacking_mode = data.get("stacking_mode", "refresh")
 	instance.base_duration = data.get("base_duration", -1)
 	instance.duration_type = data.get("duration_type", "turns")
 	instance.base_value = data.get("base_value", 0)
@@ -57,6 +67,18 @@ static func from_dict(data: Dictionary) -> StatusEffectData:
 	instance.dispel_type = data.get("dispel_type", "debuff")
 	instance.icon_path = data.get("icon_path", "")
 	instance.color_category = data.get("color_category", "red")
+
+	# Parse UI display metadata (Status v1.5)
+	instance.ui_name = data.get("ui_name", "")
+	instance.ui_short = data.get("ui_short", "")
+	instance.ui_icon = data.get("ui_icon", "")
+
+	# Parse tags (Status v1.3)
+	instance.tags.clear()
+	var tags_val = data.get("tags", [])
+	var tags_arr = tags_val if tags_val is Array else []
+	for t in tags_arr:
+		instance.tags.append(str(t))
 
 	return instance
 

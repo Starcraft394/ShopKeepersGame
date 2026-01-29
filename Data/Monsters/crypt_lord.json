@@ -1,0 +1,18 @@
+{
+  "id": "crypt_lord",
+  "display_name": "Crypt Lord",
+  "description": "An ancient commander bound to bone and oath.",
+  "family": "undead",
+  "region_id": "region_1",
+  "tier": 3,
+  "ai_tier": 3,
+  "base_stats": { "health": 85, "attack": 14, "defense": 10, "speed": 10 },
+  "ability_ids": ["basic_attack"],
+  "passive_ids": [],
+  "loot_table_id": "lt_region1_boss",
+  "gold_drop_min": 40,
+  "gold_drop_max": 70,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": true
+}

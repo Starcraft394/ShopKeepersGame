@@ -1,0 +1,29 @@
+{
+  "id": "chef",
+  "display_name": "Chef",
+  "description": "A humble kitchen where herbs and meat become restorative meals.",
+  "facility_type": "production",
+  "max_tier": 1,
+  "unlock_region": 1,
+
+  "slots_per_tier": {
+    "1": 2
+  },
+
+  "upgrade_costs": {
+    "2": {
+      "wood_bundle": 6,
+      "herb_sprig": 6
+    }
+  },
+
+  "services_per_tier": {
+    "1": ["cook_basic_meal", "prepare_rations"]
+  },
+
+  "produces_item_types": ["consumable"],
+  "input_resource_types": ["herb_sprig", "wood_bundle"],
+
+  "allows_hero_assignment": true,
+  "max_assigned_heroes": 1
+}

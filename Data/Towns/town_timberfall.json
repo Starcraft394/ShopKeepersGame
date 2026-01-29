@@ -1,0 +1,25 @@
+{
+  "id": "town_timberfall",
+  "display_name": "Timberfall",
+  "description": "A logging outpost at the forest's edge where woodcutters and rangers gather.",
+  "region_id": "region_1",
+  "dungeon_id": "dungeon_timberfall",
+  "facility_ids": [
+    "dungeon_timberfall",
+    "inn_tf",
+    "shop_timberfall",
+    "blacksmith_tf",
+    "leatherworker_tf",
+    "woodsman_tf",
+    "chef_tf",
+    "alchemist_tf",
+    "training_hall_tf",
+    "storage_tf"
+  ],
+  "unlock_region": 1,
+  "unlock": {
+    "type": "requires_town",
+    "region_required": 1,
+    "requires_town_id": "town_greenroot"
+  }
+}

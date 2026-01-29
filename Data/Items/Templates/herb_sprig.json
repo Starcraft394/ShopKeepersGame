@@ -1,0 +1,13 @@
+{
+  "id": "herb_sprig",
+  "display_name": "Herb Sprig",
+  "description": "A fragrant medicinal herb.",
+  "item_type": "material",
+  "rarity": "common",
+  "base_stats": {},
+  "stat_scalars": {},
+  "allowed_affixes": [],
+  "allowed_socket_types": [],
+  "gold_value": 5,
+  "tags": ["region_1", "greenroot", "forest", "material"]
+}

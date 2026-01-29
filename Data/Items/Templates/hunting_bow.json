@@ -1,0 +1,14 @@
+{
+  "id": "hunting_bow",
+  "display_name": "Hunting Bow",
+  "description": "A flexible bow favored by forest scouts.",
+  "item_type": "weapon",
+  "rarity": "common",
+  "equip_slot": "weapon",
+  "base_stats": { "attack": 3, "speed": 1 },
+  "stat_scalars": {},
+  "allowed_affixes": [],
+  "allowed_socket_types": [],
+  "gold_value": 16,
+  "tags": ["region_1", "weapon", "ranged"]
+}

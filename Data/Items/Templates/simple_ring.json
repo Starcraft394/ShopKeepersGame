@@ -1,0 +1,22 @@
+{
+  "id": "simple_ring",
+  "display_name": "Simple Ring",
+  "description": "A plain band traded in small towns.",
+  "item_type": "accessory",
+  "item_subtype": "ring",
+  "slot": "accessory_1",
+  "tier": 1,
+  "min_quality": 1,
+  "max_quality": 5,
+  "base_stats": { "health": 3 },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 20,
+  "icon_path": "",
+  "tags": ["region_1", "accessory"]
+}

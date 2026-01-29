@@ -1,0 +1,14 @@
+{
+  "id": "book_tidechaser",
+  "display_name": "Tidechaser's Codex",
+  "description": "A waterlogged tome that never dries, filled with healing currents. Teaches the Tidechaser class.",
+  "item_type": "consumable",
+  "rarity": "rare",
+  "use_effect_id": "learn_class_tidechaser",
+  "base_stats": {},
+  "stat_scalars": {},
+  "allowed_affixes": [],
+  "allowed_socket_types": [],
+  "gold_value": 200,
+  "tags": ["book", "class_unlock", "tidechaser"]
+}

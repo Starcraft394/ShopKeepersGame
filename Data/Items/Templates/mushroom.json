@@ -1,0 +1,13 @@
+{
+  "id": "mushroom",
+  "display_name": "Forest Mushroom",
+  "description": "A common mushroom used in alchemy.",
+  "item_type": "material",
+  "rarity": "common",
+  "base_stats": {},
+  "stat_scalars": {},
+  "allowed_affixes": [],
+  "allowed_socket_types": [],
+  "gold_value": 4,
+  "tags": ["material", "mushroom", "alchemy"]
+}

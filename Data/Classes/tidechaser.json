@@ -1,0 +1,24 @@
+{
+  "id": "tidechaser",
+  "display_name": "Tidechaser",
+  "description": "A water-attuned healer who manipulates currents to restore allies and wash away afflictions.",
+  "archetype": "healer",
+  "unlock_region": 3,
+  "base_stats": {
+    "health": 95,
+    "attack": 7,
+    "defense": 11,
+    "speed": 10
+  },
+  "stat_growth": {
+    "health": 9,
+    "attack": 2,
+    "defense": 2,
+    "speed": 2
+  },
+  "ability_a_id": "healing_tide",
+  "ability_b_id": "cleansing_wave",
+  "passive_a_id": "tidal_flow",
+  "passive_b_id": "ocean_blessing",
+  "weapon_types": ["staff", "wand", "trident"]
+}

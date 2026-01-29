@@ -1,0 +1,11 @@
+{
+  "id": "wood_bundle",
+  "display_name": "Bundle of Wood",
+  "description": "Fresh-cut lumber from Forest Haven.",
+  "item_type": "material",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 4,
+  "buy_value": 0,
+  "tags": ["region_1", "material", "crafting"]
+}

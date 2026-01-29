@@ -1,0 +1,24 @@
+{
+  "id": "stormcaller",
+  "display_name": "Stormcaller",
+  "description": "A tempest mage who commands lightning and wind to devastate enemies with elemental fury.",
+  "archetype": "dps",
+  "unlock_region": 3,
+  "base_stats": {
+    "health": 85,
+    "attack": 16,
+    "defense": 7,
+    "speed": 11
+  },
+  "stat_growth": {
+    "health": 7,
+    "attack": 4,
+    "defense": 1,
+    "speed": 3
+  },
+  "ability_a_id": "lightning_bolt",
+  "ability_b_id": "storm_surge",
+  "passive_a_id": "static_charge",
+  "passive_b_id": "eye_of_storm",
+  "weapon_types": ["staff", "wand", "orb"]
+}

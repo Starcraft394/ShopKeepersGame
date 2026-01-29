@@ -1,0 +1,46 @@
+{
+  "id": "evt_lumber_cache",
+  "title": "Rusted Cache",
+  "description": "Behind a collapsed wall of rotted planks, you spot an iron lockbox half-buried in debris. Rust cakes the hinges, but the lock mechanism looks intact. This was hidden deliberately - someone's emergency fund, perhaps.",
+  "kind": "choice",
+  "tags": ["lumber", "loot", "treasure"],
+  "choices": [
+    {
+      "id": "force_open",
+      "label": "Force it open",
+      "description": "Brute strength, but risk a trap.",
+      "effects": [
+        { "type": "add_gold_range", "min": 12, "max": 22 },
+        { "type": "add_item", "item_id": "iron_scrap", "min_qty": 1, "max_qty": 2 }
+      ],
+      "risk": {
+        "trap_chance": 0.25,
+        "damage_amount": 10
+      }
+    },
+    {
+      "id": "pick_lock",
+      "label": "Work the corroded lock",
+      "description": "Patient effort might open it safely.",
+      "effects": [
+        { "type": "add_gold_range", "min": 10, "max": 18 }
+      ]
+    },
+    {
+      "id": "salvage_box",
+      "label": "Just take the iron box",
+      "description": "The box itself is worth something.",
+      "effects": [
+        { "type": "add_item", "item_id": "iron_scrap", "min_qty": 2, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "leave_it",
+      "label": "Leave it alone",
+      "description": "Could be trapped. Not worth the risk.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "lich",
+  "display_name": "Lich",
+  "description": "A master of death magic who raises the fallen and unleashes necrotic devastation upon the living.",
+  "archetype": "dps",
+  "unlock_region": 6,
+  "base_stats": {
+    "health": 70,
+    "attack": 20,
+    "defense": 5,
+    "speed": 10
+  },
+  "stat_growth": {
+    "health": 5,
+    "attack": 6,
+    "defense": 1,
+    "speed": 2
+  },
+  "ability_a_id": "death_bolt",
+  "ability_b_id": "raise_dead",
+  "passive_a_id": "phylactery",
+  "passive_b_id": "necrotic_aura",
+  "weapon_types": ["staff", "wand", "tome"]
+}

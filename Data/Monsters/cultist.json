@@ -1,0 +1,13 @@
+{
+  "id": "cultist",
+  "display_name": "Cultist",
+  "description": "A frantic devotee who strikes hard and falls fast.",
+  "family": "humanoid",
+  "region_id": "region_1",
+  "tier": 1,
+  "base_stats": { "health": 18, "attack": 7, "defense": 1, "speed": 12 },
+  "ability_ids": ["basic_attack"],
+  "loot_table_id": "lt_region1_common",
+  "gold_drop_min": 5,
+  "gold_drop_max": 13
+}

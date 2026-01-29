@@ -1,0 +1,18 @@
+{
+  "id": "healing_tonic",
+  "display_name": "Healing Tonic",
+  "description": "A basic healing potion that restores health. Use in camp to heal a hero.",
+  "item_type": "consumable",
+  "category": "consumable",
+  "rarity": "common",
+  "base_stats": {},
+  "stat_scalars": {},
+  "allowed_affixes": [],
+  "allowed_socket_types": [],
+  "base_value": 15,
+  "buy_value": 25,
+  "stack_max": 20,
+  "use_effect": "heal",
+  "use_value": 20,
+  "tags": ["consumable", "healing", "potion", "region_1"]
+}

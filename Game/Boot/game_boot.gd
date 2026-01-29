@@ -4,14 +4,22 @@
 ## Updated: Hardened autoload validation with dynamic detection
 extends Control
 
+# Debug: Force location for testing (set to true to enable)
+const DEBUG_FORCE_LOCATION := false
+const DEBUG_REGION_ID := "region_1"
+const DEBUG_TOWN_ID := "town_greenroot"
+
 # ============================================================================
 # CONFIGURATION
 # ============================================================================
 
-## Path to the next scene after successful boot.
-@export var next_scene_path: String = "res://Game/UI/Combat/CombatScene.tscn"
+## Scene paths for phase-based routing
+const TOWN_SCENE_PATH: String = "res://Game/UI/Town/TownScene.tscn"
+const COMBAT_SCENE_PATH: String = "res://Game/UI/Combat/CombatScene.tscn"
+const DUNGEON_CAMP_SCENE_PATH: String = "res://Game/UI/Dungeon/DungeonCampScene.tscn"
+const ROOM_EVENT_SCENE_PATH: String = "res://Game/UI/Rooms/RoomEventScene.tscn"
 
-## Fallback scene paths to try if next_scene_path doesn't exist.
+## Fallback scene paths to try if primary scenes don't exist.
 const FALLBACK_SCENES: Array[String] = [
 	"res://Game/UI/Combat/CombatScene.tscn",
 	"res://Game/UI/Main.tscn",
@@ -74,8 +82,24 @@ func _run_boot_sequence() -> void:
 	if boot_ok:
 		print("========================================")
 		print("[BOOT] All checks passed!")
+		# Show load stats for key data types
+		var stats = DataRegistry.get_load_stats()
+		if stats.has("Monsters"):
+			var m = stats["Monsters"]
+			print("[BOOT] Monsters: seen=%d ok=%d bad=%d" % [m["seen"], m["ok"], m["bad"]])
+			if m["bad"] > 0 and m["examples"].size() > 0:
+				print("[BOOT] Monsters examples: %s" % ", ".join(m["examples"].slice(0, 5)))
+		if stats.has("LootTables"):
+			var lt = stats["LootTables"]
+			print("[BOOT] LootTables: seen=%d ok=%d bad=%d" % [lt["seen"], lt["ok"], lt["bad"]])
+			if lt["bad"] > 0 and lt["examples"].size() > 0:
+				print("[BOOT] LootTables examples: %s" % ", ".join(lt["examples"].slice(0, 5)))
+		print("[RunStash] Summary: ", GameContext.get_run_stash_summary())
 		print("========================================")
 		print("")
+		if DEBUG_FORCE_LOCATION and GameContext.has_method("set_location"):
+			GameContext.set_location(DEBUG_REGION_ID, DEBUG_TOWN_ID)
+			print("[BOOT][DEBUG] Forced location: %s/%s" % [DEBUG_REGION_ID, DEBUG_TOWN_ID])
 		_transition_to_next_scene()
 	else:
 		print("========================================")
@@ -237,6 +261,9 @@ func _validate_game_context() -> bool:
 		var state = context.get_state_summary()
 		print("[BOOT]   Phase: %s" % state.get("phase", "unknown"))
 		print("[BOOT]   Location: %s/%s" % [state.get("region_id", "none"), state.get("town_id", "none")])
+		print("[BOOT]   Dungeon: %s" % [state.get("dungeon_id", "") if state.get("dungeon_id", "") != "" else "none"])
+		print("[BOOT]   Floor: %d" % state.get("floor", 0))
+		print("[BOOT]   Room: %d/%d" % [state.get("room_index", 0) + 1, state.get("rooms_per_floor", 1)])
 		print("[BOOT]   Party size: %d" % state.get("party_size", 0))
 		print("[BOOT]   Run active: %s" % str(state.get("run_active", false)))
 
@@ -248,17 +275,24 @@ func _validate_game_context() -> bool:
 # ============================================================================
 
 func _transition_to_next_scene() -> void:
-	var target_scene = _find_valid_scene()
+	var routing_info = _determine_route()
+	var target_scene = routing_info["scene"]
+	var phase = routing_info["phase"]
+	var dungeon_id = routing_info["dungeon_id"]
+	var floor_num = routing_info["floor"]
 
 	if target_scene == "":
 		print("[BOOT][ERROR] No valid scene found to transition to!")
 		print("[BOOT] Checked paths:")
-		print("[BOOT]   - %s" % next_scene_path)
+		print("[BOOT]   - %s" % TOWN_SCENE_PATH)
+		print("[BOOT]   - %s" % COMBAT_SCENE_PATH)
 		for fallback in FALLBACK_SCENES:
 			print("[BOOT]   - %s" % fallback)
 		return
 
-	print("[BOOT] Transitioning to: %s" % target_scene)
+	print("[BOOT] Routing -> %s (phase=%s dungeon=%s floor=%d)" % [
+		target_scene, phase, dungeon_id if dungeon_id != "" else "none", floor_num
+	])
 
 	# Small delay to ensure logs are visible
 	await get_tree().create_timer(0.1).timeout
@@ -268,14 +302,67 @@ func _transition_to_next_scene() -> void:
 		print("[BOOT][ERROR] Failed to change scene: error code %d" % error)
 
 
-func _find_valid_scene() -> String:
-	# Try the configured next_scene_path first
-	if FileAccess.file_exists(next_scene_path):
-		return next_scene_path
+## Determine which scene to route to based on GameContext phase.
+func _determine_route() -> Dictionary:
+	var context = get_node_or_null("/root/GameContext")
+	var phase = "unknown"
+	var dungeon_id = ""
+	var floor_num = 0
 
-	# Try fallback scenes
-	for fallback in FALLBACK_SCENES:
-		if FileAccess.file_exists(fallback):
-			return fallback
+	if context != null:
+		# Get state info
+		if context.has_method("get_state_summary"):
+			var state = context.get_state_summary()
+			phase = state.get("phase", "unknown")
+			dungeon_id = state.get("dungeon_id", "")
+			floor_num = state.get("floor", 0)
+		elif context.has_method("get_phase_name"):
+			phase = context.get_phase_name()
+		if context.has_method("get_current_dungeon_id"):
+			dungeon_id = context.get_current_dungeon_id()
+		if context.has_method("get_current_floor"):
+			floor_num = context.get_current_floor()
 
-	return ""
+	# Route based on phase
+	var target_scene = ""
+
+	# COMBAT phase -> CombatScene
+	if phase == "COMBAT":
+		if FileAccess.file_exists(COMBAT_SCENE_PATH):
+			target_scene = COMBAT_SCENE_PATH
+
+	# DUNGEON_CAMP phase -> DungeonCampScene
+	elif phase == "DUNGEON_CAMP":
+		if FileAccess.file_exists(DUNGEON_CAMP_SCENE_PATH):
+			target_scene = DUNGEON_CAMP_SCENE_PATH
+
+	# ROOM_EVENT phase -> RoomEventScene (non-combat rooms)
+	elif phase == "ROOM_EVENT":
+		if FileAccess.file_exists(ROOM_EVENT_SCENE_PATH):
+			target_scene = ROOM_EVENT_SCENE_PATH
+
+	# TOWN or DUNGEON_SELECT -> TownScene
+	elif phase in ["TOWN", "DUNGEON_SELECT", "BOOT", "REWARDS", "RETURN_TO_TOWN"]:
+		if FileAccess.file_exists(TOWN_SCENE_PATH):
+			target_scene = TOWN_SCENE_PATH
+
+	# Unknown phase: fallback logic based on dungeon state
+	else:
+		# If in a dungeon (dungeon_id set), might need CombatScene
+		# Otherwise default to TownScene
+		if FileAccess.file_exists(TOWN_SCENE_PATH):
+			target_scene = TOWN_SCENE_PATH
+
+	# Final fallback if primary choice doesn't exist
+	if target_scene == "":
+		for fallback in FALLBACK_SCENES:
+			if FileAccess.file_exists(fallback):
+				target_scene = fallback
+				break
+
+	return {
+		"scene": target_scene,
+		"phase": phase,
+		"dungeon_id": dungeon_id,
+		"floor": floor_num
+	}

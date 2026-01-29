@@ -1,0 +1,14 @@
+{
+  "id": "book_prism_lancer",
+  "display_name": "Prism Lancer's Guide",
+  "description": "A luminous tome with focused light techniques etched into its crystal pages. Teaches the Prism Lancer class.",
+  "item_type": "consumable",
+  "rarity": "epic",
+  "use_effect_id": "learn_class_prism_lancer",
+  "base_stats": {},
+  "stat_scalars": {},
+  "allowed_affixes": [],
+  "allowed_socket_types": [],
+  "gold_value": 300,
+  "tags": ["book", "class_unlock", "prism_lancer"]
+}

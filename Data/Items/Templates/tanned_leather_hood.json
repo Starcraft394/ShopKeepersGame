@@ -1,0 +1,22 @@
+{
+  "id": "tanned_leather_hood",
+  "display_name": "Tanned Leather Hood",
+  "description": "Light head protection, easy to repair.",
+  "item_type": "armor",
+  "item_subtype": "light_head",
+  "slot": "head",
+  "tier": 1,
+  "min_quality": 1,
+  "max_quality": 5,
+  "base_stats": { "defense": 1 },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 10,
+  "icon_path": "",
+  "tags": ["region_1", "armor"]
+}

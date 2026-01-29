@@ -1,0 +1,46 @@
+{
+  "id": "evt_forest_herbs",
+  "title": "Medicinal Herbs",
+  "description": "A shaft of golden sunlight pierces the canopy, illuminating a patch of rare medicinal herbs. You recognize feverfew, comfrey, and what might be genuine witch hazel. Proper harvesting would yield valuable alchemical ingredients, but the clearing feels oddly still.",
+  "kind": "choice",
+  "tags": ["forest", "herbs", "alchemy"],
+  "choices": [
+    {
+      "id": "careful_harvest",
+      "label": "Harvest carefully",
+      "description": "Take time to gather them properly.",
+      "effects": [
+        { "type": "add_item", "item_id": "herb", "min_qty": 2, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "quick_grab",
+      "label": "Grab everything quickly",
+      "description": "Rip up the whole patch before something finds you.",
+      "effects": [
+        { "type": "add_item", "item_id": "herb", "min_qty": 1, "max_qty": 4 }
+      ],
+      "risk": {
+        "damage_chance": 0.25,
+        "damage_amount": 6
+      }
+    },
+    {
+      "id": "search_nearby",
+      "label": "Search for mushrooms too",
+      "description": "Rich soil like this often has fungi nearby.",
+      "effects": [
+        { "type": "add_item", "item_id": "herb", "min_qty": 1, "max_qty": 2 },
+        { "type": "add_item", "item_id": "mushroom", "min_qty": 1, "max_qty": 2 }
+      ]
+    },
+    {
+      "id": "leave_them",
+      "label": "Leave them be",
+      "description": "The stillness unnerves you. Best to move on.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

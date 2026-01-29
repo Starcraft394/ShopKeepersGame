@@ -1,0 +1,15 @@
+{
+  "id": "crystalborn",
+  "display_name": "Crystalborn",
+  "description": "Beings formed from living crystal, resonating with prismatic energy. They refract magic and possess unparalleled clarity of purpose.",
+  "unlock_region": 5,
+  "stat_modifiers": {
+    "health": 0,
+    "attack": 3,
+    "defense": 8,
+    "speed": -3
+  },
+  "racial_passive_id": "crystalborn_refraction",
+  "xp_modifier": 0.85,
+  "trait_tags": ["crystalline", "prismatic"]
+}

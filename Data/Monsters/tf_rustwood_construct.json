@@ -1,0 +1,18 @@
+{
+  "id": "tf_rustwood_construct",
+  "display_name": "Rustwood Construct",
+  "description": "A lumber-hauling automaton corrupted by dark influence, creaking with menace.",
+  "family": "construct",
+  "region_id": "region_1",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": { "health": 72, "attack": 10, "defense": 10, "speed": 8 },
+  "ability_ids": ["basic_attack"],
+  "passive_ids": [],
+  "loot_table_id": "lt_region1_uncommon",
+  "gold_drop_min": 20,
+  "gold_drop_max": 36,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false
+}

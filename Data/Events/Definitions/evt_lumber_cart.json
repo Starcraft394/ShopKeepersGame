@@ -1,0 +1,46 @@
+{
+  "id": "evt_lumber_cart",
+  "title": "Broken Supply Cart",
+  "description": "A supply cart lies overturned, its wheel shattered against a jutting rock. Crates of lumber supplies and tool parts have spilled across the muddy path. Drag marks lead into the underbrush - something hauled the driver away.",
+  "kind": "choice",
+  "tags": ["lumber", "loot", "exploration"],
+  "choices": [
+    {
+      "id": "search_crates",
+      "label": "Search the crates",
+      "description": "Lumber supplies are useful.",
+      "effects": [
+        { "type": "add_item", "item_id": "wood", "min_qty": 2, "max_qty": 4 },
+        { "type": "add_gold_range", "min": 3, "max": 8 }
+      ]
+    },
+    {
+      "id": "salvage_metal",
+      "label": "Salvage metal fittings",
+      "description": "Strip the cart for iron parts.",
+      "effects": [
+        { "type": "add_item", "item_id": "iron_scrap", "min_qty": 1, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "follow_tracks",
+      "label": "Follow the drag marks",
+      "description": "The driver might have valuables... or need help.",
+      "effects": [
+        { "type": "add_gold_range", "min": 8, "max": 16 }
+      ],
+      "risk": {
+        "ambush_chance": 0.25,
+        "damage_amount": 10
+      }
+    },
+    {
+      "id": "leave_scene",
+      "label": "Leave quickly",
+      "description": "Whatever did this might return.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

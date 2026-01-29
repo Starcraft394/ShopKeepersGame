@@ -1,0 +1,14 @@
+{
+  "id": "book_lich",
+  "display_name": "Lich's Necronomicon",
+  "description": "A forbidden tome bound in ancient leather, radiating necrotic power. Teaches the Lich class.",
+  "item_type": "consumable",
+  "rarity": "epic",
+  "use_effect_id": "learn_class_lich",
+  "base_stats": {},
+  "stat_scalars": {},
+  "allowed_affixes": [],
+  "allowed_socket_types": [],
+  "gold_value": 350,
+  "tags": ["book", "class_unlock", "lich"]
+}

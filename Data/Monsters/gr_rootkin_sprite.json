@@ -1,0 +1,18 @@
+{
+  "id": "gr_rootkin_sprite",
+  "display_name": "Rootkin Sprite",
+  "description": "A mischievous forest wisp that strikes and slips away.",
+  "family": "beast",
+  "region_id": "region_1",
+  "tier": 2,
+  "ai_tier": 1,
+  "base_stats": { "health": 26, "attack": 7, "defense": 2, "speed": 16 },
+  "ability_ids": ["basic_attack"],
+  "passive_ids": [],
+  "loot_table_id": "lt_region1_uncommon",
+  "gold_drop_min": 8,
+  "gold_drop_max": 18,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false
+}

@@ -1,0 +1,13 @@
+{
+  "id": "bat_swarm",
+  "display_name": "Bat Swarm",
+  "description": "A cloud of wings that harasses and distracts.",
+  "family": "beast",
+  "region_id": "region_1",
+  "tier": 1,
+  "base_stats": { "health": 16, "attack": 3, "defense": 1, "speed": 18 },
+  "ability_ids": ["basic_attack"],
+  "loot_table_id": "lt_region1_common",
+  "gold_drop_min": 2,
+  "gold_drop_max": 8
+}

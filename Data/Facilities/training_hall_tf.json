@@ -1,0 +1,42 @@
+{
+  "id": "training_hall_tf",
+  "display_name": "Training Hall (Timberfall)",
+  "description": "A sparring ground where heroes hone their skills and learn new classes.",
+  "facility_type": "training_hall",
+  "max_tier": 2,
+  "unlock_region": 1,
+
+  "slots_per_tier": {
+    "1": 1,
+    "2": 2
+  },
+
+  "upgrade_costs": {
+    "2": {
+      "gold": 75,
+      "items": [
+        { "item_id": "wood_bundle", "qty": 5 },
+        { "item_id": "iron_scrap", "qty": 3 }
+      ]
+    }
+  },
+
+  "services_per_tier": {
+    "1": ["train_hero", "assign_class"],
+    "2": ["advanced_training"]
+  },
+
+  "produces_item_types": [],
+  "input_resource_types": [],
+
+  "allows_hero_assignment": true,
+  "max_assigned_heroes": 3,
+
+  "unlocks": [],
+
+  "shop_items": [
+    { "item_id": "book_defender", "price_gold": 100, "requires_unlock_group": "books_t1" },
+    { "item_id": "book_striker", "price_gold": 100, "requires_unlock_group": "books_t1" },
+    { "item_id": "book_warden", "price_gold": 100, "requires_unlock_group": "books_t1" }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "id": "evt_lumber_toll",
+  "title": "Bandit Toll",
+  "description": "Three rough figures emerge from behind rusted sawmill machinery, blocking your path. Their leader, a scarred woman with a notched axe, spits at your feet. 'Toll's ten gold. Pay up or we take it from your corpse.'",
+  "kind": "choice",
+  "tags": ["lumber", "bandit", "encounter"],
+  "choices": [
+    {
+      "id": "pay_toll",
+      "label": "Pay the toll",
+      "description": "Hand over 10 gold. At least you spot some wood scraps nearby.",
+      "requires": { "gold": 10 },
+      "effects": [
+        { "type": "lose_gold", "min": 10, "max": 10 },
+        { "type": "add_item", "item_id": "wood", "min_qty": 1, "max_qty": 1 }
+      ]
+    },
+    {
+      "id": "negotiate",
+      "label": "Offer materials instead",
+      "description": "Maybe they'll take trade goods.",
+      "effects": [
+        { "type": "lose_gold", "min": 4, "max": 8 }
+      ]
+    },
+    {
+      "id": "intimidate",
+      "label": "Stand your ground",
+      "description": "Show them you won't be easy prey.",
+      "effects": [
+        { "type": "add_gold_range", "min": 5, "max": 15 }
+      ],
+      "risk": {
+        "fight_chance": 0.4,
+        "damage_amount": 12
+      },
+      "modifier": {
+        "id": "bruised",
+        "label": "Roughed Up",
+        "player_start_damage": 4
+      }
+    },
+    {
+      "id": "flee",
+      "label": "Run for it",
+      "description": "They look slow. Maybe you can outrun them.",
+      "effects": [
+        { "type": "nothing" }
+      ],
+      "risk": {
+        "catch_chance": 0.3,
+        "damage_amount": 8
+      }
+    }
+  ]
+}

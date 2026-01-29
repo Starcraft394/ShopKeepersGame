@@ -33,6 +33,24 @@ var services_per_tier: Dictionary = {}  # { "3": ["refinement"], "4": ["legendar
 var allows_hero_assignment: bool = true
 var max_assigned_heroes: int = 1
 
+# Unlocks & Shop (for craft/shop facilities)
+var unlocks: Array = []  # Array of unlock Dictionaries { id, unlock_group, label, required_tier, costs }
+var recipes: Array = []  # DEPRECATED: Use unlocks instead
+var shop_items: Array = []  # Array of shop item Dictionaries { item_id, price_gold, requires_unlock_group }
+var crafting_recipes: Array = []  # Array of { output_id, output_qty, inputs: [{ item_id, qty }] }
+
+# Pool-driven shop system
+var shop_pool_id: String = ""  # ID of shop pool JSON (e.g., "pool_region1_general")
+var shop_rolls: Dictionary = {}  # Category roll counts { "consumables": 2, "weapons": 2 }
+var shop_items_legacy: Array = []  # Legacy fallback items if no pool configured
+var stash_upgrades: Array = []  # Stash capacity upgrades available at this shop
+var shop_profile: Dictionary = {}  # Town-unique shop profile { profile_id, category_weight_mult, rolls_override }
+
+# Inn-specific: recruit level by tier
+var recruit_level_by_tier: Dictionary = {}  # { "1": 1, "2": 2 } - hero level when recruiting at this tier
+var recruit_candidates: Array = []  # Array of { class_id, cost_gold } for Inn recruitment
+var max_party_size: int = 2  # Max party size for this inn
+
 # Visual
 var icon_path: String = ""
 var building_scene_path: String = ""
@@ -71,6 +89,34 @@ static func from_dict(data: Dictionary) -> FacilityData:
 	var resource_types = resource_types_val if resource_types_val is Array else []
 	for r in resource_types:
 		instance.input_resource_types.append(str(r))
+
+	# Parse unlocks, recipes (deprecated), and shop_items for craft/shop facilities
+	var unlocks_val = data.get("unlocks", [])
+	instance.unlocks = unlocks_val if unlocks_val is Array else []
+	var recipes_val = data.get("recipes", [])
+	instance.recipes = recipes_val if recipes_val is Array else []
+	var shop_items_val = data.get("shop_items", [])
+	instance.shop_items = shop_items_val if shop_items_val is Array else []
+	var crafting_recipes_val = data.get("crafting_recipes", [])
+	instance.crafting_recipes = crafting_recipes_val if crafting_recipes_val is Array else []
+
+	# Pool-driven shop system fields
+	instance.shop_pool_id = data.get("shop_pool_id", "")
+	var shop_rolls_val = data.get("shop_rolls", {})
+	instance.shop_rolls = shop_rolls_val if shop_rolls_val is Dictionary else {}
+	var shop_items_legacy_val = data.get("shop_items_legacy", [])
+	instance.shop_items_legacy = shop_items_legacy_val if shop_items_legacy_val is Array else []
+	var stash_upgrades_val = data.get("stash_upgrades", [])
+	instance.stash_upgrades = stash_upgrades_val if stash_upgrades_val is Array else []
+	var shop_profile_val = data.get("shop_profile", {})
+	instance.shop_profile = shop_profile_val if shop_profile_val is Dictionary else {}
+
+	# Inn-specific fields
+	var recruit_level_val = data.get("recruit_level_by_tier", {})
+	instance.recruit_level_by_tier = recruit_level_val if recruit_level_val is Dictionary else {}
+	var recruit_candidates_val = data.get("recruit_candidates", [])
+	instance.recruit_candidates = recruit_candidates_val if recruit_candidates_val is Array else []
+	instance.max_party_size = data.get("max_party_size", 2)
 
 	return instance
 

@@ -1,0 +1,220 @@
+[gd_scene load_steps=3 format=3 uid="uid://camp_scene_001"]
+
+[ext_resource type="Script" path="res://Game/UI/Dungeon/DungeonCampScene.gd" id="1_camp"]
+[ext_resource type="Theme" uid="uid://game_theme_001" path="res://Themes/game_theme.tres" id="2_theme"]
+
+[node name="DungeonCampScene" type="Control"]
+theme = ExtResource("2_theme")
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_camp")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.12, 0.15, 1)
+
+[node name="MainVBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -160.0
+offset_right = 180.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="MainVBox"]
+layout_mode = 2
+text = "-- Dungeon Camp --"
+horizontal_alignment = 1
+
+[node name="Separator1" type="HSeparator" parent="MainVBox"]
+layout_mode = 2
+
+[node name="InfoSection" type="VBoxContainer" parent="MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="DungeonLabel" type="Label" parent="MainVBox/InfoSection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Dungeon: ???"
+horizontal_alignment = 1
+
+[node name="FloorLabel" type="Label" parent="MainVBox/InfoSection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Floor: 0/0"
+horizontal_alignment = 1
+
+[node name="RoomLabel" type="Label" parent="MainVBox/InfoSection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Room: 1/1"
+horizontal_alignment = 1
+
+[node name="Separator2" type="HSeparator" parent="MainVBox"]
+layout_mode = 2
+
+[node name="StashSection" type="VBoxContainer" parent="MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="DungeonStashLabel" type="Label" parent="MainVBox/StashSection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Unbanked Loot: 0 gold, 0 items"
+horizontal_alignment = 1
+modulate = Color(1, 0.9, 0.5, 1)
+
+[node name="RunStashLabel" type="Label" parent="MainVBox/StashSection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Banked Loot: 0 gold, 0 items"
+horizontal_alignment = 1
+modulate = Color(0.5, 1, 0.5, 1)
+
+[node name="Separator3" type="HSeparator" parent="MainVBox"]
+layout_mode = 2
+
+[node name="ConsumablesSection" type="VBoxContainer" parent="MainVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="ConsumablesHeader" type="Label" parent="MainVBox/ConsumablesSection"]
+layout_mode = 2
+text = "=== Consumables ==="
+horizontal_alignment = 1
+
+[node name="ConsumablesList" type="VBoxContainer" parent="MainVBox/ConsumablesSection"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="EquipmentSection" type="VBoxContainer" parent="MainVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="EquipmentHeader" type="Label" parent="MainVBox/EquipmentSection"]
+layout_mode = 2
+text = "=== Equipment ==="
+horizontal_alignment = 1
+
+[node name="EquipmentSlots" type="VBoxContainer" parent="MainVBox/EquipmentSection"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="EquippableItems" type="VBoxContainer" parent="MainVBox/EquipmentSection"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Separator3b" type="HSeparator" parent="MainVBox"]
+layout_mode = 2
+
+[node name="MapSection" type="VBoxContainer" parent="MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="MapHeader" type="Label" parent="MainVBox/MapSection"]
+layout_mode = 2
+text = "=== Choose Next Room ==="
+horizontal_alignment = 1
+
+[node name="ChoiceALabel" type="Label" parent="MainVBox/MapSection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "A: Combat (Fight)"
+horizontal_alignment = 1
+modulate = Color(0.8, 0.9, 1, 1)
+
+[node name="ChoiceBContainer" type="VBoxContainer" parent="MainVBox/MapSection"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="ChoiceBLabel" type="Label" parent="MainVBox/MapSection/ChoiceBContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "B: Event (Choice)"
+horizontal_alignment = 1
+modulate = Color(1, 0.9, 0.7, 1)
+
+[node name="NoAlternateHint" type="Label" parent="MainVBox/MapSection"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "(No alternate route available)"
+horizontal_alignment = 1
+modulate = Color(0.5, 0.5, 0.5, 1)
+
+[node name="LegendLabel" type="Label" parent="MainVBox/MapSection"]
+layout_mode = 2
+text = "Combat=Fight | Elite=Hard Fight | Event=Story"
+horizontal_alignment = 1
+modulate = Color(0.5, 0.5, 0.5, 1)
+
+[node name="Separator4" type="HSeparator" parent="MainVBox"]
+layout_mode = 2
+
+[node name="ButtonSection" type="VBoxContainer" parent="MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ChoiceAButton" type="Button" parent="MainVBox/ButtonSection"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 35)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "A: Enter Combat (A)"
+
+[node name="ChoiceBButtonContainer" type="VBoxContainer" parent="MainVBox/ButtonSection"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="ChoiceBButton" type="Button" parent="MainVBox/ButtonSection/ChoiceBButtonContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 35)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "B: Enter Event (B)"
+modulate = Color(1, 0.95, 0.8, 1)
+
+[node name="ExtractButton" type="Button" parent="MainVBox/ButtonSection"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 35)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Return to Town (E)"
+
+[node name="FleeButton" type="Button" parent="MainVBox/ButtonSection"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 35)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Flee - Lose Loot (F)"
+modulate = Color(1, 0.7, 0.7, 1)
+
+[node name="HotkeyHint" type="Label" parent="MainVBox"]
+layout_mode = 2
+text = "A=Choice A | B=Choice B | E=Extract | F=Flee"
+horizontal_alignment = 1
+modulate = Color(0.5, 0.5, 0.5, 1)

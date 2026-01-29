@@ -1,0 +1,24 @@
+{
+  "id": "fungal_berserker",
+  "display_name": "Fungal Berserker",
+  "description": "A rage-fueled warrior enhanced by symbiotic fungi, trading defense for overwhelming offensive power.",
+  "archetype": "dps",
+  "unlock_region": 2,
+  "base_stats": {
+    "health": 100,
+    "attack": 14,
+    "defense": 8,
+    "speed": 9
+  },
+  "stat_growth": {
+    "health": 10,
+    "attack": 4,
+    "defense": 1,
+    "speed": 2
+  },
+  "ability_a_id": "fungal_frenzy",
+  "ability_b_id": "spore_burst",
+  "passive_a_id": "mushroom_rage",
+  "passive_b_id": "toxic_blood",
+  "weapon_types": ["axe", "hammer", "fist"]
+}

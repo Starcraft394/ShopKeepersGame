@@ -1,0 +1,24 @@
+{
+  "id": "dark_channeler",
+  "display_name": "Dark Channeler",
+  "description": "A shadow priest who drains life from enemies to heal allies, walking the line between life and death.",
+  "archetype": "healer",
+  "unlock_region": 6,
+  "base_stats": {
+    "health": 85,
+    "attack": 10,
+    "defense": 9,
+    "speed": 9
+  },
+  "stat_growth": {
+    "health": 7,
+    "attack": 3,
+    "defense": 2,
+    "speed": 2
+  },
+  "ability_a_id": "life_drain",
+  "ability_b_id": "shadow_mend",
+  "passive_a_id": "dark_pact",
+  "passive_b_id": "soul_siphon",
+  "weapon_types": ["staff", "wand", "tome"]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "druid",
+  "display_name": "Druid",
+  "description": "A nature guardian who channels the power of plants and fungi to heal allies and control the battlefield.",
+  "archetype": "healer",
+  "unlock_region": 2,
+  "base_stats": {
+    "health": 90,
+    "attack": 6,
+    "defense": 10,
+    "speed": 8
+  },
+  "stat_growth": {
+    "health": 8,
+    "attack": 1,
+    "defense": 2,
+    "speed": 2
+  },
+  "ability_a_id": "natures_embrace",
+  "ability_b_id": "spore_cloud",
+  "passive_a_id": "verdant_growth",
+  "passive_b_id": "fungal_symbiosis",
+  "weapon_types": ["staff", "wand"]
+}

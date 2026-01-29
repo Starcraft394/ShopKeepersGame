@@ -1,0 +1,14 @@
+{
+  "id": "book_void_herald",
+  "display_name": "Void Herald's Manuscript",
+  "description": "A reality-warping tome with pages that show glimpses of the void. Teaches the Void Herald class.",
+  "item_type": "consumable",
+  "rarity": "legendary",
+  "use_effect_id": "learn_class_void_herald",
+  "base_stats": {},
+  "stat_scalars": {},
+  "allowed_affixes": [],
+  "allowed_socket_types": [],
+  "gold_value": 400,
+  "tags": ["book", "class_unlock", "void_herald"]
+}

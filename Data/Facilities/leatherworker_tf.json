@@ -1,0 +1,29 @@
+{
+  "id": "leatherworker_tf",
+  "display_name": "Leatherworker (Timberfall)",
+  "description": "A craftsman skilled in curing hides and stitching protective gear.",
+  "facility_type": "production",
+  "max_tier": 1,
+  "unlock_region": 1,
+
+  "slots_per_tier": {
+    "1": 2
+  },
+
+  "upgrade_costs": {
+    "2": {
+      "wood_bundle": 8,
+      "herb_sprig": 4
+    }
+  },
+
+  "services_per_tier": {
+    "1": ["craft_light_armor", "repair_leather"]
+  },
+
+  "produces_item_types": ["armor", "accessory"],
+  "input_resource_types": ["herb_sprig", "wood_bundle"],
+
+  "allows_hero_assignment": true,
+  "max_assigned_heroes": 1
+}

@@ -1,13 +1,15 @@
 {
   "id": "human",
   "display_name": "Human",
-  "description": "Versatile and adaptable, humans excel through determination and balance.",
+  "description": "Versatile and adaptable, humans excel through determination and balance. Their quick learning makes them natural adventurers.",
+  "unlock_region": 1,
   "stat_modifiers": {
     "health": 0,
     "attack": 0,
     "defense": 0,
     "speed": 0
   },
-  "passive_id": "",
+  "racial_passive_id": "human_adaptability",
+  "xp_modifier": 1.1,
   "trait_tags": ["adaptable", "balanced"]
 }

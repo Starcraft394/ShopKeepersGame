@@ -1,0 +1,24 @@
+{
+  "id": "prism_lancer",
+  "display_name": "Prism Lancer",
+  "description": "A radiant warrior who channels focused light into devastating piercing attacks.",
+  "archetype": "dps",
+  "unlock_region": 5,
+  "base_stats": {
+    "health": 90,
+    "attack": 17,
+    "defense": 9,
+    "speed": 12
+  },
+  "stat_growth": {
+    "health": 8,
+    "attack": 5,
+    "defense": 2,
+    "speed": 2
+  },
+  "ability_a_id": "light_lance",
+  "ability_b_id": "prismatic_burst",
+  "passive_a_id": "focused_light",
+  "passive_b_id": "crystal_resonance",
+  "weapon_types": ["spear", "lance", "crystal"]
+}

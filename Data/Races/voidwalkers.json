@@ -1,0 +1,15 @@
+{
+  "id": "voidwalkers",
+  "display_name": "Voidwalkers",
+  "description": "Entities touched by the void between worlds. They phase between dimensions and command powers that defy natural law.",
+  "unlock_region": 7,
+  "stat_modifiers": {
+    "health": -5,
+    "attack": 8,
+    "defense": -3,
+    "speed": 10
+  },
+  "racial_passive_id": "voidwalker_phase",
+  "xp_modifier": 0.75,
+  "trait_tags": ["void", "dimensional"]
+}

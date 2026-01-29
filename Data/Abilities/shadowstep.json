@@ -1,0 +1,26 @@
+{
+  "id": "shadowstep",
+  "display_name": "Shadowstep",
+  "description": "Vanish into the shadows, gaining +4 ATK and +3 SPD for 3 turns.",
+  "ability_type": "class_b",
+  "source_class_id": "striker",
+  "target_type": "self",
+  "effect_type": "buff",
+  "base_damage": 0,
+  "damage_type": "physical",
+  "attack_scaling": 0.0,
+  "cooldown": 4,
+  "buff_stats": {
+    "attack": 4,
+    "speed": 3
+  },
+  "buff_duration": 3,
+  "applies_status_id": "",
+  "status_stacks": 0,
+  "target_team": "self",
+  "ui_name": "Shadowstep",
+  "ui_short": "SHAD",
+  "ui_icon": "res://Assets/Icons/Buffs/icon_buff_shadowstep.png",
+  "ui_category": "buff",
+  "buff_tags": ["offense", "utility"]
+}

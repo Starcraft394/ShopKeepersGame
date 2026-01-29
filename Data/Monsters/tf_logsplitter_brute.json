@@ -1,0 +1,18 @@
+{
+  "id": "tf_logsplitter_brute",
+  "display_name": "Logsplitter Brute",
+  "description": "A massive woodcutter gone feral, swinging a heavy splitting maul.",
+  "family": "humanoid",
+  "region_id": "region_1",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": { "health": 68, "attack": 13, "defense": 8, "speed": 9 },
+  "ability_ids": ["basic_attack"],
+  "passive_ids": [],
+  "loot_table_id": "lt_region1_uncommon",
+  "gold_drop_min": 22,
+  "gold_drop_max": 38,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false
+}

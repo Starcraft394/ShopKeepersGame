@@ -1,0 +1,16 @@
+{
+  "id": "dwarf_deep_miner",
+  "display_name": "Deep Miner",
+  "description": "Dwarven resilience grants +1 DEF and bonus HP scaling with level (5 + level*2) at combat start.",
+  "passive_type": "race_multi_stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "defense": 1,
+    "health_scaled": {
+      "base": 5,
+      "per_level": 2
+    }
+  },
+  "category": "racial",
+  "source_type": "race"
+}

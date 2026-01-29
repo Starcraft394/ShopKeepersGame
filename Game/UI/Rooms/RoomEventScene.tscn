@@ -1,0 +1,129 @@
+[gd_scene load_steps=3 format=3 uid="uid://room_event_001"]
+
+[ext_resource type="Script" path="res://Game/UI/Rooms/RoomEventScene.gd" id="1_event"]
+[ext_resource type="Theme" uid="uid://game_theme_001" path="res://Themes/game_theme.tres" id="2_theme"]
+
+[node name="RoomEventScene" type="Control"]
+theme = ExtResource("2_theme")
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_event")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12, 0.1, 0.15, 1)
+
+[node name="MainVBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -200.0
+offset_right = 220.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="MainVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "-- Event Room --"
+horizontal_alignment = 1
+
+[node name="Separator1" type="HSeparator" parent="MainVBox"]
+layout_mode = 2
+
+[node name="DescriptionLabel" type="Label" parent="MainVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(420, 80)
+layout_mode = 2
+text = "You find something interesting..."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Separator2" type="HSeparator" parent="MainVBox"]
+layout_mode = 2
+
+[node name="ChoicesHeader" type="Label" parent="MainVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "What do you do?"
+horizontal_alignment = 1
+modulate = Color(0.8, 0.9, 1, 1)
+
+[node name="ChoicesContainer" type="VBoxContainer" parent="MainVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Choice1Button" type="Button" parent="MainVBox/ChoicesContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 36)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Choice 1 (1)"
+
+[node name="Choice2Button" type="Button" parent="MainVBox/ChoicesContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 36)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Choice 2 (2)"
+
+[node name="Choice3Button" type="Button" parent="MainVBox/ChoicesContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 36)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Choice 3 (3)"
+
+[node name="Choice4Button" type="Button" parent="MainVBox/ChoicesContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 36)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Choice 4 (4)"
+
+[node name="Separator3" type="HSeparator" parent="MainVBox"]
+layout_mode = 2
+
+[node name="OutcomeLabel" type="Label" parent="MainVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 50)
+layout_mode = 2
+text = ""
+horizontal_alignment = 1
+autowrap_mode = 2
+modulate = Color(0.7, 0.9, 0.6, 1)
+
+[node name="Spacer" type="Control" parent="MainVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ReturnButton" type="Button" parent="MainVBox"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(200, 40)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Return to Camp (R)"
+
+[node name="HotkeyHint" type="Label" parent="MainVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Press 1-4 to choose"
+horizontal_alignment = 1
+modulate = Color(0.5, 0.5, 0.5, 1)

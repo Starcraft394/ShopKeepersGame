@@ -1,0 +1,13 @@
+{
+  "id": "shielding_presence",
+  "display_name": "Shielding Presence",
+  "description": "Your defensive stance grants nearby allies +2 DEF at combat start.",
+  "passive_type": "stat_bonus",
+  "trigger": "always",
+  "effect": {
+    "stat": "defense",
+    "bonus": 2
+  },
+  "source_class_id": "defender",
+  "category": "class"
+}

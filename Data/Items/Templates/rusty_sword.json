@@ -1,0 +1,17 @@
+{
+  "id": "rusty_sword",
+  "display_name": "Rusty Sword",
+  "description": "A crude sword made from salvaged iron. Better than nothing.",
+  "item_type": "weapon",
+  "item_subtype": "sword",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 1,
+  "base_stats": {
+    "attack": 3
+  },
+  "allowed_affixes": [],
+  "allowed_socket_types": [],
+  "base_value": 20,
+  "tags": ["region_1", "weapon", "sword", "crafted"]
+}

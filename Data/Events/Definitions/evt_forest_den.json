@@ -1,0 +1,52 @@
+{
+  "id": "evt_forest_den",
+  "title": "Animal Den",
+  "description": "A hollow beneath gnarled roots reveals an animal's lair. The musky smell is strong, but among the bones and bedding you spot coins and what looks like an old herb pouch. Claw marks on the entrance suggest the occupant is sizeable.",
+  "kind": "choice",
+  "tags": ["forest", "animal", "exploration"],
+  "choices": [
+    {
+      "id": "reach_in",
+      "label": "Reach in carefully",
+      "description": "Risk a bite for the best loot.",
+      "effects": [
+        { "type": "add_gold_range", "min": 6, "max": 14 },
+        { "type": "add_item", "item_id": "herb", "min_qty": 1, "max_qty": 2 }
+      ],
+      "risk": {
+        "bite_chance": 0.3,
+        "damage_amount": 8
+      },
+      "modifier": {
+        "id": "bitten",
+        "label": "Wounded",
+        "player_start_damage": 5
+      }
+    },
+    {
+      "id": "use_stick",
+      "label": "Use a long stick",
+      "description": "Safer but you'll miss the pouch.",
+      "effects": [
+        { "type": "add_gold_range", "min": 4, "max": 10 }
+      ]
+    },
+    {
+      "id": "smoke_out",
+      "label": "Smoke the creature out first",
+      "description": "Wait for it to flee, then search freely.",
+      "effects": [
+        { "type": "add_gold_range", "min": 8, "max": 12 },
+        { "type": "add_item", "item_id": "mushroom", "min_qty": 1, "max_qty": 1 }
+      ]
+    },
+    {
+      "id": "leave_alone",
+      "label": "Leave it alone",
+      "description": "Those claw marks look fresh.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

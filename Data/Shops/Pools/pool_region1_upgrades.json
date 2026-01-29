@@ -1,0 +1,33 @@
+{
+  "id": "pool_region1_upgrades",
+  "display_name": "Region 1 Shop Upgrades Pool",
+  "description": "Upgrade options for shops in Region 1 towns (stash capacity, etc.)",
+
+  "stash_upgrades": [
+    {
+      "upgrade_id": "stash_capacity_1",
+      "display_name": "+10 Stash Capacity",
+      "price_gold": 50,
+      "bonus_value": 10,
+      "weight": 20
+    },
+    {
+      "upgrade_id": "stash_capacity_2",
+      "display_name": "+20 Stash Capacity",
+      "price_gold": 100,
+      "bonus_value": 20,
+      "weight": 15,
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "upgrade_id": "stash_capacity_3",
+      "display_name": "+30 Stash Capacity",
+      "price_gold": 200,
+      "bonus_value": 30,
+      "weight": 10,
+      "required_town_tier": 2,
+      "required_dungeon_floor_unlocked": 3
+    }
+  ]
+}

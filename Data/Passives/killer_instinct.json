@@ -1,0 +1,13 @@
+{
+  "id": "killer_instinct",
+  "display_name": "Killer Instinct",
+  "description": "On killing an enemy, gain ATK equal to (1 + level/2). Stacks persist for the duration of combat.",
+  "passive_type": "on_kill_stacking_buff",
+  "trigger": "on_kill",
+  "effect": {
+    "stat": "attack",
+    "bonus": 1
+  },
+  "source_class_id": "striker",
+  "category": "class"
+}

@@ -1,0 +1,18 @@
+{
+  "id": "bandit",
+  "display_name": "Bandit",
+  "description": "A desperate outlaw who preys on travelers.",
+  "family": "beast",
+  "region_id": "region_1",
+  "tier": 1,
+  "base_stats": {
+    "health": 32,
+    "attack": 7,
+    "defense": 3,
+    "speed": 9
+  },
+  "ability_ids": ["basic_attack"],
+  "loot_table_id": "lt_region1_common",
+  "gold_drop_min": 8,
+  "gold_drop_max": 18
+}

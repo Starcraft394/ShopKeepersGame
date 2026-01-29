@@ -1,0 +1,14 @@
+{
+  "id": "book_ashblade",
+  "display_name": "Ashblade's Teachings",
+  "description": "A smoke-wreathed manuscript detailing lethal strike techniques. Teaches the Ashblade class.",
+  "item_type": "consumable",
+  "rarity": "rare",
+  "use_effect_id": "learn_class_ashblade",
+  "base_stats": {},
+  "stat_scalars": {},
+  "allowed_affixes": [],
+  "allowed_socket_types": [],
+  "gold_value": 250,
+  "tags": ["book", "class_unlock", "ashblade"]
+}

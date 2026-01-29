@@ -1,0 +1,20 @@
+{
+  "id": "hunters_knife",
+  "display_name": "Hunter's Knife",
+  "description": "A swift blade favored by rangers and scouts. Quick but light.",
+  "item_type": "weapon",
+  "item_subtype": "dagger",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "base_stats": {
+    "attack": 4,
+    "speed": 2
+  },
+  "allowed_affixes": [],
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 42,
+  "tags": ["region_1", "weapon", "dagger", "crafted"]
+}

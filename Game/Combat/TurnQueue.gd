@@ -27,7 +27,8 @@ func initialize(units: Array) -> void:
 
 
 ## Rebuild turn order based on initiative.
-## Sort by: Speed (descending), then Player first, then unit_id (stable).
+## Sort by: Effective Speed (descending), then Player first, then unit_id (stable).
+## Uses get_effective_speed() to include temporary buff bonuses.
 func _rebuild_turn_order() -> void:
 	_turn_order.clear()
 	_current_index = 0
@@ -37,24 +38,30 @@ func _rebuild_turn_order() -> void:
 		if unit.is_alive:
 			_turn_order.append(unit)
 
-	# Sort: higher speed first, player team first on ties, then by unit_id
+	# Sort: higher effective speed first, player team first on ties, then by unit_id
 	_turn_order.sort_custom(_compare_initiative)
 
 	_round_number += 1
 	print("[TurnQueue] Round %d order:" % _round_number)
 	for i in range(_turn_order.size()):
 		var unit = _turn_order[i]
-		print("  %d. %s (SPD:%d, %s)" % [
-			i + 1, unit.display_name, unit.speed,
+		var eff_spd = unit.get_effective_speed()
+		var buff_spd = unit.get_buff_bonus("speed")
+		var spd_str = "%d" % eff_spd if buff_spd == 0 else "%d (+%d)" % [eff_spd, buff_spd]
+		print("  %d. %s (SPD:%s, %s)" % [
+			i + 1, unit.display_name, spd_str,
 			"PLAYER" if unit.team == CombatUnit.Team.PLAYER else "ENEMY"])
 
 
 ## Compare two units for turn order.
 ## Returns true if 'a' should go before 'b'.
+## Uses effective speed (base + buff bonuses) for comparison.
 func _compare_initiative(a: CombatUnit, b: CombatUnit) -> bool:
-	# Higher speed goes first
-	if a.speed != b.speed:
-		return a.speed > b.speed
+	# Higher effective speed goes first
+	var a_spd = a.get_effective_speed()
+	var b_spd = b.get_effective_speed()
+	if a_spd != b_spd:
+		return a_spd > b_spd
 
 	# Tie-breaker 1: Player team goes first
 	if a.team != b.team:
@@ -139,6 +146,34 @@ func get_first_alive_enemy(attacker_team: CombatUnit.Team) -> CombatUnit:
 func remove_unit(unit: CombatUnit) -> void:
 	# Don't actually remove, just mark as dead - handled by is_alive check
 	pass
+
+
+# ============================================================================
+# v1.9B: TIMELINE UI ACCESSOR (Read-only)
+# ============================================================================
+
+## Get snapshot of upcoming N units in turn order for UI timeline display.
+## Returns Array of dictionaries with unit_id, name, team, speed, is_current.
+func get_upcoming_units_snapshot(count: int = 6) -> Array:
+	var result: Array = []
+	var units_added = 0
+	var idx = _current_index
+
+	# Collect from current position forward
+	while idx < _turn_order.size() and units_added < count:
+		var unit = _turn_order[idx]
+		if unit.is_alive:
+			result.append({
+				"unit_id": unit.unit_id,
+				"name": unit.display_name,
+				"team": "P" if unit.team == CombatUnit.Team.PLAYER else "E",
+				"speed": unit.get_effective_speed(),
+				"is_current": (idx == _current_index)
+			})
+			units_added += 1
+		idx += 1
+
+	return result
 
 
 # ============================================================================

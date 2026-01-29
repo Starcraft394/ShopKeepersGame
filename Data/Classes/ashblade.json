@@ -1,0 +1,24 @@
+{
+  "id": "ashblade",
+  "display_name": "Ashblade",
+  "description": "A swift assassin wreathed in smoke and cinders, striking from shadows with burning precision.",
+  "archetype": "dps",
+  "unlock_region": 4,
+  "base_stats": {
+    "health": 80,
+    "attack": 18,
+    "defense": 6,
+    "speed": 14
+  },
+  "stat_growth": {
+    "health": 6,
+    "attack": 5,
+    "defense": 1,
+    "speed": 3
+  },
+  "ability_a_id": "cinder_strike",
+  "ability_b_id": "smoke_dash",
+  "passive_a_id": "ash_veil",
+  "passive_b_id": "burning_wounds",
+  "weapon_types": ["dagger", "sword", "claws"]
+}

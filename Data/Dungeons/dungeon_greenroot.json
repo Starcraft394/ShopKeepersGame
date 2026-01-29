@@ -1,0 +1,67 @@
+{
+  "id": "dungeon_greenroot",
+  "display_name": "Greenroot Woods",
+  "description": "Ancient forest paths leading to the corrupted Heartwood where the Thorn Ent resides.",
+  "region_id": "region_1",
+  "town_id": "town_greenroot",
+  "floor_count": 4,
+  "rooms_per_floor": 3,
+  "boss_id": "thorn_ent",
+  "min_rooms_per_floor": 3,
+  "max_rooms_per_floor": 4,
+  "choice_b_event_weight": 0.7,
+  "choice_b_elite_weight": 0.3,
+  "event_table_id": "et_region1_forest",
+  "encounter_tags": ["forest", "beasts", "bandits"],
+  "floor_theme": [
+    "Sunlit Canopy",
+    "Shadowed Thicket",
+    "Fungal Depths",
+    "Corrupted Heartwood"
+  ],
+  "tier1_monster_ids": [
+    "goblin",
+    "wolf",
+    "slime",
+    "giant_spider",
+    "rat_swarm",
+    "boar"
+  ],
+  "tier2_monster_ids": [
+    "gr_moss_troll",
+    "gr_rootkin_sprite",
+    "gr_bramble_stalker",
+    "gr_rootbound_shaman",
+    "dire_boar",
+    "webspinner"
+  ],
+  "elite_monster_ids": [
+    "gr_briar_guardian",
+    "dire_boar_elite",
+    "webspinner_elite"
+  ],
+  "tier1_by_floor": [
+    ["goblin", "wolf", "slime"],
+    ["goblin", "giant_spider", "rat_swarm"],
+    ["wolf", "boar", "giant_spider"],
+    ["boar", "rat_swarm", "slime"]
+  ],
+  "tier2_by_floor": [
+    ["gr_rootkin_sprite"],
+    ["gr_moss_troll", "gr_rootkin_sprite"],
+    ["gr_bramble_stalker", "gr_rootbound_shaman", "dire_boar"],
+    ["gr_moss_troll", "gr_bramble_stalker", "webspinner"]
+  ],
+  "elite_by_floor": [
+    [],
+    ["dire_boar_elite"],
+    ["webspinner_elite", "dire_boar_elite"],
+    ["gr_briar_guardian", "webspinner_elite"]
+  ],
+  "room_types_by_floor": [
+    ["combat", "event", "combat"],
+    ["combat", "treasure", "combat"],
+    ["combat", "shrine", "elite"],
+    ["combat", "event", "combat"]
+  ]
+}

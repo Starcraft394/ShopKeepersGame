@@ -3,10 +3,15 @@
   "display_name": "Basic Sword",
   "description": "A simple but reliable iron sword.",
   "item_type": "weapon",
-  "slot": "weapon",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
   "tier": 1,
   "base_stats": {
     "attack": 5
   },
-  "base_value": 25
+  "stat_bonuses": {
+    "attack": 5
+  },
+  "base_value": 25,
+  "tags": ["region_1", "weapon", "melee"]
 }

@@ -1,0 +1,13 @@
+{
+  "id": "slime_elite",
+  "display_name": "Elder Slime",
+  "description": "Denser gel, tougher skin, slower to split apart.",
+  "family": "ooze",
+  "region_id": "region_1",
+  "tier": 1,
+  "base_stats": { "health": 38, "attack": 5, "defense": 5, "speed": 8 },
+  "ability_ids": ["basic_attack"],
+  "loot_table_id": "lt_region1_elite",
+  "gold_drop_min": 9,
+  "gold_drop_max": 19
+}

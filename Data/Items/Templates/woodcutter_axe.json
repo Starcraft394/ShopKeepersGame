@@ -1,0 +1,14 @@
+{
+  "id": "woodcutter_axe",
+  "display_name": "Woodcutter Axe",
+  "description": "Balanced for chopping trees—and foes.",
+  "item_type": "weapon",
+  "rarity": "common",
+  "equip_slot": "weapon",
+  "base_stats": { "attack": 4 },
+  "stat_scalars": {},
+  "allowed_affixes": [],
+  "allowed_socket_types": [],
+  "gold_value": 14,
+  "tags": ["region_1", "timberfall", "frontier", "weapon", "melee"]
+}

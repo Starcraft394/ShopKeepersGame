@@ -1,0 +1,13 @@
+{
+  "id": "wolf_elite",
+  "display_name": "Dire Wolf",
+  "description": "Bigger jaws. Faster feet. No hesitation.",
+  "family": "beast",
+  "region_id": "region_1",
+  "tier": 1,
+  "base_stats": { "health": 28, "attack": 7, "defense": 2, "speed": 17 },
+  "ability_ids": ["basic_attack"],
+  "loot_table_id": "lt_region1_elite",
+  "gold_drop_min": 9,
+  "gold_drop_max": 20
+}

@@ -1,0 +1,15 @@
+{
+  "id": "dwarf",
+  "display_name": "Dwarf",
+  "description": "Durable and stubborn, dwarves are natural miners who find extra ore in the depths. Their resilience is legendary.",
+  "unlock_region": 1,
+  "stat_modifiers": {
+    "health": 10,
+    "attack": 0,
+    "defense": 3,
+    "speed": -3
+  },
+  "racial_passive_id": "dwarf_deep_miner",
+  "xp_modifier": 1.0,
+  "trait_tags": ["durable", "stubborn", "resist_poison"]
+}

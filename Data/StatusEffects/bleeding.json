@@ -1,0 +1,17 @@
+{
+  "id": "bleeding",
+  "display_name": "Bleeding",
+  "description": "Taking physical damage over time from wounds.",
+  "category": "dot",
+  "stacking_mode": "intensity",
+  "max_stacks": 3,
+  "base_duration": 3,
+  "base_value": 2,
+  "value_per_stack": 1,
+  "resolution_timing": "turn_start",
+  "is_cleansable": true,
+  "tags": ["dot", "bleed"],
+  "ui_name": "Bleed",
+  "ui_short": "BLD",
+  "ui_icon": "res://Assets/Icons/Status/icon_status_bleeding.png"
+}

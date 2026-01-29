@@ -1,0 +1,18 @@
+{
+  "id": "gr_briar_guardian",
+  "display_name": "Briar Guardian",
+  "description": "A thorn-plated sentinel grown to defend sacred groves.",
+  "family": "construct",
+  "region_id": "region_1",
+  "tier": 3,
+  "ai_tier": 2,
+  "base_stats": { "health": 74, "attack": 12, "defense": 11, "speed": 9 },
+  "ability_ids": ["basic_attack"],
+  "passive_ids": [],
+  "loot_table_id": "lt_region1_elite",
+  "gold_drop_min": 28,
+  "gold_drop_max": 52,
+  "sprite_path": "",
+  "is_elite": true,
+  "is_boss": false
+}

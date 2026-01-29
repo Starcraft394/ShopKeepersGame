@@ -10,9 +10,11 @@ var display_name: String = ""
 var description: String = ""
 
 # Item Classification
-var item_type: String = ""  # "weapon", "armor", "accessory", "consumable", "tool", "backpack"
+var item_type: String = ""  # "weapon", "armor", "accessory", "consumable", "material", "tool", "backpack"
 var item_subtype: String = ""  # "sword", "dagger", "staff", etc.
 var slot: String = ""  # "weapon_main", "weapon_offhand", "head", "chest", "legs", "accessory_1", "accessory_2", "backpack"
+var equip_slot: String = ""  # Simple equip slot: "weapon", "offhand", or "" (not equippable)
+var category: String = ""  # "material", "consumable", "equipment", "book" - for filtering
 
 # Tier & Quality
 var tier: int = 1
@@ -36,10 +38,57 @@ var can_refine: bool = true
 var max_refinement: int = 10
 
 # Economy
-var base_value: int = 100
+var base_value: int = 100  # Sell value (player sells to shop)
+var buy_value: int = 0  # Buy value (shop sells to player); 0 = use base_value * 2
+var stack_max: int = 999  # Max stack size (consumables/materials)
 
 # Visual
 var icon_path: String = ""
+
+# Tags for filtering/theming
+var tags: Array[String] = []
+
+# Consumable-specific (for camp/combat use)
+var use_effect: String = ""  # "heal", "cure_poison", "cure_bleeding", etc.
+var use_value: int = 0  # Effect magnitude (heal amount, etc.)
+
+# Equipment stat bonuses (v2: explicit stat grants for weapons/offhands)
+# Falls back to base_stats for backwards compatibility
+var stat_bonuses: Dictionary = {}  # { "attack": int, "defense": int, "speed": int, "health": int }
+
+# Quality tier multipliers: Q0=1.0, Q1=1.1, Q2=1.2, Q3=1.35
+const QUALITY_MULTIPLIERS := [1.0, 1.1, 1.2, 1.35]
+
+## Get stat bonuses for this equipment with quality multiplier applied.
+## Returns empty dict for non-equipment items.
+## quality_tier: 0=common, 1=uncommon, 2=rare, 3=epic
+func get_stat_bonuses_with_quality(quality_tier: int = 0) -> Dictionary:
+	# Use stat_bonuses if set, otherwise fall back to base_stats
+	var bonuses = stat_bonuses if not stat_bonuses.is_empty() else base_stats
+	if bonuses.is_empty():
+		return {}
+
+	# Clamp quality tier to valid range
+	var q = clampi(quality_tier, 0, QUALITY_MULTIPLIERS.size() - 1)
+	var multiplier = QUALITY_MULTIPLIERS[q]
+
+	var result: Dictionary = {}
+	for stat_key in bonuses:
+		var base_val = int(bonuses[stat_key])
+		result[stat_key] = int(base_val * multiplier)
+	return result
+
+## Get effective buy value (for shop purchases).
+## Returns buy_value if set, otherwise base_value * 2.
+func get_buy_value() -> int:
+	if buy_value > 0:
+		return buy_value
+	return base_value * 2
+
+## Get effective sell value (for selling to shop).
+## Returns base_value (or half for balance - using full value for now).
+func get_sell_value() -> int:
+	return base_value
 
 # Factory method
 static func from_dict(data: Dictionary) -> ItemTemplate:
@@ -52,6 +101,8 @@ static func from_dict(data: Dictionary) -> ItemTemplate:
 	instance.item_type = data.get("item_type", "")
 	instance.item_subtype = data.get("item_subtype", "")
 	instance.slot = data.get("slot", "")
+	instance.equip_slot = data.get("equip_slot", "")
+	instance.category = data.get("category", "")  # v1: category for filtering
 	instance.tier = data.get("tier", 1)
 	instance.min_quality = data.get("min_quality", 1)
 	instance.max_quality = data.get("max_quality", 5)
@@ -62,8 +113,18 @@ static func from_dict(data: Dictionary) -> ItemTemplate:
 	instance.max_sockets = data.get("max_sockets", 0)
 	instance.can_refine = data.get("can_refine", true)
 	instance.max_refinement = data.get("max_refinement", 10)
-	instance.base_value = data.get("base_value", 100)
+	# v1: Economy fields with gold_value fallback for legacy templates
+	instance.base_value = data.get("base_value", data.get("gold_value", 100))
+	instance.buy_value = data.get("buy_value", 0)  # 0 = use base_value * 2
+	instance.stack_max = data.get("stack_max", 999)
 	instance.icon_path = data.get("icon_path", "")
+	# v1: Consumable use effect fields
+	instance.use_effect = data.get("use_effect", "")
+	instance.use_value = data.get("use_value", 0)
+
+	# v2: Equipment stat bonuses (separate from base_stats for clarity)
+	var stat_bonuses_val = data.get("stat_bonuses", {})
+	instance.stat_bonuses = stat_bonuses_val if stat_bonuses_val is Dictionary else {}
 
 	# Convert typed arrays (clear + append pattern for safety)
 	instance.allowed_affixes.clear()
@@ -77,6 +138,12 @@ static func from_dict(data: Dictionary) -> ItemTemplate:
 	var socket_types = socket_types_val if socket_types_val is Array else []
 	for s in socket_types:
 		instance.allowed_socket_types.append(str(s))
+
+	instance.tags.clear()
+	var tags_val = data.get("tags", [])
+	var tags_arr = tags_val if tags_val is Array else []
+	for t in tags_arr:
+		instance.tags.append(str(t))
 
 	return instance
 

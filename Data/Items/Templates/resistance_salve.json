@@ -1,0 +1,17 @@
+{
+  "id": "resistance_salve",
+  "display_name": "Resistance Salve",
+  "description": "A thick ointment that hardens skin against elemental damage for a short time.",
+  "item_type": "consumable",
+  "item_subtype": "salve",
+  "slot": "",
+  "tier": 2,
+  "base_stats": {},
+  "use_effect": "buff_resistance",
+  "use_value": 5,
+  "allowed_affixes": [],
+  "allowed_socket_types": [],
+  "can_refine": false,
+  "base_value": 32,
+  "tags": ["region_1", "consumable", "buff", "crafted"]
+}

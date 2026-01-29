@@ -3,6 +3,7 @@
   "display_name": "Goblin",
   "description": "A small, cunning creature that attacks in groups.",
   "family": "beast",
+  "region_id": "region_1",
   "tier": 1,
   "base_stats": {
     "health": 30,
@@ -11,6 +12,7 @@
     "speed": 10
   },
   "ability_ids": ["basic_attack"],
+  "loot_table_id": "lt_region1_common",
   "gold_drop_min": 5,
   "gold_drop_max": 12
 }

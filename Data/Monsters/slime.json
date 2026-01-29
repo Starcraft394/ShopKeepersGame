@@ -1,0 +1,18 @@
+{
+  "id": "slime",
+  "display_name": "Slime",
+  "description": "A gelatinous blob that absorbs everything it touches.",
+  "family": "fungi",
+  "region_id": "region_1",
+  "tier": 1,
+  "base_stats": {
+    "health": 35,
+    "attack": 4,
+    "defense": 4,
+    "speed": 5
+  },
+  "ability_ids": ["basic_attack"],
+  "loot_table_id": "lt_region1_common",
+  "gold_drop_min": 3,
+  "gold_drop_max": 8
+}

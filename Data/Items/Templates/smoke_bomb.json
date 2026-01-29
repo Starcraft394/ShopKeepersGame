@@ -1,0 +1,22 @@
+{
+  "id": "smoke_bomb",
+  "display_name": "Smoke Bomb",
+  "description": "A small bomb that bursts into thick smoke.",
+  "item_type": "consumable",
+  "item_subtype": "utility",
+  "slot": "",
+  "tier": 1,
+  "min_quality": 1,
+  "max_quality": 5,
+  "base_stats": {},
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": false,
+  "max_refinement": 0,
+  "base_value": 12,
+  "icon_path": "",
+  "tags": ["region_1", "consumable"]
+}

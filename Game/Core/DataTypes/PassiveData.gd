@@ -79,7 +79,7 @@ func get_bonus_value() -> int:
 
 ## Check if this passive triggers on kill
 func is_on_kill() -> bool:
-	return trigger == "on_kill" or passive_type == "on_kill"
+	return trigger == "on_kill" or passive_type == "on_kill" or passive_type == "on_kill_stacking_buff"
 
 ## Check if this is a conditional passive (e.g., front row only)
 func is_conditional() -> bool:

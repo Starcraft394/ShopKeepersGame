@@ -1,0 +1,15 @@
+{
+  "id": "lt_region1_uncommon",
+  "display_name": "Region 1 Uncommon Loot",
+  "description": "Materials and consumables from tier 2 monsters.",
+  "min_drops": 1,
+  "max_drops": 3,
+  "entries": [
+    { "item_id": "iron_scrap", "weight": 30, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "herb_sprig", "weight": 25, "min_qty": 1, "max_qty": 3 },
+    { "item_id": "wood_bundle", "weight": 15, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "minor_healing_tonic", "weight": 10, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "antidote_vial", "weight": 5, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 15, "min_qty": 0, "max_qty": 0 }
+  ]
+}

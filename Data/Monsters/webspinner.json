@@ -1,0 +1,18 @@
+{
+  "id": "webspinner",
+  "display_name": "Webspinner",
+  "description": "A patient hunter that waits for the right moment.",
+  "family": "beast",
+  "region_id": "region_1",
+  "tier": 2,
+  "ai_tier": 1,
+  "base_stats": { "health": 32, "attack": 8, "defense": 3, "speed": 14 },
+  "ability_ids": ["basic_attack"],
+  "passive_ids": [],
+  "loot_table_id": "lt_region1_uncommon",
+  "gold_drop_min": 8,
+  "gold_drop_max": 18,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false
+}

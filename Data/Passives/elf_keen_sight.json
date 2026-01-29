@@ -1,0 +1,13 @@
+{
+  "id": "elf_keen_sight",
+  "display_name": "Keen Sight",
+  "description": "Elven perception grants +2 SPD at combat start, allowing quicker reactions.",
+  "passive_type": "stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "speed",
+    "bonus": 2
+  },
+  "category": "racial",
+  "source_type": "race"
+}

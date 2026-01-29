@@ -1,0 +1,13 @@
+{
+  "id": "herb",
+  "display_name": "Medicinal Herb",
+  "description": "A common herb with healing properties.",
+  "item_type": "material",
+  "rarity": "common",
+  "base_stats": {},
+  "stat_scalars": {},
+  "allowed_affixes": [],
+  "allowed_socket_types": [],
+  "gold_value": 3,
+  "tags": ["material", "herb", "alchemy"]
+}

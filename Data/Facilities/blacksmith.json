@@ -1,9 +1,108 @@
 {
   "id": "blacksmith",
   "display_name": "Blacksmith",
-  "description": "Forge weapons and armor from collected materials.",
-  "facility_type": "production",
-  "max_tier": 5,
-  "base_slots": 3,
-  "produces_item_types": ["weapon", "armor"]
+  "description": "A humble forge capable of basic repairs and simple craftsmanship.",
+  "facility_type": "blacksmith",
+  "max_tier": 2,
+  "unlock_region": 1,
+
+  "slots_per_tier": {
+    "1": 2,
+    "2": 3
+  },
+
+  "upgrade_costs": {
+    "2": {
+      "gold": 50,
+      "items": [
+        { "item_id": "iron_scrap", "qty": 5 },
+        { "item_id": "wood_bundle", "qty": 3 }
+      ]
+    }
+  },
+
+  "services_per_tier": {
+    "1": ["repair_basic", "craft_basic_weapon"],
+    "2": ["repair_advanced", "craft_advanced_weapon"]
+  },
+
+  "produces_item_types": ["weapon", "armor"],
+  "input_resource_types": ["iron_scrap", "wood_bundle"],
+
+  "allows_hero_assignment": true,
+  "max_assigned_heroes": 1,
+
+  "unlocks": [
+    {
+      "id": "unlock_offhands_t1",
+      "unlock_group": "offhands_t1",
+      "label": "Unlock Shields (Tier 1)",
+      "required_tier": 1,
+      "costs": [
+        { "item_id": "iron_scrap", "qty": 3 },
+        { "item_id": "wood_bundle", "qty": 2 }
+      ]
+    },
+    {
+      "id": "unlock_weapons_t2",
+      "unlock_group": "weapons_t2",
+      "label": "Unlock Better Weapons",
+      "required_tier": 2,
+      "costs": [
+        { "item_id": "iron_scrap", "qty": 6 },
+        { "item_id": "wood_bundle", "qty": 4 }
+      ]
+    },
+    {
+      "id": "unlock_offhands_t2",
+      "unlock_group": "offhands_t2",
+      "label": "Unlock Better Offhands",
+      "required_tier": 2,
+      "costs": [
+        { "item_id": "iron_scrap", "qty": 5 },
+        { "item_id": "wood_bundle", "qty": 3 }
+      ]
+    }
+  ],
+
+  "shop_items": [],
+
+  "crafting_recipes": [
+    {
+      "output_id": "crude_sword",
+      "output_qty": 1,
+      "required_tier": 1,
+      "inputs": [
+        { "item_id": "iron_scrap", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "wooden_shield",
+      "output_qty": 1,
+      "required_tier": 1,
+      "inputs": [
+        { "item_id": "wood_bundle", "qty": 2 },
+        { "item_id": "iron_scrap", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "iron_dagger",
+      "output_qty": 1,
+      "required_tier": 2,
+      "cost_gold": 10,
+      "inputs": [
+        { "item_id": "iron_scrap", "qty": 3 }
+      ]
+    },
+    {
+      "output_id": "reinforced_shield",
+      "output_qty": 1,
+      "required_tier": 2,
+      "cost_gold": 15,
+      "inputs": [
+        { "item_id": "wooden_shield", "qty": 1 },
+        { "item_id": "iron_scrap", "qty": 2 }
+      ]
+    }
+  ]
 }

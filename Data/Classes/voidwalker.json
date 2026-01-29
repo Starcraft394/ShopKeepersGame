@@ -1,0 +1,24 @@
+{
+  "id": "voidwalker",
+  "display_name": "Voidwalker",
+  "description": "A dimensional warrior who phases between planes to absorb attacks and confuse enemies.",
+  "archetype": "vanguard",
+  "unlock_region": 7,
+  "base_stats": {
+    "health": 125,
+    "attack": 11,
+    "defense": 14,
+    "speed": 8
+  },
+  "stat_growth": {
+    "health": 13,
+    "attack": 3,
+    "defense": 3,
+    "speed": 2
+  },
+  "ability_a_id": "void_anchor",
+  "ability_b_id": "phase_strike",
+  "passive_a_id": "dimensional_shift",
+  "passive_b_id": "void_shell",
+  "weapon_types": ["sword", "axe", "void_blade"]
+}

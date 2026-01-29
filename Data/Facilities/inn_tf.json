@@ -1,0 +1,46 @@
+{
+  "id": "inn_tf",
+  "display_name": "Wanderer's Rest Inn (Timberfall)",
+  "description": "A cozy tavern where heroes gather, rest, and join your cause.",
+  "facility_type": "inn",
+  "max_tier": 2,
+  "unlock_region": 1,
+
+  "slots_per_tier": {},
+
+  "upgrade_costs": {
+    "2": {
+      "gold": 100,
+      "items": [
+        { "item_id": "wood_bundle", "qty": 10 }
+      ]
+    }
+  },
+
+  "services_per_tier": {
+    "1": ["recruit_hero", "manage_party"],
+    "2": ["recruit_rare_hero"]
+  },
+
+  "produces_item_types": [],
+  "input_resource_types": [],
+
+  "allows_hero_assignment": false,
+  "max_assigned_heroes": 0,
+
+  "unlocks": [],
+  "shop_items": [],
+
+  "recruit_candidates": [
+    { "class_id": "defender", "cost_gold": 50 },
+    { "class_id": "striker", "cost_gold": 50 },
+    { "class_id": "warden", "cost_gold": 50 }
+  ],
+
+  "recruit_level_by_tier": {
+    "1": 1,
+    "2": 2
+  },
+
+  "max_party_size": 2
+}

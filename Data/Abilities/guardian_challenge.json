@@ -1,0 +1,16 @@
+{
+  "id": "guardian_challenge",
+  "display_name": "Guardian's Challenge",
+  "description": "Challenge an enemy with a defensive strike. Deals light damage and inflicts bleeding for 2 turns.",
+  "ability_type": "class_a",
+  "source_class_id": "defender",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 5,
+  "damage_type": "physical",
+  "attack_scaling": 0.6,
+  "cooldown": 2,
+  "applies_status_id": "bleeding",
+  "applies_status_duration": 2,
+  "status_stacks": 1
+}

@@ -1,0 +1,319 @@
+[gd_scene load_steps=3 format=3 uid="uid://dj5trkgwnxmwq"]
+
+[ext_resource type="Script" path="res://Game/UI/Town/TownScene.gd" id="1_town"]
+[ext_resource type="Theme" uid="uid://game_theme_001" path="res://Themes/game_theme.tres" id="2_theme"]
+
+[node name="TownScene" type="Control"]
+theme = ExtResource("2_theme")
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_town")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12, 0.14, 0.18, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="MainVBox" type="VBoxContainer" parent="MarginContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/ScrollContainer/MainVBox"]
+layout_mode = 2
+text = "-- Town --"
+horizontal_alignment = 1
+
+[node name="LocationSection" type="VBoxContainer" parent="MarginContainer/ScrollContainer/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="LocationLabel" type="Label" parent="MarginContainer/ScrollContainer/MainVBox/LocationSection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Location: region_1 / town_greenroot"
+
+[node name="TownNameLabel" type="Label" parent="MarginContainer/ScrollContainer/MainVBox/LocationSection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Town: Greenroot Village"
+
+[node name="ProgressLabel" type="Label" parent="MarginContainer/ScrollContainer/MainVBox/LocationSection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Dungeon: none | Floor: 0/0 | Room: 0/0"
+
+[node name="Separator1" type="HSeparator" parent="MarginContainer/ScrollContainer/MainVBox"]
+layout_mode = 2
+
+[node name="StashSection" type="VBoxContainer" parent="MarginContainer/ScrollContainer/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="StashHeader" type="Label" parent="MarginContainer/ScrollContainer/MainVBox/StashSection"]
+layout_mode = 2
+text = "=== Stash ==="
+horizontal_alignment = 1
+
+[node name="BankedStashLabel" type="Label" parent="MarginContainer/ScrollContainer/MainVBox/StashSection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Banked: 0 gold, 0 items"
+modulate = Color(0.5, 1, 0.5, 1)
+
+[node name="UnbankedStashLabel" type="Label" parent="MarginContainer/ScrollContainer/MainVBox/StashSection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Unbanked: 0 gold, 0 items"
+modulate = Color(1, 0.9, 0.5, 1)
+
+[node name="StashItemsHeader" type="Label" parent="MarginContainer/ScrollContainer/MainVBox/StashSection"]
+layout_mode = 2
+text = "Banked Items:"
+
+[node name="StashScrollContainer" type="ScrollContainer" parent="MarginContainer/ScrollContainer/MainVBox/StashSection"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="StashListVBox" type="VBoxContainer" parent="MarginContainer/ScrollContainer/MainVBox/StashSection/StashScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="PlaceholderItem" type="Label" parent="MarginContainer/ScrollContainer/MainVBox/StashSection/StashScrollContainer/StashListVBox"]
+layout_mode = 2
+text = "(empty)"
+modulate = Color(0.6, 0.6, 0.6, 1)
+
+[node name="Separator2" type="HSeparator" parent="MarginContainer/ScrollContainer/MainVBox"]
+layout_mode = 2
+
+[node name="FacilitiesSection" type="VBoxContainer" parent="MarginContainer/ScrollContainer/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="FacilitiesHeader" type="Label" parent="MarginContainer/ScrollContainer/MainVBox/FacilitiesSection"]
+layout_mode = 2
+text = "=== Facilities ==="
+horizontal_alignment = 1
+
+[node name="FacilitiesVBox" type="VBoxContainer" parent="MarginContainer/ScrollContainer/MainVBox/FacilitiesSection"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="PlaceholderFacility" type="Label" parent="MarginContainer/ScrollContainer/MainVBox/FacilitiesSection/FacilitiesVBox"]
+layout_mode = 2
+text = "(no facilities)"
+modulate = Color(0.6, 0.6, 0.6, 1)
+
+[node name="Separator3" type="HSeparator" parent="MarginContainer/ScrollContainer/MainVBox"]
+layout_mode = 2
+
+[node name="ActionSection" type="VBoxContainer" parent="MarginContainer/ScrollContainer/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ActionLabel" type="Label" parent="MarginContainer/ScrollContainer/MainVBox/ActionSection"]
+layout_mode = 2
+text = "=== Actions ==="
+horizontal_alignment = 1
+
+[node name="ButtonRow" type="HBoxContainer" parent="MarginContainer/ScrollContainer/MainVBox/ActionSection"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="EnterDungeonButton" type="Button" parent="MarginContainer/ScrollContainer/MainVBox/ActionSection/ButtonRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 35)
+layout_mode = 2
+text = "Enter Dungeon"
+
+[node name="ContinueRunButton" type="Button" parent="MarginContainer/ScrollContainer/MainVBox/ActionSection/ButtonRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 35)
+layout_mode = 2
+text = "Continue Run"
+
+[node name="ExitDungeonButton" type="Button" parent="MarginContainer/ScrollContainer/MainVBox/ActionSection/ButtonRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 35)
+layout_mode = 2
+text = "Exit Dungeon"
+
+[node name="Separator4" type="HSeparator" parent="MarginContainer/ScrollContainer/MainVBox"]
+layout_mode = 2
+
+[node name="TownSwitchSection" type="VBoxContainer" parent="MarginContainer/ScrollContainer/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SwitchLabel" type="Label" parent="MarginContainer/ScrollContainer/MainVBox/TownSwitchSection"]
+layout_mode = 2
+text = "=== Switch Town ==="
+horizontal_alignment = 1
+
+[node name="TownButtonRow" type="HBoxContainer" parent="MarginContainer/ScrollContainer/MainVBox/TownSwitchSection"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="GreenrootButton" type="Button" parent="MarginContainer/ScrollContainer/MainVBox/TownSwitchSection/TownButtonRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 30)
+layout_mode = 2
+text = "Greenroot"
+
+[node name="TimberfallButton" type="Button" parent="MarginContainer/ScrollContainer/MainVBox/TownSwitchSection/TownButtonRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 30)
+layout_mode = 2
+text = "Timberfall"
+
+[node name="Separator5" type="HSeparator" parent="MarginContainer/ScrollContainer/MainVBox"]
+layout_mode = 2
+
+[node name="DebugSection" type="VBoxContainer" parent="MarginContainer/ScrollContainer/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="DebugLabel" type="Label" parent="MarginContainer/ScrollContainer/MainVBox/DebugSection"]
+layout_mode = 2
+text = "=== Debug ==="
+horizontal_alignment = 1
+modulate = Color(0.7, 0.7, 0.7, 1)
+
+[node name="DebugButtonRow" type="HBoxContainer" parent="MarginContainer/ScrollContainer/MainVBox/DebugSection"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="ClearStashButton" type="Button" parent="MarginContainer/ScrollContainer/MainVBox/DebugSection/DebugButtonRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 30)
+layout_mode = 2
+text = "Clear Stash"
+
+[node name="ResetSaveButton" type="Button" parent="MarginContainer/ScrollContainer/MainVBox/DebugSection/DebugButtonRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 30)
+layout_mode = 2
+text = "RESET SAVE (DEV)"
+modulate = Color(1, 0.6, 0.6, 1)
+
+[node name="AddGoldButton" type="Button" parent="MarginContainer/ScrollContainer/MainVBox/DebugSection/DebugButtonRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 30)
+layout_mode = 2
+text = "+100 GOLD (DEV)"
+modulate = Color(1, 0.9, 0.5, 1)
+
+[node name="HotkeyHint" type="Label" parent="MarginContainer/ScrollContainer/MainVBox/DebugSection"]
+layout_mode = 2
+text = "Hotkeys: F5=Enter, F6=AdvFloor, Shift+F6=AdvRoom, F7=Exit"
+horizontal_alignment = 1
+modulate = Color(0.5, 0.5, 0.5, 1)
+
+[node name="FacilityWindow" type="Window" parent="."]
+unique_name_in_owner = true
+title = "Facility"
+initial_position = 2
+size = Vector2i(520, 420)
+visible = false
+transient = true
+exclusive = true
+
+[node name="PanelBg" type="Panel" parent="FacilityWindow"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="MarginContainer" type="MarginContainer" parent="FacilityWindow"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="ScrollContainer" type="ScrollContainer" parent="FacilityWindow/MarginContainer"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="VBox" type="VBoxContainer" parent="FacilityWindow/MarginContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="FacilityNameLabel" type="Label" parent="FacilityWindow/MarginContainer/ScrollContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Facility Name"
+horizontal_alignment = 1
+
+[node name="FacilityTypeLabel" type="Label" parent="FacilityWindow/MarginContainer/ScrollContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Type: production"
+horizontal_alignment = 1
+modulate = Color(0.7, 0.7, 0.7, 1)
+
+[node name="Separator" type="HSeparator" parent="FacilityWindow/MarginContainer/ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="FacilityDescLabel" type="Label" parent="FacilityWindow/MarginContainer/ScrollContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Description goes here..."
+autowrap_mode = 2
+
+[node name="FacilityTierLabel" type="Label" parent="FacilityWindow/MarginContainer/ScrollContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Max Tier: 4"
+
+[node name="FacilityServicesLabel" type="Label" parent="FacilityWindow/MarginContainer/ScrollContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Tier 1 Services: (none)"
+
+[node name="Spacer" type="Control" parent="FacilityWindow/MarginContainer/ScrollContainer/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CloseFacilityButton" type="Button" parent="FacilityWindow/MarginContainer/ScrollContainer/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 30)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Close"

@@ -1,0 +1,17 @@
+{
+  "id": "human_adaptability",
+  "display_name": "Adaptability",
+  "description": "Versatile nature grants +1 ATK and +1 DEF at combat start. At level 3+, also gain +1 SPD.",
+  "passive_type": "race_multi_stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "attack": 1,
+    "defense": 1,
+    "speed_at_level": {
+      "min_level": 3,
+      "bonus": 1
+    }
+  },
+  "category": "racial",
+  "source_type": "race"
+}
