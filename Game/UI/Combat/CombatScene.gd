@@ -520,11 +520,18 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 	container.add_theme_constant_override("separation", 2)
 	container.name = "UnitContent_%s" % unit_data["id"]
 
-	# Name + HP line
+	# Name + Class line
 	var name_label = Label.new()
 	var alive_color = Color.WHITE if unit_data["is_alive"] else Color.GRAY
 	var dead_text = " [DEAD]" if not unit_data["is_alive"] else ""
-	name_label.text = "%s%s" % [unit_data["name"], dead_text]
+	var class_suffix = ""
+	if unit_data["team"] == "player" and unit_data.get("class_id", "") != "":
+		var cls_name = unit_data["class_id"].capitalize()
+		var cls_data = DataRegistry.get_class_data(unit_data["class_id"])
+		if cls_data != null and cls_data.display_name != "":
+			cls_name = cls_data.display_name
+		class_suffix = " (%s)" % cls_name
+	name_label.text = "%s%s%s" % [unit_data["name"], class_suffix, dead_text]
 	name_label.add_theme_color_override("font_color", alive_color)
 	container.add_child(name_label)
 
@@ -576,9 +583,9 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 		cd_label.add_theme_font_size_override("font_size", 11)
 		container.add_child(cd_label)
 
-	# Items v5: Equipment display for player heroes
+	# Items v5: Equipment display for player heroes (use source_id for per-hero equipment)
 	if unit_data["team"] == "player":
-		var hero_id = unit_data["id"]
+		var hero_id = unit_data.get("source_id", unit_data["id"])
 		var equip_summary = GameContext.get_hero_equipment_summary(hero_id)
 
 		# Weapon line
@@ -959,6 +966,27 @@ static func format_gear_stat_summary(bonuses: Dictionary) -> String:
 	if parts.is_empty():
 		return ""
 	return "Gear: %s" % " ".join(parts)
+
+
+## Hero Recruit v2.1: Format combat display string for a hero (for testability).
+## Returns "Name (Class)" string from unit_data dict.
+static func format_hero_combat_label(hero_name: String, class_id: String) -> String:
+	if class_id == "":
+		return hero_name
+	var cls_name = class_id.capitalize()
+	var registry = Engine.get_singleton("DataRegistry") if Engine.has_singleton("DataRegistry") else null
+	if registry == null:
+		# Fallback: try to get from autoload tree
+		var tree = Engine.get_main_loop()
+		if tree != null and tree is SceneTree:
+			var root = tree.root
+			if root != null:
+				registry = root.get_node_or_null("DataRegistry")
+	if registry != null and registry.has_method("get_class_data"):
+		var cls_data = registry.get_class_data(class_id)
+		if cls_data != null and cls_data.display_name != "":
+			cls_name = cls_data.display_name
+	return "%s (%s)" % [hero_name, cls_name]
 
 
 ## Status UI v1.7.1: Format buff stats dictionary as human-readable string.

@@ -31,6 +31,9 @@ const BOOT_SCENE_PATH = "res://Game/Boot/game_boot.tscn"
 @onready var greenroot_button: Button = %GreenrootButton
 @onready var timberfall_button: Button = %TimberfallButton
 
+# Heroes section
+@onready var heroes_vbox: VBoxContainer = %HeroesVBox
+
 # Debug section
 @onready var clear_stash_button: Button = %ClearStashButton
 @onready var reset_save_button: Button = %ResetSaveButton
@@ -75,6 +78,10 @@ func _ready() -> void:
 	close_facility_button.pressed.connect(_on_close_facility_pressed)
 	facility_window.close_requested.connect(_on_close_facility_pressed)
 
+	# Ensure all heroes are fully healed when entering town view
+	if GameContext.get_phase() == GameContext.GamePhase.TOWN:
+		GameContext.apply_town_entry_reset()
+
 	# Initial UI refresh
 	_refresh_ui()
 	_populate_facilities_list()
@@ -100,6 +107,7 @@ func _refresh_ui() -> void:
 	_update_location_labels()
 	_update_button_states()
 	_populate_stash_list()
+	_populate_heroes_section()
 
 
 func _update_location_labels() -> void:
@@ -2391,6 +2399,73 @@ func _on_assign_book_pressed(book_id: String) -> void:
 
 
 # ============================================================================
+# HEROES SECTION (Main Town View - Minimal Party Summary + Visit Inn)
+# ============================================================================
+
+func _populate_heroes_section() -> void:
+	# Clear existing dynamic content
+	for child in heroes_vbox.get_children():
+		child.queue_free()
+
+	var party = GameContext.get_selected_party()
+	var roster_size = GameContext.get_roster().size()
+
+	# Party summary line
+	var summary_label = Label.new()
+	summary_label.text = "Party: %d / %d  |  Roster: %d  |  Gold: %d" % [
+		party.size(), GameContext.MAX_PARTY_SIZE, roster_size, GameContext.get_player_gold()
+	]
+	summary_label.modulate = Color(0.5, 1, 0.5, 1) if party.size() > 0 else Color(0.8, 0.8, 0.8, 1)
+	heroes_vbox.add_child(summary_label)
+
+	# Compact party member names
+	if party.size() > 0:
+		for hero_id in party:
+			var hero = GameContext.get_hero(hero_id)
+			if hero.is_empty():
+				continue
+			var hero_name = hero.get("name", hero_id)
+			var class_id = hero.get("class_id", "")
+			var cls_name = class_id.capitalize()
+			var class_data = DataRegistry.get_class_data(class_id)
+			if class_data != null and class_data.display_name != "":
+				cls_name = class_data.display_name
+			var member_label = Label.new()
+			member_label.text = "  %s (%s)" % [hero_name, cls_name]
+			member_label.modulate = Color(0.6, 1, 0.6, 1)
+			member_label.add_theme_font_size_override("font_size", 13)
+			heroes_vbox.add_child(member_label)
+	else:
+		var empty_label = Label.new()
+		empty_label.text = "  (No party selected - visit Inn to recruit)"
+		empty_label.modulate = Color(0.6, 0.6, 0.6, 1)
+		heroes_vbox.add_child(empty_label)
+
+	# "Visit Inn" button to open Inn facility popup
+	var inn_btn = Button.new()
+	inn_btn.text = "Visit Inn (Recruit / Party)"
+	inn_btn.custom_minimum_size = Vector2(200, 30)
+	inn_btn.pressed.connect(_on_visit_inn_pressed)
+	heroes_vbox.add_child(inn_btn)
+
+
+## Open the Inn facility popup from the main town view.
+func _on_visit_inn_pressed() -> void:
+	# Find the inn facility_id for this town
+	var town_id = GameContext.get_current_town_id()
+	var inn_id = ""
+	if DataRegistry.has_method("get_facilities_for_town"):
+		var facilities = DataRegistry.get_facilities_for_town(town_id)
+		for fac in facilities:
+			if fac.facility_type == "inn":
+				inn_id = fac.facility_id
+				break
+	if inn_id == "":
+		inn_id = "inn"  # Fallback to default inn ID
+	_show_facility_panel(inn_id)
+
+
+# ============================================================================
 # INN UI (Hero Recruitment & Party Management)
 # ============================================================================
 
@@ -2598,6 +2673,26 @@ func _create_hero_row(hero: Dictionary, selected_party: Array) -> PanelContainer
 		xp_label.modulate = Color(0.6, 0.8, 0.6, 1)  # Light green
 	info_vbox.add_child(xp_label)
 
+	# NOTE: Only one HP label in Inn row; always authoritative.
+	# In town phase, always show full HP (town reset clears hero_hp on entry).
+	# In dungeon, show persisted HP from combat if available.
+	var eff_stats = GameContext.get_hero_effective_stats(hero_id)
+	var max_hp = int(eff_stats.get("health", 80)) if not eff_stats.is_empty() else 80
+	var current_hp = max_hp
+	if GameContext.get_phase() != GameContext.GamePhase.TOWN:
+		var hp_data = GameContext.get_hero_hp(hero_id)
+		if not hp_data.is_empty():
+			current_hp = int(hp_data.get("current", max_hp))
+	var hp_label = Label.new()
+	hp_label.text = "HP: %d / %d" % [current_hp, max_hp]
+	if current_hp >= max_hp:
+		hp_label.modulate = Color(0.5, 1.0, 0.5, 1)  # Green = full
+	elif current_hp > max_hp * 0.5:
+		hp_label.modulate = Color(1.0, 0.9, 0.4, 1)  # Yellow = wounded
+	else:
+		hp_label.modulate = Color(1.0, 0.4, 0.4, 1)  # Red = critical
+	info_vbox.add_child(hp_label)
+
 	# Equipment display (per-hero gear) with stat info
 	var weapon_id = GameContext.get_hero_weapon(hero_id)
 	var offhand_id = GameContext.get_hero_offhand(hero_id)
@@ -2709,6 +2804,22 @@ func _create_hero_row(hero: Dictionary, selected_party: Array) -> PanelContainer
 			unequip_offhand_btn.text = "Unequip Off"
 			unequip_offhand_btn.pressed.connect(_on_unequip_slot_pressed.bind(hero_id, "offhand"))
 			btn_vbox.add_child(unequip_offhand_btn)
+
+	# Rename button
+	var rename_btn = Button.new()
+	rename_btn.custom_minimum_size = Vector2(100, 28)
+	rename_btn.text = "Rename"
+	rename_btn.pressed.connect(_on_rename_hero_pressed.bind(hero_id))
+	btn_vbox.add_child(rename_btn)
+
+	# Dismiss button (disabled if in party)
+	var dismiss_btn = Button.new()
+	dismiss_btn.custom_minimum_size = Vector2(100, 28)
+	dismiss_btn.text = "Dismiss"
+	dismiss_btn.disabled = in_party
+	dismiss_btn.modulate = Color(1, 0.6, 0.6, 1) if not in_party else Color(0.5, 0.5, 0.5, 1)
+	dismiss_btn.pressed.connect(_on_inn_dismiss_hero_pressed.bind(hero_id))
+	btn_vbox.add_child(dismiss_btn)
 
 	return panel
 
@@ -2947,6 +3058,72 @@ func _on_recruit_hero_pressed(class_id: String, cost: int, race_id: String = "hu
 	var hero_id = GameContext.recruit_hero(class_id, cost, race_id, level)
 	if hero_id != "":
 		print("[Inn] recruited %s Lv %d hero_id=%s" % [class_id, level, hero_id])
+	_refresh_facility_panel()
+
+
+func _on_rename_hero_pressed(hero_id: String) -> void:
+	# Build a rename popup with LineEdit, Confirm, Cancel
+	var popup = PopupPanel.new()
+	popup.name = "RenamePopup"
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 8)
+	popup.add_child(vbox)
+
+	var title_lbl = Label.new()
+	title_lbl.text = "Rename Hero"
+	title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title_lbl)
+
+	var line_edit = LineEdit.new()
+	line_edit.placeholder_text = "New name (max 18 chars)"
+	line_edit.max_length = 18
+	line_edit.custom_minimum_size = Vector2(220, 30)
+	# Pre-fill with current name
+	var hero = GameContext.get_hero(hero_id)
+	if not hero.is_empty():
+		line_edit.text = hero.get("name", "")
+	vbox.add_child(line_edit)
+
+	var btn_row = HBoxContainer.new()
+	btn_row.add_theme_constant_override("separation", 8)
+	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_child(btn_row)
+
+	var confirm_btn = Button.new()
+	confirm_btn.text = "Confirm"
+	confirm_btn.custom_minimum_size = Vector2(80, 28)
+	btn_row.add_child(confirm_btn)
+
+	var cancel_btn = Button.new()
+	cancel_btn.text = "Cancel"
+	cancel_btn.custom_minimum_size = Vector2(80, 28)
+	btn_row.add_child(cancel_btn)
+
+	# Wire buttons
+	confirm_btn.pressed.connect(func():
+		var new_name = line_edit.text
+		GameContext.set_hero_name(hero_id, new_name)
+		popup.queue_free()
+		_refresh_facility_panel()
+	)
+	cancel_btn.pressed.connect(func():
+		popup.queue_free()
+	)
+
+	add_child(popup)
+	popup.popup_centered(Vector2i(280, 130))
+
+
+func _on_inn_dismiss_hero_pressed(hero_id: String) -> void:
+	var in_party = GameContext.is_in_party(hero_id)
+	if in_party:
+		print("[Inn] cannot dismiss hero in party: %s" % hero_id)
+		return
+	var removed = GameContext.remove_hero_from_roster(hero_id)
+	if removed:
+		# Refund partial gold (25g) to run stash (same pool as recruit cost)
+		GameContext.add_run_gold(25)
+		print("[Inn] dismissed hero=%s refunded 25 gold" % hero_id)
 	_refresh_facility_panel()
 
 

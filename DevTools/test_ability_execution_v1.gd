@@ -464,6 +464,62 @@ static func run_tests() -> Dictionary:
 	else:
 		results["failed"] += 1
 
+	# Test 57: Roster/Party persistence roundtrip (Hero Recruit v2)
+	var t57 = _test_roster_party_persistence()
+	results["tests"].append(t57)
+	if t57["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 58: Dismiss restriction - cannot dismiss hero in party (Hero Recruit v2)
+	var t58 = _test_dismiss_restriction()
+	results["tests"].append(t58)
+	if t58["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 59: Dungeon uses selected party source_ids (Hero Recruit v2.1)
+	var t59 = _test_dungeon_party_source_ids()
+	results["tests"].append(t59)
+	if t59["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 60: Combat display label includes name + class (Hero Recruit v2.1)
+	var t60 = _test_combat_display_label()
+	results["tests"].append(t60)
+	if t60["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 61: Rename hero persistence (Hero Recruit v2.1)
+	var t61 = _test_rename_hero_persistence()
+	results["tests"].append(t61)
+	if t61["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 62: Town entry heals roster heroes (Hero Recruit v2.1 regression)
+	var t62 = _test_town_entry_heals_roster()
+	results["tests"].append(t62)
+	if t62["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 63: No per-hero gold field (Hero Recruit v2.1 regression)
+	var t63 = _test_no_per_hero_gold()
+	results["tests"].append(t63)
+	if t63["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
 	print("")
 	print("=" .repeat(60))
 	print("  TEST RESULTS: %d passed, %d failed" % [results["passed"], results["failed"]])
@@ -2895,7 +2951,7 @@ static func _test_town_heal_restores_hp() -> Dictionary:
 		print("[FAIL] Heroes should have tracked HP")
 
 	# Call town reset
-	GameContext._apply_town_reset()
+	GameContext.apply_town_entry_reset()
 
 	# Test 2: After town reset, hero HP tracking is cleared (full HP assumed)
 	var pass_2 = not GameContext.has_hero_hp("test_hero_50a")
@@ -3246,3 +3302,446 @@ static func _test_consume_reduces_stash_qty() -> Dictionary:
 	GameContext.dungeon_items = original_dungeon_items
 
 	return {"name": "Consuming Item Reduces Stash Qty", "passed": pass_1 and pass_2 and pass_3 and pass_4}
+
+
+static func _test_roster_party_persistence() -> Dictionary:
+	print("--- TEST 57: Roster/Party Persistence Roundtrip (Hero Recruit v2) ---")
+
+	# Save original state
+	var original_heroes = GameContext.owned_heroes.duplicate(true)
+	var original_party = GameContext.selected_party.duplicate()
+	var original_counter = GameContext._hero_id_counter
+
+	# Clear roster for clean test
+	GameContext.owned_heroes.clear()
+	GameContext.selected_party.clear()
+
+	# Test 1: recruit_new_hero creates a hero def without adding to roster
+	var hero_def = GameContext.recruit_new_hero("defender", "human", 1)
+	var pass_1 = hero_def.get("hero_id", "") != "" and hero_def.get("class_id", "") == "defender"
+	if pass_1:
+		print("[PASS] recruit_new_hero creates valid hero_def: %s" % hero_def.get("hero_id", ""))
+	else:
+		print("[FAIL] recruit_new_hero did not produce valid hero_def")
+
+	# Test 2: roster is still empty (factory doesn't add)
+	var pass_2 = GameContext.get_roster().size() == 0
+	if pass_2:
+		print("[PASS] Roster still empty after recruit_new_hero (factory only)")
+	else:
+		print("[FAIL] Roster should be empty, got %d" % GameContext.get_roster().size())
+
+	# Test 3: add_hero_to_roster adds the hero
+	GameContext.add_hero_to_roster(hero_def)
+	var pass_3 = GameContext.get_roster().size() == 1
+	if pass_3:
+		print("[PASS] Roster has 1 hero after add_hero_to_roster")
+	else:
+		print("[FAIL] Roster should have 1 hero, got %d" % GameContext.get_roster().size())
+
+	# Test 4: add second hero and set party
+	var hero_def_2 = GameContext.recruit_new_hero("striker", "human", 1)
+	GameContext.add_hero_to_roster(hero_def_2)
+	GameContext.set_selected_party([hero_def.hero_id, hero_def_2.hero_id])
+	var pass_4 = GameContext.get_selected_party().size() == 2
+	if pass_4:
+		print("[PASS] Party has 2 heroes after set_selected_party")
+	else:
+		print("[FAIL] Party should have 2, got %d" % GameContext.get_selected_party().size())
+
+	# Test 5: is_in_party works
+	var pass_5 = GameContext.is_in_party(hero_def.hero_id) and GameContext.is_in_party(hero_def_2.hero_id)
+	if pass_5:
+		print("[PASS] is_in_party returns true for both heroes")
+	else:
+		print("[FAIL] is_in_party should return true for both heroes")
+
+	# Test 6: get_hero_def returns hero data
+	var fetched = GameContext.get_hero_def(hero_def.hero_id)
+	var pass_6 = fetched.get("class_id", "") == "defender"
+	if pass_6:
+		print("[PASS] get_hero_def returns correct class_id")
+	else:
+		print("[FAIL] get_hero_def class_id mismatch")
+
+	# Test 7: get_hero_display_name returns name
+	var name = GameContext.get_hero_display_name(hero_def.hero_id)
+	var pass_7 = name != "" and name != hero_def.hero_id
+	if pass_7:
+		print("[PASS] get_hero_display_name returns '%s'" % name)
+	else:
+		print("[FAIL] get_hero_display_name returned '%s'" % name)
+
+	# Restore original state
+	GameContext.owned_heroes = original_heroes
+	GameContext.selected_party = original_party
+	GameContext._hero_id_counter = original_counter
+
+	return {"name": "Roster/Party Persistence Roundtrip", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5 and pass_6 and pass_7}
+
+
+static func _test_dismiss_restriction() -> Dictionary:
+	print("--- TEST 58: Dismiss Restriction - Cannot Dismiss Hero In Party ---")
+
+	# Save original state
+	var original_heroes = GameContext.owned_heroes.duplicate(true)
+	var original_party = GameContext.selected_party.duplicate()
+	var original_counter = GameContext._hero_id_counter
+
+	# Clear for clean test
+	GameContext.owned_heroes.clear()
+	GameContext.selected_party.clear()
+
+	# Create and add a hero
+	var hero_def = GameContext.recruit_new_hero("warden", "human", 1)
+	GameContext.add_hero_to_roster(hero_def)
+	var hero_id = hero_def.hero_id
+
+	# Add to party
+	GameContext.add_to_party(hero_id)
+
+	# Test 1: Cannot dismiss hero that is in party
+	var dismiss_result = GameContext.remove_hero_from_roster(hero_id)
+	var pass_1 = dismiss_result == false
+	if pass_1:
+		print("[PASS] Cannot dismiss hero in party (returned false)")
+	else:
+		print("[FAIL] Dismiss should return false for hero in party")
+
+	# Test 2: Hero still in roster
+	var pass_2 = GameContext.get_roster().size() == 1
+	if pass_2:
+		print("[PASS] Hero still in roster after failed dismiss")
+	else:
+		print("[FAIL] Roster should still have 1 hero, got %d" % GameContext.get_roster().size())
+
+	# Test 3: Remove from party then dismiss succeeds
+	GameContext.remove_from_party(hero_id)
+	var dismiss_result_2 = GameContext.remove_hero_from_roster(hero_id)
+	var pass_3 = dismiss_result_2 == true
+	if pass_3:
+		print("[PASS] Dismiss succeeds after removing from party")
+	else:
+		print("[FAIL] Dismiss should succeed after removing from party")
+
+	# Test 4: Roster is now empty
+	var pass_4 = GameContext.get_roster().size() == 0
+	if pass_4:
+		print("[PASS] Roster empty after dismiss")
+	else:
+		print("[FAIL] Roster should be empty, got %d" % GameContext.get_roster().size())
+
+	# Restore original state
+	GameContext.owned_heroes = original_heroes
+	GameContext.selected_party = original_party
+	GameContext._hero_id_counter = original_counter
+
+	return {"name": "Dismiss Restriction (In Party)", "passed": pass_1 and pass_2 and pass_3 and pass_4}
+
+
+## Test 59: Dungeon uses selected party — CombatUnit.create_hero produces correct source_ids.
+## Verifies that spawning heroes from selected_party yields units whose source_id matches.
+static func _test_dungeon_party_source_ids() -> Dictionary:
+	print("--- TEST 59: Dungeon Party Source IDs ---")
+
+	# Save original state
+	var original_heroes = GameContext.owned_heroes.duplicate(true)
+	var original_party = GameContext.selected_party.duplicate()
+	var original_counter = GameContext._hero_id_counter
+
+	# Clear for clean test
+	GameContext.owned_heroes.clear()
+	GameContext.selected_party.clear()
+
+	# Create two heroes and add to roster + party
+	var hero_a = GameContext.recruit_new_hero("defender", "human", 1)
+	GameContext.add_hero_to_roster(hero_a)
+	var hero_b = GameContext.recruit_new_hero("striker", "elf", 1)
+	GameContext.add_hero_to_roster(hero_b)
+	GameContext.add_to_party(hero_a.hero_id)
+	GameContext.add_to_party(hero_b.hero_id)
+
+	# Simulate what CombatController does: iterate selected_party, create CombatUnits
+	var party = GameContext.get_selected_party()
+	var spawned_source_ids: Array = []
+	for idx in range(party.size()):
+		var pid = party[idx]
+		var hero_def = GameContext.get_hero_def(pid)
+		var class_id = hero_def.get("class_id", "warrior")
+		var unit = CombatUnit.create_hero(pid, class_id, idx, {"name": hero_def.get("name", "?"), "health": 80, "attack": 12, "defense": 8, "speed": 10, "level": 1, "race_id": hero_def.get("race_id", "human")})
+		spawned_source_ids.append(unit.source_id)
+
+	# Check: source_ids match the hero_ids we put in selected_party
+	var pass_1 = spawned_source_ids.size() == 2
+	if pass_1:
+		print("[PASS] Spawned 2 units from selected party")
+	else:
+		print("[FAIL] Expected 2 units, got %d" % spawned_source_ids.size())
+
+	var pass_2 = spawned_source_ids[0] == hero_a.hero_id if spawned_source_ids.size() > 0 else false
+	if pass_2:
+		print("[PASS] Unit 0 source_id=%s matches hero_a" % spawned_source_ids[0])
+	else:
+		print("[FAIL] Unit 0 source_id mismatch: got=%s expected=%s" % [str(spawned_source_ids[0]) if spawned_source_ids.size() > 0 else "N/A", hero_a.hero_id])
+
+	var pass_3 = spawned_source_ids[1] == hero_b.hero_id if spawned_source_ids.size() > 1 else false
+	if pass_3:
+		print("[PASS] Unit 1 source_id=%s matches hero_b" % spawned_source_ids[1])
+	else:
+		print("[FAIL] Unit 1 source_id mismatch: got=%s expected=%s" % [str(spawned_source_ids[1]) if spawned_source_ids.size() > 1 else "N/A", hero_b.hero_id])
+
+	# Restore original state
+	GameContext.owned_heroes = original_heroes
+	GameContext.selected_party = original_party
+	GameContext._hero_id_counter = original_counter
+
+	return {"name": "Dungeon Party Source IDs", "passed": pass_1 and pass_2 and pass_3}
+
+
+## Test 60: Combat display label format — format_hero_combat_label produces "Name (Class)".
+static func _test_combat_display_label() -> Dictionary:
+	print("--- TEST 60: Combat Display Label Format ---")
+
+	var CombatSceneScript = load("res://Game/UI/Combat/CombatScene.gd")
+
+	# Test with class_id
+	var label_1: String = CombatSceneScript.format_hero_combat_label("Rex", "defender")
+	var pass_1 = label_1.contains("Rex") and label_1.contains("(")
+	if pass_1:
+		print("[PASS] Label contains name and class bracket: '%s'" % label_1)
+	else:
+		print("[FAIL] Label missing name or class bracket: '%s'" % label_1)
+
+	# Test with empty class_id — should return just the name
+	var label_2: String = CombatSceneScript.format_hero_combat_label("Solo", "")
+	var pass_2 = label_2 == "Solo"
+	if pass_2:
+		print("[PASS] Empty class returns plain name: '%s'" % label_2)
+	else:
+		print("[FAIL] Empty class should return 'Solo', got: '%s'" % label_2)
+
+	# Test format structure: "Name (Something)"
+	var pass_3 = label_1.begins_with("Rex (") and label_1.ends_with(")")
+	if pass_3:
+		print("[PASS] Label format is 'Name (Class)': '%s'" % label_1)
+	else:
+		print("[FAIL] Label format wrong, expected 'Rex (...)', got: '%s'" % label_1)
+
+	return {"name": "Combat Display Label Format", "passed": pass_1 and pass_2 and pass_3}
+
+
+## Test 61: Rename hero persistence — set_hero_name, verify get_hero_display_name returns new name.
+static func _test_rename_hero_persistence() -> Dictionary:
+	print("--- TEST 61: Rename Hero Persistence ---")
+
+	# Save original state
+	var original_heroes = GameContext.owned_heroes.duplicate(true)
+	var original_party = GameContext.selected_party.duplicate()
+	var original_counter = GameContext._hero_id_counter
+
+	# Clear for clean test
+	GameContext.owned_heroes.clear()
+	GameContext.selected_party.clear()
+
+	# Create a hero
+	var hero_def = GameContext.recruit_new_hero("warden", "human", 1)
+	GameContext.add_hero_to_roster(hero_def)
+	var hero_id = hero_def.hero_id
+
+	# Test 1: Rename to valid name
+	var result_1 = GameContext.set_hero_name(hero_id, "Aldric")
+	var pass_1 = result_1 == true
+	if pass_1:
+		print("[PASS] set_hero_name returned true")
+	else:
+		print("[FAIL] set_hero_name should return true")
+
+	# Test 2: Display name is now "Aldric"
+	var display = GameContext.get_hero_display_name(hero_id)
+	var pass_2 = display == "Aldric"
+	if pass_2:
+		print("[PASS] get_hero_display_name='%s'" % display)
+	else:
+		print("[FAIL] Expected 'Aldric', got '%s'" % display)
+
+	# Test 3: Rename with empty string resets to default
+	GameContext.set_hero_name(hero_id, "")
+	var default_name = GameContext.get_hero_display_name(hero_id)
+	var pass_3 = default_name.begins_with("Hero #")
+	if pass_3:
+		print("[PASS] Empty rename resets to default: '%s'" % default_name)
+	else:
+		print("[FAIL] Expected default 'Hero #N', got '%s'" % default_name)
+
+	# Test 4: Whitespace-only name also resets to default
+	GameContext.set_hero_name(hero_id, "   ")
+	var ws_name = GameContext.get_hero_display_name(hero_id)
+	var pass_4 = ws_name.begins_with("Hero #")
+	if pass_4:
+		print("[PASS] Whitespace-only rename resets to default: '%s'" % ws_name)
+	else:
+		print("[FAIL] Expected default 'Hero #N', got '%s'" % ws_name)
+
+	# Test 5: Long name gets truncated to 18 chars
+	GameContext.set_hero_name(hero_id, "Bartholomew Fitzwilliam III")
+	var long_name = GameContext.get_hero_display_name(hero_id)
+	var pass_5 = long_name.length() <= 18
+	if pass_5:
+		print("[PASS] Long name truncated to %d chars: '%s'" % [long_name.length(), long_name])
+	else:
+		print("[FAIL] Name should be <=18 chars, got %d: '%s'" % [long_name.length(), long_name])
+
+	# Restore original state
+	GameContext.owned_heroes = original_heroes
+	GameContext.selected_party = original_party
+	GameContext._hero_id_counter = original_counter
+
+	return {"name": "Rename Hero Persistence", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5}
+
+
+## Test 62: Town entry heals all roster heroes and clears statuses.
+static func _test_town_entry_heals_roster() -> Dictionary:
+	print("--- TEST 62: Town Entry Heals Roster Heroes ---")
+
+	# Save original state
+	var original_heroes = GameContext.owned_heroes.duplicate(true)
+	var original_party = GameContext.selected_party.duplicate()
+	var original_counter = GameContext._hero_id_counter
+	var original_hp = GameContext.hero_hp.duplicate(true)
+	var original_statuses = GameContext.hero_statuses.duplicate(true)
+	var original_consumables = GameContext._combat_consumables_used.duplicate(true)
+
+	# Clear for clean test
+	GameContext.owned_heroes.clear()
+	GameContext.selected_party.clear()
+
+	# Create two heroes and add to roster
+	var hero_a = GameContext.recruit_new_hero("defender", "human", 1)
+	GameContext.add_hero_to_roster(hero_a)
+	var hero_b = GameContext.recruit_new_hero("striker", "elf", 1)
+	GameContext.add_hero_to_roster(hero_b)
+
+	# Set persisted HP to partial values (simulating post-combat state)
+	GameContext.set_hero_hp(hero_a.hero_id, 50, 100)
+	GameContext.set_hero_hp(hero_b.hero_id, 10, 80)
+
+	# Set persisted statuses (simulating DOT carry-over)
+	GameContext.set_hero_statuses(hero_a.hero_id, [{"id": "poisoned", "stacks": 1, "remaining": 2}])
+	GameContext.set_hero_statuses(hero_b.hero_id, [{"id": "bleeding", "stacks": 2, "remaining": 1}])
+
+	# Verify setup
+	var setup_ok = GameContext.has_hero_hp(hero_a.hero_id) and GameContext.has_hero_hp(hero_b.hero_id)
+	if setup_ok:
+		print("[PASS] Setup: both heroes have persisted HP")
+	else:
+		print("[FAIL] Setup: heroes should have persisted HP")
+
+	var status_setup_ok = GameContext.has_hero_statuses(hero_a.hero_id) and GameContext.has_hero_statuses(hero_b.hero_id)
+	if status_setup_ok:
+		print("[PASS] Setup: both heroes have persisted statuses")
+	else:
+		print("[FAIL] Setup: heroes should have persisted statuses")
+
+	# Call town entry reset
+	GameContext.apply_town_entry_reset()
+
+	# Test 1: hero_hp cleared for hero A
+	var pass_1 = not GameContext.has_hero_hp(hero_a.hero_id)
+	if pass_1:
+		print("[PASS] Hero A HP cleared after town reset")
+	else:
+		print("[FAIL] Hero A should have HP cleared")
+
+	# Test 2: hero_hp cleared for hero B
+	var pass_2 = not GameContext.has_hero_hp(hero_b.hero_id)
+	if pass_2:
+		print("[PASS] Hero B HP cleared after town reset")
+	else:
+		print("[FAIL] Hero B should have HP cleared")
+
+	# Test 3: HP ratio returns 1.0 (full) for both
+	var ratio_a = GameContext.get_hero_hp_ratio(hero_a.hero_id)
+	var ratio_b = GameContext.get_hero_hp_ratio(hero_b.hero_id)
+	var pass_3 = ratio_a == 1.0 and ratio_b == 1.0
+	if pass_3:
+		print("[PASS] Both heroes at full HP ratio (1.0)")
+	else:
+		print("[FAIL] HP ratios should be 1.0, got A=%s B=%s" % [str(ratio_a), str(ratio_b)])
+
+	# Test 4: hero_statuses cleared for both
+	var pass_4 = not GameContext.has_hero_statuses(hero_a.hero_id) and not GameContext.has_hero_statuses(hero_b.hero_id)
+	if pass_4:
+		print("[PASS] Both heroes statuses cleared after town reset")
+	else:
+		print("[FAIL] Hero statuses should be cleared")
+
+	# Restore original state
+	GameContext.owned_heroes = original_heroes
+	GameContext.selected_party = original_party
+	GameContext._hero_id_counter = original_counter
+	GameContext.hero_hp = original_hp
+	GameContext.hero_statuses = original_statuses
+	GameContext._combat_consumables_used = original_consumables
+
+	return {"name": "Town Entry Heals Roster", "passed": setup_ok and status_setup_ok and pass_1 and pass_2 and pass_3 and pass_4}
+
+
+## Test 63: No per-hero gold field in hero defs.
+static func _test_no_per_hero_gold() -> Dictionary:
+	print("--- TEST 63: No Per-Hero Gold Field ---")
+
+	# Save original state
+	var original_heroes = GameContext.owned_heroes.duplicate(true)
+	var original_counter = GameContext._hero_id_counter
+
+	GameContext.owned_heroes.clear()
+
+	# Test 1: recruit_new_hero factory does not include "gold"
+	var hero_a = GameContext.recruit_new_hero("defender", "human", 1)
+	var pass_1 = not hero_a.has("gold")
+	if pass_1:
+		print("[PASS] recruit_new_hero() has no 'gold' key")
+	else:
+		print("[FAIL] recruit_new_hero() should not have 'gold' key, keys=%s" % str(hero_a.keys()))
+
+	# Test 2: add to roster and verify stored hero has no "gold"
+	GameContext.add_hero_to_roster(hero_a)
+	var stored = GameContext.get_hero_def(hero_a.hero_id)
+	var pass_2 = not stored.has("gold")
+	if pass_2:
+		print("[PASS] Stored hero has no 'gold' key")
+	else:
+		print("[FAIL] Stored hero should not have 'gold' key, keys=%s" % str(stored.keys()))
+
+	# Test 3: Verify only allowed keys present
+	var allowed_keys = ["hero_id", "class_id", "race_id", "name", "level", "xp"]
+	var pass_3 = true
+	for key in stored.keys():
+		if key not in allowed_keys:
+			print("[FAIL] Unexpected key '%s' in hero def" % key)
+			pass_3 = false
+	if pass_3:
+		print("[PASS] Hero def contains only allowed keys: %s" % str(stored.keys()))
+
+	# Test 4: recruit_hero() (the gold-spending path) also has no "gold"
+	var old_gold = GameContext.run_gold
+	GameContext.run_gold = 100  # Ensure enough gold
+	var hero_id_2 = GameContext.recruit_hero("striker", 50, "elf", 1)
+	var pass_4 = true
+	if hero_id_2 != "":
+		var stored_2 = GameContext.get_hero_def(hero_id_2)
+		pass_4 = not stored_2.has("gold")
+		if pass_4:
+			print("[PASS] recruit_hero() stored hero has no 'gold' key")
+		else:
+			print("[FAIL] recruit_hero() stored hero should not have 'gold', keys=%s" % str(stored_2.keys()))
+	else:
+		print("[FAIL] recruit_hero() returned empty hero_id")
+		pass_4 = false
+	GameContext.run_gold = old_gold
+
+	# Restore original state
+	GameContext.owned_heroes = original_heroes
+	GameContext._hero_id_counter = original_counter
+
+	return {"name": "No Per-Hero Gold Field", "passed": pass_1 and pass_2 and pass_3 and pass_4}

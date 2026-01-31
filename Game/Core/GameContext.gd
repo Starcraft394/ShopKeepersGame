@@ -1378,6 +1378,92 @@ func get_hero_by_id(hero_id: String) -> Dictionary:
 
 
 # ============================================================================
+# HERO RECRUIT v2 API (Town-facing roster & party helpers)
+# ============================================================================
+
+## Get the hero roster (alias for get_owned_heroes).
+func get_roster() -> Array:
+	return owned_heroes.duplicate()
+
+
+## Check if a hero is currently in the selected party.
+func is_in_party(hero_id: String) -> bool:
+	return hero_id in selected_party
+
+
+## Add a hero definition to the roster.
+func add_hero_to_roster(hero_def: Dictionary) -> void:
+	if hero_def.is_empty() or hero_def.get("hero_id", "") == "":
+		return
+	owned_heroes.append(hero_def)
+	var hero_id = hero_def.get("hero_id", "?")
+	var hero_name = hero_def.get("name", hero_id)
+	var archetype = hero_def.get("class_id", "?")
+	print("[Recruit] add hero=%s name=%s archetype=%s" % [hero_id, hero_name, archetype])
+	save_game()
+
+
+## Remove a hero from the roster. Returns false if hero is in party.
+func remove_hero_from_roster(hero_id: String) -> bool:
+	if is_in_party(hero_id):
+		print("[Recruit] dismiss failed hero=%s reason=in_party" % hero_id)
+		return false
+	for i in range(owned_heroes.size()):
+		if owned_heroes[i].get("hero_id", "") == hero_id:
+			owned_heroes.remove_at(i)
+			print("[Recruit] dismiss hero=%s" % hero_id)
+			save_game()
+			return true
+	return false
+
+
+## Factory: Create a hero definition with a new unique ID.
+## Does NOT add to roster or spend gold. Caller must add via add_hero_to_roster().
+func recruit_new_hero(archetype_id: String, race_id: String = "human", level: int = 1) -> Dictionary:
+	_hero_id_counter += 1
+	var hero_id = "hero_%s_%d" % [archetype_id, _hero_id_counter]
+	return {
+		"hero_id": hero_id,
+		"class_id": archetype_id,
+		"race_id": race_id,
+		"name": "Hero #%d" % _hero_id_counter,
+		"level": level,
+		"xp": 0
+	}
+
+
+## Get hero definition by ID (safe, returns empty dict if not found).
+func get_hero_def(hero_id: String) -> Dictionary:
+	return get_hero(hero_id)
+
+
+## Get display name for a hero. Falls back to hero_id if not found.
+func get_hero_display_name(hero_id: String) -> String:
+	var hero = get_hero(hero_id)
+	if hero.is_empty():
+		return hero_id
+	return hero.get("name", hero_id)
+
+
+## Set a hero's display name. Trims whitespace, caps at 18 chars.
+## Empty string resets to default "Hero #N" format.
+func set_hero_name(hero_id: String, new_name: String) -> bool:
+	var cleaned = new_name.strip_edges().left(18)
+	for i in range(owned_heroes.size()):
+		if owned_heroes[i].get("hero_id", "") == hero_id:
+			if cleaned == "":
+				# Reset to default name
+				var counter_part = hero_id.split("_")
+				var num = counter_part[-1] if counter_part.size() > 0 else str(i + 1)
+				cleaned = "Hero #%s" % num
+			owned_heroes[i]["name"] = cleaned
+			print("[Recruit] rename hero=%s name=%s" % [hero_id, cleaned])
+			save_game()
+			return true
+	return false
+
+
+# ============================================================================
 # HERO LEVELING SYSTEM (per GDD Section 33.3)
 # ============================================================================
 
@@ -1781,8 +1867,10 @@ func increment_shop_refresh(shop_id: String) -> int:
 
 ## Apply town reset: heal all heroes and clear status effects.
 ## Called automatically when exiting dungeon (extract or flee).
+## Also called by TownScene on entry to ensure heroes are always healed in town.
 ## Health Persistence v1: Actually restores all hero HP to max.
-func _apply_town_reset() -> void:
+## Safe to call multiple times (idempotent — no-ops if already cleared).
+func apply_town_entry_reset() -> void:
 	var party_size = selected_party.size()
 	var hero_count = owned_heroes.size()
 
@@ -2574,6 +2662,8 @@ func save_game() -> void:
 		"housing_upgrades": housing_upgrades,
 		"bonus_stash_capacity": bonus_stash_capacity,
 		"shop_refresh_counts": shop_refresh_counts,
+		# Player gold (town persistent)
+		"player_gold": player_gold,
 		# Run stash (banked gold persists across sessions)
 		"run_gold": run_gold,
 		"run_items": _serialize_run_items(run_items),
@@ -2817,6 +2907,16 @@ func load_game() -> void:
 				if not hero.has("xp"):
 					hero["xp"] = 0
 					print("[Migration] hero %s: added xp=0" % hero.get("hero_id", "?"))
+			# Migration: strip unknown keys from hero dicts (e.g., stale "gold" field)
+			var _HERO_ALLOWED_KEYS = ["hero_id", "class_id", "race_id", "name", "level", "xp"]
+			for hero in owned_heroes:
+				var keys_to_remove: Array = []
+				for key in hero.keys():
+					if key not in _HERO_ALLOWED_KEYS:
+						keys_to_remove.append(key)
+				for key in keys_to_remove:
+					hero.erase(key)
+					print("[Migration] hero %s: stripped unknown key '%s'" % [hero.get("hero_id", "?"), key])
 		if save_data.has("selected_party") and save_data.selected_party is Array:
 			selected_party = save_data.selected_party
 		if save_data.has("hero_id_counter"):
@@ -2830,6 +2930,9 @@ func load_game() -> void:
 		# Load shop refresh counts
 		if save_data.has("shop_refresh_counts") and save_data.shop_refresh_counts is Dictionary:
 			shop_refresh_counts = save_data.shop_refresh_counts
+		# Load player gold (town persistent)
+		if save_data.has("player_gold"):
+			player_gold = int(save_data.player_gold)
 		# Load run stash (banked gold persists across sessions)
 		if save_data.has("run_gold"):
 			run_gold = int(save_data.run_gold)
@@ -3074,7 +3177,7 @@ func exit_to_town() -> void:
 	set_phase(GamePhase.TOWN)
 
 	# TownReset: heal all heroes and clear status effects
-	_apply_town_reset()
+	apply_town_entry_reset()
 
 	print("[GameContext] Exited dungeon '%s', returned to town" % old_dungeon)
 
@@ -3093,7 +3196,7 @@ func flee_to_town() -> void:
 	clear_dungeon_stash()
 	print("[GameContext] Fleeing from dungeon '%s' floor %d" % [current_dungeon_id, current_floor])
 
-	# Note: exit_to_town() will call _apply_town_reset()
+	# Note: exit_to_town() will call apply_town_entry_reset()
 	exit_to_town()
 
 

@@ -848,6 +848,8 @@ func _unit_to_snapshot(unit: CombatUnit) -> Dictionary:
 	# Include effective stats (base + buff bonuses) for UI display
 	return {
 		"id": unit.unit_id,
+		"source_id": unit.source_id,
+		"class_id": unit.class_id,
 		"name": unit.display_name,
 		"hp": unit.current_health,
 		"max_hp": unit.max_health,
