@@ -1,0 +1,15 @@
+{
+  "id": "burning_wounds",
+  "display_name": "Burning Wounds",
+  "description": "Attacks against burning enemies deal (2 + level/2) bonus fire damage. Exploit the flames.",
+  "passive_type": "conditional_damage_bonus",
+  "trigger": "on_attack",
+  "condition": "target_has_status",
+  "condition_status": "burning",
+  "effect": {
+    "bonus_damage": 2,
+    "damage_type": "fire"
+  },
+  "source_class_id": "ashblade",
+  "category": "class"
+}

@@ -1,0 +1,12 @@
+{
+  "id": "soul_siphon",
+  "display_name": "Soul Siphon",
+  "description": "When an enemy dies, heal (3 + level/2). Their departing souls sustain you.",
+  "passive_type": "on_enemy_death_heal",
+  "trigger": "on_enemy_death",
+  "effect": {
+    "heal": 3
+  },
+  "source_class_id": "dark_channeler",
+  "category": "class"
+}

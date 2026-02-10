@@ -1,0 +1,15 @@
+{
+  "id": "void_tear",
+  "display_name": "Void Tear",
+  "description": "Tear a hole in reality, dealing massive void damage to a single target.",
+  "ability_type": "class_a",
+  "source_class_id": "void_herald",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 24,
+  "damage_type": "void",
+  "attack_scaling": 1.6,
+  "cooldown": 2,
+  "applies_status_id": "",
+  "status_stacks": 0
+}

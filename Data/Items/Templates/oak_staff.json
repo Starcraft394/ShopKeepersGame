@@ -1,14 +1,22 @@
 {
   "id": "oak_staff",
   "display_name": "Oak Staff",
-  "description": "A sturdy staff carved from forest oak.",
+  "description": "A sturdy staff carved from forest oak. Channels magical energy.",
   "item_type": "weapon",
   "item_subtype": "staff",
+  "category": "equipment",
   "slot": "weapon_main",
+  "equip_slot": "weapon",
   "tier": 1,
-  "min_quality": 1,
-  "max_quality": 5,
-  "base_stats": { "attack": 2, "defense": 1 },
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 3
+  },
+  "stat_bonuses": {
+    "attack": 3,
+    "health": 3
+  },
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -16,7 +24,7 @@
   "allowed_socket_types": [],
   "can_refine": true,
   "max_refinement": 10,
-  "base_value": 16,
+  "base_value": 18,
   "icon_path": "",
-  "tags": ["region_1", "greenroot", "forest", "weapon", "melee"]
+  "tags": ["region_1", "weapon", "magic", "staff", "tier_1"]
 }

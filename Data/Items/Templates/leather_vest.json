@@ -3,12 +3,28 @@
   "display_name": "Leather Vest",
   "description": "Light armor stitched from cured hides.",
   "item_type": "armor",
-  "rarity": "common",
-  "equip_slot": "chest",
-  "base_stats": { "defense": 2 },
-  "stat_scalars": {},
+  "item_subtype": "light_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 1,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 2
+  },
+  "stat_bonuses": {
+    "defense": 2,
+    "speed": 1
+  },
   "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
   "allowed_socket_types": [],
-  "gold_value": 12,
-  "tags": ["region_1", "armor"]
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 18,
+  "icon_path": "",
+  "tags": ["region_1", "armor", "leather", "tier_1"]
 }

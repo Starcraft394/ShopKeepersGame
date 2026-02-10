@@ -61,6 +61,24 @@ var _storage_filter: String = "all"  # "all", "materials", "consumables", "equip
 # Training Hall: selected hero for class assignment
 var _training_selected_hero_id: String = ""
 
+# Equipment Facility: filter and tab state
+var _equipment_tab: String = "all"  # "all", "locked", "unlocked"
+var _equipment_type_filter: String = "all"  # "all", "1h_weapon", "2h_weapon", "helmet", "armor", "legs", "offhand", "accessory", "backpack"
+
+# ============================================================================
+# HELPERS
+# ============================================================================
+
+## Immediately remove all children from a container so they vanish from the tree
+## in the current frame.  queue_free() alone defers removal to end-of-frame,
+## which lets ghost nodes stay visible when the container is repopulated in the
+## same frame (e.g. _refresh_facility_panel → _build_inn_ui).
+func _clear_children_immediate(node: Node) -> void:
+	for child in node.get_children():
+		node.remove_child(child)
+		child.queue_free()
+
+
 # ============================================================================
 # LIFECYCLE
 # ============================================================================
@@ -94,6 +112,7 @@ func _ready() -> void:
 	var room_idx = GameContext.get_current_room_index()
 	var rooms_per_floor = GameContext.get_rooms_per_floor()
 	var dungeon_str = dungeon_id if dungeon_id != "" else "none"
+	print("[TownScene] script=%s" % get_script().resource_path)
 	print("[TownScene] Loaded. Location=%s/%s Dungeon=%s Floor=%d Room=%d/%d" % [
 		region_id, town_id, dungeon_str, floor_num, room_idx + 1, rooms_per_floor
 	])
@@ -200,9 +219,8 @@ func _populate_stash_list() -> void:
 		unbanked_stash_label.text = "(No dungeon stash - in town)"
 		unbanked_stash_label.visible = true
 
-	# Clear existing items in list
-	for child in stash_list_vbox.get_children():
-		child.queue_free()
+	# Clear existing items in list (immediate removal prevents ghost nodes)
+	_clear_children_immediate(stash_list_vbox)
 
 	# Aggregate items by template_id + quality_tier
 	# Key format: "template_id:quality_tier" for ItemInstance, "template_id:0" for Dictionary
@@ -308,7 +326,6 @@ func _populate_stash_list() -> void:
 					if entry.quality_tier > 0 and entry.quality_tier < quality_names.size():
 						tooltip_parts.append("Quality: %s" % quality_names[entry.quality_tier])
 				tooltip_parts.append("Sell: %d gold" % tpl.base_value)
-				tooltip_parts.append("Buy: %d gold" % tpl.get_buy_value())
 			item_label.tooltip_text = "\n".join(tooltip_parts)
 
 			stash_list_vbox.add_child(item_label)
@@ -465,9 +482,8 @@ func _on_close_facility_pressed() -> void:
 # ============================================================================
 
 func _populate_facilities_list() -> void:
-	# Clear existing facility buttons (except placeholder)
-	for child in facilities_vbox.get_children():
-		child.queue_free()
+	# Clear existing facility buttons (immediate removal prevents ghost nodes)
+	_clear_children_immediate(facilities_vbox)
 
 	# Get current town
 	var town_id = GameContext.get_current_town_id()
@@ -557,20 +573,18 @@ func _show_facility_panel(facility_id: String) -> void:
 
 
 func _create_facility_actions(facility) -> void:
-	# Clear previous actions container
-	if _facility_actions_container != null:
-		_facility_actions_container.queue_free()
-		_facility_actions_container = null
-
-	# Create new container
-	_facility_actions_container = VBoxContainer.new()
-	_facility_actions_container.add_theme_constant_override("separation", 6)
-
-	# Insert before close button (VBox is inside MarginContainer/ScrollContainer)
-	var vbox = facility_window.get_node("MarginContainer/ScrollContainer/VBox")
-	var close_idx = close_facility_button.get_index()
-	vbox.add_child(_facility_actions_container)
-	vbox.move_child(_facility_actions_container, close_idx)
+	# Reuse the same container — only clear its children.  Destroying and
+	# recreating the container every refresh caused ghost duplicates when
+	# Godot's Window viewport retained the old node for an extra frame.
+	if _facility_actions_container == null:
+		_facility_actions_container = VBoxContainer.new()
+		_facility_actions_container.add_theme_constant_override("separation", 6)
+		var vbox = facility_window.get_node("MarginContainer/ScrollContainer/VBox")
+		var close_idx = close_facility_button.get_index()
+		vbox.add_child(_facility_actions_container)
+		vbox.move_child(_facility_actions_container, close_idx)
+	else:
+		_clear_children_immediate(_facility_actions_container)
 
 	# Add separator
 	var sep = HSeparator.new()
@@ -591,12 +605,12 @@ func _create_facility_actions(facility) -> void:
 			_build_alchemist_ui()
 		"blacksmith":
 			_build_blacksmith_ui()
+		"equipment":
+			_build_equipment_ui()
 		"training_hall":
 			_build_training_ui()
 		"inn":
 			_build_inn_ui()
-		"woodsman":
-			_build_woodsman_ui()
 		"production":
 			_build_production_ui()
 		_:
@@ -625,124 +639,6 @@ func _build_storage_ui() -> void:
 	gold_label.modulate = Color(1, 0.9, 0.5, 1)
 	_facility_actions_container.add_child(gold_label)
 
-	# v2: Equipment display section
-	var equip_header = Label.new()
-	equip_header.text = "-- Equipped Gear --"
-	equip_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	equip_header.modulate = Color(0.7, 0.7, 0.7, 1)
-	_facility_actions_container.add_child(equip_header)
-
-	var equip_summary = GameContext.get_equipment_summary()
-	var weapon_id = equip_summary.get("weapon_id", "")
-	var weapon_quality = equip_summary.get("weapon_quality", 0)
-	var offhand_id = equip_summary.get("offhand_id", "")
-	var offhand_quality = equip_summary.get("offhand_quality", 0)
-
-	# Weapon display
-	var weapon_label = Label.new()
-	if weapon_id != "":
-		var weapon_tpl = DataRegistry.get_item_template(weapon_id)
-		var weapon_name = weapon_id
-		if weapon_tpl != null:
-			weapon_name = weapon_tpl.display_name
-		weapon_label.text = "Weapon: %s (Q%d)" % [weapon_name, weapon_quality]
-		weapon_label.modulate = Color(0.8, 1.0, 0.8, 1)
-	else:
-		weapon_label.text = "Weapon: (none)"
-		weapon_label.modulate = Color(0.5, 0.5, 0.5, 1)
-	_facility_actions_container.add_child(weapon_label)
-
-	# Offhand display
-	var offhand_label = Label.new()
-	if offhand_id != "":
-		var offhand_tpl = DataRegistry.get_item_template(offhand_id)
-		var offhand_name = offhand_id
-		if offhand_tpl != null:
-			offhand_name = offhand_tpl.display_name
-		offhand_label.text = "Offhand: %s (Q%d)" % [offhand_name, offhand_quality]
-		offhand_label.modulate = Color(0.8, 1.0, 0.8, 1)
-	else:
-		offhand_label.text = "Offhand: (none)"
-		offhand_label.modulate = Color(0.5, 0.5, 0.5, 1)
-	_facility_actions_container.add_child(offhand_label)
-
-	# Gear bonus display
-	var gear_bonus = GameContext._get_equipment_stat_bonuses()
-	var bonus_label = Label.new()
-	bonus_label.text = "Gear Bonus: HP +%d, ATK +%d, DEF +%d, SPD +%d" % [
-		gear_bonus.get("health", 0), gear_bonus.get("attack", 0),
-		gear_bonus.get("defense", 0), gear_bonus.get("speed", 0)
-	]
-	bonus_label.modulate = Color(0.6, 0.9, 1.0, 1)
-	_facility_actions_container.add_child(bonus_label)
-
-	# Unequip buttons
-	var unequip_row = HBoxContainer.new()
-	unequip_row.alignment = BoxContainer.ALIGNMENT_CENTER
-	unequip_row.add_theme_constant_override("separation", 8)
-	_facility_actions_container.add_child(unequip_row)
-
-	var unequip_weapon_btn = Button.new()
-	unequip_weapon_btn.text = "Unequip Weapon"
-	unequip_weapon_btn.custom_minimum_size = Vector2(120, 26)
-	unequip_weapon_btn.disabled = weapon_id == ""
-	unequip_weapon_btn.pressed.connect(_on_unequip_weapon_pressed)
-	unequip_row.add_child(unequip_weapon_btn)
-
-	var unequip_offhand_btn = Button.new()
-	unequip_offhand_btn.text = "Unequip Offhand"
-	unequip_offhand_btn.custom_minimum_size = Vector2(120, 26)
-	unequip_offhand_btn.disabled = offhand_id == ""
-	unequip_offhand_btn.pressed.connect(_on_unequip_offhand_pressed)
-	unequip_row.add_child(unequip_offhand_btn)
-
-	var equip_sep = HSeparator.new()
-	_facility_actions_container.add_child(equip_sep)
-
-	# Player inventory section (if exists) - for transfers
-	var player_gold = GameContext.get_player_gold()
-	var player_items = GameContext.get_player_items()
-	var has_player_inventory = player_gold > 0 or not player_items.is_empty()
-
-	if has_player_inventory:
-		var transfer_header = Label.new()
-		transfer_header.text = "-- Personal Wallet --"
-		transfer_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		transfer_header.modulate = Color(0.7, 0.7, 0.7, 1)
-		_facility_actions_container.add_child(transfer_header)
-
-		var wallet_label = Label.new()
-		wallet_label.text = "Personal Gold: %d" % player_gold
-		_facility_actions_container.add_child(wallet_label)
-
-		# Gold transfer buttons
-		var gold_row = HBoxContainer.new()
-		gold_row.alignment = BoxContainer.ALIGNMENT_CENTER
-		gold_row.add_theme_constant_override("separation", 8)
-		_facility_actions_container.add_child(gold_row)
-
-		var deposit_btn = Button.new()
-		deposit_btn.text = "Deposit 10"
-		deposit_btn.custom_minimum_size = Vector2(100, 26)
-		deposit_btn.disabled = player_gold < 10
-		deposit_btn.pressed.connect(_on_storage_deposit_pressed)
-		gold_row.add_child(deposit_btn)
-
-		var withdraw_btn = Button.new()
-		withdraw_btn.text = "Withdraw 10"
-		withdraw_btn.custom_minimum_size = Vector2(100, 26)
-		withdraw_btn.disabled = run_gold < 10
-		withdraw_btn.pressed.connect(_on_storage_withdraw_pressed)
-		gold_row.add_child(withdraw_btn)
-
-		# Player items with transfer buttons
-		if not player_items.is_empty():
-			for item_id in player_items.keys():
-				var qty = player_items[item_id]
-				var item_row = _create_item_transfer_row(item_id, qty, "wallet", "deposit")
-				_facility_actions_container.add_child(item_row)
-
-	# Separator
 	var sep = HSeparator.new()
 	_facility_actions_container.add_child(sep)
 
@@ -792,13 +688,6 @@ func _build_storage_ui() -> void:
 		for item in filtered_items:
 			var row = _create_stash_item_row(item)
 			_facility_actions_container.add_child(row)
-
-	# Transfer hint if player inventory exists
-	if has_player_inventory:
-		var hint = Label.new()
-		hint.text = "(Transfer items between bank and personal wallet)"
-		hint.modulate = Color(0.6, 0.6, 0.6, 1)
-		_facility_actions_container.add_child(hint)
 
 
 func _get_aggregated_stash_items() -> Array:
@@ -960,9 +849,19 @@ func _create_stash_item_row(item: Dictionary) -> HBoxContainer:
 				if item.quality_tier < quality_names.size():
 					tooltip_parts.append("Quality: %s" % quality_names[item.quality_tier])
 
+		# Materials: Show what recipes can be crafted with this item
+		if item.category == "materials":
+			var recipes = GameContext.get_recipes_using_material(item.template_id)
+			if recipes.size() > 0:
+				tooltip_parts.append("")
+				tooltip_parts.append("Used in recipes:")
+				for recipe_info in recipes:
+					tooltip_parts.append("  • %s (%s)" % [recipe_info.recipe_name, recipe_info.facility_name])
+
+		tooltip_parts.append("")
 		tooltip_parts.append("Sell: %d gold" % tpl.base_value)
-		tooltip_parts.append("Buy: %d gold" % tpl.get_buy_value())
 		label.tooltip_text = "\n".join(tooltip_parts)
+		label.mouse_filter = Control.MOUSE_FILTER_STOP  # Enable tooltip on hover
 	row.add_child(label)
 
 	# Category tag
@@ -978,16 +877,6 @@ func _create_stash_item_row(item: Dictionary) -> HBoxContainer:
 		equip_btn.custom_minimum_size = Vector2(60, 24)
 		equip_btn.pressed.connect(_on_equip_item_pressed.bind(item.template_id, tpl.equip_slot))
 		row.add_child(equip_btn)
-
-	# Withdraw button (to player inventory if it exists)
-	var player_items = GameContext.get_player_items()
-	var player_gold = GameContext.get_player_gold()
-	if player_gold > 0 or not player_items.is_empty():
-		var btn = Button.new()
-		btn.text = "To Wallet"
-		btn.custom_minimum_size = Vector2(80, 24)
-		btn.pressed.connect(_on_item_transfer_pressed.bind(item.template_id, "withdraw"))
-		row.add_child(btn)
 
 	return row
 
@@ -1186,6 +1075,10 @@ func _build_shop_ui() -> void:
 		_facility_actions_container.add_child(no_data)
 		return
 
+	var town_id = GameContext.get_current_town_id()
+	var facility_id = _current_facility.facility_id
+	var shop_id = _current_facility_id
+
 	# Show run stash gold (shop uses banked gold)
 	var gold_label = Label.new()
 	gold_label.text = "Banked Gold: %d" % GameContext.get_run_gold()
@@ -1199,17 +1092,23 @@ func _build_shop_ui() -> void:
 	capacity_label.modulate = Color(0.5, 1, 0.5, 1) if capacity_bonus > 0 else Color(0.6, 0.6, 0.6, 1)
 	_facility_actions_container.add_child(capacity_label)
 
-	# Get context for seeded RNG
-	var town_id = GameContext.get_current_town_id()
-	var facility_id = _current_facility.facility_id
+	# Get shop tier and max tier
 	var current_tier = GameContext.get_facility_tier(town_id, facility_id)
 	var max_tier = GameContext.get_facility_max_tier(facility_id)
 
-	# Tier display
+	# Tier display with slot capacity
+	var max_slots = GameContext.get_shop_max_slots(town_id)
+	var allocated_slots = GameContext.get_shop_allocated_slots(town_id)
 	var tier_label = Label.new()
 	tier_label.text = "Store Tier: %d / %d" % [current_tier, max_tier]
 	tier_label.modulate = Color(0.8, 0.9, 1.0, 1)
 	_facility_actions_container.add_child(tier_label)
+
+	# Slot capacity display
+	var slots_label = Label.new()
+	slots_label.text = "Shop Slots: %d / %d" % [allocated_slots, max_slots]
+	slots_label.modulate = Color(0.7, 1.0, 0.7, 1) if allocated_slots < max_slots else Color(1.0, 0.9, 0.5, 1)
+	_facility_actions_container.add_child(slots_label)
 
 	# Upgrade section (if not at max tier)
 	if current_tier < max_tier:
@@ -1233,12 +1132,15 @@ func _build_shop_ui() -> void:
 			cost_parts.append("%s x%d" % [item_name, qty])
 
 		var cost_text = ", ".join(cost_parts) if cost_parts.size() > 0 else "Free"
+		var current_slots = GameContext.SHOP_TIER_MAX_SLOTS.get(current_tier, 4)
+		var next_slots = GameContext.SHOP_TIER_MAX_SLOTS.get(next_tier, max_slots)
+		var bonus_slots = next_slots - current_slots
 
 		var upgrade_row = HBoxContainer.new()
 		upgrade_row.add_theme_constant_override("separation", 8)
 
 		var upgrade_label = Label.new()
-		upgrade_label.text = "Upgrade to Tier %d: %s" % [next_tier, cost_text]
+		upgrade_label.text = "Tier %d (+%d slots): %s" % [next_tier, bonus_slots, cost_text]
 		upgrade_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		upgrade_row.add_child(upgrade_label)
 
@@ -1251,12 +1153,68 @@ func _build_shop_ui() -> void:
 
 		_facility_actions_container.add_child(upgrade_row)
 
-	# Separator before shop items
-	var tier_sep = HSeparator.new()
-	_facility_actions_container.add_child(tier_sep)
+	# Separator before facility slot allocation
+	var alloc_sep = HSeparator.new()
+	_facility_actions_container.add_child(alloc_sep)
+
+	# Facility Slot Allocation Section
+	var alloc_header = Label.new()
+	alloc_header.text = "-- Facility Slot Allocation --"
+	alloc_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	alloc_header.modulate = Color(0.7, 0.7, 0.7, 1)
+	_facility_actions_container.add_child(alloc_header)
+
+	# Show each contributing facility with +/- controls
+	for contrib_facility_id in GameContext.SHOP_CONTRIBUTING_FACILITIES:
+		var facility_data = DataRegistry.get_facility(contrib_facility_id)
+		var display_name = facility_data.display_name if facility_data != null else contrib_facility_id.capitalize()
+		var current_alloc = GameContext.get_facility_slot_allocation(town_id, contrib_facility_id)
+		var recipe_count = GameContext.get_facility_unlocked_recipes(contrib_facility_id).size()
+
+		var alloc_row = HBoxContainer.new()
+		alloc_row.add_theme_constant_override("separation", 8)
+
+		# Facility name with recipe count
+		var fac_label = Label.new()
+		fac_label.text = "%s (%d recipes)" % [display_name, recipe_count]
+		fac_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		if recipe_count == 0:
+			fac_label.modulate = Color(0.5, 0.5, 0.5, 1)
+		alloc_row.add_child(fac_label)
+
+		# Minus button
+		var minus_btn = Button.new()
+		minus_btn.text = "-"
+		minus_btn.custom_minimum_size = Vector2(28, 28)
+		minus_btn.disabled = current_alloc <= 0
+		minus_btn.pressed.connect(_on_shop_slot_minus.bind(contrib_facility_id))
+		alloc_row.add_child(minus_btn)
+
+		# Slot count display
+		var slot_count = Label.new()
+		slot_count.text = "%d" % current_alloc
+		slot_count.custom_minimum_size = Vector2(24, 0)
+		slot_count.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		alloc_row.add_child(slot_count)
+
+		# Plus button
+		var plus_btn = Button.new()
+		plus_btn.text = "+"
+		plus_btn.custom_minimum_size = Vector2(28, 28)
+		# Disable if at max slots or no recipes unlocked
+		plus_btn.disabled = allocated_slots >= max_slots or recipe_count == 0
+		plus_btn.pressed.connect(_on_shop_slot_plus.bind(contrib_facility_id))
+		alloc_row.add_child(plus_btn)
+
+		_facility_actions_container.add_child(alloc_row)
+
+	# Separator before items
+	var items_sep = HSeparator.new()
+	_facility_actions_container.add_child(items_sep)
+
+	# Get context for seeded RNG
 	var town = DataRegistry.get_town(town_id) if DataRegistry.has_method("get_town") else null
 	var dungeon_id = town.dungeon_id if town != null else ""
-	var shop_id = _current_facility_id
 	var town_tier = GameContext.get_town_tier(town_id)
 	var highest_floor = GameContext.get_unlocked_floor(dungeon_id) if dungeon_id != "" else 1
 	var refresh_count = GameContext.get_shop_refresh_count(shop_id)
@@ -1271,112 +1229,55 @@ func _build_shop_ui() -> void:
 	var shop_rng = RandomNumberGenerator.new()
 	shop_rng.seed = shop_seed
 
-	print("[ShopRNG] shop=%s town=%s profile=%s refresh=%d" % [shop_id, town_id, profile_id, refresh_count])
+	print("[ShopRNG] shop=%s town=%s profile=%s refresh=%d slots=%d/%d" % [shop_id, town_id, profile_id, refresh_count, allocated_slots, max_slots])
 
-	# Load pool data and generate inventory
-	var unlocked_shop_items: Array = _generate_pool_inventory(shop_rng, town_id, dungeon_id)
+	# Facility-allocated equipment section (items based on slot allocation)
+	var facility_items = _generate_facility_allocated_items(town_id, shop_rng)
+	if facility_items.size() > 0:
+		var equip_header = Label.new()
+		equip_header.text = "-- Equipment for Sale --"
+		equip_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		equip_header.modulate = Color(0.7, 0.7, 0.7, 1)
+		_facility_actions_container.add_child(equip_header)
 
-	# Shop items section (items and locked placeholders)
-	var has_items = false
-	for entry in unlocked_shop_items:
-		if entry.get("type", "item") == "item":
-			has_items = true
-			break
-
-	if unlocked_shop_items.size() > 0:
-		var shop_header = Label.new()
-		shop_header.text = "-- Items for Sale --"
-		shop_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		shop_header.modulate = Color(0.7, 0.7, 0.7, 1)
-		_facility_actions_container.add_child(shop_header)
-
-		for entry in unlocked_shop_items:
-			var entry_type = entry.get("type", "item")
-			if entry_type == "locked":
-				# Show locked category placeholder
-				var locked_row = HBoxContainer.new()
-				locked_row.add_theme_constant_override("separation", 8)
-				var locked_label = Label.new()
-				var category = entry.get("category", "items")
-				var reason = entry.get("reason", "Locked")
-				locked_label.text = "(%s: %s)" % [category.capitalize(), reason]
-				locked_label.modulate = Color(0.5, 0.5, 0.5, 1)
-				locked_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-				locked_row.add_child(locked_label)
-				_facility_actions_container.add_child(locked_row)
+		for entry in facility_items:
+			var slot_key = entry.get("slot_key", "")
+			# Check if this slot was already purchased
+			if slot_key != "" and GameContext.is_shop_slot_purchased(shop_id, slot_key):
+				var empty_row = _create_empty_shop_slot_row()
+				_facility_actions_container.add_child(empty_row)
 			else:
-				# Normal item row
-				var row = _create_shop_row(entry)
+				var row = _create_shop_row(entry, shop_id)
 				_facility_actions_container.add_child(row)
+	elif allocated_slots == 0:
+		var no_alloc = Label.new()
+		no_alloc.text = "(Allocate slots to facilities above to stock equipment)"
+		no_alloc.modulate = Color(0.6, 0.6, 0.6, 1)
+		_facility_actions_container.add_child(no_alloc)
 	else:
-		var no_items = Label.new()
-		no_items.text = "(No items for sale)"
-		no_items.modulate = Color(0.6, 0.6, 0.6, 1)
-		_facility_actions_container.add_child(no_items)
+		var no_recipes = Label.new()
+		no_recipes.text = "(No items available - unlock recipes at facilities)"
+		no_recipes.modulate = Color(0.6, 0.6, 0.6, 1)
+		_facility_actions_container.add_child(no_recipes)
 
-	# Stash upgrades section
-	var stash_upgrades = _current_facility.stash_upgrades
-	if stash_upgrades.size() > 0:
-		var sep = HSeparator.new()
-		_facility_actions_container.add_child(sep)
+	# Bottom buttons row
+	var bottom_sep = HSeparator.new()
+	_facility_actions_container.add_child(bottom_sep)
 
-		var upgrades_header = Label.new()
-		upgrades_header.text = "-- Stash Upgrades --"
-		upgrades_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		upgrades_header.modulate = Color(0.7, 0.7, 0.7, 1)
-		_facility_actions_container.add_child(upgrades_header)
+	var buttons_row = HBoxContainer.new()
+	buttons_row.add_theme_constant_override("separation", 12)
+	buttons_row.alignment = BoxContainer.ALIGNMENT_CENTER
 
-		for upgrade in stash_upgrades:
-			var row = _create_stash_upgrade_row(upgrade)
-			_facility_actions_container.add_child(row)
+	# Sell button - opens sell window
+	var sell_btn = Button.new()
+	sell_btn.text = "Sell Items"
+	sell_btn.custom_minimum_size = Vector2(120, 32)
+	sell_btn.pressed.connect(_on_shop_sell_pressed)
+	buttons_row.add_child(sell_btn)
 
-	# Sell Items section (from run stash)
-	var sell_sep = HSeparator.new()
-	_facility_actions_container.add_child(sell_sep)
+	# Note: Stock refreshes automatically when returning from dungeon
 
-	var sell_header = Label.new()
-	sell_header.text = "-- Sell Items --"
-	sell_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	sell_header.modulate = Color(0.7, 0.7, 0.7, 1)
-	_facility_actions_container.add_child(sell_header)
-
-	var sellable_items = _get_sellable_stash_items()
-	if sellable_items.size() == 0:
-		var no_sell = Label.new()
-		no_sell.text = "(No items to sell)"
-		no_sell.modulate = Color(0.6, 0.6, 0.6, 1)
-		_facility_actions_container.add_child(no_sell)
-	else:
-		for item in sellable_items:
-			var row = _create_sell_item_row(item)
-			_facility_actions_container.add_child(row)
-
-	# Refresh Stock button with cost from Run Stash
-	var refresh_sep = HSeparator.new()
-	_facility_actions_container.add_child(refresh_sep)
-
-	var refresh_row = HBoxContainer.new()
-	refresh_row.add_theme_constant_override("separation", 8)
-
-	var refresh_cost = GameContext.get_shop_refresh_cost(shop_id)
-	var can_afford_refresh = GameContext.can_afford_shop_refresh(shop_id)
-
-	var refresh_label = Label.new()
-	refresh_label.text = "Refresh stock for new items"
-	refresh_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	refresh_label.modulate = Color(0.7, 0.7, 0.7, 1)
-	refresh_row.add_child(refresh_label)
-
-	var refresh_btn = Button.new()
-	refresh_btn.text = "Refresh (%dg)" % refresh_cost
-	refresh_btn.custom_minimum_size = Vector2(100, 26)
-	refresh_btn.disabled = not can_afford_refresh
-	refresh_btn.pressed.connect(_on_shop_refresh_pressed.bind(shop_id))
-	if not can_afford_refresh:
-		refresh_btn.tooltip_text = "Not enough gold"
-	refresh_row.add_child(refresh_btn)
-
-	_facility_actions_container.add_child(refresh_row)
+	_facility_actions_container.add_child(buttons_row)
 
 
 ## Generate shop inventory from pool data using weighted random selection.
@@ -1466,6 +1367,58 @@ func _generate_pool_inventory(rng: RandomNumberGenerator, town_id: String, dunge
 			category, roll_count, candidates.size(), str(picked_ids)
 		])
 
+	return result
+
+
+## Generate shop items from unlocked recipes.
+## Quality is rolled based on the source facility's tier at time of unlock.
+func _generate_recipe_shop_items() -> Array:
+	var result: Array = []
+	var unlocked_recipe_ids = GameContext.get_all_unlocked_recipes()
+
+	for item_id in unlocked_recipe_ids:
+		var recipe_data = GameContext.get_recipe_data(item_id)
+		if recipe_data.is_empty():
+			continue
+
+		var template = DataRegistry.get_item_template(item_id)
+		if template == null:
+			continue
+
+		# Only include equipment items (not consumables which are in the regular pool)
+		if template.equip_slot == "":
+			continue
+
+		# Get facility tier from recipe data
+		var facility_tier = recipe_data.get("facility_tier", 1)
+
+		# Roll quality based on facility tier
+		var quality_tier = GameContext.roll_quality_for_facility_tier(facility_tier)
+
+		# Calculate price based on template value and quality
+		var base_price = template.get_buy_value()
+		var quality_mult = [1.0, 1.2, 1.5, 2.0]  # Price multiplier per quality
+		var final_price = int(base_price * quality_mult[quality_tier])
+
+		result.append({
+			"type": "item",
+			"item_id": item_id,
+			"price_gold": final_price,
+			"quality_tier": quality_tier,
+			"source_facility": recipe_data.get("source_facility", ""),
+			"from_recipe": true
+		})
+
+	# Sort by item name for consistent display
+	result.sort_custom(func(a, b):
+		var name_a = DataRegistry.get_item_template(a.get("item_id", ""))
+		var name_b = DataRegistry.get_item_template(b.get("item_id", ""))
+		var display_a = name_a.display_name if name_a else a.get("item_id", "")
+		var display_b = name_b.display_name if name_b else b.get("item_id", "")
+		return display_a < display_b
+	)
+
+	print("[ShopRecipes] generated %d items from unlocked recipes" % result.size())
 	return result
 
 
@@ -1643,12 +1596,323 @@ func _on_shop_refresh_pressed(shop_id: String) -> void:
 		_refresh_facility_panel()
 
 
-func _create_shop_row(shop_item: Dictionary) -> HBoxContainer:
+## Handle shop slot allocation plus button.
+func _on_shop_slot_plus(facility_id: String) -> void:
+	var town_id = GameContext.get_current_town_id()
+	var success = GameContext.increment_facility_slots(town_id, facility_id)
+	if success:
+		print("[Shop] slot_plus facility=%s" % facility_id)
+		_refresh_facility_panel()
+
+
+## Handle shop slot allocation minus button.
+func _on_shop_slot_minus(facility_id: String) -> void:
+	var town_id = GameContext.get_current_town_id()
+	var success = GameContext.decrement_facility_slots(town_id, facility_id)
+	if success:
+		print("[Shop] slot_minus facility=%s" % facility_id)
+		_refresh_facility_panel()
+
+
+## Handle shop sell button - opens sell items window.
+func _on_shop_sell_pressed() -> void:
+	_show_sell_window()
+
+
+## Show sell items window with all sellable items from storage.
+func _show_sell_window() -> void:
+	# Create popup window
+	var popup = Window.new()
+	popup.title = "Sell Items"
+	popup.size = Vector2i(400, 500)
+	popup.transient = true
+	popup.exclusive = true
+
+	# Center on screen
+	var screen_size = DisplayServer.screen_get_size()
+	popup.position = Vector2i((screen_size.x - popup.size.x) / 2, (screen_size.y - popup.size.y) / 2)
+
+	# Main container with margin
+	var margin = MarginContainer.new()
+	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
+	margin.add_theme_constant_override("margin_left", 12)
+	margin.add_theme_constant_override("margin_right", 12)
+	margin.add_theme_constant_override("margin_top", 12)
+	margin.add_theme_constant_override("margin_bottom", 12)
+	popup.add_child(margin)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 8)
+	margin.add_child(vbox)
+
+	# Gold display
+	var gold_label = Label.new()
+	gold_label.text = "Current Gold: %d" % GameContext.get_run_gold()
+	gold_label.modulate = Color(1, 0.9, 0.5, 1)
+	vbox.add_child(gold_label)
+
+	var sep = HSeparator.new()
+	vbox.add_child(sep)
+
+	# Scroll container for items
+	var scroll = ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.custom_minimum_size = Vector2(0, 300)
+	vbox.add_child(scroll)
+
+	var items_vbox = VBoxContainer.new()
+	items_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	items_vbox.add_theme_constant_override("separation", 4)
+	scroll.add_child(items_vbox)
+
+	# Get sellable items
+	var sellable_items = _get_sellable_stash_items()
+
+	if sellable_items.size() == 0:
+		var no_items = Label.new()
+		no_items.text = "(No items to sell)"
+		no_items.modulate = Color(0.6, 0.6, 0.6, 1)
+		items_vbox.add_child(no_items)
+	else:
+		for item in sellable_items:
+			var row = _create_sell_window_row(item, popup, gold_label, items_vbox)
+			items_vbox.add_child(row)
+
+	# Close button at bottom
+	var close_sep = HSeparator.new()
+	vbox.add_child(close_sep)
+
+	var close_btn = Button.new()
+	close_btn.text = "Close"
+	close_btn.custom_minimum_size = Vector2(100, 32)
+	close_btn.pressed.connect(func():
+		popup.queue_free()
+		_refresh_facility_panel()  # Refresh shop to update gold display
+	)
+	vbox.add_child(close_btn)
+
+	# Handle window close
+	popup.close_requested.connect(func():
+		popup.queue_free()
+		_refresh_facility_panel()
+	)
+
+	add_child(popup)
+	popup.show()
+
+
+## Create a row for the sell window.
+func _create_sell_window_row(item: Dictionary, popup: Window, gold_label: Label, items_container: VBoxContainer) -> HBoxContainer:
+	var row = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+
+	var template_id = item.get("item_id", "")
+	var qty = item.get("qty", 0)
+	var quality_tier = item.get("quality_tier", 0)
+
+	# Get display name
+	var display_name = template_id
+	var template = DataRegistry.get_item_template(template_id)
+	if template != null and template.display_name != "":
+		display_name = template.display_name
+
+	# Quality prefix
+	var quality_prefix = ItemInstance.QUALITY_PREFIXES[quality_tier] if quality_tier < ItemInstance.QUALITY_PREFIXES.size() else ""
+	if quality_prefix != "":
+		display_name = "%s %s" % [quality_prefix, display_name]
+
+	# Calculate sell price
+	var sell_price = 1
+	if template != null:
+		sell_price = template.get_sell_value()
+		var quality_mult = [1.0, 1.1, 1.2, 1.35]
+		sell_price = int(sell_price * quality_mult[quality_tier])
+
+	# Item name and quantity
+	var name_label = Label.new()
+	name_label.text = "%s x%d" % [display_name, qty]
+	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	# Quality color
+	var quality_colors = [Color.WHITE, Color(0.4, 0.8, 0.4), Color(0.4, 0.6, 1.0), Color(0.8, 0.4, 1.0)]
+	name_label.modulate = quality_colors[quality_tier] if quality_tier < quality_colors.size() else Color.WHITE
+	row.add_child(name_label)
+
+	# Price label
+	var price_label = Label.new()
+	price_label.text = "%dg ea" % sell_price
+	price_label.modulate = Color(0.8, 0.8, 0.8, 1)
+	row.add_child(price_label)
+
+	# Sell 1 button
+	var sell_one_btn = Button.new()
+	sell_one_btn.text = "Sell 1"
+	sell_one_btn.custom_minimum_size = Vector2(60, 26)
+	sell_one_btn.pressed.connect(func():
+		_do_sell_item(template_id, 1, quality_tier)
+		_refresh_sell_window(popup, gold_label, items_container)
+	)
+	row.add_child(sell_one_btn)
+
+	# Sell All button (if qty > 1)
+	if qty > 1:
+		var sell_all_btn = Button.new()
+		sell_all_btn.text = "Sell All"
+		sell_all_btn.custom_minimum_size = Vector2(70, 26)
+		sell_all_btn.pressed.connect(func():
+			_do_sell_item(template_id, qty, quality_tier)
+			_refresh_sell_window(popup, gold_label, items_container)
+		)
+		row.add_child(sell_all_btn)
+
+	return row
+
+
+## Execute selling an item.
+func _do_sell_item(template_id: String, qty: int, quality_tier: int) -> void:
+	var template = DataRegistry.get_item_template(template_id)
+	if template == null:
+		return
+
+	var sell_price = template.get_sell_value()
+	var quality_mult = [1.0, 1.1, 1.2, 1.35]
+	sell_price = int(sell_price * quality_mult[quality_tier])
+
+	var gold_before = GameContext.get_run_gold()
+	var removed = GameContext.remove_run_items(template_id, qty)
+	var total_gain = removed * sell_price
+	GameContext.add_run_gold(total_gain)
+	var gold_after = GameContext.get_run_gold()
+
+	print("[Store] sell item=%s qty=%d gain=%d gold_before=%d gold_after=%d" % [
+		template_id, removed, total_gain, gold_before, gold_after])
+
+
+## Refresh the sell window contents.
+func _refresh_sell_window(popup: Window, gold_label: Label, items_container: VBoxContainer) -> void:
+	# Update gold display
+	gold_label.text = "Current Gold: %d" % GameContext.get_run_gold()
+
+	# Clear and rebuild items list
+	for child in items_container.get_children():
+		child.queue_free()
+
+	var sellable_items = _get_sellable_stash_items()
+
+	if sellable_items.size() == 0:
+		var no_items = Label.new()
+		no_items.text = "(No items to sell)"
+		no_items.modulate = Color(0.6, 0.6, 0.6, 1)
+		items_container.add_child(no_items)
+	else:
+		for item in sellable_items:
+			var row = _create_sell_window_row(item, popup, gold_label, items_container)
+			items_container.add_child(row)
+
+
+## Generate equipment items based on facility slot allocations.
+## Each allocated slot generates one item from that facility's unlocked recipes.
+## Each facility gets its own seeded RNG to avoid cross-contamination when allocations change.
+func _generate_facility_allocated_items(town_id: String, base_rng: RandomNumberGenerator) -> Array:
+	var result: Array = []
+
+	for facility_id in GameContext.SHOP_CONTRIBUTING_FACILITIES:
+		var slots = GameContext.get_facility_slot_allocation(town_id, facility_id)
+		if slots <= 0:
+			continue
+
+		# Get unlocked recipes for this facility
+		var recipes = GameContext.get_facility_unlocked_recipes(facility_id)
+		if recipes.is_empty():
+			continue
+
+		# Create a separate RNG for this facility so allocations don't affect other facilities
+		var facility_seed = ("%s_%s" % [base_rng.seed, facility_id]).hash()
+		var facility_rng = RandomNumberGenerator.new()
+		facility_rng.seed = facility_seed
+
+		# Generate one item per allocated slot
+		for i in range(slots):
+			# Create unique slot key for tracking purchases
+			var slot_key = "%s:%d" % [facility_id, i]
+
+			# Pick a random recipe (seeded per facility)
+			var recipe_idx = facility_rng.randi() % recipes.size()
+			var item_id = recipes[recipe_idx]
+
+			var template = DataRegistry.get_item_template(item_id)
+			if template == null:
+				continue
+
+			# Get facility tier for quality roll
+			var recipe_data = GameContext.get_recipe_data(item_id)
+			var facility_tier = recipe_data.get("facility_tier", 1)
+
+			# Roll quality based on facility tier (seeded per facility)
+			var quality_roll = facility_rng.randf() * 100.0
+			var quality_tier = _roll_quality_seeded(quality_roll, facility_tier)
+
+			# Calculate price based on template value and quality
+			var base_price = template.get_buy_value()
+			var quality_mult = [1.0, 1.2, 1.5, 2.0]  # Price multiplier per quality
+			var final_price = int(base_price * quality_mult[quality_tier])
+
+			result.append({
+				"type": "item",
+				"item_id": item_id,
+				"price_gold": final_price,
+				"quality_tier": quality_tier,
+				"source_facility": facility_id,
+				"slot_key": slot_key,
+				"from_recipe": true
+			})
+
+	# Sort by facility then item name for consistent display
+	result.sort_custom(func(a, b):
+		var fac_a = a.get("source_facility", "")
+		var fac_b = b.get("source_facility", "")
+		if fac_a != fac_b:
+			return fac_a < fac_b
+		var name_a = DataRegistry.get_item_template(a.get("item_id", ""))
+		var name_b = DataRegistry.get_item_template(b.get("item_id", ""))
+		var display_a = name_a.display_name if name_a else a.get("item_id", "")
+		var display_b = name_b.display_name if name_b else b.get("item_id", "")
+		return display_a < display_b
+	)
+
+	print("[ShopFacility] generated %d items from %d allocated slots" % [result.size(), GameContext.get_shop_allocated_slots(town_id)])
+	return result
+
+
+## Roll quality tier based on facility tier using a seeded roll value.
+func _roll_quality_seeded(roll: float, facility_tier: int) -> int:
+	match facility_tier:
+		1:  # 85% Common, 14% Uncommon, 1% Rare, 0% Epic
+			if roll < 85.0: return 0
+			elif roll < 99.0: return 1
+			else: return 2
+		2:  # 55% Common, 30% Uncommon, 10% Rare, 5% Epic
+			if roll < 55.0: return 0
+			elif roll < 85.0: return 1
+			elif roll < 95.0: return 2
+			else: return 3
+		3:  # 35% Common, 40% Uncommon, 15% Rare, 10% Epic
+			if roll < 35.0: return 0
+			elif roll < 75.0: return 1
+			elif roll < 90.0: return 2
+			else: return 3
+		_:
+			return 0  # Unknown tier = common
+
+
+func _create_shop_row(shop_item: Dictionary, shop_id: String = "") -> HBoxContainer:
 	var row = HBoxContainer.new()
 	row.add_theme_constant_override("separation", 8)
 
 	var item_id = shop_item.get("item_id", "")
 	var price = shop_item.get("price_gold", 0)
+	var quality_tier = int(shop_item.get("quality_tier", 0))
+	var slot_key = shop_item.get("slot_key", "")
 
 	# Get display name from template
 	var display_name = item_id
@@ -1656,10 +1920,24 @@ func _create_shop_row(shop_item: Dictionary) -> HBoxContainer:
 	if template != null and template.display_name != "":
 		display_name = template.display_name
 
-	# Item name label
+	# Quality prefix and color
+	var quality_prefix = ItemInstance.QUALITY_PREFIXES[quality_tier] if quality_tier < ItemInstance.QUALITY_PREFIXES.size() else ""
+	var quality_colors = [Color.WHITE, Color.GREEN, Color.CORNFLOWER_BLUE, Color.MEDIUM_PURPLE]
+	var text_color = quality_colors[quality_tier] if quality_tier < quality_colors.size() else Color.WHITE
+
+	# Build tooltip with item stats
+	var tooltip_text = _build_item_tooltip(template, quality_tier)
+
+	# Item name label with quality
 	var name_label = Label.new()
-	name_label.text = "%s (%d gold)" % [display_name, price]
+	if quality_tier > 0 or shop_item.get("from_recipe", false):
+		name_label.text = "Q%d %s%s (%d gold)" % [quality_tier, quality_prefix, display_name, price]
+	else:
+		name_label.text = "%s (%d gold)" % [display_name, price]
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	name_label.modulate = text_color
+	name_label.tooltip_text = tooltip_text
+	name_label.mouse_filter = Control.MOUSE_FILTER_STOP  # Enable tooltip on hover
 	row.add_child(name_label)
 
 	# Buy button (uses run stash gold)
@@ -1668,21 +1946,98 @@ func _create_shop_row(shop_item: Dictionary) -> HBoxContainer:
 	btn.text = "Buy"
 	btn.custom_minimum_size = Vector2(60, 26)
 	btn.disabled = not can_afford
-	btn.pressed.connect(_on_shop_buy_pressed.bind(item_id, price))
+	btn.pressed.connect(_on_shop_buy_pressed.bind(item_id, price, quality_tier, shop_id, slot_key))
 	row.add_child(btn)
 
 	return row
 
 
-func _on_shop_buy_pressed(item_id: String, price: int) -> void:
+## Create an empty slot row to show where a purchased item was.
+func _create_empty_shop_slot_row() -> HBoxContainer:
+	var row = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+
+	var empty_label = Label.new()
+	empty_label.text = "[Empty Slot]"
+	empty_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	empty_label.modulate = Color(0.4, 0.4, 0.4, 1)
+	row.add_child(empty_label)
+
+	# Placeholder for button alignment
+	var spacer = Control.new()
+	spacer.custom_minimum_size = Vector2(60, 26)
+	row.add_child(spacer)
+
+	return row
+
+
+## Build tooltip text showing item stats.
+func _build_item_tooltip(template, quality_tier: int) -> String:
+	if template == null:
+		return ""
+
+	var lines: Array[String] = []
+
+	# Item name and description
+	lines.append(template.display_name)
+	if template.description != "":
+		lines.append(template.description)
+	lines.append("")
+
+	# Equipment slot
+	var slot = template.equip_slot if template.equip_slot != "" else template.slot
+	if slot != "":
+		lines.append("Slot: %s" % slot.capitalize())
+
+	# Quality multiplier
+	var quality_names = ["Common", "Uncommon", "Rare", "Epic"]
+	var quality_mults = [1.0, 1.1, 1.2, 1.35]
+	var quality_name = quality_names[quality_tier] if quality_tier < quality_names.size() else "Common"
+	var quality_mult = quality_mults[quality_tier] if quality_tier < quality_mults.size() else 1.0
+	lines.append("Quality: %s (x%.2f stats)" % [quality_name, quality_mult])
+	lines.append("")
+
+	# Stats with quality scaling
+	var base_stats = template.base_stats if template.base_stats != null else {}
+	var stat_bonuses = template.stat_bonuses if template.stat_bonuses != null else {}
+
+	# Combine base_stats and stat_bonuses (they often contain the same data)
+	var all_stats = {}
+	for key in base_stats.keys():
+		all_stats[key] = base_stats[key]
+	for key in stat_bonuses.keys():
+		if not all_stats.has(key):
+			all_stats[key] = stat_bonuses[key]
+
+	if all_stats.size() > 0:
+		lines.append("Stats:")
+		for stat_name in all_stats.keys():
+			var base_value = int(all_stats[stat_name])
+			var scaled_value = int(base_value * quality_mult)
+			lines.append("  +%d %s" % [scaled_value, stat_name.capitalize()])
+
+	return "\n".join(lines)
+
+
+func _on_shop_buy_pressed(item_id: String, price: int, quality_tier: int = 0, shop_id: String = "", slot_key: String = "") -> void:
 	var had_gold = GameContext.get_run_gold()
 	if had_gold < price:
 		print("[Store] buy item=%s qty=1 cost=%d gold_before=%d gold_after=FAIL (insufficient)" % [item_id, price, had_gold])
 		return
 
 	GameContext.spend_run_gold(price)
-	GameContext.add_run_item(item_id, 1)
-	print("[Store] buy item=%s qty=1 cost=%d gold_before=%d gold_after=%d" % [item_id, price, had_gold, GameContext.get_run_gold()])
+
+	# Add item with quality tier
+	if quality_tier > 0:
+		GameContext._add_item_with_quality(item_id, quality_tier)
+	else:
+		GameContext.add_run_item(item_id, 1)
+
+	# Mark the slot as purchased so it shows as empty
+	if shop_id != "" and slot_key != "":
+		GameContext.mark_shop_slot_purchased(shop_id, slot_key)
+
+	print("[Store] buy item=%s qty=1 q=%d cost=%d gold_before=%d gold_after=%d slot=%s" % [item_id, quality_tier, price, had_gold, GameContext.get_run_gold(), slot_key])
 	_refresh_facility_panel()
 
 
@@ -1865,6 +2220,421 @@ func _build_alchemist_ui() -> void:
 	_build_unlock_ui("Alchemist")
 
 
+# ============================================================================
+# EQUIPMENT FACILITY UI (Blacksmith, Huntsman, Enchanter - Per-Recipe Unlocking)
+# ============================================================================
+
+func _build_equipment_ui() -> void:
+	if _current_facility == null:
+		return
+
+	var facility = _current_facility
+	var facility_id = facility.facility_id
+	var town_id = GameContext.get_current_town_id()
+	var current_tier = GameContext.get_facility_tier(town_id, facility_id)
+	var max_tier = facility.max_tier
+
+	# Header with facility info
+	var header = Label.new()
+	header.text = "=== %s (Tier %d / %d) ===" % [facility.display_name, current_tier, max_tier]
+	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_facility_actions_container.add_child(header)
+
+	# Gold display
+	var run_gold = GameContext.get_run_gold()
+	var gold_label = Label.new()
+	gold_label.text = "Gold: %d" % run_gold
+	gold_label.modulate = Color(1, 0.9, 0.5, 1)
+	_facility_actions_container.add_child(gold_label)
+
+	# Upgrade button (if not max tier)
+	if current_tier < max_tier:
+		var upgrade_row = _create_equipment_facility_upgrade_row(facility, current_tier)
+		_facility_actions_container.add_child(upgrade_row)
+
+	var sep1 = HSeparator.new()
+	_facility_actions_container.add_child(sep1)
+
+	# Explanation label
+	var explain_label = Label.new()
+	explain_label.text = "Unlock recipes to add items to the General Store"
+	explain_label.add_theme_font_size_override("font_size", 11)
+	explain_label.modulate = Color(0.6, 0.8, 0.6, 1)
+	explain_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_facility_actions_container.add_child(explain_label)
+
+	# Tab buttons: All | Locked | Unlocked
+	var tab_row = HBoxContainer.new()
+	tab_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	tab_row.add_theme_constant_override("separation", 4)
+	_facility_actions_container.add_child(tab_row)
+
+	var tabs = ["all", "locked", "unlocked"]
+	var tab_labels = {"all": "All Recipes", "locked": "Locked", "unlocked": "Unlocked"}
+	for tab in tabs:
+		var btn = Button.new()
+		btn.text = tab_labels[tab]
+		btn.custom_minimum_size = Vector2(90, 26)
+		btn.disabled = (_equipment_tab == tab)
+		btn.pressed.connect(_on_equipment_tab_pressed.bind(tab))
+		tab_row.add_child(btn)
+
+	# Equipment type filter buttons
+	var filter_label = Label.new()
+	filter_label.text = "-- Filter by Type --"
+	filter_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	filter_label.modulate = Color(0.7, 0.7, 0.7, 1)
+	_facility_actions_container.add_child(filter_label)
+
+	var filter_row1 = HBoxContainer.new()
+	filter_row1.alignment = BoxContainer.ALIGNMENT_CENTER
+	filter_row1.add_theme_constant_override("separation", 4)
+	_facility_actions_container.add_child(filter_row1)
+
+	var filter_row2 = HBoxContainer.new()
+	filter_row2.alignment = BoxContainer.ALIGNMENT_CENTER
+	filter_row2.add_theme_constant_override("separation", 4)
+	_facility_actions_container.add_child(filter_row2)
+
+	# Filter buttons organized in two rows
+	var filters_row1 = ["all", "1h_weapon", "2h_weapon", "offhand"]
+	var filters_row2 = ["helmet", "armor", "legs", "accessory", "backpack"]
+	var filter_labels = {
+		"all": "All",
+		"1h_weapon": "1H Weps",
+		"2h_weapon": "2H Weps",
+		"offhand": "Off Hand",
+		"helmet": "Helm",
+		"armor": "Body",
+		"legs": "Legs",
+		"accessory": "Accessory",
+		"backpack": "Backpack"
+	}
+
+	for f in filters_row1:
+		var btn = Button.new()
+		btn.text = filter_labels.get(f, f.capitalize())
+		btn.custom_minimum_size = Vector2(70, 24)
+		btn.disabled = (_equipment_type_filter == f)
+		btn.pressed.connect(_on_equipment_filter_pressed.bind(f))
+		filter_row1.add_child(btn)
+
+	for f in filters_row2:
+		var btn = Button.new()
+		btn.text = filter_labels.get(f, f.capitalize())
+		btn.custom_minimum_size = Vector2(70, 24)
+		btn.disabled = (_equipment_type_filter == f)
+		btn.pressed.connect(_on_equipment_filter_pressed.bind(f))
+		filter_row2.add_child(btn)
+
+	var sep2 = HSeparator.new()
+	_facility_actions_container.add_child(sep2)
+
+	# Get and filter recipes
+	var recipes = _get_filtered_equipment_recipes(facility, current_tier)
+
+	# Recipe count
+	var count_label = Label.new()
+	count_label.text = "Showing %d recipes" % recipes.size()
+	count_label.modulate = Color(0.7, 0.7, 0.7, 1)
+	_facility_actions_container.add_child(count_label)
+
+	if recipes.size() == 0:
+		var no_recipes = Label.new()
+		no_recipes.text = "(No recipes match current filters)"
+		no_recipes.modulate = Color(0.6, 0.6, 0.6, 1)
+		_facility_actions_container.add_child(no_recipes)
+	else:
+		for recipe in recipes:
+			var recipe_row = _create_equipment_recipe_row(recipe, facility_id, current_tier)
+			_facility_actions_container.add_child(recipe_row)
+
+	print("[EquipmentUI] facility=%s tier=%d tab=%s filter=%s recipes_shown=%d" % [
+		facility_id, current_tier, _equipment_tab, _equipment_type_filter, recipes.size()])
+
+
+func _get_filtered_equipment_recipes(facility, current_tier: int) -> Array:
+	var all_recipes = facility.crafting_recipes
+	var filtered: Array = []
+
+	for recipe in all_recipes:
+		var output_id = recipe.get("output_id", "")
+		var required_tier = recipe.get("required_tier", 1)
+		var equipment_type = recipe.get("equipment_type", "")
+		var is_unlocked = GameContext.is_recipe_unlocked(output_id)
+		var is_tier_locked = required_tier > current_tier
+
+		# Filter by tab
+		match _equipment_tab:
+			"locked":
+				if is_unlocked:
+					continue
+			"unlocked":
+				if not is_unlocked:
+					continue
+			# "all" shows everything
+
+		# Filter by equipment type
+		if _equipment_type_filter != "all":
+			if equipment_type != _equipment_type_filter:
+				continue
+
+		# Add to filtered list with metadata
+		filtered.append({
+			"recipe": recipe,
+			"is_unlocked": is_unlocked,
+			"is_tier_locked": is_tier_locked
+		})
+
+	return filtered
+
+
+func _create_equipment_recipe_row(recipe_data: Dictionary, facility_id: String, current_tier: int) -> VBoxContainer:
+	var container = VBoxContainer.new()
+	container.add_theme_constant_override("separation", 2)
+
+	var recipe = recipe_data.get("recipe", {})
+	var is_unlocked = recipe_data.get("is_unlocked", false)
+	var is_tier_locked = recipe_data.get("is_tier_locked", false)
+
+	var output_id = recipe.get("output_id", "")
+	var required_tier = recipe.get("required_tier", 1)
+	var equipment_type = recipe.get("equipment_type", "")
+	var unlock_cost = recipe.get("unlock_cost", [])
+
+	# Get output item info
+	var output_template = DataRegistry.get_item_template(output_id)
+	var output_name = output_id
+	if output_template != null and output_template.display_name != "":
+		output_name = output_template.display_name
+
+	# Type label
+	var type_str = _get_equipment_type_label(equipment_type)
+
+	# Name label with status
+	var name_label = Label.new()
+	if is_unlocked:
+		name_label.text = "[UNLOCKED] %s (%s)" % [output_name, type_str]
+		name_label.modulate = Color(0.5, 0.9, 0.5, 1)
+	elif is_tier_locked:
+		name_label.text = "[TIER %d] %s (%s)" % [required_tier, output_name, type_str]
+		name_label.modulate = Color(0.5, 0.5, 0.5, 1)
+		container.modulate = Color(0.6, 0.6, 0.6, 1)
+	else:
+		name_label.text = "%s (%s)" % [output_name, type_str]
+	container.add_child(name_label)
+
+	# Add tooltip with item stats
+	if output_template != null:
+		name_label.tooltip_text = _build_equipment_item_tooltip(output_template)
+		name_label.mouse_filter = Control.MOUSE_FILTER_STOP
+
+	# If unlocked, just show availability message
+	if is_unlocked:
+		var unlocked_label = Label.new()
+		unlocked_label.text = "  Available in General Store"
+		unlocked_label.add_theme_font_size_override("font_size", 11)
+		unlocked_label.modulate = Color(0.6, 0.8, 0.6, 1)
+		container.add_child(unlocked_label)
+		return container
+
+	# If tier locked, show what tier is needed
+	if is_tier_locked:
+		var tier_label = Label.new()
+		tier_label.text = "  Requires Tier %d facility" % required_tier
+		tier_label.add_theme_font_size_override("font_size", 11)
+		tier_label.modulate = Color(0.6, 0.6, 0.6, 1)
+		container.add_child(tier_label)
+		return container
+
+	# Show unlock cost
+	var cost_parts = []
+	var run_items_dict = GameContext.get_run_items_dict()
+	var can_afford = true
+
+	for cost_entry in unlock_cost:
+		var item_id = cost_entry.get("item_id", "")
+		var qty_needed = cost_entry.get("qty", 1)
+		var qty_have = run_items_dict.get(item_id, 0)
+
+		var item_name = item_id
+		var item_template = DataRegistry.get_item_template(item_id)
+		if item_template != null and item_template.display_name != "":
+			item_name = item_template.display_name
+
+		cost_parts.append("%s %d/%d" % [item_name, qty_have, qty_needed])
+		if qty_have < qty_needed:
+			can_afford = false
+
+	var cost_label = Label.new()
+	cost_label.text = "  Unlock cost: %s" % ", ".join(cost_parts)
+	cost_label.add_theme_font_size_override("font_size", 11)
+	cost_label.modulate = Color(0.8, 0.8, 0.8, 1) if can_afford else Color(1, 0.5, 0.5, 1)
+	container.add_child(cost_label)
+
+	# Unlock button
+	var btn = Button.new()
+	btn.custom_minimum_size = Vector2(120, 28)
+	if can_afford:
+		btn.text = "Unlock Recipe"
+		btn.disabled = false
+		btn.pressed.connect(_on_equipment_unlock_pressed.bind(output_id, unlock_cost, facility_id, current_tier))
+	else:
+		btn.text = "Need Materials"
+		btn.disabled = true
+	container.add_child(btn)
+
+	return container
+
+
+func _create_equipment_facility_upgrade_row(facility, current_tier: int) -> HBoxContainer:
+	var row = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+
+	var next_tier = current_tier + 1
+	var tier_key = str(next_tier)
+
+	# Get upgrade cost
+	var upgrade_cost = {}
+	if facility.upgrade_costs.has(tier_key):
+		upgrade_cost = facility.upgrade_costs[tier_key]
+	elif facility.upgrade_costs.has(next_tier):
+		upgrade_cost = facility.upgrade_costs[next_tier]
+
+	var gold_cost = int(upgrade_cost.get("gold", 0))
+	var item_costs = upgrade_cost.get("items", [])
+
+	# Cost display
+	var cost_parts = []
+	if gold_cost > 0:
+		cost_parts.append("%dg" % gold_cost)
+
+	var can_afford = GameContext.get_run_gold() >= gold_cost
+	var run_items_dict = GameContext.get_run_items_dict()
+
+	for item_cost in item_costs:
+		var item_id = item_cost.get("item_id", "")
+		var qty_needed = item_cost.get("qty", 1)
+		var qty_have = run_items_dict.get(item_id, 0)
+
+		var item_name = item_id
+		var item_template = DataRegistry.get_item_template(item_id)
+		if item_template != null and item_template.display_name != "":
+			item_name = item_template.display_name
+
+		cost_parts.append("%s %d/%d" % [item_name, qty_have, qty_needed])
+		if qty_have < qty_needed:
+			can_afford = false
+
+	var cost_label = Label.new()
+	cost_label.text = "Upgrade to Tier %d: %s" % [next_tier, ", ".join(cost_parts)]
+	cost_label.modulate = Color(0.8, 0.8, 0.8, 1) if can_afford else Color(1, 0.5, 0.5, 1)
+	row.add_child(cost_label)
+
+	var upgrade_btn = Button.new()
+	upgrade_btn.text = "Upgrade"
+	upgrade_btn.custom_minimum_size = Vector2(80, 26)
+	upgrade_btn.disabled = not can_afford
+	upgrade_btn.pressed.connect(_on_equipment_facility_upgrade_pressed.bind(facility.facility_id, next_tier, gold_cost, item_costs))
+	row.add_child(upgrade_btn)
+
+	return row
+
+
+func _get_equipment_type_label(equipment_type: String) -> String:
+	var labels = {
+		"1h_weapon": "1H Weapon",
+		"2h_weapon": "2H Weapon",
+		"offhand": "Off Hand",
+		"helmet": "Helmet",
+		"armor": "Body Armor",
+		"legs": "Legs",
+		"accessory": "Accessory",
+		"backpack": "Backpack"
+	}
+	return labels.get(equipment_type, equipment_type.capitalize())
+
+
+func _build_equipment_item_tooltip(template) -> String:
+	var lines = []
+	lines.append(template.display_name)
+
+	if template.description != "":
+		lines.append(template.description)
+
+	# Stats - use get_stat_bonuses_with_quality() for proper dictionary access
+	var bonuses = template.get_stat_bonuses_with_quality(0)  # 0 = common quality
+	if bonuses.get("attack", 0) > 0:
+		lines.append("ATK: +%d" % bonuses.get("attack", 0))
+	if bonuses.get("defense", 0) > 0:
+		lines.append("DEF: +%d" % bonuses.get("defense", 0))
+	if bonuses.get("health", 0) > 0:
+		lines.append("HP: +%d" % bonuses.get("health", 0))
+	if bonuses.get("speed", 0) > 0:
+		lines.append("SPD: +%d" % bonuses.get("speed", 0))
+
+	# Slot type - use modern equip_slot property
+	if template.equip_slot != "":
+		lines.append("Slot: %s" % template.equip_slot.capitalize())
+
+	return "\n".join(lines)
+
+
+func _on_equipment_tab_pressed(tab: String) -> void:
+	_equipment_tab = tab
+	_refresh_facility_panel()
+
+
+func _on_equipment_filter_pressed(filter: String) -> void:
+	_equipment_type_filter = filter
+	_refresh_facility_panel()
+
+
+func _on_equipment_unlock_pressed(output_id: String, unlock_cost: Array, facility_id: String, facility_tier: int) -> void:
+	var success = GameContext.purchase_recipe_unlock(output_id, unlock_cost, facility_id, facility_tier)
+	if success:
+		print("[EquipmentUI] unlocked recipe=%s facility=%s tier=%d" % [output_id, facility_id, facility_tier])
+	else:
+		print("[EquipmentUI] unlock_failed recipe=%s" % output_id)
+	_refresh_facility_panel()
+
+
+func _on_equipment_facility_upgrade_pressed(facility_id: String, new_tier: int, gold_cost: int, item_costs: Array) -> void:
+	var town_id = GameContext.get_current_town_id()
+
+	# Check gold
+	if gold_cost > 0 and GameContext.get_run_gold() < gold_cost:
+		print("[EquipmentUI] upgrade_failed facility=%s reason=insufficient_gold" % facility_id)
+		return
+
+	# Check materials
+	var run_items_dict = GameContext.get_run_items_dict()
+	for item_cost in item_costs:
+		var item_id = item_cost.get("item_id", "")
+		var qty_needed = item_cost.get("qty", 1)
+		var qty_have = run_items_dict.get(item_id, 0)
+		if qty_have < qty_needed:
+			print("[EquipmentUI] upgrade_failed facility=%s reason=missing_%s" % [facility_id, item_id])
+			return
+
+	# Spend gold
+	if gold_cost > 0:
+		GameContext.spend_run_gold(gold_cost)
+
+	# Spend materials
+	for item_cost in item_costs:
+		var item_id = item_cost.get("item_id", "")
+		var qty = item_cost.get("qty", 0)
+		if item_id != "" and qty > 0:
+			GameContext.remove_run_item(item_id, qty)
+
+	# Upgrade facility
+	GameContext.set_facility_tier(town_id, facility_id, new_tier)
+
+	print("[EquipmentUI] upgraded facility=%s tier=%d gold_spent=%d" % [facility_id, new_tier, gold_cost])
+	_refresh_facility_panel()
+
+
 func _build_blacksmith_ui() -> void:
 	_build_unlock_ui("Blacksmith")
 
@@ -1896,10 +2666,18 @@ func _build_blacksmith_ui() -> void:
 	_facility_actions_container.add_child(sep)
 
 	var craft_header = Label.new()
-	craft_header.text = "-- Crafting (Tier %d / %d) --" % [current_tier, _current_facility.max_tier]
+	craft_header.text = "-- Recipes (Tier %d / %d) --" % [current_tier, _current_facility.max_tier]
 	craft_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	craft_header.modulate = Color(0.7, 0.7, 0.7, 1)
 	_facility_actions_container.add_child(craft_header)
+
+	# Explanation label
+	var explain_label = Label.new()
+	explain_label.text = "Unlock recipes to add items to the General Store"
+	explain_label.add_theme_font_size_override("font_size", 11)
+	explain_label.modulate = Color(0.6, 0.8, 0.6, 1)
+	explain_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_facility_actions_container.add_child(explain_label)
 
 	# Show available recipes
 	if available_recipes.size() == 0:
@@ -1925,9 +2703,11 @@ func _create_crafting_recipe_row(recipe: Dictionary) -> VBoxContainer:
 	container.add_theme_constant_override("separation", 2)
 
 	var output_id = recipe.get("output_id", "")
-	var output_qty = recipe.get("output_qty", 1)
 	var inputs = recipe.get("inputs", [])
 	var cost_gold = int(recipe.get("cost_gold", 0))
+
+	# Check if already unlocked
+	var is_unlocked = GameContext.is_recipe_unlocked(output_id)
 
 	# Get output item info
 	var output_template = DataRegistry.get_item_template(output_id)
@@ -1935,13 +2715,61 @@ func _create_crafting_recipe_row(recipe: Dictionary) -> VBoxContainer:
 	if output_template != null and output_template.display_name != "":
 		output_name = output_template.display_name
 
-	# Recipe name
+	# Recipe name with unlock status
 	var name_label = Label.new()
-	if output_qty > 1:
-		name_label.text = "Craft: %s x%d" % [output_name, output_qty]
+	if is_unlocked:
+		name_label.text = "Recipe: %s [UNLOCKED]" % output_name
+		name_label.modulate = Color(0.5, 0.9, 0.5, 1)  # Green for unlocked
 	else:
-		name_label.text = "Craft: %s" % output_name
+		name_label.text = "Recipe: %s" % output_name
 	container.add_child(name_label)
+
+	# If already unlocked, show craft option (if recipe has inputs) or shop message
+	if is_unlocked:
+		if inputs.size() > 0:
+			# Recipe has material inputs - show Craft button
+			var run_items_dict = GameContext.get_run_items_dict()
+			var can_craft = true
+			var cost_parts = []
+
+			for input_item in inputs:
+				var item_id = input_item.get("item_id", "")
+				var qty_needed = input_item.get("qty", 1)
+				var qty_have = run_items_dict.get(item_id, 0)
+
+				var item_name = item_id
+				var item_template = DataRegistry.get_item_template(item_id)
+				if item_template != null and item_template.display_name != "":
+					item_name = item_template.display_name
+
+				cost_parts.append("%s %d/%d" % [item_name, qty_have, qty_needed])
+				if qty_have < qty_needed:
+					can_craft = false
+
+			var cost_label = Label.new()
+			cost_label.text = "  Craft cost: %s" % ", ".join(cost_parts)
+			cost_label.add_theme_font_size_override("font_size", 11)
+			cost_label.modulate = Color(0.8, 0.8, 0.8, 1) if can_craft else Color(1, 0.5, 0.5, 1)
+			container.add_child(cost_label)
+
+			var craft_btn = Button.new()
+			craft_btn.custom_minimum_size = Vector2(120, 28)
+			if can_craft:
+				craft_btn.text = "Craft"
+				craft_btn.disabled = false
+				craft_btn.pressed.connect(_on_craft_recipe_pressed.bind(recipe))
+			else:
+				craft_btn.text = "Need Materials"
+				craft_btn.disabled = true
+			container.add_child(craft_btn)
+		else:
+			# No inputs - just show shop availability
+			var unlocked_label = Label.new()
+			unlocked_label.text = "  Available in General Store"
+			unlocked_label.add_theme_font_size_override("font_size", 11)
+			unlocked_label.modulate = Color(0.6, 0.8, 0.6, 1)
+			container.add_child(unlocked_label)
+		return container
 
 	# Cost display (materials from run stash)
 	var cost_parts = []
@@ -1967,7 +2795,7 @@ func _create_crafting_recipe_row(recipe: Dictionary) -> VBoxContainer:
 	cost_label.modulate = Color(0.8, 0.8, 0.8, 1) if can_afford else Color(1, 0.5, 0.5, 1)
 	container.add_child(cost_label)
 
-	# v2: Gold cost display (if any)
+	# Gold cost display (if any)
 	if cost_gold > 0:
 		var current_gold = GameContext.get_run_gold()
 		var gold_label = Label.new()
@@ -1979,13 +2807,13 @@ func _create_crafting_recipe_row(recipe: Dictionary) -> VBoxContainer:
 			gold_label.modulate = Color(0.8, 0.8, 0.8, 1)
 		container.add_child(gold_label)
 
-	# Craft button
+	# Unlock button
 	var btn = Button.new()
 	btn.custom_minimum_size = Vector2(150, 28)
 	if can_afford:
-		btn.text = "Craft"
+		btn.text = "Unlock"
 		btn.disabled = false
-		btn.pressed.connect(_on_craft_recipe_pressed.bind(recipe))
+		btn.pressed.connect(_on_unlock_recipe_pressed.bind(recipe))
 	else:
 		btn.text = "Missing Materials"
 		btn.disabled = true
@@ -2076,6 +2904,60 @@ func _on_craft_recipe_pressed(recipe: Dictionary) -> void:
 	GameContext.add_run_item(output_id, output_qty)
 
 	print("[Blacksmith] craft item=%s qty=%d consumed=[%s] gold_spent=%d" % [output_id, output_qty, ", ".join(consumed_parts), cost_gold])
+
+	# Refresh UI
+	_refresh_facility_panel()
+
+
+## Unlock a recipe so its item appears in the General Store.
+func _on_unlock_recipe_pressed(recipe: Dictionary) -> void:
+	var output_id = recipe.get("output_id", "")
+	var inputs = recipe.get("inputs", [])
+	var cost_gold = int(recipe.get("cost_gold", 0))
+
+	# Check if already unlocked
+	if GameContext.is_recipe_unlocked(output_id):
+		print("[Recipe] Already unlocked: %s" % output_id)
+		_refresh_facility_panel()
+		return
+
+	# Verify gold cost
+	if cost_gold > 0 and GameContext.get_run_gold() < cost_gold:
+		print("[Recipe] unlock_failed item=%s reason=insufficient_gold need=%d have=%d" % [output_id, cost_gold, GameContext.get_run_gold()])
+		return
+
+	# Verify materials
+	var run_items_dict = GameContext.get_run_items_dict()
+	for input_item in inputs:
+		var item_id = input_item.get("item_id", "")
+		var qty_needed = input_item.get("qty", 1)
+		var qty_have = run_items_dict.get(item_id, 0)
+		if qty_have < qty_needed:
+			print("[Recipe] unlock_failed item=%s reason=missing_%s need=%d have=%d" % [output_id, item_id, qty_needed, qty_have])
+			return
+
+	# Consume gold (if any)
+	if cost_gold > 0:
+		GameContext.spend_run_gold(cost_gold)
+
+	# Consume materials
+	var consumed_parts = []
+	for input_item in inputs:
+		var item_id = input_item.get("item_id", "")
+		var qty_needed = input_item.get("qty", 1)
+		GameContext.remove_run_item(item_id, qty_needed)
+		consumed_parts.append("%s=%d" % [item_id, qty_needed])
+
+	# Get facility info for recipe unlock
+	var facility_id = _current_facility.facility_id if _current_facility != null else "unknown"
+	var town_id = GameContext.get_current_town_id()
+	var facility_tier = GameContext.get_facility_tier(town_id, facility_id)
+
+	# Unlock the recipe
+	GameContext.unlock_recipe(output_id, facility_id, facility_tier)
+
+	print("[Recipe] unlocked item=%s facility=%s tier=%d consumed=[%s] gold_spent=%d" % [
+		output_id, facility_id, facility_tier, ", ".join(consumed_parts), cost_gold])
 
 	# Refresh UI
 	_refresh_facility_panel()
@@ -2403,17 +3285,16 @@ func _on_assign_book_pressed(book_id: String) -> void:
 # ============================================================================
 
 func _populate_heroes_section() -> void:
-	# Clear existing dynamic content
-	for child in heroes_vbox.get_children():
-		child.queue_free()
+	# Clear existing dynamic content (immediate removal prevents ghost nodes)
+	_clear_children_immediate(heroes_vbox)
 
 	var party = GameContext.get_selected_party()
 	var roster_size = GameContext.get_roster().size()
 
 	# Party summary line
 	var summary_label = Label.new()
-	summary_label.text = "Party: %d / %d  |  Roster: %d  |  Gold: %d" % [
-		party.size(), GameContext.MAX_PARTY_SIZE, roster_size, GameContext.get_player_gold()
+	summary_label.text = "Party: %d / %d  |  Roster: %d" % [
+		party.size(), GameContext.MAX_PARTY_SIZE, roster_size
 	]
 	summary_label.modulate = Color(0.5, 1, 0.5, 1) if party.size() > 0 else Color(0.8, 0.8, 0.8, 1)
 	heroes_vbox.add_child(summary_label)
@@ -2441,12 +3322,25 @@ func _populate_heroes_section() -> void:
 		empty_label.modulate = Color(0.6, 0.6, 0.6, 1)
 		heroes_vbox.add_child(empty_label)
 
+	# Button row
+	var btn_row = HBoxContainer.new()
+	btn_row.add_theme_constant_override("separation", 10)
+	heroes_vbox.add_child(btn_row)
+
 	# "Visit Inn" button to open Inn facility popup
 	var inn_btn = Button.new()
 	inn_btn.text = "Visit Inn (Recruit / Party)"
 	inn_btn.custom_minimum_size = Vector2(200, 30)
 	inn_btn.pressed.connect(_on_visit_inn_pressed)
-	heroes_vbox.add_child(inn_btn)
+	btn_row.add_child(inn_btn)
+
+	# "Manage Bags" button to open hero bag management (only if party exists)
+	if party.size() > 0:
+		var bags_btn = Button.new()
+		bags_btn.text = "Manage Hero Bags"
+		bags_btn.custom_minimum_size = Vector2(150, 30)
+		bags_btn.pressed.connect(_on_manage_bags_pressed)
+		btn_row.add_child(bags_btn)
 
 
 ## Open the Inn facility popup from the main town view.
@@ -2466,11 +3360,230 @@ func _on_visit_inn_pressed() -> void:
 
 
 # ============================================================================
+# HERO BAG MANAGEMENT (Town Consumable Transfer)
+# ============================================================================
+
+var _bag_management_window: Window = null
+
+## Open the hero bag management popup to transfer consumables.
+func _on_manage_bags_pressed() -> void:
+	if _bag_management_window != null and is_instance_valid(_bag_management_window):
+		_bag_management_window.queue_free()
+		_bag_management_window = null
+
+	_bag_management_window = Window.new()
+	_bag_management_window.title = "Manage Hero Bags"
+	_bag_management_window.size = Vector2i(600, 500)
+	_bag_management_window.position = Vector2i(
+		int((get_viewport().get_visible_rect().size.x - 600) / 2),
+		int((get_viewport().get_visible_rect().size.y - 500) / 2)
+	)
+	_bag_management_window.transient = true
+	_bag_management_window.exclusive = false
+	_bag_management_window.close_requested.connect(_close_bag_management_window)
+
+	var main_vbox = VBoxContainer.new()
+	main_vbox.anchor_right = 1.0
+	main_vbox.anchor_bottom = 1.0
+	main_vbox.offset_left = 10
+	main_vbox.offset_top = 10
+	main_vbox.offset_right = -10
+	main_vbox.offset_bottom = -10
+	main_vbox.add_theme_constant_override("separation", 12)
+	_bag_management_window.add_child(main_vbox)
+
+	_populate_bag_management_ui(main_vbox)
+
+	add_child(_bag_management_window)
+	_bag_management_window.popup_centered()
+	print("[BagMgmt] opened")
+
+
+func _close_bag_management_window() -> void:
+	if _bag_management_window != null and is_instance_valid(_bag_management_window):
+		_bag_management_window.queue_free()
+		_bag_management_window = null
+	print("[BagMgmt] closed")
+
+
+func _populate_bag_management_ui(container: VBoxContainer) -> void:
+	# Clear existing children
+	for child in container.get_children():
+		child.queue_free()
+
+	# --- Section 1: Shopkeeper Stash Consumables ---
+	var stash_header = Label.new()
+	stash_header.text = "-- Stash Consumables --"
+	stash_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	stash_header.modulate = Color(1, 0.9, 0.5, 1)
+	container.add_child(stash_header)
+
+	var run_items = GameContext.get_run_items_dict()
+	var consumables_in_stash: Array = []
+
+	for item_id in run_items.keys():
+		var template = DataRegistry.get_item_template(item_id)
+		if template != null and template.item_type == "consumable":
+			consumables_in_stash.append({
+				"item_id": item_id,
+				"qty": run_items[item_id],
+				"template": template
+			})
+
+	if consumables_in_stash.size() == 0:
+		var no_items = Label.new()
+		no_items.text = "(No consumables in stash)"
+		no_items.modulate = Color(0.6, 0.6, 0.6, 1)
+		container.add_child(no_items)
+	else:
+		for item_info in consumables_in_stash:
+			var row = _create_stash_consumable_row(item_info, container)
+			container.add_child(row)
+
+	# Separator
+	var sep = HSeparator.new()
+	container.add_child(sep)
+
+	# --- Section 2: Party Hero Bags ---
+	var party_header = Label.new()
+	party_header.text = "-- Party Hero Bags --"
+	party_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	party_header.modulate = Color(0.5, 1, 0.5, 1)
+	container.add_child(party_header)
+
+	var party = GameContext.get_selected_party()
+	if party.size() == 0:
+		var no_party = Label.new()
+		no_party.text = "(No heroes in party)"
+		no_party.modulate = Color(0.6, 0.6, 0.6, 1)
+		container.add_child(no_party)
+	else:
+		for hero_id in party:
+			var hero_section = _create_hero_bag_section(hero_id, container)
+			container.add_child(hero_section)
+
+
+func _create_stash_consumable_row(item_info: Dictionary, parent_container: VBoxContainer) -> HBoxContainer:
+	var row = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+
+	var item_id = item_info.get("item_id", "")
+	var qty = item_info.get("qty", 0)
+	var template = item_info.get("template")
+	var display_name = template.display_name if template else item_id
+
+	# Item label
+	var label = Label.new()
+	label.text = "%s x%d" % [display_name, qty]
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(label)
+
+	# "Give to" dropdown for each hero in party
+	var party = GameContext.get_selected_party()
+	for hero_id in party:
+		var hero_data = GameContext.get_hero(hero_id)
+		var hero_name = hero_data.get("name", hero_id) if hero_data else hero_id
+
+		var give_btn = Button.new()
+		give_btn.text = "→ %s" % hero_name
+		give_btn.custom_minimum_size = Vector2(90, 24)
+
+		# Check if hero can receive item
+		var can_add = GameContext.can_add_to_hero_bag(hero_id, item_id, 1)
+		give_btn.disabled = not can_add
+		if can_add:
+			give_btn.pressed.connect(_on_give_to_hero_pressed.bind(item_id, hero_id, parent_container))
+
+		row.add_child(give_btn)
+
+	return row
+
+
+func _create_hero_bag_section(hero_id: String, parent_container: VBoxContainer) -> VBoxContainer:
+	var section = VBoxContainer.new()
+	section.add_theme_constant_override("separation", 4)
+
+	var hero_data = GameContext.get_hero(hero_id)
+	var hero_name = hero_data.get("name", hero_id) if hero_data else hero_id
+	var bag = GameContext.get_hero_bag(hero_id)
+	var capacity = GameContext.get_hero_bag_capacity(hero_id)
+	var used = bag.size()
+
+	# Hero header with bag capacity
+	var header = Label.new()
+	header.text = "%s's Bag (%d/%d)" % [hero_name, used, capacity]
+	header.modulate = Color(0.8, 0.8, 1, 1)
+	section.add_child(header)
+
+	if bag.size() == 0:
+		var empty_label = Label.new()
+		empty_label.text = "  (Empty)"
+		empty_label.modulate = Color(0.5, 0.5, 0.5, 1)
+		section.add_child(empty_label)
+	else:
+		for entry in bag:
+			var entry_row = _create_hero_bag_item_row(hero_id, entry, parent_container)
+			section.add_child(entry_row)
+
+	return section
+
+
+func _create_hero_bag_item_row(hero_id: String, entry: Dictionary, parent_container: VBoxContainer) -> HBoxContainer:
+	var row = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+
+	var item_id = entry.get("item_id", "")
+	var quality = entry.get("quality", 0)
+	var template = DataRegistry.get_item_template(item_id)
+	var display_name = template.display_name if template else item_id
+
+	# Indent
+	var indent = Label.new()
+	indent.text = "  "
+	row.add_child(indent)
+
+	# Item name
+	var label = Label.new()
+	label.text = display_name
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(label)
+
+	# Return to stash button
+	var return_btn = Button.new()
+	return_btn.text = "Return to Stash"
+	return_btn.custom_minimum_size = Vector2(110, 24)
+	return_btn.pressed.connect(_on_return_to_stash_pressed.bind(hero_id, item_id, quality, parent_container))
+	row.add_child(return_btn)
+
+	return row
+
+
+func _on_give_to_hero_pressed(item_id: String, hero_id: String, parent_container: VBoxContainer) -> void:
+	var success = GameContext.move_item_stash_to_hero_bag(hero_id, item_id, 1)
+	if success:
+		print("[BagMgmt] transferred item=%s to hero=%s" % [item_id, hero_id])
+		GameContext.save_game()
+		_populate_bag_management_ui(parent_container)
+	else:
+		print("[BagMgmt] transfer_failed item=%s hero=%s" % [item_id, hero_id])
+
+
+func _on_return_to_stash_pressed(hero_id: String, item_id: String, quality: int, parent_container: VBoxContainer) -> void:
+	var success = GameContext.move_item_hero_bag_to_stash(hero_id, item_id, 1, quality)
+	if success:
+		print("[BagMgmt] returned item=%s from hero=%s to stash" % [item_id, hero_id])
+		GameContext.save_game()
+		_populate_bag_management_ui(parent_container)
+	else:
+		print("[BagMgmt] return_failed item=%s hero=%s" % [item_id, hero_id])
+
+
+# ============================================================================
 # INN UI (Hero Recruitment & Party Management)
 # ============================================================================
 
 func _build_inn_ui() -> void:
-	print("[Inn] opened")
+	print("[Inn] opened  phase=%s" % str(GameContext.get_phase()))
 
 	var header = Label.new()
 	header.text = "=== Wanderer's Rest Inn ==="
@@ -2587,7 +3700,8 @@ func _build_inn_ui() -> void:
 		var row = _create_recruit_row(candidate)
 		_facility_actions_container.add_child(row)
 
-	print("[Inn] owned=%d party=%d" % [owned_heroes.size(), selected_party.size()])
+	# Log container child count to detect accidental double-population
+	print("[Inn] owned=%d party=%d container_children=%d" % [owned_heroes.size(), selected_party.size(), _facility_actions_container.get_child_count()])
 
 
 ## Create a hero tile/card for the Inn UI.
@@ -2662,15 +3776,20 @@ func _create_hero_row(hero: Dictionary, selected_party: Array) -> PanelContainer
 	level_label.modulate = Color(0.7, 0.7, 0.9, 1)
 	info_vbox.add_child(level_label)
 
-	# XP progress label
+	# XP progress label — uses static format_xp_line() for testability
 	var xp_label = Label.new()
-	if hero_level >= GameContext.MAX_HERO_LEVEL:
-		xp_label.text = "XP: MAX"
+	var is_max_level = hero_level >= GameContext.MAX_HERO_LEVEL
+	if is_max_level:
+		xp_label.text = format_xp_line(hero_xp, 0, true)
 		xp_label.modulate = Color(1.0, 0.85, 0.3, 1)  # Gold color for max
 	else:
 		var next_level_xp = GameContext.get_xp_for_level(hero_level + 1)
-		xp_label.text = "XP: %d / %d" % [hero_xp, next_level_xp]
-		xp_label.modulate = Color(0.6, 0.8, 0.6, 1)  # Light green
+		xp_label.text = format_xp_line(hero_xp, next_level_xp, false)
+		xp_label.modulate = Color(0.5, 0.8, 1.0, 1)  # Cyan-blue (distinct from green HP)
+	# GUARD: If format_xp_line returns wrong prefix, force-correct it
+	if not xp_label.text.begins_with("XP:"):
+		print("[InnUI] BUG xp_label wrong prefix: '%s' hero=%s  FORCING XP prefix" % [xp_label.text, hero_id])
+		xp_label.text = "XP" + xp_label.text.substr(xp_label.text.find(":")) if ":" in xp_label.text else "XP: ???"
 	info_vbox.add_child(xp_label)
 
 	# NOTE: Only one HP label in Inn row; always authoritative.
@@ -2684,7 +3803,7 @@ func _create_hero_row(hero: Dictionary, selected_party: Array) -> PanelContainer
 		if not hp_data.is_empty():
 			current_hp = int(hp_data.get("current", max_hp))
 	var hp_label = Label.new()
-	hp_label.text = "HP: %d / %d" % [current_hp, max_hp]
+	hp_label.text = format_hp_line(current_hp, max_hp)
 	if current_hp >= max_hp:
 		hp_label.modulate = Color(0.5, 1.0, 0.5, 1)  # Green = full
 	elif current_hp > max_hp * 0.5:
@@ -2692,70 +3811,77 @@ func _create_hero_row(hero: Dictionary, selected_party: Array) -> PanelContainer
 	else:
 		hp_label.modulate = Color(1.0, 0.4, 0.4, 1)  # Red = critical
 	info_vbox.add_child(hp_label)
+	print("[InnUI] hero=%s xp_text='%s' hp_text='%s' phase=%s" % [hero_id, xp_label.text, hp_label.text, str(GameContext.get_phase())])
 
-	# Equipment display (per-hero gear) with stat info
-	var weapon_id = GameContext.get_hero_weapon(hero_id)
-	var offhand_id = GameContext.get_hero_offhand(hero_id)
-	var weapon_quality = GameContext.get_hero_weapon_quality(hero_id)
-	var offhand_quality = GameContext.get_hero_offhand_quality(hero_id)
+	# Equipment display (all 7 slots + bag)
+	var equip = GameContext.get_hero_equipment(hero_id)
+	var total_stats = { "health": 0, "attack": 0, "defense": 0, "speed": 0 }
 
-	# Build weapon display with stats
-	var weapon_text = "WPN: None"
-	var weapon_stats: Dictionary = {}
-	if weapon_id != "":
-		var weapon_tpl = DataRegistry.get_item_template(weapon_id)
-		if weapon_tpl != null:
-			var prefix = ItemInstance.QUALITY_PREFIXES[weapon_quality] if weapon_quality < ItemInstance.QUALITY_PREFIXES.size() else ""
-			weapon_stats = weapon_tpl.get_stat_bonuses_with_quality(weapon_quality)
-			var stat_abbrevs: Array = []
-			if weapon_stats.get("attack", 0) > 0: stat_abbrevs.append("+ATK")
-			if weapon_stats.get("defense", 0) > 0: stat_abbrevs.append("+DEF")
-			if weapon_stats.get("speed", 0) > 0: stat_abbrevs.append("+SPD")
-			if weapon_stats.get("health", 0) > 0: stat_abbrevs.append("+HP")
-			var stat_str = "(" + ", ".join(stat_abbrevs) + ")" if stat_abbrevs.size() > 0 else ""
-			weapon_text = "WPN: Q%d %s %s" % [weapon_quality, prefix + weapon_tpl.display_name, stat_str]
+	# Slot abbreviations for compact display
+	var slot_abbrevs = {
+		"weapon": "WPN", "offhand": "OFF", "helmet": "HLM",
+		"armor": "ARM", "legs": "LEG", "ring": "RNG", "amulet": "AMU"
+	}
 
-	# Build offhand display with stats
-	var offhand_text = "OFF: None"
-	var offhand_stats: Dictionary = {}
-	if offhand_id != "":
-		var offhand_tpl = DataRegistry.get_item_template(offhand_id)
-		if offhand_tpl != null:
-			var prefix = ItemInstance.QUALITY_PREFIXES[offhand_quality] if offhand_quality < ItemInstance.QUALITY_PREFIXES.size() else ""
-			offhand_stats = offhand_tpl.get_stat_bonuses_with_quality(offhand_quality)
-			var stat_abbrevs: Array = []
-			if offhand_stats.get("attack", 0) > 0: stat_abbrevs.append("+ATK")
-			if offhand_stats.get("defense", 0) > 0: stat_abbrevs.append("+DEF")
-			if offhand_stats.get("speed", 0) > 0: stat_abbrevs.append("+SPD")
-			if offhand_stats.get("health", 0) > 0: stat_abbrevs.append("+HP")
-			var stat_str = "(" + ", ".join(stat_abbrevs) + ")" if stat_abbrevs.size() > 0 else ""
-			offhand_text = "OFF: Q%d %s %s" % [offhand_quality, prefix + offhand_tpl.display_name, stat_str]
+	# Display each equipment slot
+	for slot in GameContext.EQUIPMENT_SLOTS:
+		var slot_data = equip.get(slot, {})
+		var item_id = slot_data.get("id", "")
+		var quality = int(slot_data.get("quality", 0))
+		var abbrev = slot_abbrevs.get(slot, slot.to_upper().left(3))
 
-	var weapon_label = Label.new()
-	weapon_label.text = weapon_text
-	weapon_label.modulate = Color(0.9, 0.7, 0.5, 1) if weapon_id != "" else Color(0.5, 0.5, 0.5, 1)
-	info_vbox.add_child(weapon_label)
+		var slot_text = "%s: None" % abbrev
+		if item_id != "":
+			var tpl = DataRegistry.get_item_template(item_id)
+			if tpl != null:
+				var prefix = ItemInstance.QUALITY_PREFIXES[quality] if quality < ItemInstance.QUALITY_PREFIXES.size() else ""
+				var stats = tpl.get_stat_bonuses_with_quality(quality)
+				# Accumulate total stats
+				for stat_key in stats:
+					if total_stats.has(stat_key):
+						total_stats[stat_key] += stats[stat_key]
+				# Build stat abbreviations
+				var stat_abbrevs: Array = []
+				if stats.get("attack", 0) > 0: stat_abbrevs.append("+%dA" % stats.get("attack", 0))
+				if stats.get("defense", 0) > 0: stat_abbrevs.append("+%dD" % stats.get("defense", 0))
+				if stats.get("speed", 0) > 0: stat_abbrevs.append("+%dS" % stats.get("speed", 0))
+				if stats.get("health", 0) > 0: stat_abbrevs.append("+%dH" % stats.get("health", 0))
+				var stat_str = " " + " ".join(stat_abbrevs) if stat_abbrevs.size() > 0 else ""
+				slot_text = "%s: Q%d %s%s%s" % [abbrev, quality, prefix, tpl.display_name, stat_str]
 
-	var offhand_label = Label.new()
-	offhand_label.text = offhand_text
-	offhand_label.modulate = Color(0.9, 0.7, 0.5, 1) if offhand_id != "" else Color(0.5, 0.5, 0.5, 1)
-	info_vbox.add_child(offhand_label)
+		var slot_label = Label.new()
+		slot_label.text = slot_text
+		slot_label.add_theme_font_size_override("font_size", 11)
+		slot_label.modulate = Color(0.9, 0.7, 0.5, 1) if item_id != "" else Color(0.5, 0.5, 0.5, 1)
+		info_vbox.add_child(slot_label)
 
-	# Gear Bonus summary line
-	var total_hp = weapon_stats.get("health", 0) + offhand_stats.get("health", 0)
-	var total_atk = weapon_stats.get("attack", 0) + offhand_stats.get("attack", 0)
-	var total_def = weapon_stats.get("defense", 0) + offhand_stats.get("defense", 0)
-	var total_spd = weapon_stats.get("speed", 0) + offhand_stats.get("speed", 0)
-
+	# Gear Bonus summary line (totals from all 7 equipment slots)
 	var gear_bonus_label = Label.new()
-	if total_hp > 0 or total_atk > 0 or total_def > 0 or total_spd > 0:
-		gear_bonus_label.text = "Gear Bonus: HP +%d ATK +%d DEF +%d SPD +%d" % [total_hp, total_atk, total_def, total_spd]
+	if total_stats.health > 0 or total_stats.attack > 0 or total_stats.defense > 0 or total_stats.speed > 0:
+		gear_bonus_label.text = "Gear: HP+%d ATK+%d DEF+%d SPD+%d" % [
+			total_stats.health, total_stats.attack, total_stats.defense, total_stats.speed]
 		gear_bonus_label.modulate = Color(0.6, 0.9, 0.6, 1)  # Light green
 	else:
-		gear_bonus_label.text = "Gear Bonus: (none)"
+		gear_bonus_label.text = "Gear: (none equipped)"
 		gear_bonus_label.modulate = Color(0.5, 0.5, 0.5, 1)
 	gear_bonus_label.add_theme_font_size_override("font_size", 12)
 	info_vbox.add_child(gear_bonus_label)
+
+	# Backpack display (equipped bag + contents summary)
+	var bag_item_id = GameContext.get_hero_bag_item(hero_id)
+	var bag_quality = GameContext.get_hero_bag_quality(hero_id)
+	var bag_equip_text = "None"
+	if bag_item_id != "":
+		var bag_tpl = DataRegistry.get_item_template(bag_item_id)
+		if bag_tpl != null:
+			var prefix = ItemInstance.QUALITY_PREFIXES[bag_quality] if bag_quality < ItemInstance.QUALITY_PREFIXES.size() else ""
+			bag_equip_text = "Q%d %s%s" % [bag_quality, prefix, bag_tpl.display_name]
+	var bag_summary = GameContext.get_hero_bag_summary(hero_id)
+	var bag_label = Label.new()
+	bag_label.text = "BAG: %s | %s" % [bag_equip_text, bag_summary]
+	bag_label.add_theme_font_size_override("font_size", 12)
+	bag_label.modulate = Color(0.9, 0.7, 0.5, 1) if bag_item_id != "" else Color(0.5, 0.5, 0.5, 1)
+	info_vbox.add_child(bag_label)
 
 	# Buttons VBox (right side)
 	var btn_vbox = VBoxContainer.new()
@@ -2776,34 +3902,27 @@ func _create_hero_row(hero: Dictionary, selected_party: Array) -> PanelContainer
 
 	# Equipment buttons (only for party members)
 	if in_party:
-		# Equip Weapon button
-		var equip_weapon_btn = Button.new()
-		equip_weapon_btn.custom_minimum_size = Vector2(100, 28)
-		equip_weapon_btn.text = "Equip Wpn"
-		equip_weapon_btn.pressed.connect(_on_equip_slot_pressed.bind(hero_id, "weapon"))
-		btn_vbox.add_child(equip_weapon_btn)
+		# Manage Gear button opens slot selection popup
+		var manage_gear_btn = Button.new()
+		manage_gear_btn.custom_minimum_size = Vector2(100, 28)
+		manage_gear_btn.text = "Manage Gear"
+		manage_gear_btn.pressed.connect(_on_manage_gear_pressed.bind(hero_id))
+		btn_vbox.add_child(manage_gear_btn)
 
-		# Equip Offhand button
-		var equip_offhand_btn = Button.new()
-		equip_offhand_btn.custom_minimum_size = Vector2(100, 28)
-		equip_offhand_btn.text = "Equip Off"
-		equip_offhand_btn.pressed.connect(_on_equip_slot_pressed.bind(hero_id, "offhand"))
-		btn_vbox.add_child(equip_offhand_btn)
+		# Quick Equip Bag button (most common action)
+		var equip_bag_btn = Button.new()
+		equip_bag_btn.custom_minimum_size = Vector2(100, 28)
+		equip_bag_btn.text = "Equip Bag"
+		equip_bag_btn.pressed.connect(_on_equip_slot_pressed.bind(hero_id, "bag"))
+		btn_vbox.add_child(equip_bag_btn)
 
-		# Unequip buttons (only show if slot has item)
-		if weapon_id != "":
-			var unequip_weapon_btn = Button.new()
-			unequip_weapon_btn.custom_minimum_size = Vector2(100, 28)
-			unequip_weapon_btn.text = "Unequip Wpn"
-			unequip_weapon_btn.pressed.connect(_on_unequip_slot_pressed.bind(hero_id, "weapon"))
-			btn_vbox.add_child(unequip_weapon_btn)
-
-		if offhand_id != "":
-			var unequip_offhand_btn = Button.new()
-			unequip_offhand_btn.custom_minimum_size = Vector2(100, 28)
-			unequip_offhand_btn.text = "Unequip Off"
-			unequip_offhand_btn.pressed.connect(_on_unequip_slot_pressed.bind(hero_id, "offhand"))
-			btn_vbox.add_child(unequip_offhand_btn)
+		# Unequip Bag button (only show if bag slot has item)
+		if bag_item_id != "":
+			var unequip_bag_btn = Button.new()
+			unequip_bag_btn.custom_minimum_size = Vector2(100, 28)
+			unequip_bag_btn.text = "Unequip Bag"
+			unequip_bag_btn.pressed.connect(_on_unequip_slot_pressed.bind(hero_id, "bag"))
+			btn_vbox.add_child(unequip_bag_btn)
 
 	# Rename button
 	var rename_btn = Button.new()
@@ -2820,6 +3939,18 @@ func _create_hero_row(hero: Dictionary, selected_party: Array) -> PanelContainer
 	dismiss_btn.modulate = Color(1, 0.6, 0.6, 1) if not in_party else Color(0.5, 0.5, 0.5, 1)
 	dismiss_btn.pressed.connect(_on_inn_dismiss_hero_pressed.bind(hero_id))
 	btn_vbox.add_child(dismiss_btn)
+
+	# --- DUP_HP sanity check + full label dump (debug only, non-fatal) ---
+	var hp_count := 0
+	var all_labels: Array[String] = []
+	for child_node in info_vbox.get_children():
+		if child_node is Label:
+			var lbl := child_node as Label
+			all_labels.append(lbl.text)
+			if lbl.text.begins_with("HP:"):
+				hp_count += 1
+	if hp_count != 1:
+		print("[InnUI] DUP_HP hero=%s count=%d all_labels=%s node=%s" % [hero_id, hp_count, str(all_labels), str(panel.get_path()) if panel.is_inside_tree() else "not_in_tree"])
 
 	return panel
 
@@ -2877,6 +4008,106 @@ func _on_equip_slot_pressed(hero_id: String, slot: String) -> void:
 	_show_equip_selection_popup(hero_id, slot)
 
 
+## Show popup to manage all 8 equipment slots for a hero.
+func _on_manage_gear_pressed(hero_id: String) -> void:
+	var hero = GameContext.get_hero(hero_id)
+	var hero_name = hero.get("name", hero_id) if not hero.is_empty() else hero_id
+	var equip = GameContext.get_hero_equipment(hero_id)
+
+	# Slot display names
+	var slot_names = {
+		"weapon": "Weapon", "offhand": "Offhand", "helmet": "Helmet",
+		"armor": "Armor", "legs": "Legs", "ring": "Ring", "amulet": "Amulet", "bag": "Bag"
+	}
+
+	# Create popup
+	var popup = PopupPanel.new()
+	popup.name = "ManageGearPopup"
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 4)
+	popup.add_child(vbox)
+
+	# Title
+	var title = Label.new()
+	title.text = "Manage Gear - %s" % hero_name
+	title.add_theme_font_size_override("font_size", 16)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+
+	var sep = HSeparator.new()
+	vbox.add_child(sep)
+
+	# Create row for each slot
+	for slot in GameContext.ALL_EQUIP_SLOTS:
+		var slot_hbox = HBoxContainer.new()
+		slot_hbox.add_theme_constant_override("separation", 8)
+		vbox.add_child(slot_hbox)
+
+		# Slot label
+		var slot_label = Label.new()
+		slot_label.text = "%s:" % slot_names.get(slot, slot.capitalize())
+		slot_label.custom_minimum_size = Vector2(60, 0)
+		slot_hbox.add_child(slot_label)
+
+		# Current item display
+		var slot_data = equip.get(slot, {})
+		var item_id = slot_data.get("id", "")
+		var quality = int(slot_data.get("quality", 0))
+
+		var item_label = Label.new()
+		if item_id != "":
+			var tpl = DataRegistry.get_item_template(item_id)
+			if tpl != null:
+				var prefix = ItemInstance.QUALITY_PREFIXES[quality] if quality < ItemInstance.QUALITY_PREFIXES.size() else ""
+				item_label.text = "Q%d %s%s" % [quality, prefix, tpl.display_name]
+				item_label.modulate = Color(0.9, 0.7, 0.5, 1)
+			else:
+				item_label.text = "(unknown)"
+		else:
+			item_label.text = "(empty)"
+			item_label.modulate = Color(0.5, 0.5, 0.5, 1)
+		item_label.custom_minimum_size = Vector2(150, 0)
+		slot_hbox.add_child(item_label)
+
+		# Equip button
+		var equip_btn = Button.new()
+		equip_btn.text = "Equip"
+		equip_btn.custom_minimum_size = Vector2(60, 24)
+		equip_btn.pressed.connect(func():
+			popup.hide()
+			popup.queue_free()
+			_on_equip_slot_pressed(hero_id, slot)
+		)
+		slot_hbox.add_child(equip_btn)
+
+		# Unequip button (only if slot has item)
+		if item_id != "":
+			var unequip_btn = Button.new()
+			unequip_btn.text = "Unequip"
+			unequip_btn.custom_minimum_size = Vector2(70, 24)
+			unequip_btn.pressed.connect(func():
+				GameContext.unequip_hero_item(hero_id, slot)
+				popup.hide()
+				popup.queue_free()
+				_refresh_facility_panel()
+			)
+			slot_hbox.add_child(unequip_btn)
+
+	# Close button
+	var close_btn = Button.new()
+	close_btn.text = "Close"
+	close_btn.custom_minimum_size = Vector2(80, 28)
+	close_btn.pressed.connect(func():
+		popup.hide()
+		popup.queue_free()
+	)
+	vbox.add_child(close_btn)
+
+	# Show popup
+	add_child(popup)
+	popup.popup_centered(Vector2(350, 400))
+
+
 func _on_unequip_slot_pressed(hero_id: String, slot: String) -> void:
 	GameContext.unequip_hero_item(hero_id, slot)
 	_refresh_facility_panel()
@@ -2918,16 +4149,10 @@ func _show_equip_selection_popup(hero_id: String, slot: String) -> void:
 	var hero = GameContext.get_hero(hero_id)
 	var hero_name = hero.get("name", hero_id) if not hero.is_empty() else hero_id
 
-	# Get currently equipped item info for comparison
-	var current_id = ""
-	var current_quality = 0
+	# Get currently equipped item info for comparison (generic for all slots)
+	var current_id = GameContext.get_hero_slot_item(hero_id, slot)
+	var current_quality = GameContext.get_hero_slot_quality(hero_id, slot)
 	var current_stats: Dictionary = {}
-	if slot == "weapon":
-		current_id = GameContext.get_hero_weapon(hero_id)
-		current_quality = GameContext.get_hero_weapon_quality(hero_id)
-	else:
-		current_id = GameContext.get_hero_offhand(hero_id)
-		current_quality = GameContext.get_hero_offhand_quality(hero_id)
 
 	if current_id != "":
 		var current_template = DataRegistry.get_item_template(current_id)
@@ -3260,49 +4485,7 @@ func _passive_exists(passive_id: String) -> bool:
 
 
 # ============================================================================
-# WOODSMAN UI (Flavor/Placeholder - NO materials shop)
-# ============================================================================
-
-func _build_woodsman_ui() -> void:
-	print("[Woodsman] opened")
-
-	var header = Label.new()
-	header.text = "=== Woodsman's Lodge ==="
-	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_facility_actions_container.add_child(header)
-
-	# Flavor text - woodsman is placeholder, NOT a materials shop
-	var desc_label = Label.new()
-	desc_label.text = _current_facility.description if _current_facility != null else "A rustic lodge where rangers and hunters share tales of the forest."
-	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	desc_label.custom_minimum_size = Vector2(250, 0)
-	desc_label.modulate = Color(0.8, 0.9, 0.7, 1)
-	_facility_actions_container.add_child(desc_label)
-
-	var sep = HSeparator.new()
-	_facility_actions_container.add_child(sep)
-
-	# Info about services coming soon
-	var info_header = Label.new()
-	info_header.text = "-- Services --"
-	info_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	info_header.modulate = Color(0.7, 0.7, 0.7, 1)
-	_facility_actions_container.add_child(info_header)
-
-	var coming_soon = Label.new()
-	coming_soon.text = "(Services coming in a future update)"
-	coming_soon.modulate = Color(0.6, 0.6, 0.6, 1)
-	_facility_actions_container.add_child(coming_soon)
-
-	# Tip about materials
-	var tip = Label.new()
-	tip.text = "Tip: Find materials in dungeon loot drops!"
-	tip.modulate = Color(0.5, 0.7, 0.5, 1)
-	_facility_actions_container.add_child(tip)
-
-
-# ============================================================================
-# PRODUCTION UI (Chef, Leatherworker - placeholder)
+# PRODUCTION UI (Huntsman, Enchanter, etc.)
 # ============================================================================
 
 func _build_production_ui() -> void:
@@ -3312,11 +4495,6 @@ func _build_production_ui() -> void:
 	header.text = "=== %s ===" % (_current_facility.display_name if _current_facility != null else "Production")
 	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_facility_actions_container.add_child(header)
-
-	var info = Label.new()
-	info.text = "(Production crafting coming soon!)"
-	info.modulate = Color(0.6, 0.6, 0.6, 1)
-	_facility_actions_container.add_child(info)
 
 	if _current_facility != null:
 		var services_label = Label.new()
@@ -3328,6 +4506,209 @@ func _build_production_ui() -> void:
 		services_label.text = "Services: %s" % ", ".join(tier_1_services) if tier_1_services.size() > 0 else "Services: (none)"
 		services_label.modulate = Color(0.7, 0.7, 0.7, 1)
 		_facility_actions_container.add_child(services_label)
+
+	# === UNLOCKS SECTION (v1) ===
+	_build_facility_unlocks_section()
+
+	# === CRAFTING RECIPES SECTION ===
+	_build_crafting_recipes_section()
+
+
+## Build the crafting recipes section for a production facility.
+## Shows available recipes with craft buttons.
+func _build_crafting_recipes_section() -> void:
+	if _current_facility == null:
+		return
+
+	var crafting_recipes = _current_facility.crafting_recipes
+	if crafting_recipes.size() == 0:
+		return
+
+	# Get current facility tier
+	var town_id = GameContext.get_current_town_id()
+	var facility_id = _current_facility.facility_id
+	var current_tier = GameContext.get_facility_tier(town_id, facility_id)
+
+	# Separate recipes into available and locked by tier
+	var available_recipes: Array = []
+	var locked_recipes: Array = []
+	for recipe in crafting_recipes:
+		var required_tier = recipe.get("required_tier", 1)
+		if required_tier <= current_tier:
+			available_recipes.append(recipe)
+		else:
+			locked_recipes.append(recipe)
+
+	# Separator and header
+	var sep = HSeparator.new()
+	_facility_actions_container.add_child(sep)
+
+	var craft_header = Label.new()
+	craft_header.text = "-- Recipes (Tier %d / %d) --" % [current_tier, _current_facility.max_tier]
+	craft_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	craft_header.modulate = Color(0.7, 0.7, 0.7, 1)
+	_facility_actions_container.add_child(craft_header)
+
+	# Show available recipes
+	if available_recipes.size() == 0:
+		var no_recipes = Label.new()
+		no_recipes.text = "(No recipes available at this tier)"
+		no_recipes.modulate = Color(0.6, 0.6, 0.6, 1)
+		_facility_actions_container.add_child(no_recipes)
+	else:
+		for recipe in available_recipes:
+			var recipe_row = _create_production_recipe_row(recipe)
+			_facility_actions_container.add_child(recipe_row)
+
+	# Show locked recipes as grayed-out
+	for recipe in locked_recipes:
+		var locked_row = _create_locked_recipe_row(recipe)
+		_facility_actions_container.add_child(locked_row)
+
+	print("[Production] tier=%d recipes_shown=%d recipes_locked=%d" % [current_tier, available_recipes.size(), locked_recipes.size()])
+
+
+## Create a row for a production recipe (direct crafting, no unlock required)
+func _create_production_recipe_row(recipe: Dictionary) -> VBoxContainer:
+	var container = VBoxContainer.new()
+	container.add_theme_constant_override("separation", 2)
+
+	var output_id = recipe.get("output_id", "")
+	var output_qty = recipe.get("output_qty", 1)
+	var inputs = recipe.get("inputs", [])
+
+	# Get output item info
+	var output_template = DataRegistry.get_item_template(output_id)
+	var output_name = output_id
+	if output_template != null and output_template.display_name != "":
+		output_name = output_template.display_name
+
+	# Recipe name
+	var name_label = Label.new()
+	name_label.text = "Recipe: %s" % output_name
+	container.add_child(name_label)
+
+	# Show material costs and craft button
+	var run_items_dict = GameContext.get_run_items_dict()
+	var can_craft = true
+	var cost_parts = []
+
+	for input_item in inputs:
+		var item_id = input_item.get("item_id", "")
+		var qty_needed = input_item.get("qty", 1)
+		var qty_have = run_items_dict.get(item_id, 0)
+
+		var item_name = item_id
+		var item_template = DataRegistry.get_item_template(item_id)
+		if item_template != null and item_template.display_name != "":
+			item_name = item_template.display_name
+
+		cost_parts.append("%s %d/%d" % [item_name, qty_have, qty_needed])
+		if qty_have < qty_needed:
+			can_craft = false
+
+	if inputs.size() > 0:
+		var cost_label = Label.new()
+		cost_label.text = "  Materials: %s" % ", ".join(cost_parts)
+		cost_label.add_theme_font_size_override("font_size", 11)
+		cost_label.modulate = Color(0.8, 0.8, 0.8, 1) if can_craft else Color(1, 0.5, 0.5, 1)
+		container.add_child(cost_label)
+
+	var craft_btn = Button.new()
+	craft_btn.custom_minimum_size = Vector2(120, 28)
+	if can_craft:
+		craft_btn.text = "Craft"
+		craft_btn.disabled = false
+		craft_btn.pressed.connect(_on_craft_recipe_pressed.bind(recipe))
+	else:
+		craft_btn.text = "Need Materials"
+		craft_btn.disabled = true
+	container.add_child(craft_btn)
+
+	return container
+
+
+## Build the unlocks section for a production facility.
+## Shows available unlocks with purchase buttons.
+func _build_facility_unlocks_section() -> void:
+	if _current_facility == null or _current_facility_id == "":
+		return
+
+	var town_id = GameContext.get_current_town_id()
+	var available_unlocks = GameContext.get_available_facility_unlocks(_current_facility_id, town_id)
+
+	if available_unlocks.is_empty():
+		return
+
+	# Separator
+	var sep = HSeparator.new()
+	_facility_actions_container.add_child(sep)
+
+	# Header
+	var unlock_header = Label.new()
+	unlock_header.text = "-- Available Unlocks --"
+	unlock_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	unlock_header.modulate = Color(0.9, 0.8, 0.5, 1)
+	_facility_actions_container.add_child(unlock_header)
+
+	# Each unlock as a row
+	for unlock in available_unlocks:
+		var unlock_id = unlock.get("id", "")
+		var label_text = unlock.get("label", unlock_id)
+		var costs = unlock.get("costs", [])
+
+		var row = HBoxContainer.new()
+		row.add_theme_constant_override("separation", 8)
+		_facility_actions_container.add_child(row)
+
+		# Unlock label
+		var unlock_label = Label.new()
+		unlock_label.text = label_text
+		unlock_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(unlock_label)
+
+		# Cost display
+		var cost_parts: Array = []
+		for cost in costs:
+			var item_id = cost.get("item_id", "")
+			var qty = cost.get("qty", 0)
+			var tpl = DataRegistry.get_item_template(item_id)
+			var item_name = tpl.display_name if tpl != null else item_id
+			var have = GameContext.get_run_item_count(item_id)
+			var color_code = "green" if have >= qty else "red"
+			cost_parts.append("[color=%s]%s x%d[/color]" % [color_code, item_name, qty])
+
+		var cost_label = RichTextLabel.new()
+		cost_label.bbcode_enabled = true
+		cost_label.fit_content = true
+		cost_label.scroll_active = false
+		cost_label.custom_minimum_size.x = 200
+		cost_label.text = " | ".join(cost_parts) if cost_parts.size() > 0 else "(free)"
+		row.add_child(cost_label)
+
+		# Purchase button
+		var can_afford = GameContext.can_afford_facility_unlock(unlock)
+		var purchase_btn = Button.new()
+		purchase_btn.text = "Purchase"
+		purchase_btn.disabled = not can_afford
+		purchase_btn.pressed.connect(_on_facility_unlock_purchase.bind(unlock_id))
+		row.add_child(purchase_btn)
+
+
+## Handler for facility unlock purchase button.
+func _on_facility_unlock_purchase(unlock_id: String) -> void:
+	if _current_facility_id == "":
+		return
+
+	var town_id = GameContext.get_current_town_id()
+	var success = GameContext.purchase_facility_unlock(_current_facility_id, unlock_id, town_id)
+
+	if success:
+		print("[TownScene] Unlock purchased: %s" % unlock_id)
+		# Refresh the facility panel to update UI
+		_show_facility_panel(_current_facility_id)
+	else:
+		print("[TownScene] Unlock purchase failed: %s" % unlock_id)
 
 
 func _build_dungeon_ui() -> void:
@@ -3685,3 +5066,16 @@ func _debug_exit_to_town() -> void:
 
 	# Refresh UI instead of reloading scene
 	_refresh_ui()
+
+
+## Static helper: format the XP progress line for a hero card.
+## Used by _create_hero_row and tested by the headless suite.
+static func format_xp_line(xp: int, next_level_xp: int, is_max_level: bool) -> String:
+	if is_max_level:
+		return "XP: MAX"
+	return "XP: %d / %d" % [xp, next_level_xp]
+
+
+## Static helper: format the HP line for a hero card.
+static func format_hp_line(current_hp: int, max_hp: int) -> String:
+	return "HP: %d / %d" % [current_hp, max_hp]

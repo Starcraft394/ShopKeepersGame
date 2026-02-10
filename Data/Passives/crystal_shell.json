@@ -1,0 +1,13 @@
+{
+  "id": "crystal_shell",
+  "display_name": "Crystal Shell",
+  "description": "At combat start, gain DEF equal to (4 + hero level). Crystalline armor forms around you.",
+  "passive_type": "level_scaled_stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "defense",
+    "bonus": 4
+  },
+  "source_class_id": "prism_sentinel",
+  "category": "class"
+}

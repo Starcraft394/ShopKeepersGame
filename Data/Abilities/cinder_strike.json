@@ -1,0 +1,16 @@
+{
+  "id": "cinder_strike",
+  "display_name": "Cinder Strike",
+  "description": "Strike with a burning blade, dealing high damage and applying burn.",
+  "ability_type": "class_a",
+  "source_class_id": "ashblade",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 16,
+  "damage_type": "fire",
+  "attack_scaling": 1.4,
+  "cooldown": 2,
+  "applies_status_id": "burning",
+  "applies_status_duration": 2,
+  "status_stacks": 1
+}

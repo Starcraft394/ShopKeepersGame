@@ -112,7 +112,11 @@ var pending_combat_modifier: Dictionary = {}  # Empty = none
 # EQUIPMENT SLOTS (per-hero, persistent, applies stat bonuses in combat)
 # ============================================================================
 
-# Per-hero equipment: { hero_id: { "weapon": {"id": "", "quality": 0}, "offhand": {"id": "", "quality": 0} } }
+# Valid equipment slots: 7 equipment + 1 utility (bag)
+const EQUIPMENT_SLOTS: Array[String] = ["weapon", "offhand", "helmet", "armor", "legs", "ring", "amulet"]
+const ALL_EQUIP_SLOTS: Array[String] = ["weapon", "offhand", "helmet", "armor", "legs", "ring", "amulet", "bag"]
+
+# Per-hero equipment: { hero_id: { "weapon": {"id": "", "quality": 0}, ... } }
 var hero_equipment: Dictionary = {}
 
 # DEPRECATED: Legacy global equipment (kept for save migration only)
@@ -123,6 +127,20 @@ var equipped_offhand_quality: int = 0
 
 # Track which heroes have had gear logged this combat spawn (avoid spam)
 var _gear_logged_heroes: Dictionary = {}
+
+# Per-hero bag (small personal inventory for consumables in combat, display-only for now)
+# Structure: { hero_id: Array[ { "item_id": String, "qty": int } ] }
+var hero_bags: Dictionary = {}
+const DEFAULT_HERO_BAG_CAPACITY: int = 1  # v1.2: base=1, backpack adds bonus
+
+# Shopkeeper bag (shared town-level container for consumables + materials)
+# Array of { "item_id": String, "qty": int, "quality_tier": int }
+var shopkeeper_bag: Array = []
+const SHOPKEEPER_BAG_CAPACITY_DEFAULT: int = 6  # Max stacks
+
+# DEPRECATED (v1.2): Loot routing preference - kept for save compatibility only, not used.
+# Manual-only routing now; no auto-assign or remember preference.
+var loot_pref: Dictionary = {}
 
 # ============================================================================
 # GROUP UNLOCKS (persistent, controls what Shop can sell)
@@ -148,6 +166,23 @@ const ITEM_TO_GROUP_MAP: Dictionary = {
 # Legacy: keep for backwards compat during migration
 var unlocked_item_ids: Dictionary = {}
 const DEFAULT_UNLOCKS: Array[String] = ["healing_tonic", "rusty_sword"]
+
+# ============================================================================
+# RECIPE UNLOCKS (controls what items appear in General Store)
+# ============================================================================
+
+# Tracks which recipes have been unlocked at which facility.
+# Structure: { "item_id": { "source_facility": "blacksmith", "facility_tier": 2 } }
+# When an item is in this dict, it can appear in the General Store.
+# The source facility's tier at time of unlock determines quality distribution.
+var unlocked_recipes: Dictionary = {}
+
+# Default recipes unlocked on fresh save (basic starter items)
+const DEFAULT_UNLOCKED_RECIPES: Dictionary = {
+	"healing_tonic": { "source_facility": "alchemist", "facility_tier": 1 },
+	"rusty_sword": { "source_facility": "blacksmith", "facility_tier": 1 },
+	"wooden_shield": { "source_facility": "blacksmith", "facility_tier": 1 }
+}
 
 # ============================================================================
 # DUNGEON FLOOR UNLOCK & START FLOOR SELECTION
@@ -284,6 +319,28 @@ var bonus_stash_capacity: int = 0
 # Tracks refresh count per shop: "shop_id" -> refresh_count (int)
 # Used to change shop inventory deterministically on refresh
 var shop_refresh_counts: Dictionary = {}
+
+# ============================================================================
+# SHOP SLOT ALLOCATION (General Store v2 - Facility-based slots)
+# ============================================================================
+
+# Tracks slot allocation per town: { "town_id": { "blacksmith": 2, "leatherworker": 1, ... } }
+# Slots determine how many items from each facility appear in the General Store.
+var shop_slot_allocations: Dictionary = {}
+
+# Tracks purchased shop slots per shop: { "shop_id": ["facility_id:slot_idx", ...] }
+# Used to show empty slots after purchase instead of regenerating items.
+var shop_purchased_slots: Dictionary = {}
+
+# Shop tier constants: max total slots available based on shop tier
+const SHOP_TIER_MAX_SLOTS: Dictionary = {
+	1: 4,   # Tier 1: 4 total slots
+	2: 6,   # Tier 2: 6 total slots
+	3: 8    # Tier 3: 8 total slots
+}
+
+# Facilities that can contribute items to the General Store
+const SHOP_CONTRIBUTING_FACILITIES: Array[String] = ["blacksmith", "huntsman", "enchanter", "alchemist"]
 
 # ============================================================================
 # PERSISTENCE CONSTANTS
@@ -611,6 +668,23 @@ func get_run_items_dict() -> Dictionary:
 	return result
 
 
+## Get dungeon stash items as aggregated dictionary { item_id: qty }.
+func get_dungeon_items_dict() -> Dictionary:
+	var result: Dictionary = {}
+	for item in dungeon_items:
+		var template_id = ""
+		var qty = 1
+		if item is ItemInstance:
+			template_id = item.template_id
+			qty = item.quantity
+		elif item is Dictionary:
+			template_id = item.get("item_id", "")
+			qty = item.get("qty", 1)
+		if template_id != "":
+			result[template_id] = result.get(template_id, 0) + qty
+	return result
+
+
 ## Get count of a specific item in run stash (all qualities combined).
 func get_run_item_count(template_id: String) -> int:
 	if template_id == "":
@@ -834,16 +908,29 @@ func consume_pending_combat_modifier() -> Dictionary:
 # PUBLIC API - EQUIPMENT (Per-Hero Weapon + Offhand slots)
 # ============================================================================
 
-## Get hero equipment data. Returns { "weapon": {"id": "", "quality": 0}, "offhand": {"id": "", "quality": 0} }
+## Create empty equipment dictionary with all 8 slots.
+func _create_empty_equipment() -> Dictionary:
+	return {
+		"weapon": {"id": "", "quality": 0},
+		"offhand": {"id": "", "quality": 0},
+		"helmet": {"id": "", "quality": 0},
+		"armor": {"id": "", "quality": 0},
+		"legs": {"id": "", "quality": 0},
+		"ring": {"id": "", "quality": 0},
+		"amulet": {"id": "", "quality": 0},
+		"bag": {"id": "", "quality": 0}
+	}
+
+
+## Get hero equipment data. Returns dict with all 8 slots.
 func get_hero_equipment(hero_id: String) -> Dictionary:
 	if hero_id == "" or not hero_equipment.has(hero_id):
-		return { "weapon": {"id": "", "quality": 0}, "offhand": {"id": "", "quality": 0} }
+		return _create_empty_equipment()
 	var equip = hero_equipment[hero_id]
-	# Ensure structure exists
-	if not equip.has("weapon"):
-		equip["weapon"] = {"id": "", "quality": 0}
-	if not equip.has("offhand"):
-		equip["offhand"] = {"id": "", "quality": 0}
+	# Ensure all slots exist (forward-compat for old saves)
+	for slot in ALL_EQUIP_SLOTS:
+		if not equip.has(slot):
+			equip[slot] = {"id": "", "quality": 0}
 	return equip
 
 
@@ -871,6 +958,59 @@ func get_hero_offhand_quality(hero_id: String) -> int:
 	return int(equip.offhand.get("quality", 0))
 
 
+## Get equipped bag item_id for a hero (empty if none).
+func get_hero_bag_item(hero_id: String) -> String:
+	var equip = get_hero_equipment(hero_id)
+	return equip.bag.get("id", "")
+
+
+## Get hero bag quality tier (0-3).
+func get_hero_bag_quality(hero_id: String) -> int:
+	var equip = get_hero_equipment(hero_id)
+	return int(equip.bag.get("quality", 0))
+
+
+## Generic getter for any equipment slot item_id.
+func get_hero_slot_item(hero_id: String, slot: String) -> String:
+	var equip = get_hero_equipment(hero_id)
+	if equip.has(slot):
+		return equip[slot].get("id", "")
+	return ""
+
+
+## Generic getter for any equipment slot quality.
+func get_hero_slot_quality(hero_id: String, slot: String) -> int:
+	var equip = get_hero_equipment(hero_id)
+	if equip.has(slot):
+		return int(equip[slot].get("quality", 0))
+	return 0
+
+
+## Get equipped helmet item_id for a hero (empty if none).
+func get_hero_helmet(hero_id: String) -> String:
+	return get_hero_slot_item(hero_id, "helmet")
+
+
+## Get equipped armor item_id for a hero (empty if none).
+func get_hero_armor(hero_id: String) -> String:
+	return get_hero_slot_item(hero_id, "armor")
+
+
+## Get equipped legs item_id for a hero (empty if none).
+func get_hero_legs(hero_id: String) -> String:
+	return get_hero_slot_item(hero_id, "legs")
+
+
+## Get equipped ring item_id for a hero (empty if none).
+func get_hero_ring(hero_id: String) -> String:
+	return get_hero_slot_item(hero_id, "ring")
+
+
+## Get equipped amulet item_id for a hero (empty if none).
+func get_hero_amulet(hero_id: String) -> String:
+	return get_hero_slot_item(hero_id, "amulet")
+
+
 ## DEPRECATED: Legacy global getters (for backwards compatibility during migration)
 func get_equipped_weapon() -> String:
 	return equipped_weapon_id
@@ -892,12 +1032,12 @@ func has_run_item(item_id: String) -> bool:
 
 
 ## Check if an item can be equipped in the given slot.
-## Valid slots: "weapon", "offhand"
+## Valid slots: weapon, offhand, helmet, armor, legs, ring, amulet, bag
 ## Checks: item exists in run stash AND item template has matching equip_slot.
 func is_item_equippable(slot: String, item_id: String) -> bool:
 	if item_id == "" or slot == "":
 		return false
-	if slot not in ["weapon", "offhand"]:
+	if slot not in ALL_EQUIP_SLOTS:
 		return false
 	if not has_run_item(item_id):
 		return false
@@ -912,7 +1052,7 @@ func is_item_equippable(slot: String, item_id: String) -> bool:
 func get_equip_rejection_reason(slot: String, item_id: String) -> String:
 	if item_id == "" or slot == "":
 		return "no_item"
-	if slot not in ["weapon", "offhand"]:
+	if slot not in ALL_EQUIP_SLOTS:
 		return "invalid_slot"
 	if not has_run_item(item_id):
 		return "not_in_stash"
@@ -956,19 +1096,13 @@ func equip_hero_item(hero_id: String, slot: String, item_id: String) -> bool:
 		print("[Equip] hero=%s slot=%s item=%s failed reason=stash_remove_failed" % [hero_id, slot, item_id])
 		return false
 
-	# Ensure hero has equipment entry
+	# Ensure hero has equipment entry with all slots
 	if not hero_equipment.has(hero_id):
-		hero_equipment[hero_id] = {
-			"weapon": {"id": "", "quality": 0},
-			"offhand": {"id": "", "quality": 0}
-		}
+		hero_equipment[hero_id] = _create_empty_equipment()
 
-	# Equip with quality tracking
-	match slot:
-		"weapon":
-			hero_equipment[hero_id]["weapon"] = {"id": item_id, "quality": quality_tier}
-		"offhand":
-			hero_equipment[hero_id]["offhand"] = {"id": item_id, "quality": quality_tier}
+	# Equip with quality tracking (generic for all slots)
+	if slot in ALL_EQUIP_SLOTS:
+		hero_equipment[hero_id][slot] = {"id": item_id, "quality": quality_tier}
 
 	print("[Equip] hero=%s slot=%s item=%s q=%d from_stash=true" % [hero_id, slot, item_id, quality_tier])
 	save_game()
@@ -977,24 +1111,17 @@ func equip_hero_item(hero_id: String, slot: String, item_id: String) -> bool:
 
 ## Unequip the item in the given slot for a specific hero, returning it to run stash.
 func unequip_hero_item(hero_id: String, slot: String) -> void:
-	if hero_id == "" or slot not in ["weapon", "offhand"]:
+	if hero_id == "" or slot not in ALL_EQUIP_SLOTS:
 		return
 
 	if not hero_equipment.has(hero_id):
 		return
 
-	var item_id = ""
-	var quality_tier = 0
-
-	match slot:
-		"weapon":
-			item_id = hero_equipment[hero_id].get("weapon", {}).get("id", "")
-			quality_tier = int(hero_equipment[hero_id].get("weapon", {}).get("quality", 0))
-			hero_equipment[hero_id]["weapon"] = {"id": "", "quality": 0}
-		"offhand":
-			item_id = hero_equipment[hero_id].get("offhand", {}).get("id", "")
-			quality_tier = int(hero_equipment[hero_id].get("offhand", {}).get("quality", 0))
-			hero_equipment[hero_id]["offhand"] = {"id": "", "quality": 0}
+	# Generic slot handling for all 8 slots
+	var slot_data = hero_equipment[hero_id].get(slot, {})
+	var item_id = slot_data.get("id", "")
+	var quality_tier = int(slot_data.get("quality", 0))
+	hero_equipment[hero_id][slot] = {"id": "", "quality": 0}
 
 	if item_id != "":
 		# Return item to stash with same quality
@@ -1042,7 +1169,9 @@ func get_hero_equipment_summary(hero_id: String) -> Dictionary:
 		"weapon_id": equip.weapon.get("id", ""),
 		"weapon_quality": int(equip.weapon.get("quality", 0)),
 		"offhand_id": equip.offhand.get("id", ""),
-		"offhand_quality": int(equip.offhand.get("quality", 0))
+		"offhand_quality": int(equip.offhand.get("quality", 0)),
+		"bag_id": equip.bag.get("id", ""),
+		"bag_quality": int(equip.bag.get("quality", 0))
 	}
 
 
@@ -1063,27 +1192,18 @@ func _get_hero_equipment_stat_bonuses(hero_id: String) -> Dictionary:
 
 	var equip = get_hero_equipment(hero_id)
 
-	# Weapon bonuses
-	var weapon_id = equip.weapon.get("id", "")
-	var weapon_quality = int(equip.weapon.get("quality", 0))
-	if weapon_id != "":
-		var weapon_template = DataRegistry.get_item_template(weapon_id)
-		if weapon_template != null:
-			var bonuses = weapon_template.get_stat_bonuses_with_quality(weapon_quality)
-			for stat_key in bonuses:
-				if result.has(stat_key):
-					result[stat_key] += bonuses[stat_key]
-
-	# Offhand bonuses
-	var offhand_id = equip.offhand.get("id", "")
-	var offhand_quality = int(equip.offhand.get("quality", 0))
-	if offhand_id != "":
-		var offhand_template = DataRegistry.get_item_template(offhand_id)
-		if offhand_template != null:
-			var bonuses = offhand_template.get_stat_bonuses_with_quality(offhand_quality)
-			for stat_key in bonuses:
-				if result.has(stat_key):
-					result[stat_key] += bonuses[stat_key]
+	# Iterate over all 7 equipment slots (not bag - it doesn't give combat stats)
+	for slot in EQUIPMENT_SLOTS:
+		var slot_data = equip.get(slot, {})
+		var item_id = slot_data.get("id", "")
+		var quality = int(slot_data.get("quality", 0))
+		if item_id != "":
+			var template = DataRegistry.get_item_template(item_id)
+			if template != null:
+				var bonuses = template.get_stat_bonuses_with_quality(quality)
+				for stat_key in bonuses:
+					if result.has(stat_key):
+						result[stat_key] += bonuses[stat_key]
 
 	return result
 
@@ -1113,9 +1233,347 @@ func _get_equipment_stat_bonuses() -> Dictionary:
 	return result
 
 
+# ============================================================================
+# HERO BAGS (per-hero small consumable inventory, display-only scaffolding)
+# ============================================================================
+
+## Get the bag contents for a hero. Returns Array of { "item_id": String, "qty": int }.
+func get_hero_bag(hero_id: String) -> Array:
+	if hero_bags.has(hero_id):
+		return hero_bags[hero_id]
+	return []
+
+## Get the bag capacity for a hero (base + equipped backpack bonus).
+func get_hero_bag_capacity(hero_id: String) -> int:
+	var bonus := 0
+	var bag_item_id = get_hero_bag_item(hero_id)
+	if bag_item_id != "":
+		var tpl = DataRegistry.get_item_template(bag_item_id)
+		if tpl != null:
+			bonus = tpl.bag_capacity_bonus
+	return DEFAULT_HERO_BAG_CAPACITY + bonus
+
+## Get a human-readable bag summary string for display.
+## v1.2: Capacity measured by stacks. Returns e.g. "0/1 (empty)" or "2/3 Potion x1, Herb x1"
+func get_hero_bag_summary(hero_id: String) -> String:
+	var bag = get_hero_bag(hero_id)
+	var cap = get_hero_bag_capacity(hero_id)
+	var used := bag.size()  # v1.2: Count stacks, not total qty
+	var parts: Array[String] = []
+	for entry in bag:
+		var qty = int(entry.get("qty", 1))
+		var item_id = entry.get("item_id", "")
+		var name = item_id.replace("_", " ").capitalize()
+		var tpl = DataRegistry.get_item_template(item_id)
+		if tpl != null and tpl.display_name != "":
+			name = tpl.display_name
+		parts.append("%s x%d" % [name, qty])
+	if parts.is_empty():
+		return "%d/%d (empty)" % [used, cap]
+	return "%d/%d %s" % [used, cap, ", ".join(parts)]
+
+
 ## Clear gear logging tracking (call when starting new combat).
 func clear_gear_logging() -> void:
 	_gear_logged_heroes.clear()
+
+
+# ============================================================================
+# HERO BAGS - Item Transfer (consumables only)
+# ============================================================================
+
+## Get the total number of items currently in a hero's bag.
+func _get_hero_bag_used(hero_id: String) -> int:
+	# v1.2: Capacity is measured by STACKS (entries), not total qty
+	var bag = get_hero_bag(hero_id)
+	return bag.size()
+
+## Check if an item can be added to a hero's bag.
+## v1.3: ALL item types allowed. NO STACKING — each slot holds exactly 1 item.
+func can_add_to_hero_bag(hero_id: String, item_id: String, _qty: int = 1) -> bool:
+	if hero_id == "" or item_id == "":
+		return false
+	var tpl = DataRegistry.get_item_template(item_id)
+	if tpl == null:
+		return false
+	# v1.3: No category restriction — ALL items allowed
+	# v1.3: No stacking — each item needs its own slot
+	var bag = get_hero_bag(hero_id)
+	var used = bag.size()
+	var cap = get_hero_bag_capacity(hero_id)
+	return used < cap
+
+## Add a single item to a hero's bag. Returns true if successful.
+## v1.3: ALL item types allowed. NO STACKING — always creates new entry with qty=1.
+func add_item_to_hero_bag(hero_id: String, item_id: String, qty: int = 1, quality: int = 0) -> bool:
+	# v1.3: Add each unit as separate entry (no stacking in dungeon bags)
+	for _i in range(qty):
+		if not can_add_to_hero_bag(hero_id, item_id, 1):
+			return false
+		# Ensure bag array exists
+		if not hero_bags.has(hero_id):
+			hero_bags[hero_id] = []
+		# v1.3: Always append new entry (no merging)
+		hero_bags[hero_id].append({ "item_id": item_id, "qty": 1, "quality_tier": quality })
+		var used = _get_hero_bag_used(hero_id)
+		var cap = get_hero_bag_capacity(hero_id)
+		print("[HeroBag] +1 %s hero=%s bag=%d/%d" % [item_id, hero_id, used, cap])
+	return true
+
+## Remove item(s) from a hero's bag. Returns true if successful.
+func remove_item_from_hero_bag(hero_id: String, item_id: String, qty: int = 1, _quality: int = 0) -> bool:
+	if hero_id == "" or item_id == "" or qty <= 0:
+		return false
+	if not hero_bags.has(hero_id):
+		return false
+	var bag: Array = hero_bags[hero_id]
+	for i in range(bag.size()):
+		if bag[i].get("item_id", "") == item_id:
+			var current_qty = int(bag[i].get("qty", 1))
+			if current_qty < qty:
+				return false
+			elif current_qty == qty:
+				bag.remove_at(i)
+			else:
+				bag[i]["qty"] = current_qty - qty
+			var used = _get_hero_bag_used(hero_id)
+			var cap = get_hero_bag_capacity(hero_id)
+			print("[HeroBag] -%d %s hero=%s bag=%d/%d" % [qty, item_id, hero_id, used, cap])
+			return true
+	return false
+
+## Move item from run stash to hero bag.
+## v1.3: All item types allowed (no category restriction).
+## Returns true if successful.
+func move_item_stash_to_hero_bag(hero_id: String, item_id: String, qty: int = 1) -> bool:
+	# v1.3: No category restriction — all items allowed in hero bags
+	var tpl = DataRegistry.get_item_template(item_id)
+	if tpl == null:
+		print("[HeroBag] REJECT stash->bag item=%s reason=unknown_item" % item_id)
+		return false
+	# Check stash has enough
+	var stash_count = get_run_item_count(item_id)
+	if stash_count < qty:
+		print("[HeroBag] REJECT stash->bag item=%s reason=insufficient_stash (%d<%d)" % [item_id, stash_count, qty])
+		return false
+	# Check hero bag capacity
+	if not can_add_to_hero_bag(hero_id, item_id, qty):
+		print("[HeroBag] REJECT stash->bag item=%s hero=%s reason=bag_full" % [item_id, hero_id])
+		return false
+	# Execute transfer
+	var removed = remove_run_item(item_id, qty)
+	if not removed:
+		return false
+	var added = add_item_to_hero_bag(hero_id, item_id, qty)
+	if not added:
+		# Rollback: put items back in stash
+		add_run_item(item_id, qty)
+		return false
+	print("[HeroBag] TRANSFER stash->bag hero=%s item=%s qty=%d" % [hero_id, item_id, qty])
+	save_game()
+	return true
+
+## Move item from hero bag to run stash.
+## Returns true if successful.
+func move_item_hero_bag_to_stash(hero_id: String, item_id: String, qty: int = 1, quality: int = 0) -> bool:
+	if not remove_item_from_hero_bag(hero_id, item_id, qty, quality):
+		return false
+	add_run_item(item_id, qty)
+	print("[HeroBag] TRANSFER bag->stash hero=%s item=%s qty=%d" % [hero_id, item_id, qty])
+	save_game()
+	return true
+
+
+# ============================================================================
+# PENDING ACQUISITIONS — Loot Recipient Routing
+# ============================================================================
+
+## Pending acquisitions waiting for player recipient choice.
+## Each entry: { "item_id": String, "qty": int, "quality": int, "source": String }
+var _pending_acquisitions: Array = []
+
+## Queue an item for recipient routing. Does NOT add to any stash yet.
+func acquire_item_with_recipient(item_id: String, qty: int, quality: int = 0, source: String = "loot") -> void:
+	if item_id == "" or qty <= 0:
+		return
+	_pending_acquisitions.append({
+		"item_id": item_id,
+		"qty": qty,
+		"quality": quality,
+		"source": source
+	})
+	print("[Acquire] pending item=%s qty=%d q=%d source=%s" % [item_id, qty, quality, source])
+
+## Check if there are any pending acquisitions.
+func has_pending_acquisition() -> bool:
+	return not _pending_acquisitions.is_empty()
+
+## Get the first pending acquisition (or empty dict).
+func get_pending_acquisition() -> Dictionary:
+	if _pending_acquisitions.is_empty():
+		return {}
+	return _pending_acquisitions[0]
+
+## Get all pending acquisitions.
+func get_all_pending_acquisitions() -> Array:
+	return _pending_acquisitions
+
+## Resolve a pending acquisition at a given index.
+## recipient_type: "stash", "hero_bag", or "shop_bag"
+## Returns true if resolved (partial or full), false if rejected (stays pending).
+## v1.2: Stash is BANKED during dungeon — only available when phase is TOWN.
+## v1.3: hero_bag and shop_bag move only 1 item per call (no stacking in dungeon bags).
+func resolve_acquisition_at(index: int, recipient_type: String, hero_id: String = "") -> bool:
+	if index < 0 or index >= _pending_acquisitions.size():
+		return false
+	var acq = _pending_acquisitions[index]
+	var item_id = acq.get("item_id", "")
+	var qty = int(acq.get("qty", 1))
+	var quality = int(acq.get("quality", 0))
+
+	if recipient_type == "stash":
+		# v1.2: Stash is banked (locked) unless in TOWN phase
+		if _current_phase != GamePhase.TOWN:
+			print("[Acquire] reject to=stash item=%s reason=banked_stash_locked (phase=%s)" % [item_id, get_phase_name()])
+			return false
+		# In town: route to run_items (banked stash) — stash CAN stack
+		run_items.append({"item_id": item_id, "qty": qty, "quality_tier": quality})
+		_pending_acquisitions.remove_at(index)
+		print("[Acquire] resolved to=stash item=%s qty=%d q=%d" % [item_id, qty, quality])
+		return true
+
+	elif recipient_type == "hero_bag":
+		if hero_id == "":
+			return false
+		# v1.3: No category restriction — ALL items allowed
+		var tpl = DataRegistry.get_item_template(item_id)
+		if tpl == null:
+			print("[Acquire] reject to=hero_bag hero=%s item=%s reason=unknown_item" % [hero_id, item_id])
+			return false
+		# v1.3: Move only 1 item at a time (no stacking in bags)
+		if not can_add_to_hero_bag(hero_id, item_id, 1):
+			print("[Acquire] reject to=hero_bag hero=%s item=%s reason=bag_full" % [hero_id, item_id])
+			return false
+		# Add single item to hero bag
+		add_item_to_hero_bag(hero_id, item_id, 1, quality)
+		# Decrease pending qty or remove if exhausted
+		if qty <= 1:
+			_pending_acquisitions.remove_at(index)
+		else:
+			acq["qty"] = qty - 1
+		print("[Acquire] resolved to=hero_bag hero=%s item=%s qty=1 q=%d (pending_remaining=%d)" % [hero_id, item_id, quality, max(0, qty - 1)])
+		return true
+
+	elif recipient_type == "shop_bag":
+		# v1.3: No category restriction — ALL items allowed
+		# v1.3: Move only 1 item at a time (no stacking in bags)
+		if not can_add_to_shopkeeper_bag(item_id, 1, quality):
+			print("[Acquire] reject to=shop_bag item=%s reason=full" % item_id)
+			return false
+		add_item_to_shopkeeper_bag(item_id, 1, quality, "combat")
+		# Decrease pending qty or remove if exhausted
+		if qty <= 1:
+			_pending_acquisitions.remove_at(index)
+		else:
+			acq["qty"] = qty - 1
+		print("[Acquire] resolved to=shop_bag item=%s qty=1 q=%d (pending_remaining=%d)" % [item_id, quality, max(0, qty - 1)])
+		return true
+
+	return false
+
+## Convenience: resolve the first pending acquisition.
+func resolve_pending_acquisition(recipient_type: String, hero_id: String = "") -> bool:
+	return resolve_acquisition_at(0, recipient_type, hero_id)
+
+## Resolve all pending acquisitions to stash (headless/fallback).
+func resolve_all_to_stash() -> void:
+	while has_pending_acquisition():
+		resolve_pending_acquisition("stash")
+
+## Clear all pending acquisitions without resolving.
+func clear_pending_acquisitions() -> void:
+	_pending_acquisitions.clear()
+
+
+# ============================================================================
+# PUBLIC API - SHOPKEEPER BAG
+# ============================================================================
+
+## Get the shopkeeper bag contents.
+func get_shopkeeper_bag() -> Array:
+	return shopkeeper_bag
+
+## Get the shopkeeper bag capacity (max stacks).
+func get_shopkeeper_bag_capacity() -> int:
+	return SHOPKEEPER_BAG_CAPACITY_DEFAULT
+
+## Count current stacks in the shopkeeper bag.
+func _get_shopkeeper_bag_stacks() -> int:
+	return shopkeeper_bag.size()
+
+## Get a human-readable summary of the shopkeeper bag.
+func get_shopkeeper_bag_summary() -> String:
+	var stacks = _get_shopkeeper_bag_stacks()
+	var cap = get_shopkeeper_bag_capacity()
+	if shopkeeper_bag.is_empty():
+		return "%d/%d stacks (empty)" % [stacks, cap]
+	var parts: Array[String] = []
+	for entry in shopkeeper_bag:
+		var item_id = entry.get("item_id", "")
+		var qty = int(entry.get("qty", 1))
+		var name = item_id.replace("_", " ").capitalize()
+		var tpl = DataRegistry.get_item_template(item_id)
+		if tpl != null and tpl.display_name != "":
+			name = tpl.display_name
+		parts.append("%s x%d" % [name, qty])
+	return "%d/%d stacks %s" % [stacks, cap, ", ".join(parts)]
+
+## Check if an item can be added to the shopkeeper bag.
+## Allowed: consumables + materials. NOT gear/equipment.
+## Capacity measured by stacks (each unique item_id+quality = 1 stack).
+## Check if an item can be added to the shopkeeper bag.
+## v1.3: ALL item types allowed. NO STACKING — each slot holds exactly 1 item.
+func can_add_to_shopkeeper_bag(item_id: String, _qty: int = 1, _quality: int = 0) -> bool:
+	if item_id == "":
+		return false
+	var tpl = DataRegistry.get_item_template(item_id)
+	if tpl == null:
+		return false
+	# v1.3: No category restriction — ALL items allowed
+	# v1.3: No stacking — each item needs its own slot
+	return _get_shopkeeper_bag_stacks() < get_shopkeeper_bag_capacity()
+
+## Add a single item to the shopkeeper bag.
+## v1.3: ALL item types allowed. NO STACKING — always creates new entry with qty=1.
+func add_item_to_shopkeeper_bag(item_id: String, qty: int = 1, quality: int = 0, source: String = "loot") -> bool:
+	# v1.3: Add each unit as separate entry (no stacking in dungeon bags)
+	for _i in range(qty):
+		if not can_add_to_shopkeeper_bag(item_id, 1, quality):
+			print("[ShopBag] reject item=%s reason=full" % item_id)
+			return false
+		# v1.3: Always append new entry (no merging)
+		shopkeeper_bag.append({"item_id": item_id, "qty": 1, "quality_tier": quality})
+		print("[ShopBag] add item=%s qty=1 q=%d slots=%d/%d source=%s" % [item_id, quality, _get_shopkeeper_bag_stacks(), get_shopkeeper_bag_capacity(), source])
+	return true
+
+
+# ============================================================================
+# DEPRECATED API - LOOT PREFERENCES + AUTO-ROUTING (v1.2: removed, manual only)
+# ============================================================================
+# These functions are kept as stubs for API compatibility but do nothing.
+# Loot routing is now manual-only in v1.2.
+
+## DEPRECATED: Set loot routing preferences (no-op in v1.2).
+func set_loot_pref(_pref_dict: Dictionary) -> void:
+	pass  # No-op: manual routing only
+
+## DEPRECATED: Get loot routing preferences (returns empty in v1.2).
+func get_loot_pref() -> Dictionary:
+	return {}
+
+## DEPRECATED: Auto-route pending acquisition (always returns false in v1.2).
+func resolve_pending_acquisition_auto(_party_hero_ids: Array) -> bool:
+	return false  # No-op: manual routing only
 
 
 # ============================================================================
@@ -1154,6 +1612,231 @@ func get_unlocked_groups() -> Array:
 		if unlocked_groups[g] and g not in result:
 			result.append(g)
 	return result
+
+
+# ============================================================================
+# PUBLIC API - RECIPE UNLOCKS (Shop Item Generation)
+# ============================================================================
+
+## Check if a recipe/item is unlocked for the shop.
+func is_recipe_unlocked(item_id: String) -> bool:
+	if item_id == "":
+		return false
+	# Check default unlocks
+	if DEFAULT_UNLOCKED_RECIPES.has(item_id):
+		return true
+	return unlocked_recipes.has(item_id)
+
+
+## Unlock a recipe so its item appears in the General Store.
+## source_facility: The facility that unlocked this recipe (determines quality).
+## facility_tier: The tier of the facility at time of unlock.
+func unlock_recipe(item_id: String, source_facility: String, facility_tier: int = 1) -> void:
+	if item_id == "":
+		return
+	if is_recipe_unlocked(item_id):
+		print("[Recipe] Already unlocked: %s" % item_id)
+		return
+	unlocked_recipes[item_id] = {
+		"source_facility": source_facility,
+		"facility_tier": facility_tier
+	}
+	print("[Recipe] Unlocked item=%s source=%s tier=%d" % [item_id, source_facility, facility_tier])
+	save_game()
+
+
+## Get recipe unlock data for an item. Returns empty dict if not unlocked.
+func get_recipe_data(item_id: String) -> Dictionary:
+	if DEFAULT_UNLOCKED_RECIPES.has(item_id):
+		return DEFAULT_UNLOCKED_RECIPES[item_id]
+	return unlocked_recipes.get(item_id, {})
+
+
+## Get all unlocked recipe item IDs (for shop generation).
+func get_all_unlocked_recipes() -> Array:
+	var result: Array = []
+	for item_id in DEFAULT_UNLOCKED_RECIPES.keys():
+		if item_id not in result:
+			result.append(item_id)
+	for item_id in unlocked_recipes.keys():
+		if item_id not in result:
+			result.append(item_id)
+	return result
+
+
+## Check if player can afford a recipe unlock cost.
+## unlock_cost: Array of { item_id, qty } from facility recipe data.
+func can_afford_recipe_unlock(unlock_cost: Array) -> bool:
+	for cost_entry in unlock_cost:
+		var item_id = cost_entry.get("item_id", "")
+		var qty_needed = cost_entry.get("qty", 0)
+		if item_id == "" or qty_needed <= 0:
+			continue
+		var qty_have = get_run_item_count(item_id)
+		if qty_have < qty_needed:
+			return false
+	return true
+
+
+## Purchase/unlock a recipe by spending materials from run stash.
+## Returns true if successful, false if not enough materials or already unlocked.
+func purchase_recipe_unlock(output_id: String, unlock_cost: Array, source_facility: String, facility_tier: int = 1) -> bool:
+	# Already unlocked?
+	if is_recipe_unlocked(output_id):
+		print("[Recipe] Already unlocked: %s" % output_id)
+		return false
+
+	# Check affordability
+	if not can_afford_recipe_unlock(unlock_cost):
+		print("[Recipe] Cannot afford unlock for: %s" % output_id)
+		return false
+
+	# Spend materials
+	for cost_entry in unlock_cost:
+		var item_id = cost_entry.get("item_id", "")
+		var qty = cost_entry.get("qty", 0)
+		if item_id != "" and qty > 0:
+			remove_run_item(item_id, qty)
+
+	# Unlock the recipe
+	unlock_recipe(output_id, source_facility, facility_tier)
+	print("[Recipe] Purchased unlock for %s at %s (tier %d)" % [output_id, source_facility, facility_tier])
+	return true
+
+
+## Roll quality tier based on facility tier.
+## Returns: 0=Common, 1=Uncommon, 2=Rare, 3=Epic
+func roll_quality_for_facility_tier(facility_tier: int) -> int:
+	var roll = randf() * 100.0
+	match facility_tier:
+		1:  # 85% Common, 14% Uncommon, 1% Rare, 0% Epic
+			if roll < 85.0: return 0
+			elif roll < 99.0: return 1
+			else: return 2
+		2:  # 55% Common, 30% Uncommon, 10% Rare, 5% Epic
+			if roll < 55.0: return 0
+			elif roll < 85.0: return 1
+			elif roll < 95.0: return 2
+			else: return 3
+		3:  # 35% Common, 40% Uncommon, 15% Rare, 10% Epic
+			if roll < 35.0: return 0
+			elif roll < 75.0: return 1
+			elif roll < 90.0: return 2
+			else: return 3
+		_:
+			return 0  # Unknown tier = common
+
+
+# ============================================================================
+# FACILITY UNLOCK PURCHASE API (v1)
+# ============================================================================
+
+## Get available unlocks for a facility (not yet purchased, tier requirement met).
+## Returns array of unlock dictionaries from facility JSON.
+func get_available_facility_unlocks(facility_id: String, town_id: String = "") -> Array:
+	var facility = DataRegistry.get_facility(facility_id)
+	if facility == null:
+		return []
+
+	# Get current facility tier
+	var current_tier = 1
+	if town_id != "":
+		current_tier = get_facility_tier(town_id, facility_id)
+
+	# Get unlocks array from facility data (property, not dict)
+	var unlocks_data = facility.unlocks if facility.unlocks != null else []
+	if unlocks_data.is_empty():
+		return []
+
+	var available: Array = []
+	for unlock in unlocks_data:
+		var unlock_id = unlock.get("id", "")
+		var unlock_group = unlock.get("unlock_group", "")
+		var required_tier = unlock.get("required_tier", 1)
+
+		# Skip if already unlocked
+		if has_unlocked_group(unlock_group):
+			continue
+
+		# Skip if tier requirement not met
+		if current_tier < required_tier:
+			continue
+
+		available.append(unlock)
+
+	return available
+
+
+## Check if player can afford an unlock's costs.
+## Returns true if all material costs are in run_items.
+func can_afford_facility_unlock(unlock: Dictionary) -> bool:
+	var costs = unlock.get("costs", [])
+	for cost in costs:
+		var item_id = cost.get("item_id", "")
+		var qty_needed = cost.get("qty", 0)
+		if item_id == "" or qty_needed <= 0:
+			continue
+		var have = get_run_item_count(item_id)
+		if have < qty_needed:
+			return false
+	return true
+
+
+## Purchase a facility unlock by deducting costs and unlocking the group.
+## Returns true if successful.
+func purchase_facility_unlock(facility_id: String, unlock_id: String, town_id: String = "") -> bool:
+	var facility = DataRegistry.get_facility(facility_id)
+	if facility == null:
+		print("[FacilityUnlock] purchase failed facility=%s reason=not_found" % facility_id)
+		return false
+
+	# Find the unlock entry (facility.unlocks is a property, not dict key)
+	var unlocks_data = facility.unlocks if facility.unlocks != null else []
+	var unlock: Dictionary = {}
+	for u in unlocks_data:
+		if u.get("id", "") == unlock_id:
+			unlock = u
+			break
+
+	if unlock.is_empty():
+		print("[FacilityUnlock] purchase failed facility=%s unlock=%s reason=unlock_not_found" % [facility_id, unlock_id])
+		return false
+
+	var unlock_group = unlock.get("unlock_group", "")
+	var required_tier = unlock.get("required_tier", 1)
+	var costs = unlock.get("costs", [])
+
+	# Check if already unlocked
+	if has_unlocked_group(unlock_group):
+		print("[FacilityUnlock] purchase failed unlock=%s reason=already_unlocked" % unlock_id)
+		return false
+
+	# Check tier requirement
+	var current_tier = 1
+	if town_id != "":
+		current_tier = get_facility_tier(town_id, facility_id)
+	if current_tier < required_tier:
+		print("[FacilityUnlock] purchase failed unlock=%s reason=tier_too_low (have=%d need=%d)" % [unlock_id, current_tier, required_tier])
+		return false
+
+	# Check if can afford all costs
+	if not can_afford_facility_unlock(unlock):
+		print("[FacilityUnlock] purchase failed unlock=%s reason=insufficient_materials" % unlock_id)
+		return false
+
+	# Deduct costs
+	for cost in costs:
+		var item_id = cost.get("item_id", "")
+		var qty = cost.get("qty", 0)
+		if item_id != "" and qty > 0:
+			remove_run_item(item_id, qty)
+			print("[FacilityUnlock] deducted item=%s qty=%d" % [item_id, qty])
+
+	# Unlock the group
+	unlock_group(unlock_group)
+	print("[FacilityUnlock] SUCCESS facility=%s unlock=%s group=%s" % [facility_id, unlock_id, unlock_group])
+
+	return true
 
 
 # ============================================================================
@@ -1635,10 +2318,17 @@ func get_hero_effective_stats(hero_id: String) -> Dictionary:
 
 	# Log gear bonuses once per hero per combat spawn
 	if not _gear_logged_heroes.has(hero_id):
-		var weapon_str = get_hero_weapon(hero_id) if get_hero_weapon(hero_id) != "" else "none"
-		var offhand_str = get_hero_offhand(hero_id) if get_hero_offhand(hero_id) != "" else "none"
-		print("[HeroGear] hero=%s weapon=%s offhand=%s bonus={HP:+%d ATK:+%d DEF:+%d SPD:+%d}" % [
-			hero_id, weapon_str, offhand_str,
+		var equipped_slots: Array[String] = []
+		for slot in EQUIPMENT_SLOTS:
+			var item_id = get_hero_slot_item(hero_id, slot)
+			if item_id != "":
+				equipped_slots.append("%s=%s" % [slot, item_id])
+		var bag_str = get_hero_bag_item(hero_id)
+		if bag_str != "":
+			equipped_slots.append("bag=%s" % bag_str)
+		var gear_str = ", ".join(equipped_slots) if equipped_slots.size() > 0 else "none"
+		print("[HeroGear] hero=%s gear=[%s] bonus={HP:+%d ATK:+%d DEF:+%d SPD:+%d}" % [
+			hero_id, gear_str,
 			gear_bonus.get("health", 0), gear_bonus.get("attack", 0),
 			gear_bonus.get("defense", 0), gear_bonus.get("speed", 0)
 		])
@@ -1856,9 +2546,152 @@ func increment_shop_refresh(shop_id: String) -> int:
 	var current = get_shop_refresh_count(shop_id)
 	var new_count = current + 1
 	shop_refresh_counts[shop_id] = new_count
+	# Clear purchased slots on refresh since new items are generated
+	shop_purchased_slots[shop_id] = []
 	print("[ShopRNG] refresh_pressed shop=%s new_refresh=%d (legacy call)" % [shop_id, new_count])
 	save_game()
 	return new_count
+
+
+## Mark a shop slot as purchased (shows empty slot instead of item)
+func mark_shop_slot_purchased(shop_id: String, slot_key: String) -> void:
+	if not shop_purchased_slots.has(shop_id):
+		shop_purchased_slots[shop_id] = []
+	if slot_key not in shop_purchased_slots[shop_id]:
+		shop_purchased_slots[shop_id].append(slot_key)
+	print("[Shop] Slot purchased shop=%s slot=%s" % [shop_id, slot_key])
+
+
+## Check if a shop slot has been purchased
+func is_shop_slot_purchased(shop_id: String, slot_key: String) -> bool:
+	if not shop_purchased_slots.has(shop_id):
+		return false
+	return slot_key in shop_purchased_slots[shop_id]
+
+
+## Clear purchased slots for a shop (called on refresh)
+func clear_shop_purchased_slots(shop_id: String) -> void:
+	shop_purchased_slots[shop_id] = []
+
+
+# ============================================================================
+# SHOP SLOT ALLOCATION API (General Store v2)
+# ============================================================================
+
+## Get max shop slots for current town based on General Store tier.
+func get_shop_max_slots(town_id: String) -> int:
+	var shop_tier = get_facility_tier(town_id, "shop_greenroot")  # General Store facility ID
+	return SHOP_TIER_MAX_SLOTS.get(shop_tier, SHOP_TIER_MAX_SLOTS[1])
+
+
+## Get total slots currently allocated across all facilities.
+func get_shop_allocated_slots(town_id: String) -> int:
+	var allocations = shop_slot_allocations.get(town_id, {})
+	var total = 0
+	for facility_id in allocations.keys():
+		total += int(allocations[facility_id])
+	return total
+
+
+## Get slot allocation for a specific facility.
+func get_facility_slot_allocation(town_id: String, facility_id: String) -> int:
+	var allocations = shop_slot_allocations.get(town_id, {})
+	return int(allocations.get(facility_id, 0))
+
+
+## Set slot allocation for a specific facility.
+## Returns true if successful, false if would exceed max slots.
+func set_facility_slot_allocation(town_id: String, facility_id: String, slots: int) -> bool:
+	slots = max(0, slots)  # Can't be negative
+
+	# Get current allocation and calculate new total
+	var current = get_facility_slot_allocation(town_id, facility_id)
+	var allocated = get_shop_allocated_slots(town_id)
+	var max_slots = get_shop_max_slots(town_id)
+	var new_total = allocated - current + slots
+
+	if new_total > max_slots:
+		print("[ShopSlots] set_allocation failed: town=%s facility=%s slots=%d would_exceed_max=%d/%d" % [
+			town_id, facility_id, slots, new_total, max_slots])
+		return false
+
+	# Ensure town dict exists
+	if not shop_slot_allocations.has(town_id):
+		shop_slot_allocations[town_id] = {}
+
+	shop_slot_allocations[town_id][facility_id] = slots
+	print("[ShopSlots] set_allocation: town=%s facility=%s slots=%d total=%d/%d" % [
+		town_id, facility_id, slots, new_total, max_slots])
+	save_game()
+	return true
+
+
+## Increment slot allocation for a facility by 1. Returns true if successful.
+func increment_facility_slots(town_id: String, facility_id: String) -> bool:
+	var current = get_facility_slot_allocation(town_id, facility_id)
+	return set_facility_slot_allocation(town_id, facility_id, current + 1)
+
+
+## Decrement slot allocation for a facility by 1. Returns true if successful.
+func decrement_facility_slots(town_id: String, facility_id: String) -> bool:
+	var current = get_facility_slot_allocation(town_id, facility_id)
+	if current <= 0:
+		return false
+	return set_facility_slot_allocation(town_id, facility_id, current - 1)
+
+
+## Get all slot allocations for a town.
+func get_shop_slot_allocations(town_id: String) -> Dictionary:
+	return shop_slot_allocations.get(town_id, {}).duplicate()
+
+
+## Get unlocked recipes for a specific facility.
+## Returns array of item_ids that can appear in shop for this facility.
+func get_facility_unlocked_recipes(facility_id: String) -> Array:
+	var result: Array = []
+
+	# Check default recipes
+	for item_id in DEFAULT_UNLOCKED_RECIPES.keys():
+		var recipe = DEFAULT_UNLOCKED_RECIPES[item_id]
+		if recipe.get("source_facility", "") == facility_id:
+			result.append(item_id)
+
+	# Check player unlocked recipes
+	for item_id in unlocked_recipes.keys():
+		var recipe = unlocked_recipes[item_id]
+		if recipe.get("source_facility", "") == facility_id:
+			if item_id not in result:
+				result.append(item_id)
+
+	return result
+
+
+## Find all recipes that use a specific material/item.
+## Returns array of { facility_name, recipe_name, output_id } dictionaries.
+func get_recipes_using_material(material_id: String) -> Array:
+	var result: Array = []
+	var all_facilities = DataRegistry.get_all_facilities()
+
+	for facility in all_facilities:
+		if facility == null:
+			continue
+		var facility_name = facility.display_name
+
+		for recipe in facility.crafting_recipes:
+			var inputs = recipe.get("inputs", [])
+			for input_item in inputs:
+				if input_item.get("item_id", "") == material_id:
+					var output_id = recipe.get("output_id", "")
+					var output_tpl = DataRegistry.get_item_template(output_id)
+					var recipe_name = output_tpl.display_name if output_tpl else output_id
+					result.append({
+						"facility_name": facility_name,
+						"recipe_name": recipe_name,
+						"output_id": output_id
+					})
+					break  # Don't add same recipe twice if material appears multiple times
+
+	return result
 
 
 # ============================================================================
@@ -1993,10 +2826,20 @@ func can_hero_use_consumable(hero_id: String) -> bool:
 func mark_consumable_used(hero_id: String) -> void:
 	_combat_consumables_used[hero_id] = true
 
-## Find a healing consumable in dungeon stash (priority) or run stash.
-## Returns { "item_id": String, "use_value": int, "source": "dungeon"|"run" } or empty.
-func find_healing_consumable() -> Dictionary:
-	# Check dungeon stash first (when in dungeon)
+## Find a healing consumable. Priority: hero_bag > dungeon > run stash.
+## Returns { "item_id": String, "use_value": int, "source": "hero_bag"|"dungeon"|"run", "hero_id": String } or empty.
+func find_healing_consumable(hero_id: String = "") -> Dictionary:
+	# Check hero bag first (if hero_id provided)
+	if hero_id != "":
+		for entry in get_hero_bag(hero_id):
+			var eid = entry.get("item_id", "")
+			if eid == "":
+				continue
+			var template = DataRegistry.get_item_template(eid)
+			if template != null and _is_healing_consumable(template):
+				return { "item_id": eid, "use_value": template.use_value, "source": "hero_bag", "hero_id": hero_id }
+
+	# Check dungeon stash (when in dungeon)
 	if current_dungeon_id != "":
 		for item in dungeon_items:
 			var item_id = ""
@@ -2025,9 +2868,9 @@ func find_healing_consumable() -> Dictionary:
 
 	return {}
 
-## Find a cleanse consumable (removes DOT or stun).
-## Returns { "item_id": String, "use_effect": String, "source": "dungeon"|"run" } or empty.
-func find_cleanse_consumable(for_effect: String) -> Dictionary:
+## Find a cleanse consumable (removes DOT or stun). Priority: hero_bag > dungeon > run.
+## Returns { "item_id": String, "use_effect": String, "source": "hero_bag"|"dungeon"|"run", "hero_id": String } or empty.
+func find_cleanse_consumable(for_effect: String, hero_id: String = "") -> Dictionary:
 	# Map effect type to consumable use_effect
 	var target_effects: Array = []
 	if for_effect == "dot":
@@ -2037,6 +2880,16 @@ func find_cleanse_consumable(for_effect: String) -> Dictionary:
 
 	if target_effects.is_empty():
 		return {}
+
+	# Check hero bag first (if hero_id provided)
+	if hero_id != "":
+		for entry in get_hero_bag(hero_id):
+			var eid = entry.get("item_id", "")
+			if eid == "":
+				continue
+			var template = DataRegistry.get_item_template(eid)
+			if template != null and template.use_effect in target_effects:
+				return { "item_id": eid, "use_effect": template.use_effect, "source": "hero_bag", "hero_id": hero_id }
 
 	# Check dungeon stash first
 	if current_dungeon_id != "":
@@ -2073,10 +2926,16 @@ func _get_item_id_from_entry(item) -> String:
 		return item.get("item_id", item.get("template_id", ""))
 	return ""
 
-## Consume 1 quantity of item from stash.
+## Consume 1 quantity of item from stash or hero bag.
 ## Returns true if consumed, false if not found.
-func consume_stash_item(item_id: String, source: String) -> bool:
-	if source == "dungeon":
+## source: "dungeon", "run", or "hero_bag" (requires hero_id).
+func consume_stash_item(item_id: String, source: String, hero_id: String = "") -> bool:
+	if source == "hero_bag" and hero_id != "":
+		var ok = remove_item_from_hero_bag(hero_id, item_id, 1)
+		if ok:
+			print("[Consumable] removed item=%s source=hero_bag hero=%s" % [item_id, hero_id])
+		return ok
+	elif source == "dungeon":
 		return _consume_from_dungeon_stash(item_id)
 	elif source == "run":
 		return _consume_from_run_stash(item_id)
@@ -2652,7 +3511,10 @@ func save_game() -> void:
 		"equipped_offhand_quality": equipped_offhand_quality,
 		# Per-hero equipment (v3)
 		"hero_equipment": hero_equipment,
+		# Per-hero bags (v4 scaffolding)
+		"hero_bags": hero_bags,
 		"unlocked_groups": unlocked_groups,
+		"unlocked_recipes": unlocked_recipes,
 		"facility_tiers": facility_tiers,
 		"learned_classes": learned_classes,
 		"town_tiers": town_tiers,
@@ -2662,11 +3524,17 @@ func save_game() -> void:
 		"housing_upgrades": housing_upgrades,
 		"bonus_stash_capacity": bonus_stash_capacity,
 		"shop_refresh_counts": shop_refresh_counts,
+		"shop_purchased_slots": shop_purchased_slots,
+		"shop_slot_allocations": shop_slot_allocations,
 		# Player gold (town persistent)
 		"player_gold": player_gold,
 		# Run stash (banked gold persists across sessions)
 		"run_gold": run_gold,
 		"run_items": _serialize_run_items(run_items),
+		# Shopkeeper bag (v5)
+		"shopkeeper_bag": shopkeeper_bag,
+		# Loot routing preferences (v5)
+		"loot_pref": loot_pref,
 		# Region progression
 		"current_region": current_region
 	}
@@ -2721,11 +3589,13 @@ func reset_save_game() -> void:
 	equipped_offhand_id = ""
 	equipped_offhand_quality = 0
 	hero_equipment = {}
+	hero_bags = {}
 	_gear_logged_heroes.clear()
 
-	# Unlock groups
+	# Unlock groups and recipes
 	unlocked_groups = {}
 	unlocked_item_ids = {}
+	unlocked_recipes = {}
 
 	# Dungeon floor unlocks
 	unlocked_dungeon_floors = {}
@@ -2751,6 +3621,12 @@ func reset_save_game() -> void:
 
 	# Shop refresh counts
 	shop_refresh_counts = {}
+
+	# Shop purchased slots (empty slots after purchase)
+	shop_purchased_slots = {}
+
+	# Shop slot allocations
+	shop_slot_allocations = {}
 
 	# Run stash
 	run_gold = 0
@@ -2840,6 +3716,9 @@ func load_game() -> void:
 		# Load per-hero equipment (v3)
 		if save_data.has("hero_equipment") and save_data.hero_equipment is Dictionary:
 			hero_equipment = save_data.hero_equipment
+		# Load per-hero bags (v4 scaffolding, safe default = empty)
+		if save_data.has("hero_bags") and save_data.hero_bags is Dictionary:
+			hero_bags = save_data.hero_bags
 		# Migration: convert legacy global equipment to per-hero equipment
 		# If hero_equipment is empty but legacy equipment exists, assign to first party member
 		if hero_equipment.is_empty() and (equipped_weapon_id != "" or equipped_offhand_id != ""):
@@ -2861,6 +3740,9 @@ func load_game() -> void:
 		# Load legacy item-based unlocks for migration
 		if save_data.has("unlocked_item_ids") and save_data.unlocked_item_ids is Dictionary:
 			unlocked_item_ids = save_data.unlocked_item_ids
+		# Load recipe unlocks (shop item generation)
+		if save_data.has("unlocked_recipes") and save_data.unlocked_recipes is Dictionary:
+			unlocked_recipes = save_data.unlocked_recipes
 		if save_data.has("facility_tiers") and save_data.facility_tiers is Dictionary:
 			facility_tiers = save_data.facility_tiers
 		if save_data.has("learned_classes") and save_data.learned_classes is Dictionary:
@@ -2930,6 +3812,12 @@ func load_game() -> void:
 		# Load shop refresh counts
 		if save_data.has("shop_refresh_counts") and save_data.shop_refresh_counts is Dictionary:
 			shop_refresh_counts = save_data.shop_refresh_counts
+		# Load shop purchased slots (empty slots after purchase)
+		if save_data.has("shop_purchased_slots") and save_data.shop_purchased_slots is Dictionary:
+			shop_purchased_slots = save_data.shop_purchased_slots
+		# Load shop slot allocations
+		if save_data.has("shop_slot_allocations") and save_data.shop_slot_allocations is Dictionary:
+			shop_slot_allocations = save_data.shop_slot_allocations
 		# Load player gold (town persistent)
 		if save_data.has("player_gold"):
 			player_gold = int(save_data.player_gold)
@@ -2938,6 +3826,13 @@ func load_game() -> void:
 			run_gold = int(save_data.run_gold)
 		if save_data.has("run_items") and save_data.run_items is Array:
 			run_items = _deserialize_run_items(save_data.run_items)
+		# Load shopkeeper bag (v5, safe default = empty)
+		if save_data.has("shopkeeper_bag") and save_data.shopkeeper_bag is Array:
+			shopkeeper_bag = save_data.shopkeeper_bag
+		# Load loot routing preferences (v5, safe default = keep current)
+		if save_data.has("loot_pref") and save_data.loot_pref is Dictionary:
+			for key in save_data.loot_pref:
+				loot_pref[key] = save_data.loot_pref[key]
 		# Load region progression
 		if save_data.has("current_region"):
 			current_region = clampi(int(save_data.current_region), 1, 7)
@@ -2985,6 +3880,55 @@ func commit_dungeon_stash_to_run() -> void:
 	print("[Extract] Committed dungeon stash to run stash. RunGold=%d RunItems=%d (+%d gold, +%d items)" % [
 		run_gold, run_items.size(), commit_gold, commit_items
 	])
+
+
+## v1.2: Bank shopkeeper bag contents to run stash on extract.
+## Called when successfully returning to town from dungeon.
+func bank_shopkeeper_bag_to_stash() -> void:
+	if shopkeeper_bag.is_empty():
+		return
+	var moved_stacks = shopkeeper_bag.size()
+	var moved_qty = 0
+	for entry in shopkeeper_bag:
+		var item_id = entry.get("item_id", "")
+		var qty = int(entry.get("qty", 1))
+		var quality = int(entry.get("quality_tier", 0))
+		moved_qty += qty
+		run_items.append({"item_id": item_id, "qty": qty, "quality_tier": quality})
+	shopkeeper_bag.clear()
+	print("[Extract] bank_shop_bag moved_stacks=%d moved_qty=%d to_stash=true" % [moved_stacks, moved_qty])
+
+
+## v1.3: Bank non-consumable items from hero bags to run stash on town return.
+## Only consumables should stay in hero bags between dungeon runs.
+func bank_hero_materials_to_stash() -> void:
+	var total_moved = 0
+	for hero_id in selected_party:
+		if not hero_bags.has(hero_id):
+			continue
+		var bag: Array = hero_bags[hero_id]
+		var items_to_remove: Array = []
+
+		for i in range(bag.size()):
+			var entry = bag[i]
+			var item_id = entry.get("item_id", "")
+			var template = DataRegistry.get_item_template(item_id)
+
+			# Only keep consumables in hero bags - move everything else to stash
+			if template == null or template.item_type != "consumable":
+				var qty = int(entry.get("qty", 1))
+				var quality = int(entry.get("quality", 0))
+				run_items.append({"item_id": item_id, "qty": qty, "quality_tier": quality})
+				items_to_remove.append(i)
+				total_moved += 1
+				print("[Extract] hero=%s banked material=%s to stash" % [hero_id, item_id])
+
+		# Remove items in reverse order to preserve indices
+		for i in range(items_to_remove.size() - 1, -1, -1):
+			bag.remove_at(items_to_remove[i])
+
+	if total_moved > 0:
+		print("[Extract] bank_hero_materials total_moved=%d to_stash=true" % total_moved)
 
 
 ## Get dungeon stash summary.
@@ -3176,8 +4120,22 @@ func exit_to_town() -> void:
 	_last_room_was_event = false
 	set_phase(GamePhase.TOWN)
 
+	# v1.2: Bank shopkeeper bag to stash on extract
+	bank_shopkeeper_bag_to_stash()
+
+	# v1.3: Bank non-consumables from hero bags to stash (only consumables stay)
+	bank_hero_materials_to_stash()
+
 	# TownReset: heal all heroes and clear status effects
 	apply_town_entry_reset()
+
+	# Refresh shop inventory on dungeon return
+	var shop_id = _current_town_id.replace("town_", "shop_")
+	increment_shop_refresh(shop_id)
+	print("[GameContext] Shop inventory refreshed on dungeon return (shop_id=%s)" % shop_id)
+
+	# Save to persist cleared shopkeeper bag and hero bag changes
+	save_game()
 
 	print("[GameContext] Exited dungeon '%s', returned to town" % old_dungeon)
 

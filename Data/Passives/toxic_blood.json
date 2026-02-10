@@ -1,0 +1,13 @@
+{
+  "id": "toxic_blood",
+  "display_name": "Toxic Blood",
+  "description": "When hit by a melee attack, the attacker takes (2 + level/2) poison damage. Fungal spores infest wounds.",
+  "passive_type": "on_hit_retaliation",
+  "trigger": "on_melee_hit_received",
+  "effect": {
+    "damage": 2,
+    "damage_type": "poison"
+  },
+  "source_class_id": "fungal_berserker",
+  "category": "class"
+}

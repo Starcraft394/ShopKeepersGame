@@ -1,0 +1,12 @@
+{
+  "id": "lt_beast_wolf",
+  "display_name": "Wolf Parts",
+  "description": "Pelts and bones from wolves.",
+  "min_drops": 1,
+  "max_drops": 2,
+  "entries": [
+    { "item_id": "wolf_pelt", "weight": 60, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "bone_fragment", "weight": 20, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 20, "min_qty": 0, "max_qty": 0 }
+  ]
+}

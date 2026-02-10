@@ -1,29 +1,90 @@
 {
   "id": "chef_tf",
   "display_name": "Chef (Timberfall)",
-  "description": "A humble kitchen where herbs and meat become restorative meals.",
+  "description": "A humble kitchen where forest ingredients become restorative meals.",
   "facility_type": "production",
-  "max_tier": 1,
+  "max_tier": 2,
   "unlock_region": 1,
 
   "slots_per_tier": {
-    "1": 2
+    "1": 2,
+    "2": 3
   },
 
   "upgrade_costs": {
     "2": {
-      "wood_bundle": 6,
-      "herb_sprig": 6
+      "gold": 45,
+      "items": []
     }
   },
 
   "services_per_tier": {
-    "1": ["cook_basic_meal", "prepare_rations"]
+    "1": ["cook_basic_meal", "prepare_rations"],
+    "2": ["cook_feast", "prepare_travel_food"]
   },
 
   "produces_item_types": ["consumable"],
-  "input_resource_types": ["herb_sprig", "wood_bundle"],
+  "input_resource_types": ["raw_meat", "wild_berries", "forest_mushroom"],
 
   "allows_hero_assignment": true,
-  "max_assigned_heroes": 1
+  "max_assigned_heroes": 1,
+
+  "unlocks": [],
+
+  "crafting_recipes": [
+    {
+      "output_id": "cooked_meat",
+      "output_qty": 1,
+      "required_tier": 1,
+      "inputs": [
+        { "item_id": "raw_meat", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "berry_tart",
+      "output_qty": 1,
+      "required_tier": 1,
+      "inputs": [
+        { "item_id": "wild_berries", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "mushroom_stew",
+      "output_qty": 1,
+      "required_tier": 1,
+      "inputs": [
+        { "item_id": "forest_mushroom", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "trail_rations",
+      "output_qty": 1,
+      "required_tier": 1,
+      "inputs": [
+        { "item_id": "raw_meat", "qty": 1 },
+        { "item_id": "wild_berries", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "hunters_feast",
+      "output_qty": 1,
+      "required_tier": 2,
+      "inputs": [
+        { "item_id": "raw_meat", "qty": 2 },
+        { "item_id": "forest_mushroom", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "forest_bounty",
+      "output_qty": 1,
+      "required_tier": 2,
+      "inputs": [
+        { "item_id": "raw_meat", "qty": 1 },
+        { "item_id": "wild_berries", "qty": 1 },
+        { "item_id": "forest_mushroom", "qty": 1 }
+      ]
+    }
+  ],
+
+  "shop_items": []
 }

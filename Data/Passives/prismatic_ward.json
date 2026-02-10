@@ -1,0 +1,12 @@
+{
+  "id": "prismatic_ward",
+  "display_name": "Prismatic Ward",
+  "description": "At round start, gain a shield for (2 + level/2). Light reforms the barrier.",
+  "passive_type": "round_start_shield",
+  "trigger": "round_start",
+  "effect": {
+    "shield": 2
+  },
+  "source_class_id": "prism_sentinel",
+  "category": "class"
+}

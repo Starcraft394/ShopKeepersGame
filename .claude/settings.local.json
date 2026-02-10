@@ -69,7 +69,12 @@
       "Bash(\"DevTools/Godot_v4.5.1-stable_win64_console.exe\" --headless --path . --script res://DevTools/gameicons_apply_batch.gd --quit)",
       "Bash(\"DevTools/Godot_v4.5.1-stable_win64_console.exe\" --headless --path . --script res://DevTools/gameicons_search.gd -- \"stun\" --quit)",
       "Bash(\"DevTools/Godot_v4.5.1-stable_win64_console.exe\" --headless --path . --script res://DevTools/gameicons_search.gd -- \"poison\" --quit)",
-      "Bash(\"DevTools/Godot_v4.5.1-stable_win64_console.exe\" --headless --path . --script res://DevTools/gameicons_search.gd -- \"bleed\" --quit)"
+      "Bash(\"DevTools/Godot_v4.5.1-stable_win64_console.exe\" --headless --path . --script res://DevTools/gameicons_search.gd -- \"bleed\" --quit)",
+      "Bash(cmd /c \"cd /d \"\"c:\\\\Users\\\\rober\\\\OneDrive\\\\ShopKeepers Game\"\" && call DevTools\\\\run_headless.bat\")",
+      "Bash(powershell.exe -NoProfile -Command \"Set-Location ''c:\\\\Users\\\\rober\\\\OneDrive\\\\ShopKeepers Game''; & cmd.exe /c ''DevTools\\\\run_headless.bat''\")",
+      "Bash(\"c:\\\\Users\\\\rober\\\\OneDrive\\\\ShopKeepers Game\\\\DevTools\\\\Godot_v4.5.1-stable_win64_console.exe\" --headless --path \"c:\\\\Users\\\\rober\\\\OneDrive\\\\ShopKeepers Game\" --script \"res://DevTools/run_tests_headless.gd\" --quit)",
+      "Bash(grep:*)",
+      "Bash(find:*)"
     ]
   }
 }

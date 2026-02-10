@@ -1,0 +1,11 @@
+{
+  "id": "lt_food_meat",
+  "display_name": "Food Loot - Meat",
+  "description": "Meat drops from hunted animals.",
+  "min_drops": 1,
+  "max_drops": 2,
+  "entries": [
+    { "item_id": "raw_meat", "weight": 80, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "", "weight": 20, "min_qty": 0, "max_qty": 0 }
+  ]
+}

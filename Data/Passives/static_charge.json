@@ -1,0 +1,13 @@
+{
+  "id": "static_charge",
+  "display_name": "Static Charge",
+  "description": "At combat start, gain ATK equal to (3 + hero level). The storm builds within.",
+  "passive_type": "level_scaled_stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "attack",
+    "bonus": 3
+  },
+  "source_class_id": "stormcaller",
+  "category": "class"
+}

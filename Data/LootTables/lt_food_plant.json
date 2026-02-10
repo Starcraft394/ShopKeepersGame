@@ -1,0 +1,12 @@
+{
+  "id": "lt_food_plant",
+  "display_name": "Food Loot - Plants",
+  "description": "Edible plant materials from foraging.",
+  "min_drops": 1,
+  "max_drops": 3,
+  "entries": [
+    { "item_id": "wild_berries", "weight": 45, "min_qty": 1, "max_qty": 3 },
+    { "item_id": "forest_mushroom", "weight": 45, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "", "weight": 10, "min_qty": 0, "max_qty": 0 }
+  ]
+}

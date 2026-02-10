@@ -4,14 +4,26 @@
   "description": "A crude sword made from salvaged iron. Better than nothing.",
   "item_type": "weapon",
   "item_subtype": "sword",
+  "category": "equipment",
   "slot": "weapon_main",
   "equip_slot": "weapon",
   "tier": 1,
+  "min_quality": 0,
+  "max_quality": 3,
   "base_stats": {
     "attack": 3
   },
+  "stat_bonuses": {
+    "attack": 3
+  },
   "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
   "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
   "base_value": 20,
-  "tags": ["region_1", "weapon", "sword", "crafted"]
+  "icon_path": "",
+  "tags": ["region_1", "weapon", "sword", "crafted", "tier_1"]
 }

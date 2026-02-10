@@ -1,0 +1,16 @@
+{
+  "id": "prismatic_burst",
+  "display_name": "Prismatic Burst",
+  "description": "Shatter light into a thousand fragments, damaging all enemies.",
+  "ability_type": "class_b",
+  "source_class_id": "prism_lancer",
+  "target_type": "all_enemies",
+  "effect_type": "damage",
+  "base_damage": 10,
+  "damage_type": "magical",
+  "attack_scaling": 0.9,
+  "cooldown": 5,
+  "applies_status_id": "blinded",
+  "applies_status_duration": 1,
+  "status_stacks": 0
+}

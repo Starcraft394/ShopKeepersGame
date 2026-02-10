@@ -1,7 +1,4 @@
-[gd_resource type="Theme" load_steps=14 format=3 uid="uid://game_theme_001"]
-
-[ext_resource type="FontFile" uid="uid://kenney_future_001" path="res://Assets/UI/Kenney/UI/Font/Kenney Future.ttf" id="1_font"]
-[ext_resource type="FontFile" uid="uid://kenney_future_narrow_001" path="res://Assets/UI/Kenney/UI/Font/Kenney Future Narrow.ttf" id="2_font_narrow"]
+[gd_resource type="Theme" load_steps=11 format=3 uid="uid://game_theme_001"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0.15, 0.15, 0.2, 0.95)
@@ -123,16 +120,14 @@ content_margin_right = 6
 content_margin_bottom = 4
 
 [resource]
-default_font = ExtResource("1_font")
-default_font_size = 14
+default_font_size = 15
 
 Button/colors/font_color = Color(0.9, 0.92, 0.96, 1)
 Button/colors/font_hover_color = Color(1, 1, 1, 1)
 Button/colors/font_pressed_color = Color(0.8, 0.85, 0.95, 1)
 Button/colors/font_disabled_color = Color(0.5, 0.5, 0.55, 0.6)
 Button/colors/font_focus_color = Color(1, 1, 1, 1)
-Button/font_sizes/font_size = 14
-Button/fonts/font = ExtResource("1_font")
+Button/font_sizes/font_size = 15
 Button/styles/normal = SubResource("StyleBoxFlat_button_normal")
 Button/styles/hover = SubResource("StyleBoxFlat_button_hover")
 Button/styles/pressed = SubResource("StyleBoxFlat_button_pressed")
@@ -141,8 +136,7 @@ Button/styles/focus = SubResource("StyleBoxFlat_button_focus")
 
 Label/colors/font_color = Color(0.88, 0.9, 0.94, 1)
 Label/colors/font_shadow_color = Color(0, 0, 0, 0.2)
-Label/font_sizes/font_size = 14
-Label/fonts/font = ExtResource("1_font")
+Label/font_sizes/font_size = 15
 
 PanelContainer/styles/panel = SubResource("StyleBoxFlat_panel")
 Panel/styles/panel = SubResource("StyleBoxFlat_panel")
@@ -151,14 +145,12 @@ LineEdit/colors/font_color = Color(0.9, 0.92, 0.96, 1)
 LineEdit/colors/font_placeholder_color = Color(0.6, 0.62, 0.68, 0.6)
 LineEdit/colors/caret_color = Color(0.9, 0.92, 0.96, 1)
 LineEdit/colors/selection_color = Color(0.3, 0.5, 0.8, 0.5)
-LineEdit/font_sizes/font_size = 14
-LineEdit/fonts/font = ExtResource("1_font")
+LineEdit/font_sizes/font_size = 15
 LineEdit/styles/normal = SubResource("StyleBoxFlat_line_edit")
 LineEdit/styles/focus = SubResource("StyleBoxFlat_button_focus")
 
 RichTextLabel/colors/default_color = Color(0.88, 0.9, 0.94, 1)
-RichTextLabel/font_sizes/normal_font_size = 13
-RichTextLabel/fonts/normal_font = ExtResource("1_font")
+RichTextLabel/font_sizes/normal_font_size = 14
 
 HSeparator/styles/separator = SubResource("StyleBoxFlat_separator")
 VSeparator/styles/separator = SubResource("StyleBoxFlat_separator")
@@ -167,5 +159,5 @@ PopupMenu/styles/panel = SubResource("StyleBoxFlat_popup")
 PopupPanel/styles/panel = SubResource("StyleBoxFlat_popup")
 
 TooltipLabel/colors/font_color = Color(0.95, 0.95, 0.98, 1)
-TooltipLabel/font_sizes/font_size = 12
+TooltipLabel/font_sizes/font_size = 13
 TooltipPanel/styles/panel = SubResource("StyleBoxFlat_tooltip")

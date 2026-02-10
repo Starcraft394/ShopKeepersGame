@@ -1,0 +1,14 @@
+{
+  "id": "ocean_blessing",
+  "display_name": "Ocean Blessing",
+  "description": "At combat start, all allies gain (1 + hero level) DEF. The ocean shields its chosen.",
+  "passive_type": "level_scaled_stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "defense",
+    "bonus": 1
+  },
+  "target": "all_allies",
+  "source_class_id": "tidechaser",
+  "category": "class"
+}

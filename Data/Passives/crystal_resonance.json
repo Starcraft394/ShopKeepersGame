@@ -1,0 +1,13 @@
+{
+  "id": "crystal_resonance",
+  "display_name": "Crystal Resonance",
+  "description": "On killing an enemy, your next ability deals (3 + level/2) bonus damage. Light amplifies.",
+  "passive_type": "on_kill_next_ability_bonus",
+  "trigger": "on_kill",
+  "effect": {
+    "bonus_damage": 3,
+    "duration": 1
+  },
+  "source_class_id": "prism_lancer",
+  "category": "class"
+}

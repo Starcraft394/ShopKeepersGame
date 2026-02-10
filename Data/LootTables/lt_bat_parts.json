@@ -1,0 +1,11 @@
+{
+  "id": "lt_bat_parts",
+  "display_name": "Bat Parts",
+  "description": "Wings from bat swarms.",
+  "min_drops": 1,
+  "max_drops": 2,
+  "entries": [
+    { "item_id": "bat_wing", "weight": 70, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "", "weight": 30, "min_qty": 0, "max_qty": 0 }
+  ]
+}

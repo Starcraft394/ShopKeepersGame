@@ -1,0 +1,14 @@
+{
+  "id": "verdant_growth",
+  "display_name": "Verdant Growth",
+  "description": "At combat start, all allies gain (2 + hero level) bonus health from nature's blessing.",
+  "passive_type": "level_scaled_stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "health",
+    "bonus": 2
+  },
+  "target": "all_allies",
+  "source_class_id": "druid",
+  "category": "class"
+}

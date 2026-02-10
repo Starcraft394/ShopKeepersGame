@@ -1,0 +1,21 @@
+{
+  "id": "natures_embrace",
+  "display_name": "Nature's Embrace",
+  "description": "Wrap an ally in healing vines, restoring health over time.",
+  "ability_type": "class_a",
+  "source_class_id": "druid",
+  "target_type": "single_ally",
+  "effect_type": "heal",
+  "base_damage": 0,
+  "base_heal": 15,
+  "damage_type": "magical",
+  "attack_scaling": 0.0,
+  "cooldown": 2,
+  "applies_status_id": "regenerating",
+  "applies_status_duration": 2,
+  "status_stacks": 1,
+  "target_team": "ally",
+  "target_rule": "lowest_hp_pct",
+  "can_overheal": false,
+  "allow_self_target": true
+}

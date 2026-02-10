@@ -1,0 +1,17 @@
+{
+  "id": "light_refraction",
+  "display_name": "Light Refraction",
+  "description": "Refract incoming damage back at attackers. The next attacker takes reflected damage.",
+  "ability_type": "class_b",
+  "source_class_id": "prism_sentinel",
+  "target_type": "self",
+  "effect_type": "buff",
+  "base_damage": 0,
+  "damage_type": "magical",
+  "attack_scaling": 0.0,
+  "cooldown": 5,
+  "applies_status_id": "reflecting",
+  "applies_status_duration": 2,
+  "status_stacks": 0,
+  "reflect_percent": 50
+}

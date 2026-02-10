@@ -1,0 +1,14 @@
+{
+  "id": "void_resonance",
+  "display_name": "Void Resonance",
+  "description": "On killing an enemy, gain (2 + level/3) ATK for the rest of combat. The void hungers.",
+  "passive_type": "on_kill_stacking_buff",
+  "trigger": "on_kill",
+  "effect": {
+    "stat": "attack",
+    "bonus": 2
+  },
+  "stacks_persist": true,
+  "source_class_id": "void_herald",
+  "category": "class"
+}

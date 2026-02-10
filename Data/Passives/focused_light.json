@@ -1,0 +1,13 @@
+{
+  "id": "focused_light",
+  "display_name": "Focused Light",
+  "description": "At combat start, gain ATK equal to (3 + hero level). Light concentrates into power.",
+  "passive_type": "level_scaled_stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "attack",
+    "bonus": 3
+  },
+  "source_class_id": "prism_lancer",
+  "category": "class"
+}

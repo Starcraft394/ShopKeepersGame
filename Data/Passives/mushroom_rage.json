@@ -1,0 +1,14 @@
+{
+  "id": "mushroom_rage",
+  "display_name": "Mushroom Rage",
+  "description": "When HP drops below 50%, gain (4 + hero level) ATK. The fungi sense danger and amplify fury.",
+  "passive_type": "low_hp_stat_bonus",
+  "trigger": "hp_threshold",
+  "threshold": 0.5,
+  "effect": {
+    "stat": "attack",
+    "bonus": 4
+  },
+  "source_class_id": "fungal_berserker",
+  "category": "class"
+}

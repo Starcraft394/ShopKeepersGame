@@ -1,0 +1,13 @@
+{
+  "id": "fungal_symbiosis",
+  "display_name": "Fungal Symbiosis",
+  "description": "When this hero heals an ally, they also heal for (1 + level/3) health. The fungi share life force.",
+  "passive_type": "on_heal_self_heal",
+  "trigger": "on_heal_ally",
+  "effect": {
+    "stat": "health",
+    "bonus": 1
+  },
+  "source_class_id": "druid",
+  "category": "class"
+}

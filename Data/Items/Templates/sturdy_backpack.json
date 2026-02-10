@@ -1,0 +1,19 @@
+{
+  "id": "sturdy_backpack",
+  "display_name": "Sturdy Backpack",
+  "description": "A well-crafted pack with reinforced stitching. Holds considerably more gear.",
+  "item_type": "backpack",
+  "item_subtype": "sturdy",
+  "slot": "backpack",
+  "equip_slot": "bag",
+  "category": "equipment",
+  "tier": 2,
+  "base_stats": {},
+  "stat_bonuses": {},
+  "bag_capacity_bonus": 4,
+  "base_value": 70,
+  "buy_value": 0,
+  "can_refine": false,
+  "icon_path": "",
+  "tags": ["region_1", "backpack"]
+}

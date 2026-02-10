@@ -1,0 +1,13 @@
+{
+  "id": "ash_veil",
+  "display_name": "Ash Veil",
+  "description": "At combat start, gain SPEED equal to (2 + hero level). Cinders obscure your movements.",
+  "passive_type": "level_scaled_stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "speed",
+    "bonus": 2
+  },
+  "source_class_id": "ashblade",
+  "category": "class"
+}

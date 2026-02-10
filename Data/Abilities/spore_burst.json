@@ -1,0 +1,16 @@
+{
+  "id": "spore_burst",
+  "display_name": "Spore Burst",
+  "description": "Explode in a cloud of toxic spores, damaging all enemies and poisoning them.",
+  "ability_type": "class_b",
+  "source_class_id": "fungal_berserker",
+  "target_type": "all_enemies",
+  "effect_type": "damage",
+  "base_damage": 7,
+  "damage_type": "physical",
+  "attack_scaling": 0.6,
+  "cooldown": 4,
+  "applies_status_id": "poisoned",
+  "applies_status_duration": 3,
+  "status_stacks": 2
+}

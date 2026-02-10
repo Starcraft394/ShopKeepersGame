@@ -1,0 +1,14 @@
+{
+  "id": "necrotic_aura",
+  "display_name": "Necrotic Aura",
+  "description": "At round start, all enemies take (2 + level/3) dark damage. Death radiates from you.",
+  "passive_type": "round_start_enemy_damage",
+  "trigger": "round_start",
+  "effect": {
+    "damage": 2,
+    "damage_type": "dark"
+  },
+  "target": "all_enemies",
+  "source_class_id": "lich",
+  "category": "class"
+}

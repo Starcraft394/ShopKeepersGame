@@ -1,0 +1,30 @@
+{
+  "id": "apprentice_focus",
+  "display_name": "Apprentice Focus",
+  "description": "A simple crystal orb used by novice spellcasters.",
+  "item_type": "offhand",
+  "item_subtype": "focus",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 1,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 1
+  },
+  "stat_bonuses": {
+    "attack": 1,
+    "health": 3
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 22,
+  "icon_path": "",
+  "tags": ["region_1", "offhand", "focus", "magic", "tier_1"]
+}

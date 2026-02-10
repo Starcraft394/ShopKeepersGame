@@ -4,11 +4,19 @@
   "description": "Leg guards made for travel through brush.",
   "item_type": "armor",
   "item_subtype": "light_legs",
+  "category": "equipment",
   "slot": "legs",
+  "equip_slot": "legs",
   "tier": 1,
-  "min_quality": 1,
-  "max_quality": 5,
-  "base_stats": { "defense": 2 },
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 2
+  },
+  "stat_bonuses": {
+    "defense": 2,
+    "speed": 1
+  },
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -18,5 +26,5 @@
   "max_refinement": 10,
   "base_value": 12,
   "icon_path": "",
-  "tags": ["region_1", "armor"]
+  "tags": ["region_1", "armor", "leather", "tier_1"]
 }

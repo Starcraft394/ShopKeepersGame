@@ -17,7 +17,8 @@ enum ActionType {
 	ITEM_USE,
 	SKIP,           # Stunned or otherwise unable to act
 	DOOM_TRIGGER,   # Doom damage occurs
-	DEATH
+	DEATH,
+	BUFF            # Buff/debuff application
 }
 
 # ============================================================================
@@ -30,6 +31,7 @@ var actor_name: String = ""
 var target_id: String = ""
 var target_name: String = ""
 var ability_id: String = ""
+var ability_name: String = ""
 var damage_dealt: int = 0
 var healing_done: int = 0
 var status_applied: String = ""
@@ -38,6 +40,10 @@ var was_critical: bool = false
 var round_number: int = 0
 var turn_number: int = 0
 var message: String = ""
+
+# AoE action metadata
+var is_aoe: bool = false
+var targets_hit: int = 0
 
 # ============================================================================
 # FACTORY METHODS

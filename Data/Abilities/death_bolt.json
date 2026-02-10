@@ -1,0 +1,15 @@
+{
+  "id": "death_bolt",
+  "display_name": "Death Bolt",
+  "description": "Hurl a bolt of necrotic energy that deals massive damage to a single target.",
+  "ability_type": "class_a",
+  "source_class_id": "lich",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 22,
+  "damage_type": "dark",
+  "attack_scaling": 1.5,
+  "cooldown": 2,
+  "applies_status_id": "",
+  "status_stacks": 0
+}

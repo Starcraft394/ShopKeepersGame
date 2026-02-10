@@ -12,8 +12,8 @@ var description: String = ""
 # Item Classification
 var item_type: String = ""  # "weapon", "armor", "accessory", "consumable", "material", "tool", "backpack"
 var item_subtype: String = ""  # "sword", "dagger", "staff", etc.
-var slot: String = ""  # "weapon_main", "weapon_offhand", "head", "chest", "legs", "accessory_1", "accessory_2", "backpack"
-var equip_slot: String = ""  # Simple equip slot: "weapon", "offhand", or "" (not equippable)
+var slot: String = ""  # Legacy detailed slot: "weapon_main", "head", "chest", "legs", etc.
+var equip_slot: String = ""  # Equipment slot: "weapon", "offhand", "helmet", "armor", "legs", "ring", "amulet", "bag", or "" (not equippable)
 var category: String = ""  # "material", "consumable", "equipment", "book" - for filtering
 
 # Tier & Quality
@@ -55,6 +55,9 @@ var use_value: int = 0  # Effect magnitude (heal amount, etc.)
 # Equipment stat bonuses (v2: explicit stat grants for weapons/offhands)
 # Falls back to base_stats for backwards compatibility
 var stat_bonuses: Dictionary = {}  # { "attack": int, "defense": int, "speed": int, "health": int }
+
+# Backpack-specific: bonus bag capacity when equipped (NOT scaled by quality)
+var bag_capacity_bonus: int = 0
 
 # Quality tier multipliers: Q0=1.0, Q1=1.1, Q2=1.2, Q3=1.35
 const QUALITY_MULTIPLIERS := [1.0, 1.1, 1.2, 1.35]
@@ -125,6 +128,9 @@ static func from_dict(data: Dictionary) -> ItemTemplate:
 	# v2: Equipment stat bonuses (separate from base_stats for clarity)
 	var stat_bonuses_val = data.get("stat_bonuses", {})
 	instance.stat_bonuses = stat_bonuses_val if stat_bonuses_val is Dictionary else {}
+
+	# v5: Backpack bag capacity bonus (not quality-scaled)
+	instance.bag_capacity_bonus = int(data.get("bag_capacity_bonus", 0))
 
 	# Convert typed arrays (clear + append pattern for safety)
 	instance.allowed_affixes.clear()

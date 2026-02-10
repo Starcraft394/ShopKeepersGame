@@ -1,0 +1,21 @@
+{
+  "id": "smoke_dash",
+  "display_name": "Smoke Dash",
+  "description": "Vanish in a cloud of smoke, gaining evasion and speed for the next turn.",
+  "ability_type": "class_b",
+  "source_class_id": "ashblade",
+  "target_type": "self",
+  "effect_type": "buff",
+  "base_damage": 0,
+  "damage_type": "physical",
+  "attack_scaling": 0.0,
+  "cooldown": 4,
+  "applies_status_id": "evasive",
+  "applies_status_duration": 1,
+  "status_stacks": 0,
+  "self_buff": {
+    "stat": "speed",
+    "value": 6,
+    "duration": 2
+  }
+}

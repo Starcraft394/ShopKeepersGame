@@ -26,28 +26,32 @@ const BOOT_SCENE_PATH = "res://Game/Boot/game_boot.tscn"
 @onready var flee_button: Button = $MainVBox/ButtonSection/FleeButton
 @onready var hotkey_hint: Label = $MainVBox/HotkeyHint
 
-# Consumables section
-@onready var consumables_section: VBoxContainer = %ConsumablesSection
-@onready var consumables_list: VBoxContainer = %ConsumablesList
+# Heroes section (new layout)
+@onready var heroes_section: VBoxContainer = %HeroesSection
+@onready var hero_rows: VBoxContainer = %HeroRows
 
-# Equipment section
-@onready var equipment_section: VBoxContainer = %EquipmentSection
-@onready var equipment_slots: VBoxContainer = %EquipmentSlots
-@onready var equippable_items: VBoxContainer = %EquippableItems
+# Shopkeeper bag section
+@onready var shopkeeper_section: VBoxContainer = %ShopkeeperSection
+@onready var shopkeeper_bag: HBoxContainer = %ShopkeeperBag
 
-# Cache of current consumable items for hotkey access
-var _consumable_slots: Array[Dictionary] = []  # [ { "item_id": String, "qty": int, "use_effect": String }, ... ]
+# Cache of hero bag items per hero for right-click access
+var _hero_bag_cache: Dictionary = {}  # { hero_id: [ { slot_idx, item_id, button } ] }
 
-# Currently selected hero for consumable targeting (MVP: first party hero)
-var _selected_hero_idx: int = 0
+# Cache of shopkeeper bag items for display
+var _shopkeeper_items: Array[Dictionary] = []
 
-# Cache of equippable items for hotkey access
-var _equippable_weapon_items: Array[String] = []  # item_ids that can go in weapon slot
-var _equippable_offhand_items: Array[String] = []  # item_ids that can go in offhand slot
+# Popup for consumable use confirmation
+var _consumable_use_popup: PopupMenu = null
+var _pending_consumable_hero_id: String = ""
+var _pending_consumable_item_id: String = ""
 
 # State
 var _can_extract: bool = false
 var _is_dungeon_complete: bool = false
+
+# Hero info window
+var _hero_info_window: Window = null
+
 var _choice_a: Dictionary = {}
 var _choice_b: Dictionary = {}
 var _is_descend_mode: bool = false  # True when at end of floor (descend instead of room choices)
@@ -203,11 +207,11 @@ func _update_display() -> void:
 		# Extract only available at end of floor (descend mode), so hide here
 		extract_button.visible = false
 
-	# Populate consumables list
-	_populate_consumables()
+	# Populate hero rows (new layout: Name | Info | Bag)
+	_populate_hero_rows()
 
-	# Populate equipment section
-	_populate_equipment()
+	# Populate shopkeeper bag at bottom
+	_populate_shopkeeper_bag()
 
 	# Log state
 	var b_display = "-"
@@ -277,18 +281,6 @@ func _unhandled_input(event: InputEvent) -> void:
 					print("[Camp] Extract blocked - must complete floor first")
 			KEY_F, KEY_F7:
 				_do_flee()
-			KEY_1:
-				_use_consumable_slot(0)
-			KEY_2:
-				_use_consumable_slot(1)
-			KEY_3:
-				_use_consumable_slot(2)
-			KEY_W:
-				_equip_first_weapon()
-			KEY_O:
-				_equip_first_offhand()
-			KEY_U:
-				_unequip_all()
 
 
 # ============================================================================
@@ -410,180 +402,182 @@ func _do_flee() -> void:
 
 
 # ============================================================================
-# CONSUMABLES
+# HERO ROWS (New Layout: Name | Info | Bag Slots)
 # ============================================================================
 
-## Populate the consumables list from dungeon stash (Consumables v2: data-driven)
-func _populate_consumables() -> void:
-	# Clear existing items
-	for child in consumables_list.get_children():
+## Populate hero rows with name, info button, and bag slots
+func _populate_hero_rows() -> void:
+	# Clear existing rows
+	for child in hero_rows.get_children():
 		child.queue_free()
-	_consumable_slots.clear()
+	_hero_bag_cache.clear()
 
-	# Get party for hero targeting
-	var party = GameContext.get_party()
+	var party = GameContext.get_selected_party()
 	if party.is_empty():
 		var hint = Label.new()
-		hint.text = "(No party selected)"
+		hint.text = "(No heroes in party)"
 		hint.modulate = Color(0.5, 0.5, 0.5, 1)
 		hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		consumables_list.add_child(hint)
+		hero_rows.add_child(hint)
 		return
 
-	# Get consumables from GameContext (data-driven)
-	var consumables = GameContext.get_camp_consumables()
+	# Build a row for each hero
+	for hero_id in party:
+		var row = _create_hero_row(hero_id)
+		hero_rows.add_child(row)
 
-	# If no consumables, show hint
-	if consumables.is_empty():
-		var hint = Label.new()
-		hint.text = "(No consumables in stash)"
-		hint.modulate = Color(0.5, 0.5, 0.5, 1)
-		hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		consumables_list.add_child(hint)
-		return
+	print("[Camp] Populated %d hero rows" % party.size())
 
-	# Show target hero selection (MVP: just show current target)
-	var target_hero_id = party[_selected_hero_idx] if _selected_hero_idx < party.size() else party[0]
-	var hero_data = GameContext.get_hero(target_hero_id)
-	var hero_name = hero_data.get("name", target_hero_id) if not hero_data.is_empty() else target_hero_id
 
-	# Get hero HP status for display
-	var hp_display = ""
-	var hp_data = GameContext.get_hero_hp(target_hero_id)
+## Create a single hero row: [Name + HP | Info Button | Bag Slots (horizontal)]
+func _create_hero_row(hero_id: String) -> HBoxContainer:
+	var hero = GameContext.get_hero(hero_id)
+	var hero_name = hero.get("name", hero_id) if hero else hero_id
+
+	# Get HP display
+	var hp_text = ""
+	var hp_data = GameContext.get_hero_hp(hero_id)
 	if not hp_data.is_empty():
-		hp_display = " (HP: %d/%d)" % [hp_data.get("current", 0), hp_data.get("max", 0)]
+		hp_text = " (%d/%d)" % [hp_data.get("current", 0), hp_data.get("max", 0)]
 	else:
-		var stats = GameContext.get_hero_effective_stats(target_hero_id)
+		var stats = GameContext.get_hero_effective_stats(hero_id)
 		if not stats.is_empty():
-			hp_display = " (HP: %d/%d)" % [stats.get("health", 100), stats.get("health", 100)]
+			hp_text = " (%d/%d)" % [stats.get("health", 100), stats.get("health", 100)]
 
-	var target_label = Label.new()
-	target_label.text = "Target: %s%s" % [hero_name, hp_display]
-	target_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	consumables_list.add_child(target_label)
+	var row = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 12)
 
-	# Build UI for each consumable
-	var slot_idx = 0
-	for cons in consumables:
-		var item_id = cons.get("item_id", "")
-		var display_name = cons.get("display_name", item_id)
-		var qty = cons.get("qty", 0)
-		var use_effect = cons.get("use_effect", "")
-		var use_value = cons.get("use_value", 0)
+	# Hero name + HP (fixed width for alignment)
+	var name_label = Label.new()
+	name_label.text = "%s%s" % [hero_name, hp_text]
+	name_label.custom_minimum_size = Vector2(120, 0)
+	row.add_child(name_label)
 
-		_consumable_slots.append({ "item_id": item_id, "qty": qty, "use_effect": use_effect })
+	# Info button (shows hero details popup like in combat)
+	var info_btn = Button.new()
+	info_btn.text = "Info"
+	info_btn.custom_minimum_size = Vector2(50, 26)
+	info_btn.pressed.connect(_on_hero_info_pressed.bind(hero_id))
+	row.add_child(info_btn)
 
-		# Create row
-		var row = HBoxContainer.new()
-		row.add_theme_constant_override("separation", 8)
-		row.alignment = BoxContainer.ALIGNMENT_CENTER
+	# Separator before bag
+	var sep = VSeparator.new()
+	row.add_child(sep)
 
-		# Hotkey label
-		var hotkey_label = Label.new()
-		hotkey_label.text = "[%d]" % (slot_idx + 1)
-		hotkey_label.modulate = Color(0.7, 0.7, 0.7, 1)
-		row.add_child(hotkey_label)
+	# Bag slots container (horizontal)
+	var bag_container = HBoxContainer.new()
+	bag_container.add_theme_constant_override("separation", 4)
+	bag_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
-		# Item name + qty + effect summary
-		var effect_hint = _get_effect_hint(use_effect, use_value)
-		var name_label = Label.new()
-		name_label.text = "%s x%d %s" % [display_name, qty, effect_hint]
-		name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		row.add_child(name_label)
+	# Get hero's bag contents
+	var bag = GameContext.get_hero_bag(hero_id)
+	var bag_size = GameContext.get_hero_bag_capacity(hero_id)
 
-		# Use button
-		var btn = Button.new()
-		btn.text = "Use"
-		btn.custom_minimum_size = Vector2(60, 26)
-		btn.pressed.connect(_on_consumable_use_pressed.bind(item_id))
-		row.add_child(btn)
+	_hero_bag_cache[hero_id] = []
 
-		consumables_list.add_child(row)
-		slot_idx += 1
+	for slot_idx in range(bag_size):
+		var slot_btn = Button.new()
+		slot_btn.custom_minimum_size = Vector2(32, 32)
 
-	print("[Camp] Populated %d consumables from dungeon stash (target=%s)" % [_consumable_slots.size(), hero_name])
+		if slot_idx < bag.size():
+			var entry = bag[slot_idx]
+			var item_id = entry.get("item_id", "")
+			var qty = entry.get("qty", 1)
+			var template = DataRegistry.get_item_template(item_id)
+			var display_name = template.display_name if template else item_id
+
+			# Show abbreviated name (first 3 chars) or qty
+			if qty > 1:
+				slot_btn.text = str(qty)
+			else:
+				slot_btn.text = display_name.substr(0, 3) if display_name.length() > 3 else display_name
+
+			# Build detailed tooltip
+			var tooltip_lines: Array[String] = ["%s x%d" % [display_name, qty]]
+			if template != null:
+				if template.description != "":
+					tooltip_lines.append(template.description)
+				# Consumable effects
+				if template.category == "consumable" and template.use_effect != "":
+					tooltip_lines.append("")
+					tooltip_lines.append("Effect: %s" % template.use_effect.replace("_", " ").capitalize())
+					if template.use_value > 0:
+						tooltip_lines.append("Value: %d" % template.use_value)
+				# Materials: show recipes
+				if template.category == "materials":
+					var recipes = GameContext.get_recipes_using_material(item_id)
+					if recipes.size() > 0:
+						tooltip_lines.append("")
+						tooltip_lines.append("Used in recipes:")
+						for recipe_info in recipes:
+							tooltip_lines.append("  • %s" % recipe_info.recipe_name)
+			tooltip_lines.append("")
+			tooltip_lines.append("Right-click to use")
+			slot_btn.tooltip_text = "\n".join(tooltip_lines)
+
+			# Connect right-click for consumable use
+			slot_btn.gui_input.connect(_on_bag_slot_input.bind(hero_id, item_id, slot_idx))
+
+			_hero_bag_cache[hero_id].append({
+				"slot_idx": slot_idx,
+				"item_id": item_id,
+				"qty": qty
+			})
+		else:
+			# Empty slot
+			slot_btn.text = "-"
+			slot_btn.disabled = true
+			slot_btn.tooltip_text = "Empty slot"
+
+		bag_container.add_child(slot_btn)
+
+	row.add_child(bag_container)
+
+	return row
 
 
-## Get effect hint for consumable display
-func _get_effect_hint(use_effect: String, use_value: int) -> String:
-	match use_effect:
-		"heal", "heal_small", "heal_large":
-			return "(+%d HP)" % use_value
-		"cure_poison":
-			return "(cure poison)"
-		"cure_bleeding":
-			return "(cure bleeding)"
-		"cleanse", "cure_all":
-			return "(cure DOT)"
-		"buff_speed":
-			return "(+SPD next combat)"
-		"buff_defense":
-			return "(+DEF next combat)"
-		_:
-			return ""
+## Handle input on bag slots (right-click to use consumable)
+func _on_bag_slot_input(event: InputEvent, hero_id: String, item_id: String, slot_idx: int) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
+		_use_hero_bag_item(hero_id, item_id)
 
 
-## Use consumable by slot index (for hotkeys)
-func _use_consumable_slot(slot_idx: int) -> void:
-	if slot_idx < 0 or slot_idx >= _consumable_slots.size():
-		print("[Camp] No consumable in slot %d" % (slot_idx + 1))
-		return
-
-	var slot = _consumable_slots[slot_idx]
-	_use_consumable(slot.item_id)
-
-
-## Button handler for Use button
-func _on_consumable_use_pressed(item_id: String) -> void:
-	_use_consumable(item_id)
-
-
-## Use a consumable item from dungeon stash (Consumables v2: data-driven with persistence)
-func _use_consumable(item_id: String) -> void:
-	# Check if we have this item
-	if not GameContext.has_dungeon_item(item_id, 1):
-		print("[Consumable] No %s in dungeon stash" % item_id)
-		return
-
-	# Get target hero
-	var party = GameContext.get_party()
-	if party.is_empty():
-		print("[Consumable] No party to use consumable on")
-		return
-
-	var target_hero_id = party[_selected_hero_idx] if _selected_hero_idx < party.size() else party[0]
-
-	# Get template to check effect type
+## Use a consumable from hero's bag
+func _use_hero_bag_item(hero_id: String, item_id: String) -> void:
+	# Check if this is a usable consumable
 	var template = DataRegistry.get_item_template(item_id)
 	if template == null:
-		print("[Consumable] Unknown item template: %s" % item_id)
+		print("[Camp] Unknown item: %s" % item_id)
 		return
 
-	# Handle special effects that don't use the standard system
+	if template.category != "consumable":
+		print("[Camp] %s is not a consumable" % item_id)
+		return
+
+	# Handle special effects
 	var use_effect = template.use_effect
 	if use_effect in ["buff_speed", "stamina"]:
-		_apply_combat_modifier(item_id, "player_spd_bonus", 2, "Stamina Draught", "+2 SPD")
+		_apply_combat_modifier_from_bag(hero_id, item_id, "player_spd_bonus", 2, "Stamina Draught", "+2 SPD")
 		return
 	elif use_effect in ["buff_defense", "resistance"]:
-		_apply_combat_modifier(item_id, "player_def_bonus", 3, "Resistance Salve", "+3 DEF")
+		_apply_combat_modifier_from_bag(hero_id, item_id, "player_def_bonus", 3, "Resistance Salve", "+3 DEF")
 		return
 
-	# Use the data-driven consumable system
-	var result = GameContext.use_consumable_on_hero(item_id, target_hero_id, "dungeon")
+	# Use the consumable on the hero who owns it
+	var result = GameContext.use_consumable_on_hero(item_id, hero_id, "hero_bag")
 
 	if result.get("success", false):
-		print("[Camp] Consumable used successfully: %s" % result.get("detail", ""))
+		print("[Camp] %s used %s: %s" % [hero_id, item_id, result.get("detail", "")])
 	else:
-		print("[Camp] Consumable use failed: %s" % result.get("detail", "error"))
+		print("[Camp] Failed to use %s: %s" % [item_id, result.get("detail", "error")])
 
-	# Refresh UI
 	_update_display()
 
 
-## Apply combat modifier effect (buffs for next combat)
-func _apply_combat_modifier(item_id: String, modifier_key: String, modifier_value: int, label: String, effect_desc: String) -> void:
+## Apply combat modifier from hero bag item
+func _apply_combat_modifier_from_bag(hero_id: String, item_id: String, modifier_key: String, modifier_value: int, label: String, effect_desc: String) -> void:
 	if GameContext.has_pending_combat_modifier():
-		print("[Consumable] %s - replacing existing combat modifier" % label)
+		print("[Camp] %s - replacing existing combat modifier" % label)
 
 	var modifier = {
 		"id": item_id,
@@ -592,128 +586,209 @@ func _apply_combat_modifier(item_id: String, modifier_key: String, modifier_valu
 	}
 	GameContext.set_pending_combat_modifier(modifier)
 
-	# Consume the item
-	GameContext.consume_stash_item(item_id, "dungeon")
+	# Consume from hero bag using existing remove function
+	GameContext.remove_item_from_hero_bag(hero_id, item_id, 1)
 
-	print("[Consumable] %s used - %s for next combat" % [label, effect_desc])
+	print("[Camp] %s used %s - %s for next combat" % [hero_id, label, effect_desc])
 	_update_display()
 
 
-# ============================================================================
-# EQUIPMENT
-# ============================================================================
+## Show hero info popup (stats, equipment, abilities, etc.)
+func _on_hero_info_pressed(hero_id: String) -> void:
+	# Close existing window if open
+	if _hero_info_window != null and is_instance_valid(_hero_info_window):
+		_hero_info_window.queue_free()
+		_hero_info_window = null
 
-## Populate the equipment section with current equipped items and equippable items from run stash
-func _populate_equipment() -> void:
-	# Clear existing UI
-	for child in equipment_slots.get_children():
-		child.queue_free()
-	for child in equippable_items.get_children():
-		child.queue_free()
-	_equippable_weapon_items.clear()
-	_equippable_offhand_items.clear()
+	var hero = GameContext.get_hero(hero_id)
+	var hero_name = hero.get("name", hero_id) if hero else hero_id
+	var class_id = hero.get("class_id", "") if hero else ""
+	var race_id = hero.get("race_id", "human") if hero else "human"
 
-	# Show currently equipped items
-	var weapon_id = GameContext.get_equipped_weapon()
-	var offhand_id = GameContext.get_equipped_offhand()
+	# Get class and race display names
+	var cls_display_name = class_id.capitalize()
+	if class_id != "" and DataRegistry.has_method("get_class_data"):
+		var cls = DataRegistry.get_class_data(class_id)
+		if cls != null and cls.display_name != "":
+			cls_display_name = cls.display_name
 
-	# Weapon slot row
-	var weapon_row = HBoxContainer.new()
-	weapon_row.add_theme_constant_override("separation", 8)
-	var weapon_label = Label.new()
-	var weapon_name = _get_item_display_name(weapon_id) if weapon_id != "" else "(empty)"
-	weapon_label.text = "Weapon: %s" % weapon_name
-	weapon_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	weapon_row.add_child(weapon_label)
-	if weapon_id != "":
-		var unequip_btn = Button.new()
-		unequip_btn.text = "Unequip"
-		unequip_btn.custom_minimum_size = Vector2(70, 24)
-		unequip_btn.pressed.connect(_on_unequip_pressed.bind("weapon"))
-		weapon_row.add_child(unequip_btn)
-	equipment_slots.add_child(weapon_row)
+	var race_display_name = race_id.capitalize()
+	var race_data: RaceData = null
+	if DataRegistry.has_method("get_race"):
+		race_data = DataRegistry.get_race(race_id)
+		if race_data != null and race_data.display_name != "":
+			race_display_name = race_data.display_name
 
-	# Offhand slot row
-	var offhand_row = HBoxContainer.new()
-	offhand_row.add_theme_constant_override("separation", 8)
-	var offhand_label = Label.new()
-	var offhand_name = _get_item_display_name(offhand_id) if offhand_id != "" else "(empty)"
-	offhand_label.text = "Offhand: %s" % offhand_name
-	offhand_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	offhand_row.add_child(offhand_label)
-	if offhand_id != "":
-		var unequip_btn = Button.new()
-		unequip_btn.text = "Unequip"
-		unequip_btn.custom_minimum_size = Vector2(70, 24)
-		unequip_btn.pressed.connect(_on_unequip_pressed.bind("offhand"))
-		offhand_row.add_child(unequip_btn)
-	equipment_slots.add_child(offhand_row)
+	# Create floating window
+	_hero_info_window = Window.new()
+	_hero_info_window.title = "%s" % hero_name
+	_hero_info_window.size = Vector2i(320, 450)
+	_hero_info_window.position = Vector2i(100, 100)
+	_hero_info_window.unresizable = false
+	_hero_info_window.exclusive = false
+	_hero_info_window.always_on_top = true
+	_hero_info_window.transient = true
+	_hero_info_window.close_requested.connect(_on_hero_info_window_closed)
 
-	# Gather equippable items from run stash
-	var run_items_dict = GameContext.get_run_items_dict()
-	for item_id in run_items_dict.keys():
-		var template = DataRegistry.get_item_template(item_id)
-		if template == null:
-			continue
-		var equip_slot = template.equip_slot
-		if equip_slot == "weapon":
-			_equippable_weapon_items.append(item_id)
-		elif equip_slot == "offhand":
-			_equippable_offhand_items.append(item_id)
+	# Create scroll container
+	var scroll = ScrollContainer.new()
+	scroll.set_anchors_preset(Control.PRESET_FULL_RECT)
+	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_hero_info_window.add_child(scroll)
 
-	# Build UI for equippable items
-	if _equippable_weapon_items.is_empty() and _equippable_offhand_items.is_empty():
-		var hint = Label.new()
-		hint.text = "(No equippable items in stash)"
-		hint.modulate = Color(0.5, 0.5, 0.5, 1)
-		hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		equippable_items.add_child(hint)
-	else:
-		# Show weapons
-		for item_id in _equippable_weapon_items:
-			var row = _create_equip_row(item_id, "weapon", "[W]")
-			equippable_items.add_child(row)
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 4)
+	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(vbox)
 
-		# Show offhands
-		for item_id in _equippable_offhand_items:
-			var row = _create_equip_row(item_id, "offhand", "[O]")
-			equippable_items.add_child(row)
-
-	print("[Camp] Equipment: weapon=%s offhand=%s equippable_wpn=%d equippable_off=%d" % [
-		weapon_id if weapon_id != "" else "(none)",
-		offhand_id if offhand_id != "" else "(none)",
-		_equippable_weapon_items.size(),
-		_equippable_offhand_items.size()
-	])
-
-
-## Create a row for an equippable item
-func _create_equip_row(item_id: String, slot: String, hotkey: String) -> HBoxContainer:
-	var row = HBoxContainer.new()
-	row.add_theme_constant_override("separation", 8)
-
-	# Hotkey hint
-	var hk_label = Label.new()
-	hk_label.text = hotkey
-	hk_label.modulate = Color(0.7, 0.7, 0.7, 1)
-	row.add_child(hk_label)
-
-	# Item name with stats
+	# === HERO NAME AND CLASS ===
 	var name_label = Label.new()
-	var display_name = _get_item_display_name(item_id)
-	var stats_str = _get_item_stats_string(item_id)
-	name_label.text = "%s %s" % [display_name, stats_str]
-	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	row.add_child(name_label)
+	name_label.text = "%s (%s %s)" % [hero_name, race_display_name, cls_display_name]
+	name_label.add_theme_font_size_override("font_size", 16)
+	name_label.add_theme_color_override("font_color", Color.CYAN)
+	vbox.add_child(name_label)
 
-	# Equip button
-	var btn = Button.new()
-	btn.text = "Equip"
-	btn.custom_minimum_size = Vector2(60, 24)
-	btn.pressed.connect(_on_equip_pressed.bind(slot, item_id))
-	row.add_child(btn)
+	vbox.add_child(HSeparator.new())
 
-	return row
+	# === STATS ===
+	var stats_title = Label.new()
+	stats_title.text = "Stats"
+	stats_title.add_theme_font_size_override("font_size", 14)
+	stats_title.add_theme_color_override("font_color", Color.GOLD)
+	vbox.add_child(stats_title)
+
+	var hp_data = GameContext.get_hero_hp(hero_id)
+	var stats = GameContext.get_hero_effective_stats(hero_id)
+
+	_add_camp_stat_line(vbox, "HP", "%d / %d" % [hp_data.get("current", 0), hp_data.get("max", 0)], Color.LIGHT_GREEN)
+	_add_camp_stat_line(vbox, "Attack", str(stats.get("attack", 0)), Color.SALMON)
+	_add_camp_stat_line(vbox, "Defense", str(stats.get("defense", 0)), Color.LIGHT_BLUE)
+	_add_camp_stat_line(vbox, "Speed", str(stats.get("speed", 0)), Color.YELLOW)
+
+	vbox.add_child(HSeparator.new())
+
+	# === EQUIPMENT ===
+	var equip_title = Label.new()
+	equip_title.text = "Equipment"
+	equip_title.add_theme_font_size_override("font_size", 14)
+	equip_title.add_theme_color_override("font_color", Color.GOLD)
+	vbox.add_child(equip_title)
+
+	var equipment = GameContext.get_hero_equipment(hero_id)
+	var slots = ["weapon", "offhand", "helmet", "armor", "legs", "ring", "amulet"]
+	var slot_names = {"weapon": "Weapon", "offhand": "Offhand", "helmet": "Helmet", "armor": "Armor", "legs": "Legs", "ring": "Ring", "amulet": "Amulet"}
+
+	for slot in slots:
+		var slot_data = equipment.get(slot, {})
+		var item_id = slot_data.get("id", "") if slot_data is Dictionary else ""
+		var quality = int(slot_data.get("quality", 0)) if slot_data is Dictionary else 0
+		var slot_display = slot_names.get(slot, slot.capitalize())
+		var slot_text = "(empty)"
+		var tooltip_text = ""
+		if item_id != "":
+			var tpl = DataRegistry.get_item_template(item_id)
+			if tpl != null:
+				slot_text = tpl.display_name
+				tooltip_text = _build_camp_item_tooltip(tpl, quality)
+			else:
+				slot_text = item_id
+		_add_camp_equipment_line(vbox, slot_display, slot_text, Color.SANDY_BROWN if item_id != "" else Color.DIM_GRAY, tooltip_text)
+
+	vbox.add_child(HSeparator.new())
+
+	# === ABILITIES ===
+	var ability_title = Label.new()
+	ability_title.text = "Abilities"
+	ability_title.add_theme_font_size_override("font_size", 14)
+	ability_title.add_theme_color_override("font_color", Color.GOLD)
+	vbox.add_child(ability_title)
+
+	var cls_data = DataRegistry.get_class_data(class_id) if class_id != "" and DataRegistry.has_method("get_class_data") else null
+	var ability_a_id = cls_data.ability_a_id if cls_data else ""
+	var ability_b_id = cls_data.ability_b_id if cls_data else ""
+	var has_abilities = false
+
+	if ability_a_id != "":
+		var ability_a = DataRegistry.get_ability(ability_a_id) if DataRegistry.has_method("get_ability") else null
+		var a_name = ability_a.display_name if ability_a else ability_a_id
+		var a_desc = ability_a.description if ability_a else ""
+		_add_camp_ability_line(vbox, "[A] %s" % a_name, a_desc)
+		has_abilities = true
+
+	if ability_b_id != "":
+		var ability_b = DataRegistry.get_ability(ability_b_id) if DataRegistry.has_method("get_ability") else null
+		var b_name = ability_b.display_name if ability_b else ability_b_id
+		var b_desc = ability_b.description if ability_b else ""
+		_add_camp_ability_line(vbox, "[B] %s" % b_name, b_desc)
+		has_abilities = true
+
+	if not has_abilities:
+		var none_lbl = Label.new()
+		none_lbl.text = "(none)"
+		none_lbl.add_theme_color_override("font_color", Color.DIM_GRAY)
+		vbox.add_child(none_lbl)
+
+	# === CLOSE BUTTON ===
+	vbox.add_child(HSeparator.new())
+	var close_btn = Button.new()
+	close_btn.text = "OK"
+	close_btn.custom_minimum_size = Vector2(80, 28)
+	close_btn.pressed.connect(_on_hero_info_window_closed)
+	vbox.add_child(close_btn)
+
+	# Show window
+	add_child(_hero_info_window)
+	_hero_info_window.popup_centered()
+
+
+func _on_hero_info_window_closed() -> void:
+	if _hero_info_window != null and is_instance_valid(_hero_info_window):
+		_hero_info_window.queue_free()
+		_hero_info_window = null
+
+
+## Helper: Add a stat line to the hero info window
+func _add_camp_stat_line(container: VBoxContainer, stat_name: String, value: String, color: Color) -> void:
+	var hbox = HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 8)
+
+	var name_lbl = Label.new()
+	name_lbl.text = stat_name + ":"
+	name_lbl.custom_minimum_size = Vector2(80, 0)
+	name_lbl.add_theme_font_size_override("font_size", 12)
+	hbox.add_child(name_lbl)
+
+	var val_lbl = Label.new()
+	val_lbl.text = value
+	val_lbl.add_theme_font_size_override("font_size", 12)
+	val_lbl.add_theme_color_override("font_color", color)
+	hbox.add_child(val_lbl)
+
+	container.add_child(hbox)
+
+
+## Helper: Add an ability line with name and description
+func _add_camp_ability_line(container: VBoxContainer, ability_name: String, desc: String) -> void:
+	var ability_vbox = VBoxContainer.new()
+	ability_vbox.add_theme_constant_override("separation", 2)
+
+	var name_lbl = Label.new()
+	name_lbl.text = ability_name
+	name_lbl.add_theme_font_size_override("font_size", 12)
+	name_lbl.add_theme_color_override("font_color", Color.WHITE)
+	ability_vbox.add_child(name_lbl)
+
+	if desc != "":
+		var desc_lbl = Label.new()
+		desc_lbl.text = desc
+		desc_lbl.add_theme_font_size_override("font_size", 10)
+		desc_lbl.add_theme_color_override("font_color", Color.LIGHT_GRAY)
+		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		desc_lbl.custom_minimum_size = Vector2(260, 0)
+		ability_vbox.add_child(desc_lbl)
+
+	container.add_child(ability_vbox)
 
 
 ## Get display name for an item
@@ -726,70 +801,212 @@ func _get_item_display_name(item_id: String) -> String:
 	return item_id
 
 
-## Get stats string for an item (e.g., "+3 ATK")
-func _get_item_stats_string(item_id: String) -> String:
-	var template = DataRegistry.get_item_template(item_id)
+## Helper: Add an equipment line with tooltip support
+func _add_camp_equipment_line(container: VBoxContainer, slot_name: String, value: String, color: Color, tooltip: String = "") -> void:
+	var hbox = HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 8)
+
+	var name_lbl = Label.new()
+	name_lbl.text = slot_name + ":"
+	name_lbl.custom_minimum_size = Vector2(80, 0)
+	name_lbl.add_theme_font_size_override("font_size", 12)
+	hbox.add_child(name_lbl)
+
+	var val_lbl = Label.new()
+	val_lbl.text = value
+	val_lbl.add_theme_font_size_override("font_size", 12)
+	val_lbl.add_theme_color_override("font_color", color)
+	if tooltip != "":
+		val_lbl.tooltip_text = tooltip
+		val_lbl.mouse_filter = Control.MOUSE_FILTER_STOP
+	hbox.add_child(val_lbl)
+
+	container.add_child(hbox)
+
+
+## Build tooltip text showing item stats for equipment
+func _build_camp_item_tooltip(template, quality_tier: int) -> String:
 	if template == null:
 		return ""
-	var parts: Array[String] = []
-	var stats = template.base_stats
-	if stats.get("attack", 0) > 0:
-		parts.append("+%d ATK" % stats.attack)
-	if stats.get("defense", 0) > 0:
-		parts.append("+%d DEF" % stats.defense)
-	if stats.get("speed", 0) > 0:
-		parts.append("+%d SPD" % stats.speed)
-	if parts.is_empty():
-		return ""
-	return "(%s)" % ", ".join(parts)
+
+	var lines: Array[String] = []
+
+	# Item name and description
+	lines.append(template.display_name)
+	if template.description != "":
+		lines.append(template.description)
+	lines.append("")
+
+	# Quality multiplier
+	var quality_names = ["Common", "Uncommon", "Rare", "Epic"]
+	var quality_mults = [1.0, 1.1, 1.2, 1.35]
+	var quality_name = quality_names[quality_tier] if quality_tier < quality_names.size() else "Common"
+	var quality_mult = quality_mults[quality_tier] if quality_tier < quality_mults.size() else 1.0
+	if quality_tier > 0:
+		lines.append("Quality: %s (x%.2f stats)" % [quality_name, quality_mult])
+		lines.append("")
+
+	# Stats with quality scaling
+	var base_stats = template.base_stats if template.base_stats != null else {}
+	var stat_bonuses = template.stat_bonuses if template.stat_bonuses != null else {}
+
+	# Combine base_stats and stat_bonuses
+	var all_stats = {}
+	for key in base_stats.keys():
+		all_stats[key] = base_stats[key]
+	for key in stat_bonuses.keys():
+		if not all_stats.has(key):
+			all_stats[key] = stat_bonuses[key]
+
+	if all_stats.size() > 0:
+		lines.append("Stats:")
+		for stat_name in all_stats.keys():
+			var base_value = int(all_stats[stat_name])
+			var scaled_value = int(base_value * quality_mult)
+			lines.append("  +%d %s" % [scaled_value, stat_name.capitalize()])
+
+	return "\n".join(lines)
 
 
-## Button handler for Equip button
-func _on_equip_pressed(slot: String, item_id: String) -> void:
-	if GameContext.equip_item(slot, item_id):
-		print("[Equipment] Equipped %s in %s slot" % [item_id, slot])
-		_update_display()
+# ============================================================================
+# SHOPKEEPER BAG (Dungeon Stash Items)
+# ============================================================================
 
+## Populate the shopkeeper bag section at the bottom
+func _populate_shopkeeper_bag() -> void:
+	# Clear existing
+	for child in shopkeeper_bag.get_children():
+		child.queue_free()
+	_shopkeeper_items.clear()
 
-## Button handler for Unequip button
-func _on_unequip_pressed(slot: String) -> void:
-	GameContext.unequip_item(slot)
-	print("[Equipment] Unequipped %s slot" % slot)
-	_update_display()
+	# Get shopkeeper bag items (items player sent to shop bag after combat)
+	var bag_items = GameContext.get_shopkeeper_bag()
 
-
-## Hotkey: Equip first available weapon
-func _equip_first_weapon() -> void:
-	if _equippable_weapon_items.is_empty():
-		print("[Equipment] No weapons in stash to equip")
+	if bag_items.is_empty():
+		var hint = Label.new()
+		hint.text = "(Empty)"
+		hint.modulate = Color(0.5, 0.5, 0.5, 1)
+		shopkeeper_bag.add_child(hint)
 		return
-	var item_id = _equippable_weapon_items[0]
-	if GameContext.equip_item("weapon", item_id):
-		print("[Equipment] Equipped %s via hotkey W" % item_id)
-		_update_display()
+
+	# Build slot buttons for each item in the bag
+	for entry in bag_items:
+		var item_id = entry.get("item_id", "")
+		var qty = entry.get("qty", 1)
+		var template = DataRegistry.get_item_template(item_id)
+		var display_name = template.display_name if template else item_id
+
+		_shopkeeper_items.append({
+			"item_id": item_id,
+			"qty": qty,
+			"display_name": display_name
+		})
+
+		var slot_btn = Button.new()
+		slot_btn.custom_minimum_size = Vector2(60, 32)
+
+		# Show name + qty
+		if qty > 1:
+			slot_btn.text = "%s(%d)" % [display_name.substr(0, 4), qty]
+		else:
+			slot_btn.text = display_name.substr(0, 6) if display_name.length() > 6 else display_name
+
+		# Build detailed tooltip
+		var tooltip_lines: Array[String] = ["%s x%d" % [display_name, qty]]
+		if template != null:
+			if template.description != "":
+				tooltip_lines.append(template.description)
+
+			# Equipment stats
+			if template.equip_slot != "":
+				tooltip_lines.append("")
+				tooltip_lines.append("Slot: %s" % template.equip_slot.capitalize())
+				var base_stats = template.base_stats if template.base_stats != null else {}
+				var stat_bonuses = template.stat_bonuses if template.stat_bonuses != null else {}
+				var all_stats = {}
+				for key in base_stats.keys():
+					all_stats[key] = base_stats[key]
+				for key in stat_bonuses.keys():
+					if not all_stats.has(key):
+						all_stats[key] = stat_bonuses[key]
+				if all_stats.size() > 0:
+					for stat_name in all_stats.keys():
+						tooltip_lines.append("+%d %s" % [int(all_stats[stat_name]), stat_name.capitalize()])
+
+			# Materials: show recipes
+			if template.category == "materials":
+				var recipes = GameContext.get_recipes_using_material(item_id)
+				if recipes.size() > 0:
+					tooltip_lines.append("")
+					tooltip_lines.append("Used in recipes:")
+					for recipe_info in recipes:
+						tooltip_lines.append("  • %s" % recipe_info.recipe_name)
+
+		slot_btn.tooltip_text = "\n".join(tooltip_lines)
+
+		# Check if equippable
+		if template != null and template.equip_slot in ["weapon", "offhand"]:
+			slot_btn.tooltip_text += "\n\nClick to equip"
+			slot_btn.pressed.connect(_on_shopkeeper_item_pressed.bind(item_id, template.equip_slot))
+		elif template != null and template.category == "consumable":
+			slot_btn.tooltip_text += "\n\nTransfer to hero bag (coming soon)"
+
+		shopkeeper_bag.add_child(slot_btn)
+
+	print("[Camp] Populated shopkeeper bag with %d items" % bag_items.size())
 
 
-## Hotkey: Equip first available offhand
-func _equip_first_offhand() -> void:
-	if _equippable_offhand_items.is_empty():
-		print("[Equipment] No offhands in stash to equip")
+## Handle click on shopkeeper bag item (equip to hero)
+func _on_shopkeeper_item_pressed(item_id: String, slot: String) -> void:
+	var party = GameContext.get_selected_party()
+	if party.is_empty():
+		print("[Camp] No heroes to equip")
 		return
-	var item_id = _equippable_offhand_items[0]
-	if GameContext.equip_item("offhand", item_id):
-		print("[Equipment] Equipped %s via hotkey O" % item_id)
-		_update_display()
 
-
-## Hotkey: Unequip both slots
-func _unequip_all() -> void:
-	var weapon = GameContext.get_equipped_weapon()
-	var offhand = GameContext.get_equipped_offhand()
-	if weapon == "" and offhand == "":
-		print("[Equipment] Nothing equipped to unequip")
+	# If only one hero, equip directly
+	if party.size() == 1:
+		_equip_from_stash(party[0], slot, item_id)
 		return
-	if weapon != "":
-		GameContext.unequip_item("weapon")
-	if offhand != "":
-		GameContext.unequip_item("offhand")
-	print("[Equipment] Unequipped all via hotkey U")
-	_update_display()
+
+	# Multiple heroes - show selection popup
+	_pending_consumable_item_id = item_id
+	_pending_consumable_hero_id = slot  # Reusing this var for slot
+
+	if _consumable_use_popup != null:
+		_consumable_use_popup.queue_free()
+
+	_consumable_use_popup = PopupMenu.new()
+	add_child(_consumable_use_popup)
+
+	for i in range(party.size()):
+		var hero_id = party[i]
+		var hero = GameContext.get_hero(hero_id)
+		var hero_name = hero.get("name", hero_id) if hero else hero_id
+		_consumable_use_popup.add_item("Equip to %s" % hero_name, i)
+
+	_consumable_use_popup.id_pressed.connect(_on_shopkeeper_equip_hero_selected)
+	_consumable_use_popup.popup_centered()
+
+
+## Handle hero selection for equipping from shopkeeper bag
+func _on_shopkeeper_equip_hero_selected(index: int) -> void:
+	var party = GameContext.get_selected_party()
+	if index >= 0 and index < party.size():
+		var hero_id = party[index]
+		_equip_from_stash(hero_id, _pending_consumable_hero_id, _pending_consumable_item_id)
+
+	if _consumable_use_popup != null:
+		_consumable_use_popup.queue_free()
+		_consumable_use_popup = null
+
+
+## Equip item from dungeon/run stash to a hero
+func _equip_from_stash(hero_id: String, slot: String, item_id: String) -> void:
+	# Try run stash first, then dungeon stash
+	if GameContext.equip_hero_item(hero_id, slot, item_id):
+		var hero = GameContext.get_hero(hero_id)
+		var hero_name = hero.get("name", hero_id) if hero else hero_id
+		print("[Camp] Equipped %s to %s's %s slot" % [item_id, hero_name, slot])
+		_update_display()
+	else:
+		print("[Camp] Failed to equip %s" % item_id)

@@ -1,0 +1,30 @@
+{
+  "id": "composite_bow",
+  "display_name": "Composite Bow",
+  "description": "A powerful bow crafted from layered wood and horn. Greater range and punch.",
+  "item_type": "weapon",
+  "item_subtype": "bow",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 5
+  },
+  "stat_bonuses": {
+    "attack": 5,
+    "speed": 2
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 45,
+  "icon_path": "",
+  "tags": ["region_1", "weapon", "ranged", "tier_2"]
+}

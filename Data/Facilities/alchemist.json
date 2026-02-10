@@ -1,8 +1,8 @@
 {
   "id": "alchemist",
   "display_name": "Alchemist",
-  "description": "A bubbling laboratory where herbs become healing tonics and potent elixirs.",
-  "facility_type": "alchemist",
+  "description": "A bubbling laboratory where monster parts become healing tonics and potent elixirs.",
+  "facility_type": "production",
   "max_tier": 2,
   "unlock_region": 1,
 
@@ -13,34 +13,111 @@
 
   "upgrade_costs": {
     "2": {
-      "gold": 40,
-      "items": [
-        { "item_id": "herb", "qty": 5 },
-        { "item_id": "mushroom", "qty": 3 }
-      ]
+      "gold": 50,
+      "items": []
     }
   },
 
   "services_per_tier": {
     "1": ["brew_healing_tonic", "brew_antidote"],
-    "2": ["brew_advanced_potions"]
+    "2": ["brew_advanced_potions", "brew_stat_elixirs"]
   },
 
   "produces_item_types": ["consumable"],
-  "input_resource_types": ["herb", "mushroom"],
+  "input_resource_types": ["herb_sprig", "slime_gel", "spider_silk", "spider_fang", "bat_wing", "bone_fragment", "wolf_pelt", "boar_tusk", "cursed_dust"],
 
   "allows_hero_assignment": true,
   "max_assigned_heroes": 1,
 
-  "unlocks": [
+  "unlocks": [],
+
+  "crafting_recipes": [
     {
-      "id": "unlock_consumables_t2",
-      "unlock_group": "consumables_t2",
-      "label": "Unlock Advanced Potions",
+      "output_id": "healing_tonic",
+      "output_qty": 1,
+      "required_tier": 1,
+      "inputs": [
+        { "item_id": "herb_sprig", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "antidote",
+      "output_qty": 1,
+      "required_tier": 1,
+      "inputs": [
+        { "item_id": "slime_gel", "qty": 1 },
+        { "item_id": "herb_sprig", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "bandage",
+      "output_qty": 1,
+      "required_tier": 1,
+      "inputs": [
+        { "item_id": "spider_silk", "qty": 1 },
+        { "item_id": "herb_sprig", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "minor_venom_flask",
+      "output_qty": 1,
+      "required_tier": 1,
+      "inputs": [
+        { "item_id": "spider_fang", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "smelling_salts",
+      "output_qty": 1,
+      "required_tier": 1,
+      "inputs": [
+        { "item_id": "bat_wing", "qty": 1 },
+        { "item_id": "herb_sprig", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "strong_healing_tonic",
+      "output_qty": 1,
       "required_tier": 2,
-      "costs": [
-        { "item_id": "herb", "qty": 3 },
-        { "item_id": "mushroom", "qty": 2 }
+      "inputs": [
+        { "item_id": "herb_sprig", "qty": 2 },
+        { "item_id": "bone_fragment", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "stamina_draught",
+      "output_qty": 1,
+      "required_tier": 2,
+      "inputs": [
+        { "item_id": "bat_wing", "qty": 1 },
+        { "item_id": "spider_silk", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "resistance_salve",
+      "output_qty": 1,
+      "required_tier": 2,
+      "inputs": [
+        { "item_id": "slime_gel", "qty": 1 },
+        { "item_id": "boar_tusk", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "power_elixir",
+      "output_qty": 1,
+      "required_tier": 2,
+      "inputs": [
+        { "item_id": "wolf_pelt", "qty": 1 },
+        { "item_id": "bone_fragment", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "shadow_oil",
+      "output_qty": 1,
+      "required_tier": 2,
+      "inputs": [
+        { "item_id": "cursed_dust", "qty": 1 },
+        { "item_id": "spider_silk", "qty": 1 }
       ]
     }
   ],

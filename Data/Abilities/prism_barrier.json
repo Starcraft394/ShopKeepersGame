@@ -1,0 +1,18 @@
+{
+  "id": "prism_barrier",
+  "display_name": "Prism Barrier",
+  "description": "Erect a crystalline barrier that absorbs damage and taunts enemies.",
+  "ability_type": "class_a",
+  "source_class_id": "prism_sentinel",
+  "target_type": "self",
+  "effect_type": "buff",
+  "base_damage": 0,
+  "damage_type": "magical",
+  "attack_scaling": 0.0,
+  "cooldown": 3,
+  "applies_status_id": "taunting",
+  "applies_status_duration": 2,
+  "status_stacks": 0,
+  "shield_value": 20,
+  "shield_duration": 2
+}

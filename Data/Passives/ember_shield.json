@@ -1,0 +1,13 @@
+{
+  "id": "ember_shield",
+  "display_name": "Ember Shield",
+  "description": "When hit by a melee attack, the attacker takes (3 + level/2) fire damage. Flames bite back.",
+  "passive_type": "on_hit_retaliation",
+  "trigger": "on_melee_hit_received",
+  "effect": {
+    "damage": 3,
+    "damage_type": "fire"
+  },
+  "source_class_id": "pyrewarden",
+  "category": "class"
+}

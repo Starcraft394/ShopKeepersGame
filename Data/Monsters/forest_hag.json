@@ -9,7 +9,7 @@
   "base_stats": { "health": 72, "attack": 16, "defense": 8, "speed": 13 },
   "ability_ids": ["basic_attack"],
   "passive_ids": [],
-  "loot_table_id": "lt_region1_boss",
+  "loot_table_id": "lt_cultist_parts",
   "gold_drop_min": 38,
   "gold_drop_max": 68,
   "sprite_path": "",

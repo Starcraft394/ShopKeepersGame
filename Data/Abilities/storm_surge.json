@@ -1,0 +1,16 @@
+{
+  "id": "storm_surge",
+  "display_name": "Storm Surge",
+  "description": "Unleash a tempest that strikes all enemies with wind and lightning.",
+  "ability_type": "class_b",
+  "source_class_id": "stormcaller",
+  "target_type": "all_enemies",
+  "effect_type": "damage",
+  "base_damage": 8,
+  "damage_type": "magical",
+  "attack_scaling": 0.8,
+  "cooldown": 5,
+  "applies_status_id": "shocked",
+  "applies_status_duration": 2,
+  "status_stacks": 1
+}

@@ -1,0 +1,12 @@
+{
+  "id": "eye_of_storm",
+  "display_name": "Eye of the Storm",
+  "description": "On killing an enemy, reduce all ability cooldowns by 1. The tempest accelerates.",
+  "passive_type": "on_kill_cooldown_reduction",
+  "trigger": "on_kill",
+  "effect": {
+    "cooldown_reduction": 1
+  },
+  "source_class_id": "stormcaller",
+  "category": "class"
+}

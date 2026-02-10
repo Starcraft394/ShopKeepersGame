@@ -1,0 +1,21 @@
+{
+  "id": "flame_guard",
+  "display_name": "Flame Guard",
+  "description": "Wreath yourself in flames, taunting enemies and gaining defense.",
+  "ability_type": "class_a",
+  "source_class_id": "pyrewarden",
+  "target_type": "self",
+  "effect_type": "buff",
+  "base_damage": 0,
+  "damage_type": "fire",
+  "attack_scaling": 0.0,
+  "cooldown": 3,
+  "applies_status_id": "taunting",
+  "applies_status_duration": 2,
+  "status_stacks": 0,
+  "self_buff": {
+    "stat": "defense",
+    "value": 6,
+    "duration": 2
+  }
+}

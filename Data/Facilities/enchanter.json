@@ -1,0 +1,118 @@
+{
+  "id": "enchanter",
+  "display_name": "Enchanter",
+  "description": "A mystical workshop where magical items are imbued with power. Specializes in staves, focuses, and accessories.",
+  "facility_type": "equipment",
+  "max_tier": 2,
+  "unlock_region": 1,
+
+  "slots_per_tier": {
+    "1": 2,
+    "2": 3
+  },
+
+  "upgrade_costs": {
+    "2": {
+      "gold": 70,
+      "items": [
+        { "item_id": "herb_sprig", "qty": 6 },
+        { "item_id": "wood_bundle", "qty": 4 }
+      ]
+    }
+  },
+
+  "services_per_tier": {
+    "1": ["enchant_basic"],
+    "2": ["enchant_basic", "reroll_stats"]
+  },
+
+  "produces_item_types": ["weapon", "offhand", "accessory"],
+  "input_resource_types": ["herb_sprig", "wood_bundle", "cursed_dust", "bone_fragment"],
+
+  "allows_hero_assignment": true,
+  "max_assigned_heroes": 1,
+
+  "unlocks": [],
+
+  "crafting_recipes": [
+    {
+      "output_id": "oak_staff",
+      "output_qty": 1,
+      "required_tier": 1,
+      "equipment_type": "2h_weapon",
+      "unlock_cost": [
+        { "item_id": "wood_bundle", "qty": 2 },
+        { "item_id": "herb_sprig", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "apprentice_focus",
+      "output_qty": 1,
+      "required_tier": 1,
+      "equipment_type": "offhand",
+      "unlock_cost": [
+        { "item_id": "wood_bundle", "qty": 1 },
+        { "item_id": "herb_sprig", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "simple_ring",
+      "output_qty": 1,
+      "required_tier": 1,
+      "equipment_type": "accessory",
+      "unlock_cost": [
+        { "item_id": "herb_sprig", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "lucky_charm",
+      "output_qty": 1,
+      "required_tier": 1,
+      "equipment_type": "accessory",
+      "unlock_cost": [
+        { "item_id": "herb_sprig", "qty": 1 },
+        { "item_id": "wood_bundle", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "arcane_staff",
+      "output_qty": 1,
+      "required_tier": 2,
+      "equipment_type": "2h_weapon",
+      "unlock_cost": [
+        { "item_id": "wood_bundle", "qty": 3 },
+        { "item_id": "herb_sprig", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "wooden_focus",
+      "output_qty": 1,
+      "required_tier": 2,
+      "equipment_type": "offhand",
+      "unlock_cost": [
+        { "item_id": "wood_bundle", "qty": 2 },
+        { "item_id": "herb_sprig", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "silver_ring",
+      "output_qty": 1,
+      "required_tier": 2,
+      "equipment_type": "accessory",
+      "unlock_cost": [
+        { "item_id": "herb_sprig", "qty": 3 },
+        { "item_id": "cursed_dust", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "warriors_pendant",
+      "output_qty": 1,
+      "required_tier": 2,
+      "equipment_type": "accessory",
+      "unlock_cost": [
+        { "item_id": "herb_sprig", "qty": 2 },
+        { "item_id": "bone_fragment", "qty": 1 }
+      ]
+    }
+  ]
+}

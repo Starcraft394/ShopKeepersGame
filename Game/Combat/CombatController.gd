@@ -22,6 +22,10 @@ signal passive_triggered(unit: CombatUnit, passive_id: String, effect_desc: Stri
 signal status_changed(unit_id: String)  # Status UI v1.6: Emitted when status applied/stacked/expired
 signal all_statuses_ticked()  # Status UI v1.6: Emitted after round-start status tick
 signal intent_decided(actor_id: String, action_type: String, ability_id: String, target_id: String)  # v1.9B: Intent surface
+signal player_input_required(unit: CombatUnit, available_actions: Array)  # Player Actions v1
+signal target_selection_required(unit: CombatUnit, valid_targets: Array, action_type: String, ability: AbilityData)  # Player Actions v1
+signal multi_action_update(unit: CombatUnit, actions_remaining: int, actions_total: int)  # Player Actions v1
+signal combat_continue_ready()  # Player Actions v1: Emitted when ready for next step (auto-flow)
 
 # ============================================================================
 # HERO CLASS MAPPING (Legacy fallback for hardcoded hero_ids)
@@ -59,6 +63,23 @@ var _encounter_boss_id: String = ""
 
 # Configuration
 const MAX_ROUNDS = 100  # Safety limit
+const ENEMY_ACTION_DELAY: float = 0.6  # Delay between enemy actions for visual clarity
+
+# ============================================================================
+# PLAYER INPUT STATE (Player Actions v1)
+# ============================================================================
+
+var _awaiting_player_input: bool = false
+var _input_unit: CombatUnit = null
+var _selected_action_type: String = ""  # "basic", "ability_a", "ability_b", "consumable"
+var _selected_ability: AbilityData = null
+
+# ============================================================================
+# MULTI-ACTION STATE (Speed Multi-Actions v1)
+# ============================================================================
+
+var _unit_remaining_actions: Dictionary = {}  # { unit_id: int }
+var _current_multi_action_unit: CombatUnit = null
 
 # ============================================================================
 # INITIALIZATION
@@ -103,6 +124,11 @@ func initialize_combat(hero_ids: Array, enemy_ids: Array, rng: RandomNumberGener
 
 	# Apply equipment stat bonuses from equipped items
 	_apply_equipment_bonuses()
+
+	# HP Clamp v1: Ensure current_health does not exceed max_health after all bonuses
+	# This fixes a bug where persisted HP from previous combat (with bonuses applied)
+	# would be restored, then bonuses applied again, causing current > max.
+	_clamp_player_hp()
 
 	# Apply combat modifier speed bonuses BEFORE TurnQueue is built
 	_apply_combat_modifier_speeds(modifier)
@@ -510,53 +536,30 @@ func _apply_verdant_renewal(healer: CombatUnit, passive: PassiveData) -> void:
 # EQUIPMENT STAT BONUSES
 # ============================================================================
 
-## Apply equipment stat bonuses to all player units.
-## Equipment is shared across the party (all heroes benefit from equipped items).
+## DEPRECATED: Equipment bonuses are now applied via GameContext.get_hero_effective_stats()
+## which is called during CombatUnit.create_hero(). This function is kept as a no-op
+## for compatibility but does nothing. Equipment stats are per-hero and include all
+## 7 equipment slots: weapon, offhand, helmet, armor, legs, ring, amulet.
 func _apply_equipment_bonuses() -> void:
-	var weapon_id = GameContext.get_equipped_weapon()
-	var offhand_id = GameContext.get_equipped_offhand()
+	# No-op: Equipment bonuses already included in hero effective stats
+	# See GameContext._get_hero_equipment_stat_bonuses() for implementation
+	pass
 
-	if weapon_id == "" and offhand_id == "":
-		print("[CombatController] No equipment equipped")
-		return
 
-	print("[CombatController] Applying equipment bonuses...")
+# ============================================================================
+# HP CLAMP (Bug Fix: current_health exceeding max_health)
+# ============================================================================
 
-	# Get item templates
-	var weapon_template = DataRegistry.get_item_template(weapon_id) if weapon_id != "" else null
-	var offhand_template = DataRegistry.get_item_template(offhand_id) if offhand_id != "" else null
-
-	# Apply to all player units
+## Clamp all player unit current_health to not exceed max_health.
+## Called after all stat bonuses (passives, race, equipment) are applied.
+## Fixes bug where persisted HP from previous combat (with bonuses) would be
+## restored, then bonuses applied again, causing current_health > max_health.
+func _clamp_player_hp() -> void:
 	for unit in _player_units:
-		if weapon_template != null:
-			_apply_item_stats(unit, weapon_template, "weapon")
-		if offhand_template != null:
-			_apply_item_stats(unit, offhand_template, "offhand")
-
-
-## Apply stats from a single item template to a unit.
-func _apply_item_stats(unit: CombatUnit, template: ItemTemplate, slot: String) -> void:
-	var stats = template.base_stats
-	var changes: Array[String] = []
-
-	var atk_bonus = stats.get("attack", 0)
-	if atk_bonus > 0:
-		unit.attack += atk_bonus
-		changes.append("+%d ATK" % atk_bonus)
-
-	var def_bonus = stats.get("defense", 0)
-	if def_bonus > 0:
-		unit.defense += def_bonus
-		changes.append("+%d DEF" % def_bonus)
-
-	var spd_bonus = stats.get("speed", 0)
-	if spd_bonus > 0:
-		unit.speed += spd_bonus
-		changes.append("+%d SPD" % spd_bonus)
-
-	if changes.size() > 0:
-		print("[CombatController] %s: %s from %s (%s)" % [
-			unit.display_name, ", ".join(changes), template.display_name, slot])
+		if unit.current_health > unit.max_health:
+			print("[HP] clamp unit=%s current=%d max=%d (clamped to %d)" % [
+				unit.display_name, unit.current_health, unit.max_health, unit.max_health])
+			unit.current_health = unit.max_health
 
 
 # ============================================================================
@@ -754,8 +757,26 @@ func _trigger_on_kill_passives(killer: CombatUnit, target_id: String = "") -> vo
 func step_one_turn() -> Array:
 	_pending_actions.clear()
 
-	if not _is_combat_active:
+	if not _is_combat_active or _awaiting_player_input:
 		return _pending_actions
+
+	# Continue multi-action unit if they have remaining actions
+	if _current_multi_action_unit != null:
+		var remaining = _unit_remaining_actions.get(_current_multi_action_unit.unit_id, 0)
+		if remaining > 0 and _current_multi_action_unit.is_alive:
+			_process_unit_turn_step(_current_multi_action_unit)
+			# After processing, check if we need to emit signal
+			# (_consume_action may have ended the turn and set _current_multi_action_unit = null)
+			if _current_multi_action_unit == null:
+				# Turn ended during action processing - need to signal for next turn
+				if not _check_combat_end():
+					if not _awaiting_player_input:
+						combat_continue_ready.emit()
+			return _pending_actions
+		else:
+			# Done with this unit
+			_current_multi_action_unit = null
+			_turn_queue.advance()
 
 	# Check if round is complete, start new round if needed
 	if _turn_queue.is_round_complete():
@@ -767,6 +788,7 @@ func step_one_turn() -> Array:
 		_tick_all_statuses()
 		_turn_queue.start_new_round()
 		_apply_round_start_passives()  # Trigger round-start passives (e.g., verdant_renewal)
+		_unit_remaining_actions.clear()  # Reset action counts for new round
 		round_ended.emit(_current_round)
 
 	# Get next unit
@@ -774,14 +796,23 @@ func step_one_turn() -> Array:
 	if unit == null:
 		return _pending_actions
 
+	# Initialize action count for this unit if not already set
+	if not _unit_remaining_actions.has(unit.unit_id):
+		var eff_speed = unit.get_effective_speed()
+		_unit_remaining_actions[unit.unit_id] = _calculate_actions_for_speed(eff_speed)
+		print("[MultiAction] unit=%s speed=%d actions=%d" % [
+			unit.display_name, eff_speed, _unit_remaining_actions[unit.unit_id]])
+
+	_current_multi_action_unit = unit
+
 	# Process this unit's turn
 	_process_unit_turn_step(unit)
 
-	# Advance queue
-	_turn_queue.advance()
-
-	# Check combat end
-	_check_combat_end()
+	# Check combat end (don't advance queue here - handled by _consume_action)
+	if not _check_combat_end():
+		# If not awaiting player input, signal to continue
+		if not _awaiting_player_input:
+			combat_continue_ready.emit()
 
 	return _pending_actions
 
@@ -861,8 +892,12 @@ func _unit_to_snapshot(unit: CombatUnit) -> Dictionary:
 		"base_defense": unit.defense,
 		"weapon_cooldown": unit.weapon_ability_cooldown,
 		"weapon_max_cooldown": unit.weapon_ability_max_cooldown,
+		"ability_a_id": unit.ability_a_id,
+		"ability_b_id": unit.ability_b_id,
 		"ability_a_cooldown": unit.ability_a_cooldown,
 		"ability_b_cooldown": unit.ability_b_cooldown,
+		"passive_a_id": unit.passive_a_id,
+		"passive_b_id": unit.passive_b_id,
 		"statuses": statuses,
 		"active_statuses_v1": v1_statuses,
 		"active_buffs": unit.active_buffs.size(),
@@ -925,6 +960,62 @@ func _find_unit_by_id(unit_id: String) -> CombatUnit:
 ## Returns the CombatUnit or null if not found.
 func get_unit_by_id(unit_id: String) -> CombatUnit:
 	return _find_unit_by_id(unit_id)
+
+
+## Get CombatUnit by source_id (hero_id or monster_id).
+## Used for looking up combat units when you only have the GameContext hero_id.
+func get_unit_by_source_id(source_id: String) -> CombatUnit:
+	for unit in _all_units:
+		if unit.source_id == source_id:
+			return unit
+	return null
+
+
+## Get combat stats for a unit as a safe dictionary (avoids RefCounted property access issues).
+## Returns {"valid": false} if unit not found or invalid.
+## Uses get() for ALL property access to prevent crashes on RefCounted objects.
+## Accepts either source_id (hero_id) or unit_id for flexible lookup.
+func get_unit_combat_stats(lookup_id: String) -> Dictionary:
+	DebugLog.combat("get_unit_combat_stats called with lookup_id=%s, _all_units.size()=%d" % [lookup_id, _all_units.size()])
+	for unit in _all_units:
+		if unit == null:
+			continue
+		# Use get() for safe property access on RefCounted objects
+		var src_id = unit.get("source_id")
+		var u_id = unit.get("unit_id")
+		var alive = unit.get("is_alive")
+		DebugLog.combat("  Checking unit: source_id=%s, unit_id=%s, alive=%s" % [str(src_id), str(u_id), str(alive)])
+		# Match by either source_id or unit_id
+		if (src_id != lookup_id and u_id != lookup_id) or alive != true:
+			continue
+		# Safely get all stats using get() - returns null if property access fails
+		# NOTE: Properties are current_health and max_health (not current_hp/max_hp)
+		var hp = unit.get("current_health")
+		var max_hp_val = unit.get("max_health")
+		if hp == null or max_hp_val == null:
+			DebugLog.warn("  Found unit but current_health/max_health is null")
+			continue
+		# For methods, check they exist and call safely
+		var attack_val = 0
+		var defense_val = 0
+		var speed_val = 0
+		if unit.has_method("get_effective_attack"):
+			attack_val = unit.get_effective_attack()
+		if unit.has_method("get_effective_defense"):
+			defense_val = unit.get_effective_defense()
+		if unit.has_method("get_effective_speed"):
+			speed_val = unit.get_effective_speed()
+		DebugLog.combat("  FOUND: hp=%d/%d atk=%d def=%d spd=%d" % [hp, max_hp_val, attack_val, defense_val, speed_val])
+		return {
+			"current_hp": hp,
+			"max_hp": max_hp_val,
+			"attack": attack_val,
+			"defense": defense_val,
+			"speed": speed_val,
+			"valid": true
+		}
+	DebugLog.warn("get_unit_combat_stats: unit not found for lookup_id=%s" % lookup_id)
+	return {"valid": false}
 
 
 ## Status UI v1.6.2: Get sorted status snapshot for a specific unit.
@@ -1030,14 +1121,20 @@ func _process_unit_turn(unit: CombatUnit) -> void:
 
 ## Process unit turn for step-based combat (stores actions in _pending_actions).
 func _process_unit_turn_step(unit: CombatUnit) -> void:
+	# v2.1 Fix: Guard against null unit to prevent crash
+	if unit == null:
+		push_warning("[Combat] _process_unit_turn_step called with null unit, skipping turn")
+		return
+
 	_current_turn += 1
 	_result.total_turns = _current_turn
 
-	turn_started.emit(unit)
+	# Emit multi-action update for UI
+	var total_actions = _calculate_actions_for_speed(unit.get_effective_speed())
+	var remaining = _unit_remaining_actions.get(unit.unit_id, 1)
+	multi_action_update.emit(unit, remaining, total_actions)
 
-	# Consumables v1: Auto-use consumable for player heroes at turn start
-	if unit.team == CombatUnit.Team.PLAYER:
-		_try_auto_use_consumable(unit)
+	turn_started.emit(unit)
 
 	# Process turn start - check if stunned (legacy StatusRuntime)
 	var can_act = unit.statuses.process_turn_start()
@@ -1051,11 +1148,30 @@ func _process_unit_turn_step(unit: CombatUnit) -> void:
 		_pending_actions.append(action)
 		_result.add_action(action)
 		action_performed.emit(action)
-	else:
-		_execute_unit_action_step(unit)
+		_finish_unit_action(unit)
+		return
 
-	# Process turn end
-	unit.tick_cooldowns()
+	# Branch: Player vs Enemy
+	if unit.team == CombatUnit.Team.PLAYER:
+		# Player turn - wait for input
+		_awaiting_player_input = true
+		_input_unit = unit
+		var available = _get_available_actions(unit)
+		print("[Combat] Emitting player_input_required for %s (actions=%d)" % [unit.display_name, available.size()])
+		player_input_required.emit(unit, available)
+		print("[Combat] player_input_required emitted, awaiting_player_input=%s" % str(_awaiting_player_input))
+		# Do NOT continue - wait for player input via submit_player_action/target
+	else:
+		# Enemy AI - auto-use consumable and execute
+		_try_auto_use_consumable(unit)
+		_execute_unit_action_step(unit)
+		_finish_unit_action(unit)
+
+
+## Finish a unit's action: process doom, consume action.
+## Note: Cooldowns tick in _consume_action() when the unit's full turn ends (not per action).
+func _finish_unit_action(unit: CombatUnit) -> void:
+	# Process doom damage (happens per action for consistent behavior)
 	var doom_damage = unit.statuses.process_turn_end()
 
 	if doom_damage > 0:
@@ -1072,6 +1188,9 @@ func _process_unit_turn_step(unit: CombatUnit) -> void:
 			action_performed.emit(death_action)
 
 	turn_ended.emit(unit)
+
+	# Consume action and potentially advance queue
+	_consume_action(unit)
 
 
 func _execute_unit_action(unit: CombatUnit) -> void:
@@ -1348,18 +1467,40 @@ func _execute_class_ability_step(unit: CombatUnit, ability: AbilityData, ability
 		"damage":
 			_execute_damage_ability(unit, ability, ability_type)
 		"heal":
-			_execute_heal_ability(unit, ability, ability_type)
+			# Check for cleansing heal (all_allies + cleanses_debuffs)
+			if ability.target_type == "all_allies" and ability.cleanses_debuffs > 0:
+				_execute_cleanse_heal_ability(unit, ability, ability_type)
+			elif ability.target_type == "all_allies":
+				_execute_aoe_heal_ability(unit, ability, ability_type)
+			else:
+				_execute_heal_ability(unit, ability, ability_type)
 		"buff":
-			_execute_buff_ability(unit, ability, ability_type)
+			# Check for AoE buff (all_allies)
+			if ability.target_type == "all_allies":
+				_execute_aoe_buff_ability(unit, ability, ability_type)
+			else:
+				_execute_buff_ability(unit, ability, ability_type)
+		"damage_and_heal":
+			_execute_drain_ability(unit, ability, ability_type)
+		"debuff":
+			# Debuff-only abilities (e.g., void_anchor)
+			_execute_debuff_ability(unit, ability, ability_type)
 		_:
 			# Fallback: treat as damage ability
 			_execute_damage_ability(unit, ability, ability_type)
 
 
 ## Execute a damage-type ability (guardian_challenge, aegis_slam, twin_strike).
+## Supports single target and AoE (all_enemies) abilities.
 func _execute_damage_ability(unit: CombatUnit, ability: AbilityData, ability_type: String) -> void:
-	# Get enemy target
 	var enemies = TargetingPolicy.get_enemies_for_team(_all_units, unit.team)
+
+	# Check for AoE ability (all_enemies)
+	if ability.target_type == "all_enemies":
+		_execute_aoe_damage_ability(unit, ability, ability_type, enemies)
+		return
+
+	# Single target ability
 	var target = _targeting_policy.select_target(unit, enemies)
 
 	if target == null:
@@ -1380,13 +1521,19 @@ func _execute_damage_ability(unit: CombatUnit, ability: AbilityData, ability_typ
 			break
 
 		var raw_damage = _calculate_ability_damage(unit, ability)
-		var actual_damage = target.take_damage(raw_damage, ability.damage_type)
+		# Apply armor piercing if ability has it
+		var actual_damage: int
+		if ability.armor_piercing:
+			actual_damage = target.take_damage(raw_damage, "true")  # True damage ignores defense
+		else:
+			actual_damage = target.take_damage(raw_damage, ability.damage_type)
 		total_damage += actual_damage
 		hits_landed += 1
 
 		# Log in required format
-		print("[Ability] %s caster=%s target=%s dmg=%d hit=%d/%d" % [
-			ability.ability_id, unit.display_name, target.display_name, actual_damage, i + 1, hits])
+		print("[Ability] %s caster=%s target=%s dmg=%d hit=%d/%d%s" % [
+			ability.ability_id, unit.display_name, target.display_name, actual_damage, i + 1, hits,
+			" (piercing)" if ability.armor_piercing else ""])
 
 	# Create action for UI
 	var action = CombatAction.create_ability_attack(unit, target, ability.ability_id, ability.display_name, total_damage)
@@ -1403,6 +1550,13 @@ func _execute_damage_ability(unit: CombatUnit, ability: AbilityData, ability_typ
 	if ability.applies_status_id != "":
 		_apply_ability_status(target, ability, unit)
 
+	# Apply enemy debuff if ability has one (e.g., entropy_blast)
+	if not ability.enemy_debuff.is_empty():
+		_apply_enemy_debuff(target, ability.enemy_debuff, ability.ability_id)
+
+	# Apply self buff/debuff if ability has them (e.g., fungal_frenzy)
+	_apply_self_effects(unit, ability)
+
 	# Handle death
 	if not target.is_alive:
 		var death_action = CombatAction.create_death(target)
@@ -1410,6 +1564,63 @@ func _execute_damage_ability(unit: CombatUnit, ability: AbilityData, ability_typ
 		_result.add_action(death_action)
 		action_performed.emit(death_action)
 		_trigger_on_kill_passives(unit, target.source_id)
+
+
+## Execute an AoE damage ability (spore_cloud, storm_surge, etc.)
+func _execute_aoe_damage_ability(unit: CombatUnit, ability: AbilityData, ability_type: String, enemies: Array) -> void:
+	var alive_enemies = enemies.filter(func(e): return e.is_alive)
+	if alive_enemies.is_empty():
+		return
+
+	var total_damage = 0
+	var targets_hit = 0
+
+	for enemy in alive_enemies:
+		var raw_damage = _calculate_ability_damage(unit, ability)
+		var actual_damage: int
+		if ability.armor_piercing:
+			actual_damage = enemy.take_damage(raw_damage, "true")
+		else:
+			actual_damage = enemy.take_damage(raw_damage, ability.damage_type)
+		total_damage += actual_damage
+		targets_hit += 1
+
+		print("[Ability] %s caster=%s target=%s dmg=%d (AoE %d/%d)" % [
+			ability.ability_id, unit.display_name, enemy.display_name, actual_damage,
+			targets_hit, alive_enemies.size()])
+
+		# Apply status effect to each target
+		if ability.applies_status_id != "":
+			_apply_ability_status(enemy, ability, unit)
+
+		# Apply enemy debuff to each target
+		if not ability.enemy_debuff.is_empty():
+			_apply_enemy_debuff(enemy, ability.enemy_debuff, ability.ability_id)
+
+	# Create action for UI (use first target for display)
+	var action = CombatAction.create_ability_attack(unit, alive_enemies[0], ability.ability_id, ability.display_name, total_damage)
+	action.is_aoe = true
+	action.targets_hit = targets_hit
+	_pending_actions.append(action)
+	_result.add_action(action)
+	action_performed.emit(action)
+
+	# Put ability on cooldown
+	_put_ability_on_cooldown(unit, ability_type)
+	print("[CD] set ability=%s unit=%s cd=%d" % [ability.ability_id, unit.display_name,
+		unit.ability_a_cooldown if ability_type == "ability_a" else unit.ability_b_cooldown])
+
+	# Apply self effects
+	_apply_self_effects(unit, ability)
+
+	# Check for deaths
+	for enemy in alive_enemies:
+		if not enemy.is_alive:
+			var death_action = CombatAction.create_death(enemy)
+			_pending_actions.append(death_action)
+			_result.add_action(death_action)
+			action_performed.emit(death_action)
+			_trigger_on_kill_passives(unit, enemy.source_id)
 
 
 ## Execute a heal-type ability (natures_grace).
@@ -1501,6 +1712,325 @@ func _execute_buff_ability(unit: CombatUnit, ability: AbilityData, ability_type:
 		unit.ability_a_cooldown if ability_type == "ability_a" else unit.ability_b_cooldown])
 
 
+## Execute an AoE heal ability (healing_tide for all allies, etc.)
+func _execute_aoe_heal_ability(unit: CombatUnit, ability: AbilityData, ability_type: String) -> void:
+	var allies = _player_units if unit.team == CombatUnit.Team.PLAYER else _enemy_units
+	var alive_allies = allies.filter(func(a): return a.is_alive)
+
+	if alive_allies.is_empty():
+		return
+
+	var targets_healed = 0
+	var total_heal = 0
+
+	for ally in alive_allies:
+		var hp_before = ally.current_health
+		var actual_heal = ally.heal(ability.base_heal)
+		var hp_after = ally.current_health
+		total_heal += actual_heal
+		targets_healed += 1
+
+		print("[Ability] %s caster=%s target=%s heal=%d hp_before=%d hp_after=%d (AoE %d/%d)" % [
+			ability.ability_id, unit.display_name, ally.display_name, actual_heal, hp_before, hp_after,
+			targets_healed, alive_allies.size()])
+
+	# Create action for UI
+	var action = CombatAction.create_heal(unit, alive_allies[0], ability.ability_id, ability.display_name, total_heal)
+	action.is_aoe = true
+	action.targets_hit = targets_healed
+	_pending_actions.append(action)
+	_result.add_action(action)
+	action_performed.emit(action)
+
+	# Put ability on cooldown
+	_put_ability_on_cooldown(unit, ability_type)
+	print("[CD] set ability=%s unit=%s cd=%d" % [ability.ability_id, unit.display_name,
+		unit.ability_a_cooldown if ability_type == "ability_a" else unit.ability_b_cooldown])
+
+
+## Execute an AoE buff ability (raise_dead, etc.)
+func _execute_aoe_buff_ability(unit: CombatUnit, ability: AbilityData, ability_type: String) -> void:
+	var allies = _player_units if unit.team == CombatUnit.Team.PLAYER else _enemy_units
+	var alive_allies = allies.filter(func(a): return a.is_alive)
+
+	if alive_allies.is_empty():
+		return
+
+	var targets_buffed = 0
+
+	# Build buff stats from ally_buff or buff_stats
+	var buff_stats: Dictionary = {}
+	var duration: int = 3
+
+	if not ability.ally_buff.is_empty():
+		var stats_arr = ability.ally_buff.get("stats", [])
+		var value = int(ability.ally_buff.get("value", 0))
+		duration = int(ability.ally_buff.get("duration", 3))
+		for stat in stats_arr:
+			buff_stats[stat] = value
+	elif not ability.buff_stats.is_empty():
+		buff_stats = ability.buff_stats
+		duration = ability.buff_duration if ability.buff_duration > 0 else 3
+
+	for ally in alive_allies:
+		ally.apply_buff(ability.ability_id, buff_stats, duration)
+		targets_buffed += 1
+
+		print("[Ability] %s caster=%s target=%s buff=%s duration=%d (AoE %d/%d)" % [
+			ability.ability_id, unit.display_name, ally.display_name,
+			JSON.stringify(buff_stats), duration, targets_buffed, alive_allies.size()])
+
+	# Create action for UI
+	var buff_desc = ", ".join(buff_stats.keys().map(func(k): return "+%d %s" % [buff_stats[k], k.to_upper()]))
+	var action = CombatAction.create_buff(unit, alive_allies[0], ability.ability_id, ability.display_name, buff_desc)
+	action.is_aoe = true
+	action.targets_hit = targets_buffed
+	_pending_actions.append(action)
+	_result.add_action(action)
+	action_performed.emit(action)
+
+	# Put ability on cooldown
+	_put_ability_on_cooldown(unit, ability_type)
+	print("[CD] set ability=%s unit=%s cd=%d" % [ability.ability_id, unit.display_name,
+		unit.ability_a_cooldown if ability_type == "ability_a" else unit.ability_b_cooldown])
+
+
+## Execute a debuff-only ability (void_anchor).
+func _execute_debuff_ability(unit: CombatUnit, ability: AbilityData, ability_type: String) -> void:
+	var enemies = TargetingPolicy.get_enemies_for_team(_all_units, unit.team)
+
+	# Check for AoE debuff
+	if ability.target_type == "all_enemies":
+		var alive_enemies = enemies.filter(func(e): return e.is_alive)
+		if alive_enemies.is_empty():
+			return
+
+		for enemy in alive_enemies:
+			# Apply status effect if present
+			if ability.applies_status_id != "":
+				_apply_ability_status(enemy, ability, unit)
+
+			# Apply enemy debuff
+			if not ability.enemy_debuff.is_empty():
+				_apply_enemy_debuff(enemy, ability.enemy_debuff, ability.ability_id)
+
+			print("[Ability] %s caster=%s target=%s debuff applied" % [
+				ability.ability_id, unit.display_name, enemy.display_name])
+
+		# Create action for UI
+		var action = CombatAction.new()
+		action.action_type = CombatAction.ActionType.BUFF
+		action.actor_id = unit.unit_id
+		action.actor_name = unit.display_name
+		action.target_id = alive_enemies[0].unit_id
+		action.target_name = alive_enemies[0].display_name
+		action.ability_id = ability.ability_id
+		action.ability_name = ability.display_name
+		action.is_aoe = true
+		action.targets_hit = alive_enemies.size()
+		_pending_actions.append(action)
+		_result.add_action(action)
+		action_performed.emit(action)
+	else:
+		# Single target debuff
+		var target = _targeting_policy.select_target(unit, enemies)
+		if target == null:
+			return
+
+		if ability.applies_status_id != "":
+			_apply_ability_status(target, ability, unit)
+
+		if not ability.enemy_debuff.is_empty():
+			_apply_enemy_debuff(target, ability.enemy_debuff, ability.ability_id)
+
+		print("[Ability] %s caster=%s target=%s debuff applied" % [
+			ability.ability_id, unit.display_name, target.display_name])
+
+		var action = CombatAction.new()
+		action.action_type = CombatAction.ActionType.BUFF
+		action.actor_id = unit.unit_id
+		action.actor_name = unit.display_name
+		action.target_id = target.unit_id
+		action.target_name = target.display_name
+		action.ability_id = ability.ability_id
+		action.ability_name = ability.display_name
+		_pending_actions.append(action)
+		_result.add_action(action)
+		action_performed.emit(action)
+
+	# Apply self effects (e.g., taunt on self)
+	_apply_self_effects(unit, ability)
+
+	# Put ability on cooldown
+	_put_ability_on_cooldown(unit, ability_type)
+	print("[CD] set ability=%s unit=%s cd=%d" % [ability.ability_id, unit.display_name,
+		unit.ability_a_cooldown if ability_type == "ability_a" else unit.ability_b_cooldown])
+
+
+## Apply self-buff and self-debuff from an ability (e.g., fungal_frenzy, smoke_dash).
+func _apply_self_effects(unit: CombatUnit, ability: AbilityData) -> void:
+	# Apply self buff
+	if not ability.self_buff.is_empty():
+		var stat = ability.self_buff.get("stat", "")
+		var value = int(ability.self_buff.get("value", 0))
+		var duration = int(ability.self_buff.get("duration", 2))
+		if stat != "" and value != 0:
+			var buff_stats = {stat: value}
+			unit.apply_buff(ability.ability_id + "_self", buff_stats, duration)
+			print("[Ability] %s self_buff=%s +%d for %d rounds" % [
+				ability.ability_id, stat, value, duration])
+
+	# Apply self debuff
+	if not ability.self_debuff.is_empty():
+		var stat = ability.self_debuff.get("stat", "")
+		var value = int(ability.self_debuff.get("value", 0))
+		var duration = int(ability.self_debuff.get("duration", 2))
+		if stat != "" and value != 0:
+			var debuff_stats = {stat: value}  # Value is already negative
+			unit.apply_buff(ability.ability_id + "_self_debuff", debuff_stats, duration)
+			print("[Ability] %s self_debuff=%s %d for %d rounds" % [
+				ability.ability_id, stat, value, duration])
+
+	# Apply self damage (HP cost)
+	if ability.self_damage > 0:
+		var hp_before = unit.current_health
+		unit.current_health = maxi(1, unit.current_health - ability.self_damage)
+		print("[Ability] %s self_damage=%d hp_before=%d hp_after=%d" % [
+			ability.ability_id, ability.self_damage, hp_before, unit.current_health])
+
+
+## Apply enemy debuff from an ability (e.g., void_anchor, entropy_blast).
+func _apply_enemy_debuff(target: CombatUnit, debuff: Dictionary, ability_id: String) -> void:
+	var stat = debuff.get("stat", "")
+	var value = int(debuff.get("value", 0))
+	var duration = int(debuff.get("duration", 2))
+	if stat == "" or value == 0:
+		return
+
+	var debuff_stats = {stat: value}
+	target.apply_buff(ability_id + "_debuff", debuff_stats, duration)
+	print("[Ability] %s enemy_debuff=%s %d for %d rounds target=%s" % [
+		ability_id, stat, value, duration, target.display_name])
+
+
+## Execute a damage_and_heal ability (life_drain).
+## Damages an enemy and heals an ally based on the damage dealt.
+func _execute_drain_ability(unit: CombatUnit, ability: AbilityData, ability_type: String) -> void:
+	# Get damage target (enemy)
+	var enemies = TargetingPolicy.get_enemies_for_team(_all_units, unit.team)
+	var damage_target = _targeting_policy.select_target(unit, enemies)
+
+	if damage_target == null:
+		return
+
+	# Deal damage
+	var raw_damage = _calculate_ability_damage(unit, ability)
+	var actual_damage = damage_target.take_damage(raw_damage, ability.damage_type)
+
+	print("[Ability] %s caster=%s damage_target=%s dmg=%d" % [
+		ability.ability_id, unit.display_name, damage_target.display_name, actual_damage])
+
+	# Find heal target
+	var heal_target: CombatUnit = null
+	var heal_rule = ability.heal_target_rule if ability.heal_target_rule != "" else "lowest_hp_pct"
+
+	if heal_rule == "lowest_hp_pct":
+		heal_target = _find_lowest_hp_ally(unit)
+	else:
+		heal_target = unit  # Default to self
+
+	# Apply heal
+	if heal_target != null:
+		var heal_amount = ability.base_heal if ability.base_heal > 0 else int(actual_damage * 0.5)
+		var hp_before = heal_target.current_health
+		var actual_heal = heal_target.heal(heal_amount)
+		var hp_after = heal_target.current_health
+
+		print("[Ability] %s caster=%s heal_target=%s heal=%d hp_before=%d hp_after=%d" % [
+			ability.ability_id, unit.display_name, heal_target.display_name, actual_heal, hp_before, hp_after])
+
+	# Create action for UI
+	var action = CombatAction.create_ability_attack(unit, damage_target, ability.ability_id, ability.display_name, actual_damage)
+	_pending_actions.append(action)
+	_result.add_action(action)
+	action_performed.emit(action)
+
+	# Put ability on cooldown
+	_put_ability_on_cooldown(unit, ability_type)
+	print("[CD] set ability=%s unit=%s cd=%d" % [ability.ability_id, unit.display_name,
+		unit.ability_a_cooldown if ability_type == "ability_a" else unit.ability_b_cooldown])
+
+	# Apply status effect if ability has one
+	if ability.applies_status_id != "":
+		_apply_ability_status(damage_target, ability, unit)
+
+	# Handle death
+	if not damage_target.is_alive:
+		var death_action = CombatAction.create_death(damage_target)
+		_pending_actions.append(death_action)
+		_result.add_action(death_action)
+		action_performed.emit(death_action)
+		_trigger_on_kill_passives(unit, damage_target.source_id)
+
+
+## Execute a heal ability that also cleanses debuffs (cleansing_wave).
+func _execute_cleanse_heal_ability(unit: CombatUnit, ability: AbilityData, ability_type: String) -> void:
+	var allies = _player_units if unit.team == CombatUnit.Team.PLAYER else _enemy_units
+	var alive_allies = allies.filter(func(a): return a.is_alive)
+
+	if alive_allies.is_empty():
+		return
+
+	var targets_healed = 0
+
+	for ally in alive_allies:
+		var hp_before = ally.current_health
+		var actual_heal = ally.heal(ability.base_heal)
+		var hp_after = ally.current_health
+
+		# Cleanse debuffs
+		var cleansed = []
+		if ability.cleanses_debuffs > 0:
+			cleansed = _cleanse_debuffs_from_unit(ally, ability.cleanses_debuffs)
+
+		targets_healed += 1
+		print("[Ability] %s caster=%s target=%s heal=%d hp_before=%d hp_after=%d cleansed=%s" % [
+			ability.ability_id, unit.display_name, ally.display_name, actual_heal, hp_before, hp_after, str(cleansed)])
+
+	# Create action for UI
+	var action = CombatAction.create_heal(unit, alive_allies[0], ability.ability_id, ability.display_name, ability.base_heal)
+	action.is_aoe = true
+	action.targets_hit = targets_healed
+	_pending_actions.append(action)
+	_result.add_action(action)
+	action_performed.emit(action)
+
+	# Put ability on cooldown
+	_put_ability_on_cooldown(unit, ability_type)
+	print("[CD] set ability=%s unit=%s cd=%d" % [ability.ability_id, unit.display_name,
+		unit.ability_a_cooldown if ability_type == "ability_a" else unit.ability_b_cooldown])
+
+
+## Cleanse up to N debuffs from a unit.
+## Returns array of cleansed status IDs.
+func _cleanse_debuffs_from_unit(unit: CombatUnit, count: int) -> Array:
+	var cleansed: Array = []
+	var debuff_ids = ["poisoned", "bleeding", "burning", "stunned", "weakened", "slowed"]
+
+	var i = 0
+	while i < unit.active_statuses.size() and cleansed.size() < count:
+		var status = unit.active_statuses[i]
+		var status_id = status.get("id", "")
+		if status_id in debuff_ids:
+			cleansed.append(status_id)
+			unit.active_statuses.remove_at(i)
+			print("[Status] cleansed unit=%s id=%s" % [unit.display_name, status_id])
+		else:
+			i += 1
+
+	return cleansed
+
+
 ## Find the lowest HP% ally (including caster).
 func _find_lowest_hp_ally(caster: CombatUnit) -> CombatUnit:
 	var allies = _player_units if caster.team == CombatUnit.Team.PLAYER else _enemy_units
@@ -1575,10 +2105,23 @@ func _check_combat_end() -> bool:
 		_result.set_context(ctx)
 		_result.is_boss_encounter = _encounter_is_boss
 		_result.calculate_rewards(_enemy_units)
-		# Apply rewards to run stash (guarded against double-add)
+		# Apply rewards (guarded against double-add)
 		if not _result._stash_applied:
 			_result._stash_applied = true
-			GameContext.add_rewards(_result.gold_earned, _result.items_dropped)
+			# Gold goes directly to stash (no recipient choice)
+			GameContext.add_rewards(_result.gold_earned, [])
+			# Items become pending acquisitions for player routing
+			for item in _result.items_dropped:
+				var drop_id = ""
+				var drop_quality = 0
+				if item is ItemInstance:
+					drop_id = item.template_id
+					drop_quality = item.quality_tier
+				elif item is Dictionary:
+					drop_id = item.get("item_id", item.get("template_id", ""))
+					drop_quality = int(item.get("quality_tier", 0))
+				if drop_id != "":
+					GameContext.acquire_item_with_recipient(drop_id, 1, drop_quality, "combat")
 			# Apply dungeon floor bonus using SNAPSHOT values (not mutable GameContext state)
 			GameContext.apply_dungeon_floor_reward_snapshot(
 				_encounter_dungeon_id,
@@ -1588,7 +2131,7 @@ func _check_combat_end() -> bool:
 				_encounter_boss_id,
 				_rng
 			)
-			print("[RunStash] Gold=%d Items=%d" % [GameContext.run_gold, GameContext.run_items.size()])
+			print("[RunStash] Gold=%d Items=%d Pending=%d" % [GameContext.run_gold, GameContext.run_items.size(), GameContext.get_all_pending_acquisitions().size()])
 		# Health Persistence v1: Save surviving heroes' HP
 		_persist_hero_hp()
 		combat_ended.emit(_result)
@@ -1637,21 +2180,21 @@ func _try_auto_use_consumable(unit: CombatUnit) -> void:
 	# Check HP ratio - if <= 50%, look for healing
 	var hp_ratio = float(unit.current_health) / float(unit.max_health)
 	if hp_ratio <= 0.5:
-		var heal_info = GameContext.find_healing_consumable()
+		var heal_info = GameContext.find_healing_consumable(hero_id)
 		if not heal_info.is_empty():
 			_use_healing_consumable(unit, heal_info)
 			return
 
 	# Check for DOT statuses (poisoned, bleeding)
 	if _unit_has_dot_status(unit):
-		var cleanse_info = GameContext.find_cleanse_consumable("dot")
+		var cleanse_info = GameContext.find_cleanse_consumable("dot", hero_id)
 		if not cleanse_info.is_empty():
 			_use_cleanse_consumable(unit, cleanse_info, "dot")
 			return
 
 	# Check for stunned status
 	if unit.is_action_blocked_by_status():
-		var stun_info = GameContext.find_cleanse_consumable("stun")
+		var stun_info = GameContext.find_cleanse_consumable("stun", hero_id)
 		if not stun_info.is_empty():
 			_use_cleanse_consumable(unit, stun_info, "stun")
 			return
@@ -1671,17 +2214,18 @@ func _use_healing_consumable(unit: CombatUnit, heal_info: Dictionary) -> void:
 	var item_id = heal_info.get("item_id", "")
 	var heal_amount = heal_info.get("use_value", 12)  # Default 12 for heal_small
 	var source = heal_info.get("source", "dungeon")
+	var bag_hero_id = heal_info.get("hero_id", "")
 
 	var hp_before = unit.current_health
 	var actual_heal = unit.heal(heal_amount)
 	var hp_after = unit.current_health
 
-	# Consume item from stash
-	GameContext.consume_stash_item(item_id, source)
+	# Consume item from stash or hero bag
+	GameContext.consume_stash_item(item_id, source, bag_hero_id)
 	GameContext.mark_consumable_used(unit.unit_id)
 
-	print("[Consumable] use unit=%s hero=%s item=%s effect=heal hp_before=%d hp_after=%d removed_statuses=[]" % [
-		unit.display_name, unit.unit_id, item_id, hp_before, hp_after])
+	print("[Consumable] use unit=%s hero=%s item=%s effect=heal source=%s hp_before=%d hp_after=%d removed_statuses=[]" % [
+		unit.display_name, unit.unit_id, item_id, source, hp_before, hp_after])
 
 	# Create action for UI (using ITEM_USE type for consumables)
 	var action = CombatAction.new()
@@ -1701,6 +2245,7 @@ func _use_cleanse_consumable(unit: CombatUnit, cleanse_info: Dictionary, effect_
 	var item_id = cleanse_info.get("item_id", "")
 	var use_effect = cleanse_info.get("use_effect", "")
 	var source = cleanse_info.get("source", "dungeon")
+	var bag_hero_id = cleanse_info.get("hero_id", "")
 
 	var hp_before = unit.current_health
 	var removed_statuses: Array = []
@@ -1711,12 +2256,12 @@ func _use_cleanse_consumable(unit: CombatUnit, cleanse_info: Dictionary, effect_
 	elif effect_type == "stun":
 		removed_statuses = _remove_stun_status(unit)
 
-	# Consume item from stash
-	GameContext.consume_stash_item(item_id, source)
+	# Consume item from stash or hero bag
+	GameContext.consume_stash_item(item_id, source, bag_hero_id)
 	GameContext.mark_consumable_used(unit.unit_id)
 
-	print("[Consumable] use unit=%s hero=%s item=%s effect=%s hp_before=%d hp_after=%d removed_statuses=%s" % [
-		unit.display_name, unit.unit_id, item_id, use_effect, hp_before, unit.current_health, str(removed_statuses)])
+	print("[Consumable] use unit=%s hero=%s item=%s effect=%s source=%s hp_before=%d hp_after=%d removed_statuses=%s" % [
+		unit.display_name, unit.unit_id, item_id, use_effect, source, hp_before, unit.current_health, str(removed_statuses)])
 
 	# Create action for UI (using SKIP type with descriptive reason)
 	var action = CombatAction.create_skip(unit, "Used " + item_id.replace("_", " ").capitalize())
@@ -2037,3 +2582,321 @@ func run_smoke_test() -> bool:
 	print("=".repeat(60) + "\n")
 
 	return passed
+
+
+# ============================================================================
+# PLAYER ACTIONS v1 - Multi-Action and Player Input
+# ============================================================================
+
+## Calculate number of actions based on unit speed.
+## More conservative formula to prevent action spam:
+## Speed 0-9: 1 action, 10-19: 2 actions, 20+: 3 actions (cap)
+func _calculate_actions_for_speed(speed: int) -> int:
+	if speed >= 20:
+		return 3
+	elif speed >= 10:
+		return 2
+	else:
+		return 1
+
+
+## Consume one action from the unit's remaining actions.
+## Advances turn queue when all actions exhausted.
+## Cooldowns only tick when full turn ends (all actions used).
+func _consume_action(unit: CombatUnit) -> void:
+	_unit_remaining_actions[unit.unit_id] = _unit_remaining_actions.get(unit.unit_id, 1) - 1
+	if _unit_remaining_actions[unit.unit_id] <= 0:
+		# Full turn ended - NOW tick cooldowns (once per turn, not per action)
+		unit.tick_cooldowns()
+		print("[MultiAction] %s turn ended - cooldowns ticked" % unit.display_name)
+		_current_multi_action_unit = null
+		_turn_queue.advance()
+
+
+## Get available actions for a player unit.
+func _get_available_actions(unit: CombatUnit) -> Array:
+	var actions = [{"type": "basic", "name": "Basic Attack", "enabled": true, "cooldown": 0}]
+
+	if unit.ability_a_id != "":
+		var ability = DataRegistry.get_ability(unit.ability_a_id)
+		actions.append({
+			"type": "ability_a",
+			"name": ability.display_name if ability else unit.ability_a_id,
+			"enabled": unit.is_ability_a_ready(),
+			"cooldown": unit.ability_a_cooldown,
+			"ability": ability
+		})
+
+	if unit.ability_b_id != "":
+		var ability = DataRegistry.get_ability(unit.ability_b_id)
+		actions.append({
+			"type": "ability_b",
+			"name": ability.display_name if ability else unit.ability_b_id,
+			"enabled": unit.is_ability_b_ready(),
+			"cooldown": unit.ability_b_cooldown,
+			"ability": ability
+		})
+
+	# Pass action - skip remaining actions and end turn
+	actions.append({"type": "pass", "name": "Pass", "enabled": true, "cooldown": 0})
+
+	return actions
+
+
+## Called by UI when player selects an action type.
+func submit_player_action(action_type: String) -> void:
+	print("[Combat] submit_player_action called with action_type=%s" % action_type)
+	if not _awaiting_player_input or _input_unit == null:
+		print("[Combat] submit_player_action returning early")
+		return
+
+	_selected_action_type = action_type
+
+	# Get ability if needed
+	if action_type == "ability_a":
+		_selected_ability = DataRegistry.get_ability(_input_unit.ability_a_id)
+	elif action_type == "ability_b":
+		_selected_ability = DataRegistry.get_ability(_input_unit.ability_b_id)
+	else:
+		_selected_ability = null
+
+	# Determine valid targets
+	var valid_targets = _get_valid_targets(_input_unit, action_type, _selected_ability)
+	target_selection_required.emit(_input_unit, valid_targets, action_type, _selected_ability)
+
+
+## Get valid targets for an action.
+func _get_valid_targets(unit: CombatUnit, action_type: String, ability: AbilityData) -> Array:
+	var targets = []
+
+	if ability != null:
+		match ability.target_type:
+			"single_enemy":
+				var enemies = _enemy_units if unit.team == CombatUnit.Team.PLAYER else _player_units
+				for e in enemies:
+					if e.is_alive:
+						targets.append({"unit_id": e.unit_id, "name": e.display_name, "is_ally": false})
+			"single_ally", "lowest_hp_ally":
+				var allies = _player_units if unit.team == CombatUnit.Team.PLAYER else _enemy_units
+				for a in allies:
+					if a.is_alive:
+						targets.append({"unit_id": a.unit_id, "name": a.display_name, "is_ally": true})
+			"self":
+				targets.append({"unit_id": unit.unit_id, "name": unit.display_name, "is_ally": true})
+			"all_enemies", "all_allies":
+				# AoE - no target selection needed, auto-execute
+				targets.append({"unit_id": "aoe", "name": "All", "is_ally": ability.target_type == "all_allies"})
+			_:
+				# Default to enemies for damage abilities
+				var enemies = _enemy_units if unit.team == CombatUnit.Team.PLAYER else _player_units
+				for e in enemies:
+					if e.is_alive:
+						targets.append({"unit_id": e.unit_id, "name": e.display_name, "is_ally": false})
+	else:
+		# Basic attack - target enemies
+		var enemies = _enemy_units if unit.team == CombatUnit.Team.PLAYER else _player_units
+		for e in enemies:
+			if e.is_alive:
+				targets.append({"unit_id": e.unit_id, "name": e.display_name, "is_ally": false})
+
+	return targets
+
+
+## Called by UI when player clicks a target.
+func submit_player_target(target_id: String) -> void:
+	print("[Combat] submit_player_target called with target_id=%s awaiting=%s input_unit=%s" % [
+		target_id, str(_awaiting_player_input), _input_unit.display_name if _input_unit else "null"])
+	if not _awaiting_player_input or _input_unit == null:
+		print("[Combat] submit_player_target returning early - not awaiting or no input unit")
+		return
+
+	_awaiting_player_input = false
+
+	var target: CombatUnit = null
+	if target_id != "aoe":
+		target = get_unit_by_id(target_id)
+
+	# Execute the chosen action
+	_execute_player_action(_input_unit, _selected_action_type, target, _selected_ability)
+
+	# Finish the action (doom, consume action - cooldowns tick when turn fully ends)
+	_finish_unit_action(_input_unit)
+
+	_input_unit = null
+	_selected_action_type = ""
+	_selected_ability = null
+
+	if not _check_combat_end():
+		# Auto-continue: execute enemies, then prompt next player
+		_continue_to_next_turn()
+
+
+## Execute a player-chosen action.
+func _execute_player_action(unit: CombatUnit, action_type: String, target: CombatUnit, ability: AbilityData) -> void:
+	match action_type:
+		"basic":
+			_execute_basic_attack_player(unit, target)
+		"ability_a":
+			_execute_class_ability_step(unit, ability, "ability_a")
+		"ability_b":
+			_execute_class_ability_step(unit, ability, "ability_b")
+
+
+## Execute a basic attack from player input (with specific target).
+func _execute_basic_attack_player(unit: CombatUnit, target: CombatUnit) -> void:
+	if target == null:
+		print("[Combat] %s basic attack: no target" % unit.display_name)
+		return
+
+	var eff_atk = unit.get_effective_attack()
+	var actual_damage = target.take_damage(eff_atk, "physical")
+
+	var action = CombatAction.create_attack(unit, target, actual_damage, false)
+	action.round_number = _current_round
+	action.turn_number = _current_turn
+	_pending_actions.append(action)
+	_result.add_action(action)
+	action_performed.emit(action)
+
+	print("[Combat] %s attacks %s for %d damage" % [unit.display_name, target.display_name, actual_damage])
+
+	if not target.is_alive:
+		var death_action = CombatAction.create_death(target)
+		_pending_actions.append(death_action)
+		_result.add_action(death_action)
+		action_performed.emit(death_action)
+		_trigger_on_kill_passives(unit, target.source_id)
+
+
+## Called by UI when player uses a consumable from hero bag.
+func submit_consumable_use(item_id: String, hero_id: String) -> void:
+	if not _awaiting_player_input:
+		return
+
+	var result = GameContext.use_consumable_on_hero(item_id, hero_id, "hero_bag")
+	if result.get("success", false):
+		print("[Combat] Consumable used: %s on %s - %s" % [item_id, hero_id, result.get("detail", "")])
+		GameContext.mark_consumable_used(hero_id)
+
+		# Finish the action
+		_finish_unit_action(_input_unit)
+
+		_awaiting_player_input = false
+		_input_unit = null
+
+		if not _check_combat_end():
+			# Auto-continue: execute enemies, then prompt next player
+			_continue_to_next_turn()
+	else:
+		_check_combat_end()
+
+
+## Cancel target selection and return to action selection.
+func cancel_player_action() -> void:
+	if _awaiting_player_input and _input_unit != null:
+		var available = _get_available_actions(_input_unit)
+		player_input_required.emit(_input_unit, available)
+
+
+## Called by UI when player chooses to pass (skip remaining actions).
+func submit_pass_action() -> void:
+	if not _awaiting_player_input or _input_unit == null:
+		return
+
+	_awaiting_player_input = false
+	var unit = _input_unit
+
+	# Log the pass
+	var action = CombatAction.create_skip(unit, "Passed")
+	_pending_actions.append(action)
+	_result.add_action(action)
+	action_performed.emit(action)
+	print("[Combat] %s passes their turn" % unit.display_name)
+
+	# Set remaining actions to 1 so _finish_unit_action + _consume_action will end the turn
+	_unit_remaining_actions[unit.unit_id] = 1
+	_finish_unit_action(unit)
+
+	_input_unit = null
+	_selected_action_type = ""
+	_selected_ability = null
+
+	if not _check_combat_end():
+		_continue_to_next_turn()
+
+
+## Check if combat is waiting for player input.
+func is_awaiting_player_input() -> bool:
+	return _awaiting_player_input
+
+
+## Continue combat flow after player action: auto-execute enemies, then prompt next player.
+## Uses async delays between enemy actions for visual clarity.
+func _continue_to_next_turn() -> void:
+	# Auto-execute all enemy turns until it's a player's turn (or combat ends)
+	var is_first_enemy_action := true
+	while _is_combat_active and not _awaiting_player_input:
+		# Check if current multi-action unit still has actions
+		if _current_multi_action_unit != null:
+			var remaining = _unit_remaining_actions.get(_current_multi_action_unit.unit_id, 0)
+			if remaining > 0 and _current_multi_action_unit.is_alive:
+				if _current_multi_action_unit.team == CombatUnit.Team.PLAYER:
+					# Player unit has more actions - prompt for input
+					_awaiting_player_input = true
+					_input_unit = _current_multi_action_unit
+					var available = _get_available_actions(_current_multi_action_unit)
+					player_input_required.emit(_current_multi_action_unit, available)
+					return
+				else:
+					# Enemy unit - execute automatically with delay for visual pacing
+					if not is_first_enemy_action:
+						await get_tree().create_timer(ENEMY_ACTION_DELAY).timeout
+					is_first_enemy_action = false
+					# v2.1 Fix: Re-check unit validity after await (may have been freed)
+					if _current_multi_action_unit == null:
+						push_warning("[Combat] _current_multi_action_unit became null after delay, breaking loop")
+						break
+					_process_unit_turn_step(_current_multi_action_unit)
+					if _check_combat_end():
+						return
+					continue
+
+		# Round boundary check
+		if _turn_queue.is_round_complete():
+			_current_round += 1
+			_tick_all_buffs()
+			_tick_all_statuses()
+			_turn_queue.start_new_round()
+			_apply_round_start_passives()
+			_unit_remaining_actions.clear()
+			round_ended.emit(_current_round)
+
+		# Get next unit
+		var unit = _turn_queue.get_next_unit()
+		if unit == null:
+			return
+
+		# Initialize action count
+		if not _unit_remaining_actions.has(unit.unit_id):
+			var eff_speed = unit.get_effective_speed()
+			_unit_remaining_actions[unit.unit_id] = _calculate_actions_for_speed(eff_speed)
+			print("[MultiAction] unit=%s speed=%d actions=%d" % [
+				unit.display_name, eff_speed, _unit_remaining_actions[unit.unit_id]])
+
+		_current_multi_action_unit = unit
+
+		if unit.team == CombatUnit.Team.PLAYER:
+			# Player's turn - wait for input
+			_awaiting_player_input = true
+			_input_unit = unit
+			var available = _get_available_actions(unit)
+			player_input_required.emit(unit, available)
+			return
+		else:
+			# Enemy's turn - auto-execute with delay for visual pacing
+			if not is_first_enemy_action:
+				await get_tree().create_timer(ENEMY_ACTION_DELAY).timeout
+			is_first_enemy_action = false
+			_process_unit_turn_step(unit)
+			if _check_combat_end():
+				return

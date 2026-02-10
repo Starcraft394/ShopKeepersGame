@@ -1,0 +1,13 @@
+{
+  "id": "burning_presence",
+  "display_name": "Burning Presence",
+  "description": "At combat start, gain DEF equal to (3 + hero level). Flames harden into armor.",
+  "passive_type": "level_scaled_stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "defense",
+    "bonus": 3
+  },
+  "source_class_id": "pyrewarden",
+  "category": "class"
+}

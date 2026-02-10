@@ -91,42 +91,41 @@ modulate = Color(0.5, 1, 0.5, 1)
 [node name="Separator3" type="HSeparator" parent="MainVBox"]
 layout_mode = 2
 
-[node name="ConsumablesSection" type="VBoxContainer" parent="MainVBox"]
+[node name="HeroesSection" type="VBoxContainer" parent="MainVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 6
 
-[node name="ConsumablesHeader" type="Label" parent="MainVBox/ConsumablesSection"]
+[node name="HeroesHeader" type="Label" parent="MainVBox/HeroesSection"]
 layout_mode = 2
-text = "=== Consumables ==="
+text = "=== Party ==="
 horizontal_alignment = 1
 
-[node name="ConsumablesList" type="VBoxContainer" parent="MainVBox/ConsumablesSection"]
+[node name="HeroRows" type="VBoxContainer" parent="MainVBox/HeroesSection"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 4
-
-[node name="EquipmentSection" type="VBoxContainer" parent="MainVBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="EquipmentHeader" type="Label" parent="MainVBox/EquipmentSection"]
-layout_mode = 2
-text = "=== Equipment ==="
-horizontal_alignment = 1
-
-[node name="EquipmentSlots" type="VBoxContainer" parent="MainVBox/EquipmentSection"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 2
-
-[node name="EquippableItems" type="VBoxContainer" parent="MainVBox/EquipmentSection"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 2
 
 [node name="Separator3b" type="HSeparator" parent="MainVBox"]
+layout_mode = 2
+
+[node name="ShopkeeperSection" type="VBoxContainer" parent="MainVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="ShopkeeperHeader" type="Label" parent="MainVBox/ShopkeeperSection"]
+layout_mode = 2
+text = "=== Shopkeeper Bag ==="
+horizontal_alignment = 1
+
+[node name="ShopkeeperBag" type="HBoxContainer" parent="MainVBox/ShopkeeperSection"]
+unique_name_in_owner = true
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="Separator3c" type="HSeparator" parent="MainVBox"]
 layout_mode = 2
 
 [node name="MapSection" type="VBoxContainer" parent="MainVBox"]

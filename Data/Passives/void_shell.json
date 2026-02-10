@@ -1,0 +1,12 @@
+{
+  "id": "void_shell",
+  "display_name": "Void Shell",
+  "description": "When hit, 20% chance to negate the damage entirely by phasing out. The void protects.",
+  "passive_type": "damage_negation_chance",
+  "trigger": "on_hit_received",
+  "effect": {
+    "negation_chance": 0.2
+  },
+  "source_class_id": "voidwalker",
+  "category": "class"
+}

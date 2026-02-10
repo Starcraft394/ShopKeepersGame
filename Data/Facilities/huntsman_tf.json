@@ -1,0 +1,105 @@
+{
+  "id": "huntsman_tf",
+  "display_name": "Huntsman (Timberfall)",
+  "description": "A skilled craftsman who fashions bows, light armor, and travel gear from forest materials and animal pelts.",
+  "facility_type": "equipment",
+  "max_tier": 2,
+  "unlock_region": 1,
+
+  "slots_per_tier": {
+    "1": 2,
+    "2": 3
+  },
+
+  "upgrade_costs": {
+    "2": {
+      "gold": 60,
+      "items": [
+        { "item_id": "wolf_pelt", "qty": 4 },
+        { "item_id": "wood_bundle", "qty": 3 }
+      ]
+    }
+  },
+
+  "services_per_tier": {
+    "1": ["craft_light_armor", "repair_leather"],
+    "2": ["craft_light_armor", "repair_leather", "craft_backpacks"]
+  },
+
+  "produces_item_types": ["weapon", "armor", "backpack"],
+  "input_resource_types": ["wolf_pelt", "spider_silk", "wood_bundle"],
+
+  "allows_hero_assignment": true,
+  "max_assigned_heroes": 1,
+
+  "unlocks": [],
+
+  "crafting_recipes": [
+    {
+      "output_id": "hunting_bow",
+      "output_qty": 1,
+      "required_tier": 1,
+      "equipment_type": "2h_weapon",
+      "unlock_cost": [
+        { "item_id": "wood_bundle", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "leather_vest",
+      "output_qty": 1,
+      "required_tier": 1,
+      "equipment_type": "armor",
+      "unlock_cost": [
+        { "item_id": "wolf_pelt", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "tanned_leather_hood",
+      "output_qty": 1,
+      "required_tier": 1,
+      "equipment_type": "helmet",
+      "unlock_cost": [
+        { "item_id": "wolf_pelt", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "tanned_leather_greaves",
+      "output_qty": 1,
+      "required_tier": 1,
+      "equipment_type": "legs",
+      "unlock_cost": [
+        { "item_id": "wolf_pelt", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "small_backpack",
+      "output_qty": 1,
+      "required_tier": 1,
+      "equipment_type": "backpack",
+      "unlock_cost": [
+        { "item_id": "wolf_pelt", "qty": 1 },
+        { "item_id": "spider_silk", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "composite_bow",
+      "output_qty": 1,
+      "required_tier": 2,
+      "equipment_type": "2h_weapon",
+      "unlock_cost": [
+        { "item_id": "wood_bundle", "qty": 2 },
+        { "item_id": "spider_silk", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "sturdy_backpack",
+      "output_qty": 1,
+      "required_tier": 2,
+      "equipment_type": "backpack",
+      "unlock_cost": [
+        { "item_id": "wolf_pelt", "qty": 2 },
+        { "item_id": "spider_silk", "qty": 1 }
+      ]
+    }
+  ]
+}

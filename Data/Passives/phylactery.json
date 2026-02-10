@@ -1,0 +1,13 @@
+{
+  "id": "phylactery",
+  "display_name": "Phylactery",
+  "description": "Upon first death in combat, revive with 25% HP. The soul jar preserves you once.",
+  "passive_type": "death_prevention",
+  "trigger": "on_death",
+  "effect": {
+    "revive_hp_percent": 25,
+    "uses_per_combat": 1
+  },
+  "source_class_id": "lich",
+  "category": "class"
+}

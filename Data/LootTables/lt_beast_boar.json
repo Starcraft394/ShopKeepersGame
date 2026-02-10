@@ -1,0 +1,12 @@
+{
+  "id": "lt_beast_boar",
+  "display_name": "Boar Parts",
+  "description": "Tusks and meat from boars.",
+  "min_drops": 1,
+  "max_drops": 2,
+  "entries": [
+    { "item_id": "boar_tusk", "weight": 55, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "raw_meat", "weight": 25, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 20, "min_qty": 0, "max_qty": 0 }
+  ]
+}

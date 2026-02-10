@@ -1,0 +1,14 @@
+{
+  "id": "tidal_flow",
+  "display_name": "Tidal Flow",
+  "description": "At round start, heal the lowest HP% ally by (2 + hero level). The tide never stops.",
+  "passive_type": "round_start_heal",
+  "trigger": "round_start",
+  "effect": {
+    "stat": "health",
+    "bonus": 2
+  },
+  "target_rule": "lowest_hp_pct",
+  "source_class_id": "tidechaser",
+  "category": "class"
+}

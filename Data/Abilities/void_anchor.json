@@ -1,0 +1,21 @@
+{
+  "id": "void_anchor",
+  "display_name": "Void Anchor",
+  "description": "Anchor enemies to this dimension, taunting them and reducing their speed.",
+  "ability_type": "class_a",
+  "source_class_id": "voidwalker",
+  "target_type": "all_enemies",
+  "effect_type": "debuff",
+  "base_damage": 0,
+  "damage_type": "void",
+  "attack_scaling": 0.0,
+  "cooldown": 3,
+  "applies_status_id": "taunting",
+  "applies_status_duration": 2,
+  "status_stacks": 0,
+  "enemy_debuff": {
+    "stat": "speed",
+    "value": -3,
+    "duration": 2
+  }
+}

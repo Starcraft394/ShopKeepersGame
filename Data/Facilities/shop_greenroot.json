@@ -60,7 +60,8 @@
     { "item_id": "iron_dagger", "price_gold": 30, "requires_unlock_group": "weapons_t1" },
     { "item_id": "rusty_shield", "price_gold": 40, "requires_unlock_group": "offhands_t1" },
     { "item_id": "crude_sword", "price_gold": 40, "required_facility_tier": 2 },
-    { "item_id": "wooden_shield", "price_gold": 50, "required_facility_tier": 2 }
+    { "item_id": "wooden_shield", "price_gold": 50, "required_facility_tier": 2 },
+    { "item_id": "small_backpack", "price_gold": 70, "requires_unlock_group": "backpacks_t1" }
   ],
 
   "stash_upgrades": [

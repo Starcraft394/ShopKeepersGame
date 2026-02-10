@@ -1,0 +1,20 @@
+{
+  "id": "forest_hare",
+  "display_name": "Forest Hare",
+  "description": "A quick woodland creature. Prized for its tender meat.",
+  "family": "beast",
+  "region_id": "region_1",
+  "tier": 1,
+  "ai_tier": 0,
+  "base_stats": { "health": 12, "attack": 2, "defense": 0, "speed": 12 },
+  "ability_ids": ["basic_attack"],
+  "passive_ids": [],
+  "loot_table_id": "lt_food_meat",
+  "gold_drop_min": 1,
+  "gold_drop_max": 4,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "requires_facility": "chef",
+  "tags": ["food_source", "animal", "region_1"]
+}

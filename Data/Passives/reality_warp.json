@@ -1,0 +1,13 @@
+{
+  "id": "reality_warp",
+  "display_name": "Reality Warp",
+  "description": "At combat start, gain ATK equal to (4 + hero level). Reality bends to your will.",
+  "passive_type": "level_scaled_stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "attack",
+    "bonus": 4
+  },
+  "source_class_id": "void_herald",
+  "category": "class"
+}

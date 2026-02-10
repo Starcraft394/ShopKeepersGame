@@ -1,0 +1,30 @@
+{
+  "id": "arcane_staff",
+  "display_name": "Arcane Staff",
+  "description": "A staff imbued with magical crystals. Amplifies spellcasting.",
+  "item_type": "weapon",
+  "item_subtype": "staff",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 5
+  },
+  "stat_bonuses": {
+    "attack": 5,
+    "health": 6
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 50,
+  "icon_path": "",
+  "tags": ["region_1", "weapon", "magic", "staff", "tier_2"]
+}

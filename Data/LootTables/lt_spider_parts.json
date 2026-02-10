@@ -1,0 +1,12 @@
+{
+  "id": "lt_spider_parts",
+  "display_name": "Spider Parts",
+  "description": "Fangs and silk from giant spiders.",
+  "min_drops": 1,
+  "max_drops": 2,
+  "entries": [
+    { "item_id": "spider_silk", "weight": 40, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "spider_fang", "weight": 35, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 25, "min_qty": 0, "max_qty": 0 }
+  ]
+}

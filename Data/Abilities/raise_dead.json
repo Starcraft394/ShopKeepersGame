@@ -1,0 +1,20 @@
+{
+  "id": "raise_dead",
+  "display_name": "Raise Dead",
+  "description": "Channel necrotic energy to empower all allies, granting attack and speed.",
+  "ability_type": "class_b",
+  "source_class_id": "lich",
+  "target_type": "all_allies",
+  "effect_type": "buff",
+  "base_damage": 0,
+  "damage_type": "dark",
+  "attack_scaling": 0.0,
+  "cooldown": 5,
+  "ally_buff": {
+    "stats": ["attack", "speed"],
+    "value": 3,
+    "duration": 3
+  },
+  "applies_status_id": "",
+  "status_stacks": 0
+}

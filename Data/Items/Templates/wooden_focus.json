@@ -2,19 +2,30 @@
   "id": "wooden_focus",
   "display_name": "Wooden Focus",
   "description": "A carved wooden orb imbued with faint magical resonance. Aids spellcasting.",
-  "item_type": "armor",
+  "item_type": "offhand",
   "item_subtype": "focus",
-  "slot": "weapon_off",
+  "category": "equipment",
+  "slot": "weapon_offhand",
   "equip_slot": "offhand",
   "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
   "base_stats": {
-    "defense": 3,
-    "speed": 1
+    "attack": 2
+  },
+  "stat_bonuses": {
+    "attack": 2,
+    "speed": 1,
+    "health": 5
   },
   "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
   "allowed_socket_types": [],
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 50,
-  "tags": ["region_1", "armor", "focus", "magic", "crafted"]
+  "icon_path": "",
+  "tags": ["region_1", "offhand", "focus", "magic", "crafted", "tier_2"]
 }

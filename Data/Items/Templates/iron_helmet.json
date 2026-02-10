@@ -1,0 +1,30 @@
+{
+  "id": "iron_helmet",
+  "display_name": "Iron Helmet",
+  "description": "A sturdy helmet forged from iron plates.",
+  "item_type": "armor",
+  "item_subtype": "heavy_head",
+  "slot": "head",
+  "equip_slot": "helmet",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "category": "equipment",
+  "base_stats": {
+    "defense": 3
+  },
+  "stat_bonuses": {
+    "defense": 3,
+    "health": 5
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 25,
+  "icon_path": "",
+  "tags": ["region_1", "armor", "iron"]
+}

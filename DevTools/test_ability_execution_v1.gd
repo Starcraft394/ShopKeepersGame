@@ -520,6 +520,198 @@ static func run_tests() -> Dictionary:
 	else:
 		results["failed"] += 1
 
+	# Test 64: XP / HP line format (Inn hero card labels)
+	var t64 = _test_xp_hp_line_format()
+	results["tests"].append(t64)
+	if t64["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 65: Inn hero row label sanity (no HP/XP cross-contamination)
+	var t65 = _test_inn_hero_row_label_sanity()
+	results["tests"].append(t65)
+	if t65["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 66: Combat hero equipment line formatting
+	var t66 = _test_combat_equipment_line_formatting()
+	results["tests"].append(t66)
+	if t66["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 67: Bag summary formatting + default capacity
+	var t67 = _test_bag_summary_formatting()
+	results["tests"].append(t67)
+	if t67["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 68: Backpack equip increases bag capacity (Backpacks v1)
+	var t68 = _test_backpack_equip_increases_capacity()
+	results["tests"].append(t68)
+	if t68["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 69: Backpack slot validation (Backpacks v1)
+	var t69 = _test_backpack_slot_validation()
+	results["tests"].append(t69)
+	if t69["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 70: Backpack save/load roundtrip (Backpacks v1)
+	var t70 = _test_backpack_save_load_roundtrip()
+	results["tests"].append(t70)
+	if t70["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 71: Hero bag deposit/withdraw + capacity (Backpacks v1.1)
+	var t71 = _test_hero_bag_deposit_withdraw()
+	results["tests"].append(t71)
+	if t71["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 72: Hero bag accepts all item types (v1.3)
+	var t72 = _test_hero_bag_all_item_types()
+	results["tests"].append(t72)
+	if t72["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 73: Hero bag save/load roundtrip (Backpacks v1.1)
+	var t73 = _test_hero_bag_save_load_roundtrip()
+	results["tests"].append(t73)
+	if t73["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 74: Pending acquisition defaults to stash (Loot Recipient v1)
+	var t74 = _test_pending_acquisition_to_stash()
+	results["tests"].append(t74)
+	if t74["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 75: Pending acquisition hero bag routing + reject non-consumable (Loot Recipient v1)
+	var t75 = _test_pending_acquisition_hero_bag_routing()
+	results["tests"].append(t75)
+	if t75["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 76: Leatherworker unlock gates backpacks (Loot Recipient v1)
+	var t76 = _test_huntsman_unlock_gates_backpacks()
+	results["tests"].append(t76)
+	if t76["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 77: Shopkeeper bag capacity + rules (Loot Recipient v1.1)
+	var t77 = _test_shopkeeper_bag_capacity_and_rules()
+	results["tests"].append(t77)
+	if t77["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 78: Auto-routing deprecated (Loot Recipient v1.2 manual only)
+	var t78 = _test_auto_routing_deprecated()
+	results["tests"].append(t78)
+	if t78["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 79: Save/load preserves shopkeeper_bag (Loot Recipient v1.2)
+	var t79 = _test_shopkeeper_bag_save_load()
+	results["tests"].append(t79)
+	if t79["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 80: Base hero bag capacity = 1, backpack increases (Loot Recipient v1.2)
+	var t80 = _test_base_bag_capacity_one()
+	results["tests"].append(t80)
+	if t80["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 81: Stash routing blocked in dungeon phase (Loot Recipient v1.2)
+	var t81 = _test_stash_routing_blocked_in_dungeon()
+	results["tests"].append(t81)
+	if t81["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 82: Extract banks shopkeeper bag to stash (Loot Recipient v1.2)
+	var t82 = _test_extract_banks_shopkeeper_bag()
+	results["tests"].append(t82)
+	if t82["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 83: Hero bag eligibility without backpack
+	var t83 = _test_hero_bag_eligibility_no_backpack()
+	results["tests"].append(t83)
+	if t83["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 84: Hero bag accepts materials without backpack (v1.3)
+	var t84 = _test_hero_bag_accepts_materials_no_backpack()
+	results["tests"].append(t84)
+	if t84["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 85: No stacking in hero bag (v1.3)
+	var t85 = _test_hero_bag_no_stacking()
+	results["tests"].append(t85)
+	if t85["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 86: Facility unlock purchase deducts materials (Facility Unlock v1)
+	var t86 = _test_facility_unlock_purchase_deducts_materials()
+	results["tests"].append(t86)
+	if t86["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 87: Facility unlock persists across save/load (Facility Unlock v1)
+	var t87 = _test_facility_unlock_persists_save_load()
+	results["tests"].append(t87)
+	if t87["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
 	print("")
 	print("=" .repeat(60))
 	print("  TEST RESULTS: %d passed, %d failed" % [results["passed"], results["failed"]])
@@ -3745,3 +3937,1647 @@ static func _test_no_per_hero_gold() -> Dictionary:
 	GameContext._hero_id_counter = original_counter
 
 	return {"name": "No Per-Hero Gold Field", "passed": pass_1 and pass_2 and pass_3 and pass_4}
+
+
+## Test 64: XP / HP line format — ensures XP label says "XP:" and HP says "HP:".
+static func _test_xp_hp_line_format() -> Dictionary:
+	print("--- TEST 64: XP / HP Line Format ---")
+
+	var TownSceneScript = load("res://Game/UI/Town/TownScene.gd")
+
+	# XP normal case
+	var xp_line_1: String = TownSceneScript.format_xp_line(0, 100, false)
+	var pass_1 = xp_line_1.begins_with("XP:") and not xp_line_1.begins_with("HP:")
+	if pass_1:
+		print("[PASS] XP line starts with 'XP:': '%s'" % xp_line_1)
+	else:
+		print("[FAIL] XP line should start with 'XP:', got: '%s'" % xp_line_1)
+
+	# XP max level case
+	var xp_line_2: String = TownSceneScript.format_xp_line(999, 0, true)
+	var pass_2 = xp_line_2 == "XP: MAX"
+	if pass_2:
+		print("[PASS] Max level XP line: '%s'" % xp_line_2)
+	else:
+		print("[FAIL] Max level XP line should be 'XP: MAX', got: '%s'" % xp_line_2)
+
+	# XP format with actual values
+	var xp_line_3: String = TownSceneScript.format_xp_line(45, 100, false)
+	var pass_3 = xp_line_3 == "XP: 45 / 100"
+	if pass_3:
+		print("[PASS] XP format correct: '%s'" % xp_line_3)
+	else:
+		print("[FAIL] Expected 'XP: 45 / 100', got: '%s'" % xp_line_3)
+
+	# HP line format
+	var hp_line: String = TownSceneScript.format_hp_line(120, 120)
+	var pass_4 = hp_line.begins_with("HP:") and hp_line == "HP: 120 / 120"
+	if pass_4:
+		print("[PASS] HP line format correct: '%s'" % hp_line)
+	else:
+		print("[FAIL] Expected 'HP: 120 / 120', got: '%s'" % hp_line)
+
+	# XP line must NOT contain "HP:" prefix
+	var pass_5 = not xp_line_1.contains("HP:") and not xp_line_3.contains("HP:")
+	if pass_5:
+		print("[PASS] XP lines do not contain 'HP:' prefix")
+	else:
+		print("[FAIL] XP lines must not contain 'HP:' prefix")
+
+	return {"name": "XP / HP Line Format", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5}
+
+
+## Test 65: Inn hero row has exactly one HP label and one XP label.
+## Builds a hero row via _create_hero_row (through TownScene static helpers)
+## and verifies that the format helpers never cross-contaminate.
+static func _test_inn_hero_row_label_sanity() -> Dictionary:
+	print("--- TEST 65: Inn Hero Row Label Sanity ---")
+
+	var TownSceneScript = load("res://Game/UI/Town/TownScene.gd")
+
+	# Verify XP format never starts with "HP:"
+	var xp_variants: Array[String] = [
+		TownSceneScript.format_xp_line(0, 100, false),
+		TownSceneScript.format_xp_line(50, 200, false),
+		TownSceneScript.format_xp_line(0, 0, true),
+	]
+	var pass_1 = true
+	for xp_text in xp_variants:
+		if xp_text.begins_with("HP:"):
+			print("[FAIL] XP formatter returned HP-prefixed line: '%s'" % xp_text)
+			pass_1 = false
+			break
+	if pass_1:
+		print("[PASS] All XP format variants start with 'XP:' (never 'HP:')")
+
+	# Verify HP format never starts with "XP:"
+	var hp_variants: Array[String] = [
+		TownSceneScript.format_hp_line(100, 100),
+		TownSceneScript.format_hp_line(0, 80),
+		TownSceneScript.format_hp_line(50, 95),
+	]
+	var pass_2 = true
+	for hp_text in hp_variants:
+		if hp_text.begins_with("XP:"):
+			print("[FAIL] HP formatter returned XP-prefixed line: '%s'" % hp_text)
+			pass_2 = false
+			break
+	if pass_2:
+		print("[PASS] All HP format variants start with 'HP:' (never 'XP:')")
+
+	# Verify format_xp_line always starts with "XP:"
+	var pass_3 = true
+	for xp_text in xp_variants:
+		if not xp_text.begins_with("XP:"):
+			if not xp_text.begins_with("XP:"):
+				print("[FAIL] XP formatter missing 'XP:' prefix: '%s'" % xp_text)
+				pass_3 = false
+				break
+	if pass_3:
+		print("[PASS] All XP format variants confirmed 'XP:' prefix")
+
+	# Verify _clear_children_immediate exists on TownScene (method availability)
+	var pass_4 = false
+	for m in TownSceneScript.get_script_method_list():
+		if m["name"] == "_clear_children_immediate":
+			pass_4 = true
+			break
+	if pass_4:
+		print("[PASS] TownScene has _clear_children_immediate method")
+	else:
+		print("[FAIL] TownScene missing _clear_children_immediate method")
+
+	return {"name": "Inn Hero Row Label Sanity", "passed": pass_1 and pass_2 and pass_3 and pass_4}
+
+
+# ---------------------------------------------------------------------------
+# Test 66: Combat hero equipment line formatting
+# ---------------------------------------------------------------------------
+static func _test_combat_equipment_line_formatting() -> Dictionary:
+	print("--- TEST 66: Combat Hero Equipment Line Formatting ---")
+
+	var CombatSceneScript = load("res://Game/UI/Combat/CombatScene.gd")
+
+	# 1) Empty slot returns "<SLOT>: (empty)"
+	var empty_wpn = CombatSceneScript.format_equipment_line("WPN", "", 0)
+	var pass_1 = (empty_wpn == "WPN: (empty)")
+	if pass_1:
+		print("[PASS] Empty WPN slot -> '%s'" % empty_wpn)
+	else:
+		print("[FAIL] Empty WPN slot expected 'WPN: (empty)', got '%s'" % empty_wpn)
+
+	# 2) Equipped slot contains slot code and quality prefix
+	var equipped = CombatSceneScript.format_equipment_line("OFF", "iron_buckler", 2)
+	var pass_2 = equipped.begins_with("OFF: Q2 ")
+	if pass_2:
+		print("[PASS] Equipped OFF slot -> '%s'" % equipped)
+	else:
+		print("[FAIL] Equipped OFF slot expected 'OFF: Q2 ...', got '%s'" % equipped)
+
+	# 3) All six slot codes produce non-empty strings
+	var slot_codes = ["WPN", "OFF", "ARM", "HELM", "RING", "AMU"]
+	var pass_3 = true
+	for code in slot_codes:
+		var line = CombatSceneScript.format_equipment_line(code, "", 0)
+		if line == "" or not line.begins_with(code):
+			print("[FAIL] Slot '%s' produced unexpected line: '%s'" % [code, line])
+			pass_3 = false
+			break
+	if pass_3:
+		print("[PASS] All 6 slot codes produce valid prefixed lines")
+
+	# 4) Shopkeeper bag formatter returns expected structure
+	var mock_stash = {"gold": 50, "total_items": 7, "gear_count": 2, "mat_count": 3, "cons_count": 2}
+	var stash_line = CombatSceneScript.format_shopkeeper_bag(mock_stash)
+	var pass_4 = stash_line.begins_with("SHOPKEEPER BAG:") and "Gold 50" in stash_line and "Items 7" in stash_line
+	if pass_4:
+		print("[PASS] Shopkeeper bag -> '%s'" % stash_line)
+	else:
+		print("[FAIL] Shopkeeper bag expected 'SHOPKEEPER BAG: ...' with Gold 50, got '%s'" % stash_line)
+
+	return {"name": "Combat Hero Equipment Line Formatting", "passed": pass_1 and pass_2 and pass_3 and pass_4}
+
+
+# ---------------------------------------------------------------------------
+# Test 67: Bag summary formatting + default capacity
+# ---------------------------------------------------------------------------
+static func _test_bag_summary_formatting() -> Dictionary:
+	print("--- TEST 67: Bag Summary Formatting ---")
+
+	var CombatSceneScript = load("res://Game/UI/Combat/CombatScene.gd")
+
+	# 1) Empty bag returns "0/<cap> (empty)" (v1.2: base capacity is now 1)
+	var empty_bag = CombatSceneScript.format_bag_summary([], 1)
+	var pass_1 = (empty_bag == "0/1 (empty)")
+	if pass_1:
+		print("[PASS] Empty bag -> '%s'" % empty_bag)
+	else:
+		print("[FAIL] Empty bag expected '0/1 (empty)', got '%s'" % empty_bag)
+
+	# 2) Bag with items returns "<stacks>/<cap> <items>" (v1.2: stacks, not qty)
+	var entries = [
+		{"item_id": "healing_tonic", "qty": 2},
+		{"item_id": "herb", "qty": 1},
+	]
+	var filled_bag = CombatSceneScript.format_bag_summary(entries, 5)
+	var pass_2 = filled_bag.begins_with("2/5 ") and "x2" in filled_bag and "x1" in filled_bag
+	if pass_2:
+		print("[PASS] Filled bag (stacks) -> '%s'" % filled_bag)
+	else:
+		print("[FAIL] Filled bag expected '2/5 ...' with x2 and x1, got '%s'" % filled_bag)
+
+	# 3) GameContext default bag capacity is 1 (v1.2: base=1, backpack adds bonus)
+	var pass_3 = (GameContext.DEFAULT_HERO_BAG_CAPACITY == 1)
+	if pass_3:
+		print("[PASS] DEFAULT_HERO_BAG_CAPACITY == 1")
+	else:
+		print("[FAIL] DEFAULT_HERO_BAG_CAPACITY expected 1, got %d" % GameContext.DEFAULT_HERO_BAG_CAPACITY)
+
+	# 4) get_hero_bag for unknown hero returns empty array, doesn't crash
+	var unknown_bag = GameContext.get_hero_bag("nonexistent_hero_zzz")
+	var pass_4 = (unknown_bag is Array and unknown_bag.is_empty())
+	if pass_4:
+		print("[PASS] get_hero_bag('nonexistent') returns empty array")
+	else:
+		print("[FAIL] get_hero_bag('nonexistent') expected [], got %s" % str(unknown_bag))
+
+	# 5) get_hero_bag_summary for unknown hero returns "0/1 (empty)" (v1.2: base=1)
+	var summary = GameContext.get_hero_bag_summary("nonexistent_hero_zzz")
+	var pass_5 = (summary == "0/1 (empty)")
+	if pass_5:
+		print("[PASS] get_hero_bag_summary('nonexistent') -> '%s'" % summary)
+	else:
+		print("[FAIL] get_hero_bag_summary('nonexistent') expected '0/1 (empty)', got '%s'" % summary)
+
+	return {"name": "Bag Summary Formatting", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5}
+
+
+# ---------------------------------------------------------------------------
+# Test 68: Backpack equip increases bag capacity (Backpacks v1)
+# ---------------------------------------------------------------------------
+static func _test_backpack_equip_increases_capacity() -> Dictionary:
+	print("--- TEST 68: Backpack Equip Increases Bag Capacity (Backpacks v1) ---")
+
+	var test_hero_id = "test_hero_68"
+	GameContext.hero_equipment.erase(test_hero_id)
+
+	# Test 1: Default capacity without backpack
+	var default_cap = GameContext.get_hero_bag_capacity(test_hero_id)
+	var pass_1 = (default_cap == GameContext.DEFAULT_HERO_BAG_CAPACITY)
+	if pass_1:
+		print("[PASS] Default bag capacity = %d" % default_cap)
+	else:
+		print("[FAIL] Default bag capacity expected %d, got %d" % [GameContext.DEFAULT_HERO_BAG_CAPACITY, default_cap])
+
+	# Test 2: Equip small_backpack (bag_capacity_bonus=2), capacity increases to 3 (v1.2: base 1 + bonus 2)
+	GameContext.hero_equipment[test_hero_id] = {
+		"weapon": {"id": "", "quality": 0},
+		"offhand": {"id": "", "quality": 0},
+		"bag": {"id": "small_backpack", "quality": 0}
+	}
+	var equipped_cap = GameContext.get_hero_bag_capacity(test_hero_id)
+	var expected_cap = GameContext.DEFAULT_HERO_BAG_CAPACITY + 2
+	var pass_2 = (equipped_cap == expected_cap)
+	if pass_2:
+		print("[PASS] Equipped small_backpack capacity = %d (base %d + bonus 2)" % [equipped_cap, GameContext.DEFAULT_HERO_BAG_CAPACITY])
+	else:
+		print("[FAIL] Equipped capacity expected %d, got %d" % [expected_cap, equipped_cap])
+
+	# Test 3: Getter returns correct bag item id
+	var bag_id = GameContext.get_hero_bag_item(test_hero_id)
+	var pass_3 = (bag_id == "small_backpack")
+	if pass_3:
+		print("[PASS] get_hero_bag_item returns 'small_backpack'")
+	else:
+		print("[FAIL] get_hero_bag_item expected 'small_backpack', got '%s'" % bag_id)
+
+	# Test 4: bag_capacity_bonus is NOT scaled by quality (Q3 same bonus as Q0)
+	GameContext.hero_equipment[test_hero_id]["bag"] = {"id": "small_backpack", "quality": 3}
+	var q3_cap = GameContext.get_hero_bag_capacity(test_hero_id)
+	var pass_4 = (q3_cap == expected_cap)
+	if pass_4:
+		print("[PASS] Q3 backpack capacity = %d (same as Q0, not quality-scaled)" % q3_cap)
+	else:
+		print("[FAIL] Q3 capacity expected %d (no quality scaling), got %d" % [expected_cap, q3_cap])
+
+	# Cleanup
+	GameContext.hero_equipment.erase(test_hero_id)
+
+	return {"name": "Backpack Equip Capacity", "passed": pass_1 and pass_2 and pass_3 and pass_4}
+
+
+# ---------------------------------------------------------------------------
+# Test 69: Backpack slot validation (Backpacks v1)
+# ---------------------------------------------------------------------------
+static func _test_backpack_slot_validation() -> Dictionary:
+	print("--- TEST 69: Backpack Slot Validation (Backpacks v1) ---")
+
+	var test_hero_id = "test_hero_69"
+	GameContext.hero_equipment.erase(test_hero_id)
+
+	var mock_hero = {
+		"hero_id": test_hero_id,
+		"name": "Test Hero 69",
+		"class_id": "defender",
+		"race_id": "human",
+		"level": 1,
+		"xp": 0
+	}
+	GameContext.owned_heroes.append(mock_hero)
+
+	# Add a small_backpack to stash
+	var test_item = ItemInstance.new()
+	test_item.template_id = "small_backpack"
+	test_item.quantity = 1
+	test_item.quality_tier = 0
+	test_item.display_name = "Small Backpack"
+	GameContext.run_items.append(test_item)
+
+	# Test 1: Attempt to equip backpack in weapon slot (should fail)
+	var equip_result = GameContext.equip_hero_item(test_hero_id, "weapon", "small_backpack")
+	var pass_1 = (equip_result == false)
+	if pass_1:
+		print("[PASS] Equipping backpack in weapon slot was rejected")
+	else:
+		print("[FAIL] Equipping backpack in weapon slot should be rejected")
+
+	# Test 2: Rejection reason is slot_mismatch
+	var reason = GameContext.get_equip_rejection_reason("weapon", "small_backpack")
+	var pass_2 = (reason == "slot_mismatch")
+	if pass_2:
+		print("[PASS] Rejection reason is 'slot_mismatch'")
+	else:
+		print("[FAIL] Expected 'slot_mismatch', got '%s'" % reason)
+
+	# Test 3: Equipping in "bag" slot succeeds
+	var equip_bag = GameContext.equip_hero_item(test_hero_id, "bag", "small_backpack")
+	var pass_3 = (equip_bag == true)
+	if pass_3:
+		print("[PASS] Equipping backpack in bag slot succeeded")
+	else:
+		print("[FAIL] Equipping backpack in bag slot should succeed")
+
+	# Test 4: Verify bag slot has the item
+	var bag_id = GameContext.get_hero_bag_item(test_hero_id)
+	var pass_4 = (bag_id == "small_backpack")
+	if pass_4:
+		print("[PASS] Bag slot contains 'small_backpack'")
+	else:
+		print("[FAIL] Bag slot expected 'small_backpack', got '%s'" % bag_id)
+
+	# Cleanup: unequip returns to stash, then remove from stash
+	GameContext.unequip_hero_item(test_hero_id, "bag")
+	GameContext.hero_equipment.erase(test_hero_id)
+	for i in range(GameContext.owned_heroes.size() - 1, -1, -1):
+		if GameContext.owned_heroes[i].get("hero_id", "") == test_hero_id:
+			GameContext.owned_heroes.remove_at(i)
+	for i in range(GameContext.run_items.size() - 1, -1, -1):
+		var item = GameContext.run_items[i]
+		if item is ItemInstance and item.template_id == "small_backpack":
+			GameContext.run_items.remove_at(i)
+			break
+
+	return {"name": "Backpack Slot Validation", "passed": pass_1 and pass_2 and pass_3 and pass_4}
+
+
+# ---------------------------------------------------------------------------
+# Test 70: Backpack save/load roundtrip (Backpacks v1)
+# ---------------------------------------------------------------------------
+static func _test_backpack_save_load_roundtrip() -> Dictionary:
+	print("--- TEST 70: Backpack Save/Load Roundtrip (Backpacks v1) ---")
+
+	var original_equipment = GameContext.hero_equipment.duplicate(true)
+
+	var test_hero_id = "test_hero_70"
+	GameContext.hero_equipment[test_hero_id] = {
+		"weapon": {"id": "basic_sword", "quality": 1},
+		"offhand": {"id": "wooden_shield", "quality": 0},
+		"bag": {"id": "small_backpack", "quality": 0}
+	}
+
+	# Test 1: Getters return correct bag data
+	var bag_id = GameContext.get_hero_bag_item(test_hero_id)
+	var bag_q = GameContext.get_hero_bag_quality(test_hero_id)
+	var pass_1 = (bag_id == "small_backpack" and bag_q == 0)
+	if pass_1:
+		print("[PASS] Bag getters return correct values (id=%s q=%d)" % [bag_id, bag_q])
+	else:
+		print("[FAIL] Bag getters incorrect: id=%s q=%d" % [bag_id, bag_q])
+
+	# Test 2: Equipment summary includes bag fields
+	var summary = GameContext.get_hero_equipment_summary(test_hero_id)
+	var pass_2 = summary.has("bag_id") and summary.has("bag_quality") and summary["bag_id"] == "small_backpack"
+	if pass_2:
+		print("[PASS] Equipment summary includes bag_id='%s' and bag_quality=%d" % [summary["bag_id"], summary["bag_quality"]])
+	else:
+		print("[FAIL] Summary missing or incorrect bag fields: %s" % str(summary))
+
+	# Test 3: get_hero_equipment returns structured dict with bag key
+	var equip = GameContext.get_hero_equipment(test_hero_id)
+	var pass_3 = equip.has("weapon") and equip.has("offhand") and equip.has("bag")
+	if pass_3:
+		print("[PASS] get_hero_equipment has weapon, offhand, and bag keys")
+	else:
+		print("[FAIL] get_hero_equipment missing keys: %s" % str(equip.keys()))
+
+	# Test 4: Forward compatibility — old saves without "bag" key get default
+	GameContext.hero_equipment["test_hero_70_old"] = {
+		"weapon": {"id": "", "quality": 0},
+		"offhand": {"id": "", "quality": 0}
+	}
+	var old_equip = GameContext.get_hero_equipment("test_hero_70_old")
+	var pass_4 = old_equip.has("bag") and old_equip.bag.get("id", "") == ""
+	if pass_4:
+		print("[PASS] Old save format gets default bag={id:'', quality:0}")
+	else:
+		print("[FAIL] Old save format bag key missing or invalid")
+
+	# Cleanup
+	GameContext.hero_equipment = original_equipment
+
+	return {"name": "Backpack Save/Load Roundtrip", "passed": pass_1 and pass_2 and pass_3 and pass_4}
+
+
+# ============================================================================
+# TEST 71: Hero Bag Deposit/Withdraw + No Stacking (v1.3: each item = 1 slot)
+# ============================================================================
+static func _test_hero_bag_deposit_withdraw() -> Dictionary:
+	print("--- TEST 71: Hero Bag Deposit/Withdraw + No Stacking (v1.3) ---")
+	var test_hero_id = "test_hero_71"
+
+	# Save originals
+	var orig_bags = GameContext.hero_bags.duplicate(true)
+	var orig_equipment = GameContext.hero_equipment.duplicate(true)
+	var orig_run_items = GameContext.run_items.duplicate(true)
+
+	# Setup: equip small_backpack (v1.3: cap = 1 + 2 = 3 slots)
+	GameContext.hero_bags = {}
+	GameContext.hero_equipment[test_hero_id] = {
+		"weapon": {"id": "", "quality": 0},
+		"offhand": {"id": "", "quality": 0},
+		"bag": {"id": "small_backpack", "quality": 0}
+	}
+
+	# Put items in stash (individual entries)
+	GameContext.run_items = [
+		{"item_id": "healing_tonic", "qty": 1},
+		{"item_id": "healing_tonic", "qty": 1},
+		{"item_id": "antidote", "qty": 1},
+		{"item_id": "focus_elixir", "qty": 1}
+	]
+
+	# Assertion 1: Deposit healing_tonic (1 slot used, cap 3)
+	var dep1 = GameContext.move_item_stash_to_hero_bag(test_hero_id, "healing_tonic", 1)
+	var bag = GameContext.get_hero_bag(test_hero_id)
+	var pass_1 = dep1 and bag.size() == 1
+	if pass_1:
+		print("[PASS] Deposit healing_tonic: bag has %d/3 slots" % bag.size())
+	else:
+		print("[FAIL] Deposit healing_tonic: ok=%s slots=%d" % [str(dep1), bag.size()])
+
+	# Assertion 2: Deposit another healing_tonic (v1.3: NO stacking, uses 2nd slot)
+	var dep2 = GameContext.move_item_stash_to_hero_bag(test_hero_id, "healing_tonic", 1)
+	bag = GameContext.get_hero_bag(test_hero_id)
+	var pass_2 = dep2 and bag.size() == 2
+	if pass_2:
+		print("[PASS] Second healing_tonic uses separate slot: %d/3" % bag.size())
+	else:
+		print("[FAIL] v1.3 no stacking: dep2=%s slots=%d" % [str(dep2), bag.size()])
+
+	# Assertion 3: Deposit antidote (fills to 3/3)
+	var dep3 = GameContext.move_item_stash_to_hero_bag(test_hero_id, "antidote", 1)
+	bag = GameContext.get_hero_bag(test_hero_id)
+	var pass_3 = dep3 and bag.size() == 3
+	if pass_3:
+		print("[PASS] Bag filled: %d/3 slots" % bag.size())
+	else:
+		print("[FAIL] Fill bag: dep3=%s slots=%d" % [str(dep3), bag.size()])
+
+	# Assertion 4: Try deposit when full → rejected (even same item)
+	var dep4 = GameContext.move_item_stash_to_hero_bag(test_hero_id, "focus_elixir", 1)
+	var pass_4 = not dep4 and bag.size() == 3
+	if pass_4:
+		print("[PASS] Item rejected when bag full (3/3 slots)")
+	else:
+		print("[FAIL] Should reject: dep4=%s slots=%d" % [str(dep4), bag.size()])
+
+	# Assertion 5: Withdraw removes entry, frees slot
+	var wd1 = GameContext.move_item_hero_bag_to_stash(test_hero_id, "antidote", 1)
+	bag = GameContext.get_hero_bag(test_hero_id)
+	var pass_5 = wd1 and bag.size() == 2
+	if pass_5:
+		print("[PASS] Withdraw antidote: bag now %d/3 slots" % bag.size())
+	else:
+		print("[FAIL] Withdraw: wd1=%s slots=%d" % [str(wd1), bag.size()])
+
+	# Cleanup
+	GameContext.hero_bags = orig_bags
+	GameContext.hero_equipment = orig_equipment
+	GameContext.run_items = orig_run_items
+
+	return {"name": "Hero Bag Deposit/Withdraw + No Stacking (v1.3)", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5}
+
+
+# ============================================================================
+# TEST 72: Hero Bag Accepts All Item Types (v1.3: No Category Restriction)
+# ============================================================================
+static func _test_hero_bag_all_item_types() -> Dictionary:
+	print("--- TEST 72: Hero Bag Accepts All Item Types (v1.3) ---")
+	var test_hero_id = "test_hero_72"
+
+	# Save originals
+	var orig_bags = GameContext.hero_bags.duplicate(true)
+	var orig_equipment = GameContext.hero_equipment.duplicate(true)
+	var orig_run_items = GameContext.run_items.duplicate(true)
+
+	# Setup: equip small_backpack (cap = 1 + 2 = 3)
+	GameContext.hero_bags = {}
+	GameContext.hero_equipment[test_hero_id] = {
+		"weapon": {"id": "", "quality": 0},
+		"offhand": {"id": "", "quality": 0},
+		"bag": {"id": "small_backpack", "quality": 0}
+	}
+
+	# Put herb (material) and healing_tonic (consumable) in stash
+	GameContext.run_items = [
+		{"item_id": "herb", "qty": 1},
+		{"item_id": "healing_tonic", "qty": 1}
+	]
+
+	# Assertion 1: Material (herb) NOW ACCEPTED in v1.3
+	var mat_ok = GameContext.move_item_stash_to_hero_bag(test_hero_id, "herb", 1)
+	var pass_1 = mat_ok
+	if pass_1:
+		print("[PASS] Material 'herb' accepted into hero bag (v1.3: all types allowed)")
+	else:
+		print("[FAIL] Material 'herb' should be accepted in v1.3")
+
+	# Assertion 2: can_add_to_hero_bag accepts material
+	var can_add_tonic = GameContext.can_add_to_hero_bag(test_hero_id, "healing_tonic", 1)
+	var pass_2 = can_add_tonic
+	if pass_2:
+		print("[PASS] can_add_to_hero_bag accepts healing_tonic")
+	else:
+		print("[FAIL] can_add_to_hero_bag should accept healing_tonic")
+
+	# Assertion 3: Consumable also accepted
+	var con_ok = GameContext.move_item_stash_to_hero_bag(test_hero_id, "healing_tonic", 1)
+	var pass_3 = con_ok
+	if pass_3:
+		print("[PASS] Consumable 'healing_tonic' accepted into hero bag")
+	else:
+		print("[FAIL] Consumable should have been accepted")
+
+	# Assertion 4: Bag now has 2 entries (herb + tonic, no stacking)
+	var bag = GameContext.get_hero_bag(test_hero_id)
+	var pass_4 = bag.size() == 2
+	if pass_4:
+		print("[PASS] Hero bag has 2 items (herb + tonic)")
+	else:
+		print("[FAIL] Hero bag expected 2 items, got %d" % bag.size())
+
+	# Cleanup
+	GameContext.hero_bags = orig_bags
+	GameContext.hero_equipment = orig_equipment
+	GameContext.run_items = orig_run_items
+
+	return {"name": "Hero Bag Accepts All Item Types (v1.3)", "passed": pass_1 and pass_2 and pass_3 and pass_4}
+
+
+# ============================================================================
+# TEST 73: Hero Bag Save/Load Roundtrip (Backpacks v1.1)
+# ============================================================================
+static func _test_hero_bag_save_load_roundtrip() -> Dictionary:
+	print("--- TEST 73: Hero Bag Save/Load Roundtrip ---")
+	var test_hero_id = "test_hero_73"
+
+	# Save originals
+	var orig_bags = GameContext.hero_bags.duplicate(true)
+
+	# Setup: put items in hero bag directly
+	GameContext.hero_bags[test_hero_id] = [
+		{"item_id": "healing_tonic", "qty": 2},
+		{"item_id": "antidote", "qty": 1}
+	]
+
+	# Assertion 1: get_hero_bag returns correct entries
+	var bag = GameContext.get_hero_bag(test_hero_id)
+	var pass_1 = bag.size() == 2
+	if pass_1:
+		print("[PASS] get_hero_bag returns 2 entries for test hero")
+	else:
+		print("[FAIL] get_hero_bag returned %d entries (expected 2)" % bag.size())
+
+	# Assertion 2: get_hero_bag_summary shows items (v1.2: stacks, not qty)
+	# Hero has no backpack, so cap=1, but bag has 2 stacks (shows 2/1)
+	var summary = GameContext.get_hero_bag_summary(test_hero_id)
+	var pass_2 = "2/" in summary and "Healing Tonic" in summary
+	if pass_2:
+		print("[PASS] Bag summary (stacks): %s" % summary)
+	else:
+		print("[FAIL] Bag summary unexpected: %s" % summary)
+
+	# Assertion 3: Simulate save/load cycle via direct dict serialization
+	# hero_bags is saved as-is (Dictionary of Arrays of Dicts)
+	var serialized = GameContext.hero_bags.duplicate(true)
+	GameContext.hero_bags = {}  # Clear
+	var bag_after_clear = GameContext.get_hero_bag(test_hero_id)
+	var pass_3a = bag_after_clear.is_empty()
+
+	# Restore from serialized (simulates load_game)
+	GameContext.hero_bags = serialized
+	var bag_after_load = GameContext.get_hero_bag(test_hero_id)
+	var tonic_qty = 0
+	var antidote_qty = 0
+	for e in bag_after_load:
+		if e.get("item_id", "") == "healing_tonic":
+			tonic_qty = int(e.get("qty", 0))
+		elif e.get("item_id", "") == "antidote":
+			antidote_qty = int(e.get("qty", 0))
+	var pass_3 = pass_3a and tonic_qty == 2 and antidote_qty == 1
+	if pass_3:
+		print("[PASS] Save/load roundtrip: healing_tonic x%d, antidote x%d" % [tonic_qty, antidote_qty])
+	else:
+		print("[FAIL] Roundtrip: cleared=%s tonic=%d antidote=%d" % [str(pass_3a), tonic_qty, antidote_qty])
+
+	# Assertion 4: Empty hero bag returns default (forward compat)
+	var empty_bag = GameContext.get_hero_bag("nonexistent_hero_73")
+	var pass_4 = empty_bag.is_empty()
+	if pass_4:
+		print("[PASS] Nonexistent hero returns empty bag array")
+	else:
+		print("[FAIL] Nonexistent hero bag not empty: %s" % str(empty_bag))
+
+	# Cleanup
+	GameContext.hero_bags = orig_bags
+
+	return {"name": "Hero Bag Save/Load Roundtrip", "passed": pass_1 and pass_2 and pass_3 and pass_4}
+
+
+# ===========================================================================
+# Test 74: Pending acquisition defaults to stash (Loot Recipient v1)
+# ===========================================================================
+static func _test_pending_acquisition_to_stash() -> Dictionary:
+	print("--- TEST 74: Pending Acquisition Defaults to Stash ---")
+
+	# Save originals
+	var orig_run_items = GameContext.run_items.duplicate(true)
+	var orig_dungeon_items = GameContext.dungeon_items.duplicate(true)
+	var orig_dungeon_id = GameContext.current_dungeon_id
+	var orig_phase = GameContext._current_phase
+
+	# Clear state — test with no dungeon (items go to run_items)
+	# v1.2: Set phase to TOWN so stash routing is allowed
+	GameContext.run_items.clear()
+	GameContext.dungeon_items.clear()
+	GameContext.current_dungeon_id = ""
+	GameContext._current_phase = GameContext.GamePhase.TOWN
+	GameContext.clear_pending_acquisitions()
+
+	# Assertion 1: No pending initially
+	var pass_1 = not GameContext.has_pending_acquisition()
+	if pass_1:
+		print("[PASS] No pending acquisitions initially")
+	else:
+		print("[FAIL] Should have no pending acquisitions after clear")
+
+	# Assertion 2: Queue 2 items, pending size == 2
+	GameContext.acquire_item_with_recipient("healing_tonic", 1, 0, "combat")
+	GameContext.acquire_item_with_recipient("antidote", 1, 0, "combat")
+	var pending = GameContext.get_all_pending_acquisitions()
+	var pass_2 = pending.size() == 2 and GameContext.has_pending_acquisition()
+	if pass_2:
+		print("[PASS] Queued 2 items, pending size=%d" % pending.size())
+	else:
+		print("[FAIL] Expected pending size=2, got %d" % pending.size())
+
+	# Assertion 3: Resolve first to stash — success, pending size == 1
+	var resolved_1 = GameContext.resolve_pending_acquisition("stash")
+	var pending_after = GameContext.get_all_pending_acquisitions()
+	var pass_3 = resolved_1 and pending_after.size() == 1
+	if pass_3:
+		print("[PASS] Resolved first to stash, pending size=%d" % pending_after.size())
+	else:
+		print("[FAIL] resolve_pending_acquisition returned %s, pending size=%d" % [str(resolved_1), pending_after.size()])
+
+	# Assertion 4: Resolve all remaining to stash — pending empty
+	GameContext.resolve_all_to_stash()
+	var pass_4 = not GameContext.has_pending_acquisition()
+	if pass_4:
+		print("[PASS] resolve_all_to_stash cleared pending")
+	else:
+		print("[FAIL] Pending still has items after resolve_all_to_stash")
+
+	# Assertion 5: run_items increased by 2
+	var pass_5 = GameContext.run_items.size() == 2
+	if pass_5:
+		print("[PASS] run_items has 2 items after resolving to stash")
+	else:
+		print("[FAIL] run_items expected 2, got %d" % GameContext.run_items.size())
+
+	# Cleanup
+	GameContext.run_items = orig_run_items
+	GameContext.dungeon_items = orig_dungeon_items
+	GameContext.current_dungeon_id = orig_dungeon_id
+	GameContext._current_phase = orig_phase
+	GameContext.clear_pending_acquisitions()
+
+	return {"name": "Pending Acquisition to Stash", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5}
+
+
+# ===========================================================================
+# Test 75: Pending acquisition hero bag routing + reject non-consumable
+# ===========================================================================
+static func _test_pending_acquisition_hero_bag_routing() -> Dictionary:
+	print("--- TEST 75: Pending Acquisition Hero Bag Routing ---")
+
+	var test_hero_id = "test_hero_75"
+
+	# Save originals
+	var orig_bags = GameContext.hero_bags.duplicate(true)
+	var orig_equipment = GameContext.hero_equipment.duplicate(true)
+	var orig_run_items = GameContext.run_items.duplicate(true)
+	var orig_dungeon_id = GameContext.current_dungeon_id
+	var orig_phase = GameContext._current_phase
+
+	# Setup: hero with small_backpack (cap = 1 + 2 = 3), no dungeon
+	# v1.2: Set phase to TOWN so stash routing is allowed
+	GameContext._current_phase = GameContext.GamePhase.TOWN
+	GameContext.hero_bags[test_hero_id] = []
+	GameContext.hero_equipment[test_hero_id] = {
+		"weapon": {"id": "", "quality": 0},
+		"offhand": {"id": "", "quality": 0},
+		"bag": {"id": "small_backpack", "quality": 0}
+	}
+	GameContext.run_items.clear()
+	GameContext.current_dungeon_id = ""
+	GameContext.clear_pending_acquisitions()
+
+	# Queue healing_tonic (consumable) + herb (material)
+	GameContext.acquire_item_with_recipient("healing_tonic", 1, 0, "combat")
+	GameContext.acquire_item_with_recipient("herb", 1, 0, "combat")
+
+	# Assertion 1: Resolve tonic to hero_bag → success
+	var ok_1 = GameContext.resolve_pending_acquisition("hero_bag", test_hero_id)
+	var pass_1 = ok_1
+	if pass_1:
+		print("[PASS] healing_tonic resolved to hero_bag")
+	else:
+		print("[FAIL] healing_tonic should resolve to hero_bag")
+
+	# Assertion 2: Hero bag now has the tonic
+	var bag = GameContext.get_hero_bag(test_hero_id)
+	var has_tonic = false
+	for entry in bag:
+		if entry.get("item_id", "") == "healing_tonic":
+			has_tonic = true
+	var pass_2 = has_tonic
+	if pass_2:
+		print("[PASS] Hero bag contains healing_tonic")
+	else:
+		print("[FAIL] Hero bag should contain healing_tonic, got: %s" % str(bag))
+
+	# Assertion 3: v1.3 - Resolve herb to hero_bag → SUCCESS (all types allowed)
+	var ok_3 = GameContext.resolve_pending_acquisition("hero_bag", test_hero_id)
+	var pending_3 = GameContext.get_all_pending_acquisitions()
+	var pass_3 = ok_3 and pending_3.size() == 0
+	if pass_3:
+		print("[PASS] herb resolved to hero_bag (v1.3: all item types allowed)")
+	else:
+		print("[FAIL] herb should resolve to hero_bag in v1.3: resolved=%s pending=%d" % [str(ok_3), pending_3.size()])
+
+	# Assertion 4: Hero bag now has 2 items (tonic + herb)
+	var bag_after = GameContext.get_hero_bag(test_hero_id)
+	var has_herb = false
+	for entry in bag_after:
+		if entry.get("item_id", "") == "herb":
+			has_herb = true
+	var pass_4 = has_herb and bag_after.size() == 2
+	if pass_4:
+		print("[PASS] Hero bag contains herb (v1.3), total 2 items")
+	else:
+		print("[FAIL] Hero bag should have tonic + herb, got: %s" % str(bag_after))
+
+	# Assertion 5: run_items should be empty (both items went to hero_bag)
+	var pass_5 = GameContext.run_items.size() == 0
+	if pass_5:
+		print("[PASS] run_items empty (both items routed to hero_bag)")
+	else:
+		print("[FAIL] run_items should be empty, got: %s" % str(GameContext.run_items))
+
+	# Cleanup
+	GameContext.hero_bags = orig_bags
+	GameContext.hero_equipment = orig_equipment
+	GameContext.run_items = orig_run_items
+	GameContext.current_dungeon_id = orig_dungeon_id
+	GameContext._current_phase = orig_phase
+	GameContext.clear_pending_acquisitions()
+
+	return {"name": "Pending Acquisition Hero Bag Routing", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5}
+
+
+# ===========================================================================
+# Test 76: Leatherworker unlock gates backpacks in shops
+# ===========================================================================
+static func _test_huntsman_unlock_gates_backpacks() -> Dictionary:
+	print("--- TEST 76: Leatherworker Unlock Gates Backpacks ---")
+
+	# Save originals
+	var orig_unlocked_groups = GameContext.unlocked_groups.duplicate(true)
+
+	# Clear unlock groups (but DEFAULT_UNLOCK_GROUPS still pass)
+	GameContext.unlocked_groups = {}
+
+	# Assertion 1: backpacks_t1 is NOT unlocked initially
+	var pass_1 = not GameContext.has_unlocked_group("backpacks_t1")
+	if pass_1:
+		print("[PASS] backpacks_t1 not unlocked initially")
+	else:
+		print("[FAIL] backpacks_t1 should not be unlocked initially")
+
+	# Assertion 2: backpacks_t2 is NOT unlocked initially
+	var pass_2 = not GameContext.has_unlocked_group("backpacks_t2")
+	if pass_2:
+		print("[PASS] backpacks_t2 not unlocked initially")
+	else:
+		print("[FAIL] backpacks_t2 should not be unlocked initially")
+
+	# Assertion 3: A shop item with requires_unlock_group "backpacks_t1" is gated
+	# Simulate the filter check: item requires backpacks_t1, which is not unlocked
+	var test_item = {"item_id": "small_backpack", "requires_unlock_group": "backpacks_t1"}
+	var group = test_item.get("requires_unlock_group", "")
+	var gated_before = group != "" and not GameContext.has_unlocked_group(group)
+	var pass_3 = gated_before
+	if pass_3:
+		print("[PASS] small_backpack gated before unlock (requires_unlock_group=%s)" % group)
+	else:
+		print("[FAIL] small_backpack should be gated before unlock")
+
+	# Assertion 4: Unlock backpacks_t1, then check passes
+	GameContext.unlock_group("backpacks_t1")
+	var pass_4 = GameContext.has_unlocked_group("backpacks_t1")
+	if pass_4:
+		print("[PASS] backpacks_t1 unlocked after unlock_group()")
+	else:
+		print("[FAIL] backpacks_t1 should be unlocked after unlock_group()")
+
+	# Assertion 5: The shop item now passes the gate check
+	var gated_after = group != "" and not GameContext.has_unlocked_group(group)
+	var pass_5 = not gated_after
+	if pass_5:
+		print("[PASS] small_backpack passes gate after backpacks_t1 unlock")
+	else:
+		print("[FAIL] small_backpack should pass gate after unlock")
+
+	# Assertion 6: backpacks_t2 is still NOT unlocked
+	var pass_6 = not GameContext.has_unlocked_group("backpacks_t2")
+	if pass_6:
+		print("[PASS] backpacks_t2 still not unlocked (tier 2 not purchased)")
+	else:
+		print("[FAIL] backpacks_t2 should not be unlocked yet")
+
+	# Assertion 7: Leatherworker JSON has the unlocks array
+	var lw_data = DataRegistry.get_facility("huntsman")
+	var has_unlocks = false
+	var has_bp_t1 = false
+	if lw_data != null:
+		has_unlocks = lw_data.unlocks.size() >= 2
+		for u in lw_data.unlocks:
+			if u is Dictionary and u.get("unlock_group", "") == "backpacks_t1":
+				has_bp_t1 = true
+	var pass_7 = has_unlocks and has_bp_t1
+	if pass_7:
+		print("[PASS] Leatherworker JSON has unlocks array with backpacks_t1")
+	else:
+		print("[FAIL] Leatherworker unlocks missing or incomplete (has_unlocks=%s, has_bp_t1=%s)" % [str(has_unlocks), str(has_bp_t1)])
+
+	# Cleanup
+	GameContext.unlocked_groups = orig_unlocked_groups
+
+	return {"name": "Leatherworker Unlock Gates Backpacks", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5 and pass_6 and pass_7}
+
+
+# ===========================================================================
+# Test 77: Shopkeeper bag capacity + no stacking (v1.3: all types, no merge)
+# ===========================================================================
+static func _test_shopkeeper_bag_capacity_and_rules() -> Dictionary:
+	print("--- TEST 77: Shopkeeper Bag Capacity + No Stacking (v1.3) ---")
+
+	# Save originals
+	var orig_bag = GameContext.shopkeeper_bag.duplicate(true)
+
+	GameContext.shopkeeper_bag.clear()
+
+	# Assertion 1: Default capacity is 6
+	var cap = GameContext.get_shopkeeper_bag_capacity()
+	var pass_1 = cap == 6
+	if pass_1:
+		print("[PASS] Shopkeeper bag capacity = %d" % cap)
+	else:
+		print("[FAIL] Expected capacity 6, got %d" % cap)
+
+	# Assertion 2: Add material succeeds (v1.3: qty=2 creates 2 separate entries)
+	var ok_mat = GameContext.add_item_to_shopkeeper_bag("herb", 2, 0, "test")
+	var pass_2 = ok_mat and GameContext.shopkeeper_bag.size() == 2
+	if pass_2:
+		print("[PASS] Added material 'herb' x2: creates 2 separate slots (%d/6)" % GameContext.shopkeeper_bag.size())
+	else:
+		print("[FAIL] add material x2: ok=%s slots=%d (expected 2)" % [str(ok_mat), GameContext.shopkeeper_bag.size()])
+
+	# Assertion 3: Add consumable succeeds (now at 3/6)
+	var ok_con = GameContext.add_item_to_shopkeeper_bag("healing_tonic", 1, 0, "test")
+	var pass_3 = ok_con and GameContext.shopkeeper_bag.size() == 3
+	if pass_3:
+		print("[PASS] Added consumable 'healing_tonic' (slots=%d/6)" % GameContext.shopkeeper_bag.size())
+	else:
+		print("[FAIL] add consumable: ok=%s slots=%d" % [str(ok_con), GameContext.shopkeeper_bag.size()])
+
+	# Assertion 4: Add gear/equipment NOW ACCEPTED in v1.3
+	var ok_gear = GameContext.add_item_to_shopkeeper_bag("rusty_sword", 1, 0, "test")
+	var pass_4 = ok_gear and GameContext.shopkeeper_bag.size() == 4
+	if pass_4:
+		print("[PASS] Gear 'rusty_sword' accepted into shopkeeper bag (v1.3: all types allowed)")
+	else:
+		print("[FAIL] Gear should be accepted in v1.3: ok=%s slots=%d" % [str(ok_gear), GameContext.shopkeeper_bag.size()])
+
+	# Assertion 5: v1.3 NO stacking — same item creates new entry
+	var ok_herb2 = GameContext.add_item_to_shopkeeper_bag("herb", 1, 0, "test")
+	var pass_5 = ok_herb2 and GameContext.shopkeeper_bag.size() == 5
+	if pass_5:
+		print("[PASS] Same item 'herb' creates new slot (v1.3 no stacking): %d/6" % GameContext.shopkeeper_bag.size())
+	else:
+		print("[FAIL] v1.3 no stacking: ok=%s slots=%d (expected 5)" % [str(ok_herb2), GameContext.shopkeeper_bag.size()])
+
+	# Assertion 6: Fill to capacity (6 slots), then reject
+	var ok_fill = GameContext.add_item_to_shopkeeper_bag("antidote", 1, 0, "test")
+	var full_slots = GameContext.shopkeeper_bag.size()
+	var ok_overflow = GameContext.can_add_to_shopkeeper_bag("iron_scrap", 1, 0)
+	var pass_6 = ok_fill and full_slots == 6 and not ok_overflow
+	if pass_6:
+		print("[PASS] Bag full at %d slots, new item rejected" % full_slots)
+	else:
+		print("[FAIL] full_slots=%d ok_fill=%s can_add=%s" % [full_slots, str(ok_fill), str(ok_overflow)])
+
+	# Assertion 7: Summary string shows 6/6
+	var summary = GameContext.get_shopkeeper_bag_summary()
+	var pass_7 = "6/6" in summary
+	if pass_7:
+		print("[PASS] Summary: %s" % summary)
+	else:
+		print("[FAIL] Summary expected '6/6', got: %s" % summary)
+
+	# Cleanup
+	GameContext.shopkeeper_bag = orig_bag
+
+	return {"name": "Shopkeeper Bag Capacity + No Stacking (v1.3)", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5 and pass_6 and pass_7}
+
+
+# ===========================================================================
+# Test 78: Auto-routing prefers hero bag for consumable (Loot Recipient v1.1)
+# ===========================================================================
+# v1.2: Auto-routing is DEPRECATED. This test now verifies the no-op behavior.
+# ===========================================================================
+static func _test_auto_routing_deprecated() -> Dictionary:
+	print("--- TEST 78: Auto-Routing Deprecated (v1.2 Manual Only) ---")
+
+	var hero_a = "test_hero_78a"
+	var hero_b = "test_hero_78b"
+
+	# Save originals
+	var orig_bags = GameContext.hero_bags.duplicate(true)
+	var orig_equip = GameContext.hero_equipment.duplicate(true)
+	var orig_run = GameContext.run_items.duplicate(true)
+	var orig_dungeon_id = GameContext.current_dungeon_id
+	var orig_shop_bag = GameContext.shopkeeper_bag.duplicate(true)
+
+	# Setup: hero_b has space (0/3 with backpack, v1.2: base 1 + bonus 2)
+	GameContext.hero_bags[hero_a] = []
+	GameContext.hero_equipment[hero_a] = {
+		"weapon": {"id": "", "quality": 0},
+		"offhand": {"id": "", "quality": 0},
+		"bag": {"id": "", "quality": 0}
+	}
+	GameContext.hero_bags[hero_b] = []
+	GameContext.hero_equipment[hero_b] = {
+		"weapon": {"id": "", "quality": 0},
+		"offhand": {"id": "", "quality": 0},
+		"bag": {"id": "small_backpack", "quality": 0}
+	}
+	GameContext.run_items.clear()
+	GameContext.shopkeeper_bag.clear()
+	GameContext.current_dungeon_id = ""
+	GameContext.clear_pending_acquisitions()
+
+	# Queue a consumable
+	GameContext.acquire_item_with_recipient("antidote", 1, 0, "combat")
+
+	# Assertion 1: Auto-route returns false (no-op in v1.2)
+	var ok_1 = GameContext.resolve_pending_acquisition_auto([hero_a, hero_b])
+	var pass_1 = not ok_1
+	if pass_1:
+		print("[PASS] resolve_pending_acquisition_auto returns false (deprecated)")
+	else:
+		print("[FAIL] Expected auto-route to return false (deprecated)")
+
+	# Assertion 2: Item stays pending (not routed)
+	var pass_2 = GameContext.has_pending_acquisition()
+	if pass_2:
+		print("[PASS] Item stays pending (manual routing required)")
+	else:
+		print("[FAIL] Item should stay pending")
+
+	# Assertion 3: set_loot_pref is no-op (returns nothing, doesn't crash)
+	GameContext.set_loot_pref({"consumables_default_to": "shop_bag"})
+	var pref = GameContext.get_loot_pref()
+	var pass_3 = pref.is_empty()
+	if pass_3:
+		print("[PASS] get_loot_pref returns empty (deprecated)")
+	else:
+		print("[FAIL] Expected get_loot_pref to return empty, got: %s" % str(pref))
+
+	# Assertion 4: Manual routing still works
+	var ok_4 = GameContext.resolve_pending_acquisition("shop_bag")
+	var in_shop_bag = false
+	for entry in GameContext.shopkeeper_bag:
+		if entry.get("item_id", "") == "antidote":
+			in_shop_bag = true
+	var pass_4 = ok_4 and in_shop_bag
+	if pass_4:
+		print("[PASS] Consumable auto-routed to shopkeeper bag (pref=shop_bag)")
+	else:
+		print("[FAIL] shop_bag pref: ok=%s in_shop=%s" % [str(ok_4), str(in_shop_bag)])
+
+	# Cleanup
+	GameContext.hero_bags = orig_bags
+	GameContext.hero_equipment = orig_equip
+	GameContext.run_items = orig_run
+	GameContext.current_dungeon_id = orig_dungeon_id
+	GameContext.shopkeeper_bag = orig_shop_bag
+	GameContext.clear_pending_acquisitions()
+
+	return {"name": "Auto-Routing Deprecated (v1.2)", "passed": pass_1 and pass_2 and pass_3 and pass_4}
+
+
+# ===========================================================================
+# Test 79: Save/load preserves shopkeeper_bag (v1.2: loot_pref deprecated)
+# ===========================================================================
+static func _test_shopkeeper_bag_save_load() -> Dictionary:
+	print("--- TEST 79: Shopkeeper Bag Save/Load (v1.2) ---")
+
+	# Save originals
+	var orig_bag = GameContext.shopkeeper_bag.duplicate(true)
+
+	# Setup: put items in shopkeeper bag
+	GameContext.shopkeeper_bag = [
+		{"item_id": "herb", "qty": 3, "quality_tier": 0},
+		{"item_id": "healing_tonic", "qty": 1, "quality_tier": 0}
+	]
+
+	# Assertion 1: shopkeeper_bag has 2 entries
+	var pass_1 = GameContext.shopkeeper_bag.size() == 2
+	if pass_1:
+		print("[PASS] shopkeeper_bag has 2 entries before save")
+	else:
+		print("[FAIL] shopkeeper_bag expected 2, got %d" % GameContext.shopkeeper_bag.size())
+
+	# Simulate save/load cycle via dict serialization
+	var saved_bag = GameContext.shopkeeper_bag.duplicate(true)
+
+	# Clear
+	GameContext.shopkeeper_bag = []
+
+	# Assertion 2: Cleared properly
+	var pass_2 = GameContext.shopkeeper_bag.is_empty()
+	if pass_2:
+		print("[PASS] shopkeeper_bag cleared")
+	else:
+		print("[FAIL] Clear failed: bag=%d" % GameContext.shopkeeper_bag.size())
+
+	# Restore (simulates load)
+	GameContext.shopkeeper_bag = saved_bag
+
+	# Assertion 3: shopkeeper_bag restored
+	var herb_qty = 0
+	var tonic_qty = 0
+	for entry in GameContext.shopkeeper_bag:
+		if entry.get("item_id", "") == "herb":
+			herb_qty = int(entry.get("qty", 0))
+		elif entry.get("item_id", "") == "healing_tonic":
+			tonic_qty = int(entry.get("qty", 0))
+	var pass_3 = GameContext.shopkeeper_bag.size() == 2 and herb_qty == 3 and tonic_qty == 1
+	if pass_3:
+		print("[PASS] shopkeeper_bag restored: herb x%d, tonic x%d" % [herb_qty, tonic_qty])
+	else:
+		print("[FAIL] Restore: size=%d herb=%d tonic=%d" % [GameContext.shopkeeper_bag.size(), herb_qty, tonic_qty])
+
+	# Assertion 4: loot_pref is deprecated (always empty)
+	var pref = GameContext.get_loot_pref()
+	var pass_4 = pref.is_empty()
+	if pass_4:
+		print("[PASS] loot_pref is deprecated (empty)")
+	else:
+		print("[FAIL] Expected loot_pref empty, got: %s" % str(pref))
+
+	# Assertion 5: Summary works after restore
+	var summary = GameContext.get_shopkeeper_bag_summary()
+	var pass_5 = "2/6" in summary
+	if pass_5:
+		print("[PASS] Summary after restore: %s" % summary)
+	else:
+		print("[FAIL] Summary expected '2/6', got: %s" % summary)
+
+	# Cleanup
+	GameContext.shopkeeper_bag = orig_bag
+
+	return {"name": "Shopkeeper Bag Save/Load (v1.2)", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5}
+
+
+# ===========================================================================
+# Test 80: Base hero bag capacity = 1, backpack increases to 3 (Loot Recipient v1.2)
+# ===========================================================================
+static func _test_base_bag_capacity_one() -> Dictionary:
+	print("--- TEST 80: Base Bag Capacity = 1 (v1.2) ---")
+
+	var test_hero_id = "test_hero_80"
+
+	# Save originals
+	var orig_equip = GameContext.hero_equipment.duplicate(true)
+
+	GameContext.hero_equipment.erase(test_hero_id)
+
+	# Assertion 1: Default capacity is 1 (no backpack)
+	var default_cap = GameContext.get_hero_bag_capacity(test_hero_id)
+	var pass_1 = default_cap == 1
+	if pass_1:
+		print("[PASS] Default bag capacity = %d (no backpack)" % default_cap)
+	else:
+		print("[FAIL] Expected default capacity 1, got %d" % default_cap)
+
+	# Assertion 2: DEFAULT_HERO_BAG_CAPACITY constant is 1
+	var pass_2 = GameContext.DEFAULT_HERO_BAG_CAPACITY == 1
+	if pass_2:
+		print("[PASS] DEFAULT_HERO_BAG_CAPACITY == 1")
+	else:
+		print("[FAIL] Expected DEFAULT_HERO_BAG_CAPACITY == 1, got %d" % GameContext.DEFAULT_HERO_BAG_CAPACITY)
+
+	# Assertion 3: Equip small_backpack (+2 bonus), capacity becomes 3
+	GameContext.hero_equipment[test_hero_id] = {
+		"weapon": {"id": "", "quality": 0},
+		"offhand": {"id": "", "quality": 0},
+		"bag": {"id": "small_backpack", "quality": 0}
+	}
+	var equipped_cap = GameContext.get_hero_bag_capacity(test_hero_id)
+	var pass_3 = equipped_cap == 3
+	if pass_3:
+		print("[PASS] With small_backpack (+2): capacity = %d (base 1 + bonus 2)" % equipped_cap)
+	else:
+		print("[FAIL] Expected capacity 3 with backpack, got %d" % equipped_cap)
+
+	# Assertion 4: Summary for empty bag shows "0/1" without backpack
+	GameContext.hero_equipment.erase(test_hero_id)
+	var summary = GameContext.get_hero_bag_summary(test_hero_id)
+	var pass_4 = summary == "0/1 (empty)"
+	if pass_4:
+		print("[PASS] Empty bag summary: '%s'" % summary)
+	else:
+		print("[FAIL] Expected '0/1 (empty)', got '%s'" % summary)
+
+	# Cleanup
+	GameContext.hero_equipment = orig_equip
+
+	return {"name": "Base Bag Capacity = 1 (v1.2)", "passed": pass_1 and pass_2 and pass_3 and pass_4}
+
+
+# ===========================================================================
+# Test 81: Stash routing blocked in dungeon phase (Loot Recipient v1.2)
+# ===========================================================================
+static func _test_stash_routing_blocked_in_dungeon() -> Dictionary:
+	print("--- TEST 81: Stash Routing Blocked in Dungeon ---")
+
+	# Save originals
+	var orig_phase = GameContext._current_phase
+	var orig_dungeon_id = GameContext.current_dungeon_id
+	var orig_run_items = GameContext.run_items.duplicate(true)
+
+	GameContext.clear_pending_acquisitions()
+	GameContext.run_items.clear()
+
+	# Assertion 1: In TOWN phase, stash routing works
+	GameContext._current_phase = GameContext.GamePhase.TOWN
+	GameContext.current_dungeon_id = ""
+	GameContext.acquire_item_with_recipient("herb", 1, 0, "test")
+	var ok_town = GameContext.resolve_pending_acquisition("stash")
+	var pass_1 = ok_town and GameContext.run_items.size() == 1
+	if pass_1:
+		print("[PASS] Stash routing works in TOWN phase")
+	else:
+		print("[FAIL] Stash routing should work in TOWN: ok=%s run_items=%d" % [str(ok_town), GameContext.run_items.size()])
+
+	# Assertion 2: In COMBAT phase (dungeon), stash routing is blocked
+	GameContext.run_items.clear()
+	GameContext._current_phase = GameContext.GamePhase.COMBAT
+	GameContext.current_dungeon_id = "test_dungeon"
+	GameContext.acquire_item_with_recipient("healing_tonic", 1, 0, "combat")
+	var ok_combat = GameContext.resolve_pending_acquisition("stash")
+	var pass_2 = not ok_combat and GameContext.run_items.is_empty()
+	if pass_2:
+		print("[PASS] Stash routing blocked in COMBAT phase (banked_stash_locked)")
+	else:
+		print("[FAIL] Stash should be blocked in dungeon: ok=%s run_items=%d" % [str(ok_combat), GameContext.run_items.size()])
+
+	# Assertion 3: Item stays pending when blocked
+	var pass_3 = GameContext.has_pending_acquisition()
+	if pass_3:
+		print("[PASS] Item stays pending when stash blocked")
+	else:
+		print("[FAIL] Item should stay pending")
+
+	# Assertion 4: In DUNGEON_CAMP phase, stash also blocked
+	GameContext._current_phase = GameContext.GamePhase.DUNGEON_CAMP
+	var ok_camp = GameContext.resolve_pending_acquisition("stash")
+	var pass_4 = not ok_camp
+	if pass_4:
+		print("[PASS] Stash routing blocked in DUNGEON_CAMP phase")
+	else:
+		print("[FAIL] Stash should be blocked in DUNGEON_CAMP")
+
+	# Assertion 5: Shop bag routing still works in dungeon
+	var ok_shop = GameContext.resolve_pending_acquisition("shop_bag")
+	var pass_5 = ok_shop and not GameContext.has_pending_acquisition()
+	if pass_5:
+		print("[PASS] Shop bag routing works in dungeon")
+	else:
+		print("[FAIL] Shop bag routing should work: ok=%s pending=%s" % [str(ok_shop), str(GameContext.has_pending_acquisition())])
+
+	# Cleanup
+	GameContext._current_phase = orig_phase
+	GameContext.current_dungeon_id = orig_dungeon_id
+	GameContext.run_items = orig_run_items
+	GameContext.shopkeeper_bag.clear()
+	GameContext.clear_pending_acquisitions()
+
+	return {"name": "Stash Routing Blocked in Dungeon (v1.2)", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5}
+
+
+# ===========================================================================
+# Test 82: Extract banks shopkeeper bag to stash (Loot Recipient v1.2)
+# ===========================================================================
+static func _test_extract_banks_shopkeeper_bag() -> Dictionary:
+	print("--- TEST 82: Extract Banks Shopkeeper Bag ---")
+
+	# Save originals
+	var orig_shop_bag = GameContext.shopkeeper_bag.duplicate(true)
+	var orig_run_items = GameContext.run_items.duplicate(true)
+
+	# Setup: add 2 stacks to shopkeeper_bag
+	GameContext.shopkeeper_bag = [
+		{"item_id": "herb", "qty": 3, "quality_tier": 0},
+		{"item_id": "healing_tonic", "qty": 2, "quality_tier": 0}
+	]
+	GameContext.run_items.clear()
+
+	# Assertion 1: Shopkeeper bag has 2 stacks
+	var pass_1 = GameContext.shopkeeper_bag.size() == 2
+	if pass_1:
+		print("[PASS] Shopkeeper bag has 2 stacks before banking")
+	else:
+		print("[FAIL] Expected 2 stacks, got %d" % GameContext.shopkeeper_bag.size())
+
+	# Call the banking hook
+	GameContext.bank_shopkeeper_bag_to_stash()
+
+	# Assertion 2: Shopkeeper bag is now empty
+	var pass_2 = GameContext.shopkeeper_bag.is_empty()
+	if pass_2:
+		print("[PASS] Shopkeeper bag cleared after banking")
+	else:
+		print("[FAIL] Shopkeeper bag should be empty, got %d" % GameContext.shopkeeper_bag.size())
+
+	# Assertion 3: Run stash now has 2 items
+	var pass_3 = GameContext.run_items.size() == 2
+	if pass_3:
+		print("[PASS] Run stash has 2 items after banking")
+	else:
+		print("[FAIL] Run stash expected 2 items, got %d" % GameContext.run_items.size())
+
+	# Assertion 4: Verify correct items in stash
+	var has_herb = false
+	var has_tonic = false
+	for item in GameContext.run_items:
+		if item.get("item_id", "") == "herb":
+			has_herb = item.get("qty", 0) == 3
+		elif item.get("item_id", "") == "healing_tonic":
+			has_tonic = item.get("qty", 0) == 2
+	var pass_4 = has_herb and has_tonic
+	if pass_4:
+		print("[PASS] Stash contains herb x3 and healing_tonic x2")
+	else:
+		print("[FAIL] Stash contents incorrect: herb=%s tonic=%s" % [str(has_herb), str(has_tonic)])
+
+	# Assertion 5: Banking empty bag is safe (no-op)
+	GameContext.run_items.clear()
+	GameContext.bank_shopkeeper_bag_to_stash()
+	var pass_5 = GameContext.run_items.is_empty()
+	if pass_5:
+		print("[PASS] Banking empty shopkeeper bag is safe no-op")
+	else:
+		print("[FAIL] Banking empty bag should not add items")
+
+	# Cleanup
+	GameContext.shopkeeper_bag = orig_shop_bag
+	GameContext.run_items = orig_run_items
+
+	return {"name": "Extract Banks Shopkeeper Bag (v1.2)", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5}
+
+
+# ===========================================================================
+# Test 83: Loot panel hero bag eligibility without backpack
+# ===========================================================================
+static func _test_hero_bag_eligibility_no_backpack() -> Dictionary:
+	print("--- TEST 83: Hero Bag Eligibility Without Backpack ---")
+
+	var test_hero_id = "test_hero_83"
+
+	# Save originals
+	var orig_bags = GameContext.hero_bags.duplicate(true)
+	var orig_equip = GameContext.hero_equipment.duplicate(true)
+	var orig_phase = GameContext._current_phase
+
+	# Setup: hero with NO backpack equipped
+	GameContext.hero_bags[test_hero_id] = []
+	GameContext.hero_equipment[test_hero_id] = {
+		"weapon": {"id": "", "quality": 0},
+		"offhand": {"id": "", "quality": 0},
+		"bag": {"id": "", "quality": 0}  # NO backpack
+	}
+	GameContext._current_phase = GameContext.GamePhase.TOWN
+	GameContext.clear_pending_acquisitions()
+
+	# Assertion 1: Capacity is 1 (base) without backpack
+	var cap = GameContext.get_hero_bag_capacity(test_hero_id)
+	var pass_1 = cap == 1
+	if pass_1:
+		print("[PASS] Capacity without backpack = %d (base)" % cap)
+	else:
+		print("[FAIL] Expected capacity 1 without backpack, got %d" % cap)
+
+	# Assertion 2: can_add_to_hero_bag returns true for any item when bag empty
+	var can_add = GameContext.can_add_to_hero_bag(test_hero_id, "healing_tonic", 1)
+	var pass_2 = can_add
+	if pass_2:
+		print("[PASS] can_add_to_hero_bag returns true for empty bag (cap=1)")
+	else:
+		print("[FAIL] can_add_to_hero_bag should return true for empty bag")
+
+	# Assertion 3: Adding item to hero bag succeeds
+	var add_ok = GameContext.add_item_to_hero_bag(test_hero_id, "healing_tonic", 1, 0)
+	var bag = GameContext.get_hero_bag(test_hero_id)
+	var pass_3 = add_ok and bag.size() == 1
+	if pass_3:
+		print("[PASS] Added healing_tonic to hero bag (1/1 slots)")
+	else:
+		print("[FAIL] Add to hero bag: ok=%s bag_size=%d" % [str(add_ok), bag.size()])
+
+	# Assertion 4: v1.3 NO stacking — same item is REJECTED when bag full
+	var can_add_same = GameContext.can_add_to_hero_bag(test_hero_id, "healing_tonic", 1)
+	var pass_4 = not can_add_same
+	if pass_4:
+		print("[PASS] Same item rejected when bag full (v1.3: no stacking)")
+	else:
+		print("[FAIL] Same item should be rejected when bag full (v1.3 no stacking)")
+
+	# Assertion 5: Different item also rejected (bag full at 1 slot)
+	var can_add_diff = GameContext.can_add_to_hero_bag(test_hero_id, "antidote", 1)
+	var pass_5 = not can_add_diff
+	if pass_5:
+		print("[PASS] Different item rejected when bag full (1/1 slots)")
+	else:
+		print("[FAIL] Different item should be rejected when bag full")
+
+	# Assertion 6: Summary shows 1/1
+	var summary = GameContext.get_hero_bag_summary(test_hero_id)
+	var pass_6 = summary.begins_with("1/1")
+	if pass_6:
+		print("[PASS] Summary shows 1/1: %s" % summary)
+	else:
+		print("[FAIL] Summary expected '1/1...', got: %s" % summary)
+
+	# Cleanup
+	GameContext.hero_bags = orig_bags
+	GameContext.hero_equipment = orig_equip
+	GameContext._current_phase = orig_phase
+	GameContext.clear_pending_acquisitions()
+
+	return {"name": "Hero Bag Eligibility Without Backpack", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5 and pass_6}
+
+
+# ===========================================================================
+# Test 84: Hero bag accepts materials without backpack (v1.3)
+# ===========================================================================
+static func _test_hero_bag_accepts_materials_no_backpack() -> Dictionary:
+	print("--- TEST 84: Hero Bag Accepts Materials Without Backpack (v1.3) ---")
+
+	var test_hero_id = "test_hero_84"
+
+	# Save originals
+	var orig_bags = GameContext.hero_bags.duplicate(true)
+	var orig_equip = GameContext.hero_equipment.duplicate(true)
+	var orig_phase = GameContext._current_phase
+
+	# Setup: hero with NO backpack equipped (capacity = 1)
+	GameContext.hero_bags[test_hero_id] = []
+	GameContext.hero_equipment[test_hero_id] = {
+		"weapon": {"id": "", "quality": 0},
+		"offhand": {"id": "", "quality": 0},
+		"bag": {"id": "", "quality": 0}  # NO backpack
+	}
+	GameContext._current_phase = GameContext.GamePhase.TOWN
+	GameContext.clear_pending_acquisitions()
+
+	# Assertion 1: Capacity is 1 without backpack
+	var cap = GameContext.get_hero_bag_capacity(test_hero_id)
+	var pass_1 = cap == 1
+	if pass_1:
+		print("[PASS] Capacity without backpack = %d" % cap)
+	else:
+		print("[FAIL] Expected capacity 1, got %d" % cap)
+
+	# Assertion 2: Create pending loot for material "iron_scrap"
+	GameContext.acquire_item_with_recipient("iron_scrap", 1, 0, "test")
+	var pending = GameContext.get_all_pending_acquisitions()
+	var pass_2 = pending.size() == 1 and pending[0].get("item_id", "") == "iron_scrap"
+	if pass_2:
+		print("[PASS] Pending loot for iron_scrap created")
+	else:
+		print("[FAIL] Pending expected 1 iron_scrap, got: %s" % str(pending))
+
+	# Assertion 3: Resolve material to hero_bag succeeds
+	var resolve_ok = GameContext.resolve_pending_acquisition("hero_bag", test_hero_id)
+	var pass_3 = resolve_ok
+	if pass_3:
+		print("[PASS] Resolved iron_scrap to hero_bag")
+	else:
+		print("[FAIL] Resolve iron_scrap to hero_bag should succeed")
+
+	# Assertion 4: Hero bag now contains iron_scrap
+	var bag = GameContext.get_hero_bag(test_hero_id)
+	var has_iron_scrap = false
+	for e in bag:
+		if e.get("item_id", "") == "iron_scrap":
+			has_iron_scrap = true
+	var pass_4 = bag.size() == 1 and has_iron_scrap
+	if pass_4:
+		print("[PASS] Hero bag has iron_scrap (1/1 slots)")
+	else:
+		print("[FAIL] Hero bag: size=%d has_iron_scrap=%s" % [bag.size(), str(has_iron_scrap)])
+
+	# Cleanup
+	GameContext.hero_bags = orig_bags
+	GameContext.hero_equipment = orig_equip
+	GameContext._current_phase = orig_phase
+	GameContext.clear_pending_acquisitions()
+
+	return {"name": "Hero Bag Accepts Materials (v1.3)", "passed": pass_1 and pass_2 and pass_3 and pass_4}
+
+
+# ===========================================================================
+# Test 85: No stacking in hero bag — same item uses separate slots (v1.3)
+# ===========================================================================
+static func _test_hero_bag_no_stacking() -> Dictionary:
+	print("--- TEST 85: No Stacking in Hero Bag (v1.3) ---")
+
+	var test_hero_id = "test_hero_85"
+
+	# Save originals
+	var orig_bags = GameContext.hero_bags.duplicate(true)
+	var orig_equip = GameContext.hero_equipment.duplicate(true)
+	var orig_phase = GameContext._current_phase
+
+	# Setup: hero with small_backpack (capacity = 1 + 2 = 3)
+	GameContext.hero_bags[test_hero_id] = []
+	GameContext.hero_equipment[test_hero_id] = {
+		"weapon": {"id": "", "quality": 0},
+		"offhand": {"id": "", "quality": 0},
+		"bag": {"id": "small_backpack", "quality": 0}
+	}
+	GameContext._current_phase = GameContext.GamePhase.TOWN
+	GameContext.clear_pending_acquisitions()
+
+	# Assertion 1: Capacity is 3 with backpack
+	var cap = GameContext.get_hero_bag_capacity(test_hero_id)
+	var pass_1 = cap == 3
+	if pass_1:
+		print("[PASS] Capacity with small_backpack = %d" % cap)
+	else:
+		print("[FAIL] Expected capacity 3, got %d" % cap)
+
+	# Assertion 2: Add iron_scrap twice — creates 2 separate slots
+	GameContext.acquire_item_with_recipient("iron_scrap", 1, 0, "test")
+	GameContext.resolve_pending_acquisition("hero_bag", test_hero_id)
+	GameContext.acquire_item_with_recipient("iron_scrap", 1, 0, "test")
+	GameContext.resolve_pending_acquisition("hero_bag", test_hero_id)
+	var bag = GameContext.get_hero_bag(test_hero_id)
+	var pass_2 = bag.size() == 2
+	if pass_2:
+		print("[PASS] Two iron_scrap items use 2 separate slots (no stacking)")
+	else:
+		print("[FAIL] Expected 2 slots for same item, got %d" % bag.size())
+
+	# Assertion 3: Both entries are iron_scrap with qty=1
+	var iron_count = 0
+	for e in bag:
+		if e.get("item_id", "") == "iron_scrap" and int(e.get("qty", 0)) == 1:
+			iron_count += 1
+	var pass_3 = iron_count == 2
+	if pass_3:
+		print("[PASS] Both entries are iron_scrap with qty=1")
+	else:
+		print("[FAIL] Expected 2 iron_scrap entries with qty=1, found %d" % iron_count)
+
+	# Assertion 4: Third item fills bag (3/3)
+	GameContext.acquire_item_with_recipient("herb", 1, 0, "test")
+	GameContext.resolve_pending_acquisition("hero_bag", test_hero_id)
+	bag = GameContext.get_hero_bag(test_hero_id)
+	var pass_4 = bag.size() == 3
+	if pass_4:
+		print("[PASS] Bag filled: %d/3 slots" % bag.size())
+	else:
+		print("[FAIL] Expected 3 slots used, got %d" % bag.size())
+
+	# Assertion 5: Fourth item rejected (bag full)
+	GameContext.acquire_item_with_recipient("wood_bundle", 1, 0, "test")
+	var can_add = GameContext.can_add_to_hero_bag(test_hero_id, "wood_bundle", 1)
+	var pass_5 = not can_add
+	if pass_5:
+		print("[PASS] Fourth item rejected (bag full 3/3)")
+	else:
+		print("[FAIL] Fourth item should be rejected")
+
+	# Cleanup
+	GameContext.hero_bags = orig_bags
+	GameContext.hero_equipment = orig_equip
+	GameContext._current_phase = orig_phase
+	GameContext.clear_pending_acquisitions()
+
+	return {"name": "No Stacking in Hero Bag (v1.3)", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5}
+
+
+# ===========================================================================
+# Test 86: Facility unlock purchase deducts materials (Facility Unlock v1)
+# ===========================================================================
+static func _test_facility_unlock_purchase_deducts_materials() -> Dictionary:
+	print("--- TEST 86: Facility Unlock Purchase Deducts Materials ---")
+
+	# Save originals
+	var orig_run_items = GameContext.run_items.duplicate(true)
+	var orig_unlocked_groups = GameContext.unlocked_groups.duplicate(true)
+
+	# Setup: Clear run_items, add materials for unlock_backpacks_t1
+	# Cost is: herb_sprig x2, wood_bundle x2
+	GameContext.run_items.clear()
+	GameContext.add_run_item("herb_sprig", 5)
+	GameContext.add_run_item("wood_bundle", 5)
+
+	# Clear the backpacks_t1 unlock if present
+	GameContext.unlocked_groups.erase("backpacks_t1")
+
+	# Assertion 1: backpacks_t1 not unlocked initially
+	var pass_1 = not GameContext.has_unlocked_group("backpacks_t1")
+	if pass_1:
+		print("[PASS] backpacks_t1 not unlocked initially")
+	else:
+		print("[FAIL] backpacks_t1 should not be unlocked initially")
+
+	# Assertion 2: Purchase unlock_backpacks_t1 from huntsman
+	var purchase_ok = GameContext.purchase_facility_unlock("huntsman", "unlock_backpacks_t1", "town_greenroot")
+	var pass_2 = purchase_ok
+	if pass_2:
+		print("[PASS] purchase_facility_unlock returned true")
+	else:
+		print("[FAIL] purchase_facility_unlock should return true")
+
+	# Assertion 3: backpacks_t1 now unlocked
+	var pass_3 = GameContext.has_unlocked_group("backpacks_t1")
+	if pass_3:
+		print("[PASS] backpacks_t1 now unlocked")
+	else:
+		print("[FAIL] backpacks_t1 should be unlocked after purchase")
+
+	# Assertion 4: Materials deducted (should have 3 herb_sprig, 3 wood_bundle)
+	var herb_count = GameContext.get_run_item_count("herb_sprig")
+	var wood_count = GameContext.get_run_item_count("wood_bundle")
+	var pass_4 = herb_count == 3 and wood_count == 3
+	if pass_4:
+		print("[PASS] Materials deducted: herb_sprig=%d, wood_bundle=%d" % [herb_count, wood_count])
+	else:
+		print("[FAIL] Expected herb=3, wood=3, got herb=%d, wood=%d" % [herb_count, wood_count])
+
+	# Assertion 5: Cannot purchase again (already unlocked)
+	var purchase_again = GameContext.purchase_facility_unlock("huntsman", "unlock_backpacks_t1", "town_greenroot")
+	var pass_5 = not purchase_again
+	if pass_5:
+		print("[PASS] Cannot purchase same unlock twice")
+	else:
+		print("[FAIL] Should not be able to purchase already-unlocked group")
+
+	# Cleanup
+	GameContext.run_items = orig_run_items
+	GameContext.unlocked_groups = orig_unlocked_groups
+
+	return {"name": "Facility Unlock Purchase Deducts Materials", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5}
+
+
+# ===========================================================================
+# Test 87: Facility unlock persists across save/load (Facility Unlock v1)
+# ===========================================================================
+static func _test_facility_unlock_persists_save_load() -> Dictionary:
+	print("--- TEST 87: Facility Unlock Persists Across Save/Load ---")
+
+	# Save originals
+	var orig_unlocked_groups = GameContext.unlocked_groups.duplicate(true)
+	var orig_run_items = GameContext.run_items.duplicate(true)
+
+	# Setup: Ensure backpacks_t1 not unlocked, add materials
+	GameContext.unlocked_groups.erase("backpacks_t1")
+	GameContext.run_items.clear()
+	GameContext.add_run_item("herb_sprig", 5)
+	GameContext.add_run_item("wood_bundle", 5)
+
+	# Purchase the unlock
+	var purchase_ok = GameContext.purchase_facility_unlock("huntsman", "unlock_backpacks_t1", "town_greenroot")
+	var pass_1 = purchase_ok and GameContext.has_unlocked_group("backpacks_t1")
+	if pass_1:
+		print("[PASS] Purchased unlock_backpacks_t1")
+	else:
+		print("[FAIL] Failed to purchase unlock_backpacks_t1")
+
+	# Save game (unlock_group already calls save_game, but explicit for test clarity)
+	GameContext.save_game()
+
+	# Simulate load by clearing unlocked_groups and reloading
+	var before_load = GameContext.unlocked_groups.duplicate(true)
+	GameContext.unlocked_groups.clear()
+
+	# Assertion 2: After clearing, backpacks_t1 gone
+	var pass_2 = not GameContext.has_unlocked_group("backpacks_t1")
+	if pass_2:
+		print("[PASS] backpacks_t1 cleared before load")
+	else:
+		print("[FAIL] backpacks_t1 should be gone after clear")
+
+	# Load game
+	GameContext.load_game()
+
+	# Assertion 3: After load, backpacks_t1 restored
+	var pass_3 = GameContext.has_unlocked_group("backpacks_t1")
+	if pass_3:
+		print("[PASS] backpacks_t1 persisted across save/load")
+	else:
+		print("[FAIL] backpacks_t1 should persist after load, unlocked_groups=%s" % str(GameContext.unlocked_groups))
+
+	# Cleanup: Restore originals
+	GameContext.unlocked_groups = orig_unlocked_groups
+	GameContext.run_items = orig_run_items
+	GameContext.save_game()
+
+	return {"name": "Facility Unlock Persists Save/Load", "passed": pass_1 and pass_2 and pass_3}

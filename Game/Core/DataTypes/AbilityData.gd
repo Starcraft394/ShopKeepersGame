@@ -52,6 +52,27 @@ var hit_count: int = 1  # Number of hits per use
 var buff_stats: Dictionary = {}  # e.g., {"attack": 4, "speed": 3}
 var buff_duration: int = 0  # Turns the buff lasts (0 = permanent for combat)
 
+# Self-buff/debuff on ability use (e.g., fungal_frenzy, smoke_dash)
+var self_buff: Dictionary = {}  # e.g., {"stat": "attack", "value": 4, "duration": 2}
+var self_debuff: Dictionary = {}  # e.g., {"stat": "defense", "value": -2, "duration": 2}
+var self_damage: int = 0  # HP cost to cast (e.g., shadow_mend)
+
+# Enemy debuff on hit (e.g., void_anchor, entropy_blast)
+var enemy_debuff: Dictionary = {}  # e.g., {"stat": "speed", "value": -3, "duration": 2}
+
+# Ally buff for multi-target buffs (e.g., raise_dead)
+var ally_buff: Dictionary = {}  # e.g., {"stats": ["attack", "speed"], "value": 3, "duration": 3}
+
+# Special mechanics
+var armor_piercing: bool = false  # Ignore defense (e.g., light_lance, phase_strike)
+var cleanses_debuffs: int = 0  # Number of debuffs to remove (e.g., cleansing_wave)
+var shield_value: int = 0  # Temporary HP shield (e.g., prism_barrier)
+var shield_duration: int = 0  # Shield duration in rounds
+var reflect_percent: int = 0  # Damage reflection (e.g., light_refraction)
+
+# Dual effect (damage + heal, e.g., life_drain)
+var heal_target_rule: String = ""  # Target rule for heal portion of damage_and_heal
+
 # Visual
 var icon_path: String = ""
 var animation_id: String = ""
@@ -102,6 +123,30 @@ static func from_dict(data: Dictionary) -> AbilityData:
 	var buff_stats_val = data.get("buff_stats", {})
 	instance.buff_stats = buff_stats_val if buff_stats_val is Dictionary else {}
 	instance.buff_duration = data.get("buff_duration", 0)
+
+	# Self-buff/debuff on ability use
+	var self_buff_val = data.get("self_buff", {})
+	instance.self_buff = self_buff_val if self_buff_val is Dictionary else {}
+	var self_debuff_val = data.get("self_debuff", {})
+	instance.self_debuff = self_debuff_val if self_debuff_val is Dictionary else {}
+	instance.self_damage = int(data.get("self_damage", 0))
+
+	# Enemy debuff on hit
+	var enemy_debuff_val = data.get("enemy_debuff", {})
+	instance.enemy_debuff = enemy_debuff_val if enemy_debuff_val is Dictionary else {}
+
+	# Ally buff for multi-target
+	var ally_buff_val = data.get("ally_buff", {})
+	instance.ally_buff = ally_buff_val if ally_buff_val is Dictionary else {}
+
+	# Special mechanics
+	instance.armor_piercing = data.get("armor_piercing", false)
+	instance.cleanses_debuffs = int(data.get("cleanses_debuffs", 0))
+	instance.shield_value = int(data.get("shield_value", 0))
+	instance.shield_duration = int(data.get("shield_duration", 0))
+	instance.reflect_percent = int(data.get("reflect_percent", 0))
+	instance.heal_target_rule = data.get("heal_target_rule", "")
+
 	instance.icon_path = data.get("icon_path", "")
 	instance.animation_id = data.get("animation_id", "")
 

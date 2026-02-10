@@ -1,0 +1,17 @@
+{
+  "id": "life_drain",
+  "display_name": "Life Drain",
+  "description": "Drain life force from an enemy, dealing damage and healing an ally.",
+  "ability_type": "class_a",
+  "source_class_id": "dark_channeler",
+  "target_type": "single_enemy",
+  "effect_type": "damage_and_heal",
+  "base_damage": 10,
+  "base_heal": 12,
+  "damage_type": "dark",
+  "attack_scaling": 0.8,
+  "cooldown": 2,
+  "heal_target_rule": "lowest_hp_pct",
+  "applies_status_id": "",
+  "status_stacks": 0
+}

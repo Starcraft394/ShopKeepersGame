@@ -1,0 +1,16 @@
+{
+  "id": "phase_strike",
+  "display_name": "Phase Strike",
+  "description": "Phase through dimensions to strike an enemy, ignoring armor.",
+  "ability_type": "class_b",
+  "source_class_id": "voidwalker",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 14,
+  "damage_type": "void",
+  "attack_scaling": 1.1,
+  "cooldown": 4,
+  "armor_piercing": true,
+  "applies_status_id": "",
+  "status_stacks": 0
+}

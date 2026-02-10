@@ -12,7 +12,7 @@
     "speed": 5
   },
   "ability_ids": ["basic_attack"],
-  "loot_table_id": "lt_region1_common",
+  "loot_table_id": "lt_ooze_parts",
   "gold_drop_min": 3,
   "gold_drop_max": 8
 }

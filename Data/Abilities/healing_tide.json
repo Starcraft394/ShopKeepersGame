@@ -1,0 +1,20 @@
+{
+  "id": "healing_tide",
+  "display_name": "Healing Tide",
+  "description": "Call forth restorative waters to heal the most wounded ally.",
+  "ability_type": "class_a",
+  "source_class_id": "tidechaser",
+  "target_type": "single_ally",
+  "effect_type": "heal",
+  "base_damage": 0,
+  "base_heal": 18,
+  "damage_type": "magical",
+  "attack_scaling": 0.0,
+  "cooldown": 2,
+  "applies_status_id": "",
+  "status_stacks": 0,
+  "target_team": "ally",
+  "target_rule": "lowest_hp_pct",
+  "can_overheal": false,
+  "allow_self_target": true
+}

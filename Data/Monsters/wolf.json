@@ -12,7 +12,7 @@
     "speed": 12
   },
   "ability_ids": ["basic_attack"],
-  "loot_table_id": "lt_region1_common",
+  "loot_table_id": "lt_beast_wolf",
   "gold_drop_min": 4,
   "gold_drop_max": 11
 }

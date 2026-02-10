@@ -23,8 +23,6 @@ const CombatControllerScript = preload("res://Game/Combat/CombatController.gd")
 @onready var step_button: Button = $BottomPanel/ButtonRow/StepButton
 @onready var auto_button: Button = $BottomPanel/ButtonRow/AutoButton
 @onready var reset_button: Button = $BottomPanel/ButtonRow/ResetButton
-@onready var stun_button: Button = $BottomPanel/DemoButtons/StunButton
-@onready var doom_button: Button = $BottomPanel/DemoButtons/DoomButton
 @onready var dungeon_progress_label: Label = $DungeonProgressLabel
 @onready var main_content: HBoxContainer = $MainContent  # v1.9C: Reference for layout adjustment
 
@@ -37,6 +35,14 @@ var _is_auto_running: bool = false
 var _auto_timer: float = 0.0
 var _auto_delay: float = 0.5  # Seconds between auto steps
 var _scene_transition_pending: bool = false
+var _loot_panel: Control = null  # Loot routing panel (shown after victory with drops)
+var _loot_result = null  # CombatResult reference for loot panel
+
+# Swap popup for full bags - allows replacing existing items
+var _swap_popup: Window = null
+var _swap_pending_acq_index: int = -1
+var _swap_pending_hero_id: String = ""
+var _swap_pending_item_id: String = ""
 
 # Status UI v1.6: Unit display references for targeted refresh
 var _unit_displays: Dictionary = {}  # unit_id -> Control (unit display container)
@@ -73,9 +79,18 @@ var _encounter_id: int = 0  # Incremented on each new encounter
 # Active unit highlighting
 var _active_unit_id: String = ""
 var _highlight_log_emitted: bool = false  # v1.9B.1: Rate-limit debug logs
+var _hero_input_highlight_active: bool = false  # v2.0: Track if hero input highlight is active
+var _hero_input_pulse_tween: Tween = null  # v2.0: Tween for pulsing animation
+
+# v2.0: Hero input highlight colors (brighter and more visible)
+const HERO_INPUT_HIGHLIGHT_COLOR: Color = Color(1.0, 0.9, 0.2, 0.5)  # Bright golden yellow
+const HERO_INPUT_HIGHLIGHT_PULSE_MIN: Color = Color(1.0, 0.85, 0.1, 0.35)  # Dimmer pulse
+const HERO_INPUT_HIGHLIGHT_PULSE_MAX: Color = Color(1.0, 0.95, 0.3, 0.65)  # Brighter pulse
+const NORMAL_HIGHLIGHT_COLOR: Color = Color(1.0, 0.85, 0.0, 0.25)  # Original subtle gold tint
 
 # Pop text pooling
 var _pop_text_pool: Array = []  # Pool of Label nodes
+var _active_pop_timers: Array = []  # v2.1: Track active pop text timers to stop on refresh
 const POP_TEXT_DURATION: float = 1.2  # Seconds to display
 const POP_TEXT_RISE: float = 30.0  # Pixels to rise during animation
 
@@ -114,6 +129,32 @@ var _last_dot_unit: String = ""  # Track last DOT unit for combining
 var _last_dot_count: int = 0
 
 # ============================================================================
+# PLAYER ACTIONS v1: Action Selection + Target Mode
+# ============================================================================
+
+var _action_panel: HBoxContainer = null
+var _btn_basic: Button = null
+var _btn_ability_a: Button = null
+var _btn_ability_b: Button = null
+var _btn_pass: Button = null
+var _btn_cancel: Button = null
+var _action_label: Label = null  # Shows "Action 1/3:"
+
+var _target_selection_active: bool = false
+var _valid_target_ids: Array = []
+var _target_highlights: Dictionary = {}  # unit_id -> ColorRect
+
+var _consumable_popup: PopupMenu = null
+var _stats_window: Window = null  # Floating stats window
+var _stats_window_hero_id: String = ""  # Hero ID for stats window refresh
+var _stats_window_vbox: VBoxContainer = null  # Reference for auto-update
+var _auto_step_pending: bool = false  # Guard against concurrent auto-steps
+var _current_input_unit: CombatUnit = null  # Current unit awaiting player input (for tooltips)
+
+# Auto mode deferred selection state
+var _auto_pending_targets: Array = []  # Valid targets for deferred auto-selection
+
+# ============================================================================
 # LIFECYCLE
 # ============================================================================
 
@@ -124,15 +165,19 @@ func _ready() -> void:
 	step_button.pressed.connect(_on_step_pressed)
 	auto_button.pressed.connect(_on_auto_pressed)
 	reset_button.pressed.connect(_on_reset_pressed)
-	stun_button.pressed.connect(demo_apply_stun)
-	doom_button.pressed.connect(demo_apply_doom)
 
 	# Start initial encounter
 	_start_encounter()
 
 
 func _process(delta: float) -> void:
+	# Null safety: _combat_controller may be null during initialization or after queue_free
+	if _combat_controller == null:
+		return
 	if _is_auto_running and not _combat_controller.is_combat_over():
+		# Don't step if already waiting for player input (auto-selection handles this via signals)
+		if _combat_controller.is_awaiting_player_input():
+			return
 		_auto_timer += delta
 		if _auto_timer >= _auto_delay:
 			_auto_timer = 0.0
@@ -153,6 +198,9 @@ func _start_encounter() -> void:
 
 	_is_auto_running = false
 	_auto_timer = 0.0
+	_auto_step_pending = false  # Reset auto-step guard
+	_auto_pending_targets.clear()  # Clear any pending auto-selection targets
+	_stop_hero_input_highlight()  # Ensure tween is stopped before encounter reset
 
 	# Update auto button text
 	auto_button.text = "Auto"
@@ -178,9 +226,19 @@ func _start_encounter() -> void:
 	_combat_controller.turn_started.connect(_on_turn_started)  # v1.9A: Active unit highlight
 	_combat_controller.action_performed.connect(_on_action_performed)  # v1.9A: Pop text + cast callout
 	_combat_controller.intent_decided.connect(_on_intent_decided)  # v1.9B: Intent surface
+	_combat_controller.player_input_required.connect(_on_player_input_required)  # Player Actions v1
+	_combat_controller.target_selection_required.connect(_on_target_selection_required)  # Player Actions v1
+	_combat_controller.multi_action_update.connect(_on_multi_action_update)  # Player Actions v1
+	_combat_controller.combat_continue_ready.connect(_on_combat_continue_ready)  # Player Actions v1.1: Auto-flow
 
 	# v1.9B: Initialize timeline and log overlay UI
 	_create_v19b_ui()
+
+	# Player Actions v1: Create action panel
+	_create_action_panel()
+
+	# Hide Step button - using player action buttons instead
+	step_button.visible = false
 
 	# Get RNG from context
 	var run_seed = GameContext.get_run_seed() if GameContext.is_run_active() else 12345
@@ -228,6 +286,9 @@ func _start_encounter() -> void:
 	# Refresh UI
 	_refresh_all_panels()
 	_update_top_bar()
+
+	# Start first turn (will show action buttons if player turn, or auto-act if enemy)
+	call_deferred("_step_turn")
 
 
 ## Log combat modifier effects to the UI combat log.
@@ -390,6 +451,12 @@ func _step_turn() -> void:
 		_log("[color=gray]Combat has ended.[/color]")
 		return
 
+	# Guard: Don't step if already awaiting player input
+	# (Auto mode handles this via signal handlers, not _step_turn)
+	if _combat_controller.is_awaiting_player_input():
+		print("[UI] _step_turn skipped - already awaiting player input")
+		return
+
 	# Get turn info before stepping
 	var turn_info = _combat_controller.get_turn_info()
 
@@ -444,6 +511,14 @@ func _log_action(action: CombatAction) -> void:
 # ============================================================================
 
 func _refresh_all_panels() -> void:
+	# v2.0 Fix: Stop hero input highlight tween BEFORE clearing displays
+	# The tween animates a node in _unit_displays which will be freed
+	_stop_hero_input_highlight()
+
+	# v2.1 Fix: Stop all active pop text timers BEFORE clearing displays
+	# This prevents lambda capture freed errors when timers reference freed nodes
+	_stop_all_pop_timers()
+
 	var snapshot = _combat_controller.get_units_snapshot()
 	_unit_displays.clear()  # Status UI v1.6: Clear display references
 	_unit_badge_rows.clear()  # Status UI v1.7: Clear badge row references (both status and buff)
@@ -479,6 +554,15 @@ func _refresh_party_panel(units: Array) -> void:
 		var display = _create_unit_display(unit_data)
 		party_panel.add_child(display)
 		_unit_displays[unit_data["id"]] = display  # Status UI v1.6: Store reference
+
+	# Hero Loadout v1: Shopkeeper Bag summary (shared run stash)
+	var stash = GameContext.get_run_stash_detailed_summary()
+	var stash_label = Label.new()
+	stash_label.text = format_shopkeeper_bag(stash)
+	stash_label.add_theme_font_size_override("font_size", 10)
+	stash_label.add_theme_color_override("font_color", Color.WHEAT)
+	stash_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	party_panel.add_child(stash_label)
 
 
 func _refresh_enemy_panel(units: Array) -> void:
@@ -525,13 +609,22 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 	var alive_color = Color.WHITE if unit_data["is_alive"] else Color.GRAY
 	var dead_text = " [DEAD]" if not unit_data["is_alive"] else ""
 	var class_suffix = ""
+	var display_name = unit_data["name"]
+
 	if unit_data["team"] == "player" and unit_data.get("class_id", "") != "":
 		var cls_name = unit_data["class_id"].capitalize()
 		var cls_data = DataRegistry.get_class_data(unit_data["class_id"])
 		if cls_data != null and cls_data.display_name != "":
 			cls_name = cls_data.display_name
 		class_suffix = " (%s)" % cls_name
-	name_label.text = "%s%s%s" % [unit_data["name"], class_suffix, dead_text]
+	elif unit_data["team"] == "enemy":
+		# Add number to enemy name for differentiation (e.g., "Goblin #1")
+		var unit_id = unit_data.get("id", "")
+		if unit_id.begins_with("enemy_"):
+			var enemy_num = int(unit_id.replace("enemy_", "")) + 1  # Convert to 1-based
+			display_name = "%s #%d" % [unit_data["name"], enemy_num]
+
+	name_label.text = "%s%s%s" % [display_name, class_suffix, dead_text]
 	name_label.add_theme_color_override("font_color", alive_color)
 	container.add_child(name_label)
 
@@ -571,46 +664,185 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 		"buff_row": buff_badge_row
 	}
 
-	# Cooldown line (only for player units with weapon ability)
-	if unit_data["team"] == "player" and unit_data["weapon_max_cooldown"] > 0:
-		var cd_label = Label.new()
-		if unit_data["weapon_cooldown"] > 0:
-			cd_label.text = "Weapon CD: %d" % unit_data["weapon_cooldown"]
-			cd_label.add_theme_color_override("font_color", Color.ORANGE)
-		else:
-			cd_label.text = "Weapon: READY"
-			cd_label.add_theme_color_override("font_color", Color.GREEN)
-		cd_label.add_theme_font_size_override("font_size", 11)
-		container.add_child(cd_label)
+	# Stat line showing ATK, DEF, SPD for player units
+	if unit_data["team"] == "player":
+		var stat_line = HBoxContainer.new()
+		stat_line.add_theme_constant_override("separation", 8)
 
-	# Items v5: Equipment display for player heroes (use source_id for per-hero equipment)
+		var atk_label = Label.new()
+		atk_label.text = "ATK: %d" % unit_data.get("attack", 0)
+		atk_label.add_theme_font_size_override("font_size", 11)
+		atk_label.add_theme_color_override("font_color", Color.SALMON)
+		stat_line.add_child(atk_label)
+
+		var sep1 = Label.new()
+		sep1.text = "|"
+		sep1.add_theme_font_size_override("font_size", 11)
+		sep1.add_theme_color_override("font_color", Color.DIM_GRAY)
+		stat_line.add_child(sep1)
+
+		var def_label = Label.new()
+		def_label.text = "DEF: %d" % unit_data.get("defense", 0)
+		def_label.add_theme_font_size_override("font_size", 11)
+		def_label.add_theme_color_override("font_color", Color.LIGHT_BLUE)
+		stat_line.add_child(def_label)
+
+		var sep2 = Label.new()
+		sep2.text = "|"
+		sep2.add_theme_font_size_override("font_size", 11)
+		sep2.add_theme_color_override("font_color", Color.DIM_GRAY)
+		stat_line.add_child(sep2)
+
+		var spd_label = Label.new()
+		spd_label.text = "SPD: %d" % unit_data.get("speed", 0)
+		spd_label.add_theme_font_size_override("font_size", 11)
+		spd_label.add_theme_color_override("font_color", Color.YELLOW)
+		stat_line.add_child(spd_label)
+
+		container.add_child(stat_line)
+
+	# Stat line showing ATK, DEF, SPD for enemy units
+	elif unit_data["team"] == "enemy":
+		var stat_line = HBoxContainer.new()
+		stat_line.add_theme_constant_override("separation", 8)
+
+		var atk_label = Label.new()
+		atk_label.text = "ATK: %d" % unit_data.get("attack", 0)
+		atk_label.add_theme_font_size_override("font_size", 11)
+		atk_label.add_theme_color_override("font_color", Color.SALMON)
+		stat_line.add_child(atk_label)
+
+		var sep1 = Label.new()
+		sep1.text = "|"
+		sep1.add_theme_font_size_override("font_size", 11)
+		sep1.add_theme_color_override("font_color", Color.DIM_GRAY)
+		stat_line.add_child(sep1)
+
+		var def_label = Label.new()
+		def_label.text = "DEF: %d" % unit_data.get("defense", 0)
+		def_label.add_theme_font_size_override("font_size", 11)
+		def_label.add_theme_color_override("font_color", Color.LIGHT_BLUE)
+		stat_line.add_child(def_label)
+
+		var sep2 = Label.new()
+		sep2.text = "|"
+		sep2.add_theme_font_size_override("font_size", 11)
+		sep2.add_theme_color_override("font_color", Color.DIM_GRAY)
+		stat_line.add_child(sep2)
+
+		var spd_label = Label.new()
+		spd_label.text = "SPD: %d" % unit_data.get("speed", 0)
+		spd_label.add_theme_font_size_override("font_size", 11)
+		spd_label.add_theme_color_override("font_color", Color.YELLOW)
+		stat_line.add_child(spd_label)
+
+		container.add_child(stat_line)
+
+	# Player Actions v1.3: Abilities and Passives display (replaces equipment)
 	if unit_data["team"] == "player":
 		var hero_id = unit_data.get("source_id", unit_data["id"])
-		var equip_summary = GameContext.get_hero_equipment_summary(hero_id)
 
-		# Weapon line
-		var wpn_label = Label.new()
-		wpn_label.text = format_gear_slot_label("weapon", equip_summary["weapon_id"], equip_summary["weapon_quality"])
-		wpn_label.add_theme_font_size_override("font_size", 10)
-		wpn_label.add_theme_color_override("font_color", Color.LIGHT_STEEL_BLUE if equip_summary["weapon_id"] != "" else Color.DIM_GRAY)
-		container.add_child(wpn_label)
+		# Abilities row
+		var abilities_row = HBoxContainer.new()
+		abilities_row.add_theme_constant_override("separation", 8)
 
-		# Offhand line
-		var off_label = Label.new()
-		off_label.text = format_gear_slot_label("offhand", equip_summary["offhand_id"], equip_summary["offhand_quality"])
-		off_label.add_theme_font_size_override("font_size", 10)
-		off_label.add_theme_color_override("font_color", Color.LIGHT_STEEL_BLUE if equip_summary["offhand_id"] != "" else Color.DIM_GRAY)
-		container.add_child(off_label)
+		# Ability A
+		var ability_a_id = unit_data.get("ability_a_id", "")
+		if ability_a_id != "":
+			var ability_a = DataRegistry.get_ability(ability_a_id) if DataRegistry.has_method("get_ability") else null
+			var a_label = Label.new()
+			var a_name = ability_a.display_name if ability_a else ability_a_id.replace("_", " ").capitalize()
+			a_label.text = "[A] %s" % a_name
+			a_label.add_theme_font_size_override("font_size", 11)
+			a_label.add_theme_color_override("font_color", Color.CYAN)
+			a_label.mouse_filter = Control.MOUSE_FILTER_STOP
+			# Build tooltip with description and cooldown
+			var a_tooltip = a_name
+			if ability_a:
+				if ability_a.description != "":
+					a_tooltip += "\n%s" % ability_a.description
+				a_tooltip += "\nCooldown: %d turns" % ability_a.cooldown
+			a_label.tooltip_text = a_tooltip
+			abilities_row.add_child(a_label)
 
-		# Gear stat summary line (optional - only if bonuses exist)
-		var gear_bonuses = GameContext._get_hero_equipment_stat_bonuses(hero_id)
-		var gear_summary = format_gear_stat_summary(gear_bonuses)
-		if gear_summary != "":
-			var gear_label = Label.new()
-			gear_label.text = gear_summary
-			gear_label.add_theme_font_size_override("font_size", 10)
-			gear_label.add_theme_color_override("font_color", Color.PALE_GREEN)
-			container.add_child(gear_label)
+		# Ability B
+		var ability_b_id = unit_data.get("ability_b_id", "")
+		if ability_b_id != "":
+			var ability_b = DataRegistry.get_ability(ability_b_id) if DataRegistry.has_method("get_ability") else null
+			var b_label = Label.new()
+			var b_name = ability_b.display_name if ability_b else ability_b_id.replace("_", " ").capitalize()
+			b_label.text = "[B] %s" % b_name
+			b_label.add_theme_font_size_override("font_size", 11)
+			b_label.add_theme_color_override("font_color", Color.CYAN)
+			b_label.mouse_filter = Control.MOUSE_FILTER_STOP
+			# Build tooltip with description and cooldown
+			var b_tooltip = b_name
+			if ability_b:
+				if ability_b.description != "":
+					b_tooltip += "\n%s" % ability_b.description
+				b_tooltip += "\nCooldown: %d turns" % ability_b.cooldown
+			b_label.tooltip_text = b_tooltip
+			abilities_row.add_child(b_label)
+
+		container.add_child(abilities_row)
+
+		# Passives row
+		var passives_row = HBoxContainer.new()
+		passives_row.add_theme_constant_override("separation", 8)
+
+		var passive_a_id = unit_data.get("passive_a_id", "")
+		var passive_b_id = unit_data.get("passive_b_id", "")
+
+		if passive_a_id != "":
+			var passive_a = DataRegistry.get_passive(passive_a_id) if DataRegistry.has_method("get_passive") else null
+			var pa_label = Label.new()
+			var pa_name = passive_a.display_name if passive_a else passive_a_id.replace("_", " ").capitalize()
+			pa_label.text = "[P] %s" % pa_name
+			pa_label.add_theme_font_size_override("font_size", 10)
+			pa_label.add_theme_color_override("font_color", Color.MEDIUM_PURPLE)
+			pa_label.mouse_filter = Control.MOUSE_FILTER_STOP
+			var pa_tooltip = pa_name
+			if passive_a and passive_a.description != "":
+				pa_tooltip += "\n%s" % passive_a.description
+			pa_label.tooltip_text = pa_tooltip
+			passives_row.add_child(pa_label)
+
+		if passive_b_id != "":
+			var passive_b = DataRegistry.get_passive(passive_b_id) if DataRegistry.has_method("get_passive") else null
+			var pb_label = Label.new()
+			var pb_name = passive_b.display_name if passive_b else passive_b_id.replace("_", " ").capitalize()
+			pb_label.text = "[P] %s" % pb_name
+			pb_label.add_theme_font_size_override("font_size", 10)
+			pb_label.add_theme_color_override("font_color", Color.MEDIUM_PURPLE)
+			pb_label.mouse_filter = Control.MOUSE_FILTER_STOP
+			var pb_tooltip = pb_name
+			if passive_b and passive_b.description != "":
+				pb_tooltip += "\n%s" % passive_b.description
+			pb_label.tooltip_text = pb_tooltip
+			passives_row.add_child(pb_label)
+
+		if passive_a_id != "" or passive_b_id != "":
+			container.add_child(passives_row)
+
+		# Hero bag line (with right-click for consumable use)
+		var bag_summary = GameContext.get_hero_bag_summary(hero_id)
+		var bag_label = Label.new()
+		bag_label.name = "BagLabel"
+		bag_label.text = "BAG: %s" % bag_summary
+		bag_label.add_theme_font_size_override("font_size", 10)
+		bag_label.add_theme_color_override("font_color", Color.SANDY_BROWN if "empty" not in bag_summary else Color.DIM_GRAY)
+		bag_label.mouse_filter = Control.MOUSE_FILTER_STOP
+		bag_label.gui_input.connect(_on_bag_right_clicked.bind(hero_id))
+		bag_label.tooltip_text = "Right-click to use consumable"
+		container.add_child(bag_label)
+
+		# Stats button (opens floating stats window with full details)
+		var stats_btn = Button.new()
+		stats_btn.text = "Hero Info"
+		stats_btn.custom_minimum_size = Vector2(60, 24)
+		stats_btn.pressed.connect(_on_stats_button_pressed.bind(hero_id, unit_data))
+		stats_btn.tooltip_text = "View full stats, equipment, and abilities"
+		container.add_child(stats_btn)
 
 	# [DEBUG PANEL] Legacy statuses from StatusRuntime (stun, doom)
 	var status_label = Label.new()
@@ -968,6 +1200,54 @@ static func format_gear_stat_summary(bonuses: Dictionary) -> String:
 	return "Gear: %s" % " ".join(parts)
 
 
+## Hero Loadout v1: Format a single equipment slot line for combat UI.
+## slot_code: "WPN", "OFF", "ARM", "HELM", "RING", "AMU"
+## Returns e.g. "WPN: Q1 Iron Dagger" or "ARM: (empty)"
+static func format_equipment_line(slot_code: String, item_id: String, quality: int) -> String:
+	if item_id == "":
+		return "%s: (empty)" % slot_code
+
+	var display_name = item_id.replace("_", " ").capitalize()
+	var template = DataRegistry.get_item_template(item_id)
+	if template != null and template.display_name != "":
+		display_name = template.display_name
+
+	return "%s: Q%d %s" % [slot_code, quality, display_name]
+
+
+## Hero Loadout v1: Format bag summary for combat UI.
+## entries: Array of { "item_id", "qty" }; cap: max capacity.
+## Returns e.g. "0/3 (empty)" or "2/3 Potion x1, Herb x1"
+static func format_bag_summary(entries: Array, cap: int) -> String:
+	if entries.is_empty():
+		return "%d/%d (empty)" % [0, cap]
+
+	# v1.2: Count stacks (entries), not total qty
+	var used := entries.size()
+	var parts: Array[String] = []
+	for entry in entries:
+		var qty = int(entry.get("qty", 1))
+		var item_id = entry.get("item_id", "")
+		var name = item_id.replace("_", " ").capitalize()
+		var tpl = DataRegistry.get_item_template(item_id)
+		if tpl != null and tpl.display_name != "":
+			name = tpl.display_name
+		parts.append("%s x%d" % [name, qty])
+	return "%d/%d %s" % [used, cap, ", ".join(parts)]
+
+
+## Hero Loadout v1: Format the Shopkeeper Bag (shared run stash) summary.
+## stash: Dictionary from GameContext.get_run_stash_detailed_summary().
+static func format_shopkeeper_bag(stash: Dictionary) -> String:
+	return "SHOPKEEPER BAG: Gold %d | Items %d | Gear %d | Mats %d | Cons %d" % [
+		stash.get("gold", 0),
+		stash.get("total_items", 0),
+		stash.get("gear_count", 0),
+		stash.get("mat_count", 0),
+		stash.get("cons_count", 0)
+	]
+
+
 ## Hero Recruit v2.1: Format combat display string for a hero (for testability).
 ## Returns "Name (Class)" string from unit_data dict.
 static func format_hero_combat_label(hero_name: String, class_id: String) -> String:
@@ -1257,6 +1537,21 @@ func _on_auto_pressed() -> void:
 	auto_button.text = "Stop" if _is_auto_running else "Auto"
 	_auto_timer = 0.0
 
+	# Clear pending auto-selection state when toggling auto mode
+	_auto_pending_targets.clear()
+
+	print("[UI] Auto mode toggled: %s" % ("ON" if _is_auto_running else "OFF"))
+
+	# CRITICAL: If auto mode is turned ON while already waiting for player input,
+	# immediately trigger auto-selection (the signal already fired)
+	if _is_auto_running and _combat_controller != null and _combat_controller.is_awaiting_player_input():
+		print("[UI] Auto mode turned ON while awaiting input - triggering auto-select")
+		# Hide action panel since we're auto-selecting
+		if _action_panel != null:
+			_action_panel.visible = false
+		# Trigger auto-selection
+		call_deferred("_auto_select_action")
+
 
 func _on_reset_pressed() -> void:
 	_start_encounter()
@@ -1286,7 +1581,18 @@ func _on_combat_ended(_result) -> void:
 
 		GameContext.grant_party_xp(xp_amount, source)
 
-	# Transition to boot scene (guarded)
+	# Show loot panel if there are pending acquisitions to route
+	if _result != null and _result.is_victory and GameContext.has_pending_acquisition():
+		_loot_result = _result
+		_show_loot_panel()
+	else:
+		# No pending loot or defeat — auto-resolve anything leftover and transition
+		GameContext.resolve_all_to_stash()
+		_do_combat_transition()
+
+
+## Transition to boot scene after combat ends.
+func _do_combat_transition() -> void:
 	if not _scene_transition_pending:
 		_scene_transition_pending = true
 
@@ -1305,6 +1611,394 @@ func _on_combat_ended(_result) -> void:
 		# Small delay so player sees result
 		await get_tree().create_timer(1.5).timeout
 		get_tree().change_scene_to_file("res://Game/Boot/game_boot.tscn")
+
+
+# ============================================================================
+# LOOT PANEL — Route items to stash or hero bags
+# ============================================================================
+
+## Show the loot routing panel after combat victory.
+## v1.2: Manual-only routing (no auto-assign, no stash during dungeon, no remember prefs).
+func _show_loot_panel() -> void:
+	# Remove old panel if exists
+	if _loot_panel != null:
+		_loot_panel.queue_free()
+		_loot_panel = null
+
+	var pending = GameContext.get_all_pending_acquisitions()
+
+	# Create full-screen overlay
+	_loot_panel = PanelContainer.new()
+	_loot_panel.name = "LootPanel"
+	_loot_panel.anchor_right = 1.0
+	_loot_panel.anchor_bottom = 1.0
+	_loot_panel.offset_left = 0
+	_loot_panel.offset_right = 0
+	_loot_panel.offset_top = 0
+	_loot_panel.offset_bottom = 0
+	_loot_panel.focus_mode = Control.FOCUS_ALL
+
+	var scroll = ScrollContainer.new()
+	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_loot_panel.add_child(scroll)
+
+	var vbox = VBoxContainer.new()
+	vbox.name = "LootVBox"
+	vbox.add_theme_constant_override("separation", 8)
+	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(vbox)
+
+	# Title
+	var title = Label.new()
+	var gold_earned = _loot_result.gold_earned if _loot_result != null else 0
+	title.text = "COMBAT LOOT  (+%d gold)" % gold_earned
+	title.add_theme_font_size_override("font_size", 20)
+	title.modulate = Color(1, 0.9, 0.5)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+
+	var sep1 = HSeparator.new()
+	vbox.add_child(sep1)
+
+	# v1.2: Instruction text
+	var inst_lbl = Label.new()
+	inst_lbl.text = "Assign each item to a hero bag or shopkeeper bag. Keys: B=Shop Bag, 1-4=Hero"
+	inst_lbl.add_theme_font_size_override("font_size", 11)
+	inst_lbl.modulate = Color(0.7, 0.7, 0.7)
+	vbox.add_child(inst_lbl)
+
+	# Pending acquisition items
+	if pending.is_empty():
+		var no_loot = Label.new()
+		no_loot.text = "All items assigned."
+		no_loot.modulate = Color(0.6, 0.9, 0.6)
+		vbox.add_child(no_loot)
+	else:
+		for i in range(pending.size()):
+			var acq = pending[i]
+			var item_id = acq.get("item_id", "")
+			var qty = int(acq.get("qty", 1))
+			var quality = int(acq.get("quality", 0))
+			var tpl = DataRegistry.get_item_template(item_id)
+			var display_name = item_id.replace("_", " ").capitalize()
+			if tpl != null and tpl.display_name != "":
+				display_name = tpl.display_name
+
+			var item_hbox = HBoxContainer.new()
+			item_hbox.add_theme_constant_override("separation", 8)
+
+			# Item label
+			var item_label = Label.new()
+			item_label.text = "%s x%d (Q%d)" % [display_name, qty, quality]
+			item_label.add_theme_font_size_override("font_size", 14)
+			item_label.custom_minimum_size = Vector2(200, 0)
+			item_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			item_hbox.add_child(item_label)
+
+			# v1.2: NO "To Stash" button during dungeon (stash is banked)
+
+			# [To Shop Bag] button — v1.3: ALL item types allowed
+			var shop_btn = Button.new()
+			shop_btn.text = "To Shop Bag"
+			shop_btn.custom_minimum_size = Vector2(100, 28)
+			var shop_used = GameContext.shopkeeper_bag.size()
+			var shop_cap = GameContext.get_shopkeeper_bag_capacity()
+			# v1.3: Check if 1 item can be added (no stacking)
+			if not GameContext.can_add_to_shopkeeper_bag(item_id, 1, quality):
+				shop_btn.disabled = true
+				shop_btn.tooltip_text = "Shop bag full (%d/%d)" % [shop_used, shop_cap]
+			else:
+				shop_btn.pressed.connect(_on_loot_to_shop_bag.bind(i))
+			item_hbox.add_child(shop_btn)
+
+			# [To HeroName (used/cap)] buttons — one per party hero
+			# v1.3: ALL item types allowed in hero bags
+			for hero_id in GameContext.selected_party:
+				var hero = GameContext.get_hero(hero_id)
+				var hero_name = hero.get("name", hero_id) if not hero.is_empty() else hero_id
+				if hero_name.length() > 8:
+					hero_name = hero_name.substr(0, 7) + "."
+				# Show bag capacity in button text
+				var bag_used = GameContext.get_hero_bag(hero_id).size()
+				var bag_cap = GameContext.get_hero_bag_capacity(hero_id)
+				var hero_btn = Button.new()
+				hero_btn.custom_minimum_size = Vector2(110, 28)
+				# v1.4: If bag is full, enable swap mode instead of disabling
+				if not GameContext.can_add_to_hero_bag(hero_id, item_id, 1):
+					hero_btn.text = "Swap %s (%d/%d)" % [hero_name, bag_used, bag_cap]
+					hero_btn.modulate = Color(1.0, 0.8, 0.6)  # Orange tint for swap
+					hero_btn.tooltip_text = "Replace an item in %s's bag" % hero_name
+					hero_btn.pressed.connect(_on_loot_swap_request.bind(i, hero_id, item_id))
+				else:
+					hero_btn.text = "To %s (%d/%d)" % [hero_name, bag_used, bag_cap]
+					hero_btn.pressed.connect(_on_loot_to_hero.bind(i, hero_id))
+				item_hbox.add_child(hero_btn)
+
+			vbox.add_child(item_hbox)
+
+	# Separator
+	var sep2 = HSeparator.new()
+	vbox.add_child(sep2)
+
+	# Hero bag summaries
+	var bag_title = Label.new()
+	bag_title.text = "Hero Bags:"
+	bag_title.add_theme_font_size_override("font_size", 14)
+	bag_title.modulate = Color(0.9, 0.7, 0.5)
+	vbox.add_child(bag_title)
+
+	for hero_id in GameContext.selected_party:
+		var hero = GameContext.get_hero(hero_id)
+		var hero_name = hero.get("name", hero_id) if not hero.is_empty() else hero_id
+		var bag_summary = GameContext.get_hero_bag_summary(hero_id)
+		var bag_lbl = Label.new()
+		bag_lbl.text = "  %s: %s" % [hero_name, bag_summary]
+		bag_lbl.add_theme_font_size_override("font_size", 12)
+		bag_lbl.modulate = Color(0.8, 0.8, 0.6)
+		vbox.add_child(bag_lbl)
+
+	# Shopkeeper bag summary
+	var shop_bag_lbl = Label.new()
+	shop_bag_lbl.text = "  Shopkeeper Bag: %s" % GameContext.get_shopkeeper_bag_summary()
+	shop_bag_lbl.add_theme_font_size_override("font_size", 12)
+	shop_bag_lbl.modulate = Color(0.7, 0.9, 0.7)
+	vbox.add_child(shop_bag_lbl)
+
+	# Stash summary (banked, view only)
+	var stash_lbl = Label.new()
+	stash_lbl.text = "  Stash (banked): %d items, %d gold" % [GameContext.run_items.size(), GameContext.run_gold]
+	stash_lbl.add_theme_font_size_override("font_size", 12)
+	stash_lbl.modulate = Color(0.5, 0.5, 0.7)
+	vbox.add_child(stash_lbl)
+
+	# Separator
+	var sep3 = HSeparator.new()
+	vbox.add_child(sep3)
+
+	# v1.2: Block Continue if pending items remain
+	if not pending.is_empty():
+		var block_lbl = Label.new()
+		block_lbl.text = "Assign all items before continuing."
+		block_lbl.add_theme_font_size_override("font_size", 12)
+		block_lbl.modulate = Color(1.0, 0.6, 0.4)
+		vbox.add_child(block_lbl)
+
+		# Discard button (explicit user action)
+		var discard_btn = Button.new()
+		discard_btn.text = "Discard Remaining"
+		discard_btn.custom_minimum_size = Vector2(160, 32)
+		discard_btn.modulate = Color(1.0, 0.7, 0.7)
+		discard_btn.pressed.connect(_on_loot_discard_all)
+		vbox.add_child(discard_btn)
+
+	# Continue button (disabled if pending items remain)
+	var continue_btn = Button.new()
+	continue_btn.text = "Continue"
+	continue_btn.custom_minimum_size = Vector2(200, 36)
+	continue_btn.pressed.connect(_on_loot_continue)
+	if not pending.is_empty():
+		continue_btn.disabled = true
+		continue_btn.tooltip_text = "Assign all items first"
+	vbox.add_child(continue_btn)
+
+	add_child(_loot_panel)
+	_loot_panel.grab_focus()
+	print("[LootPanel] Showing %d pending acquisitions" % pending.size())
+
+
+## Refresh the loot panel after an item is routed.
+func _refresh_loot_panel() -> void:
+	_show_loot_panel()
+
+
+## Route a pending acquisition to the shopkeeper bag.
+func _on_loot_to_shop_bag(acq_index: int) -> void:
+	GameContext.resolve_acquisition_at(acq_index, "shop_bag")
+	_refresh_loot_panel()
+
+
+## Route a pending acquisition to a hero's bag.
+func _on_loot_to_hero(acq_index: int, hero_id: String) -> void:
+	var ok = GameContext.resolve_acquisition_at(acq_index, "hero_bag", hero_id)
+	if not ok:
+		print("[LootPanel] Failed to route to hero=%s (rejected)" % hero_id)
+	_refresh_loot_panel()
+
+
+## v1.4: Request swap when hero bag is full - shows popup to choose which item to replace
+func _on_loot_swap_request(acq_index: int, hero_id: String, new_item_id: String) -> void:
+	_swap_pending_acq_index = acq_index
+	_swap_pending_hero_id = hero_id
+	_swap_pending_item_id = new_item_id
+
+	# Close existing popup if any
+	if _swap_popup != null and is_instance_valid(_swap_popup):
+		_swap_popup.queue_free()
+
+	# Get hero info
+	var hero = GameContext.get_hero(hero_id)
+	var hero_name = hero.get("name", hero_id) if hero else hero_id
+	var bag = GameContext.get_hero_bag(hero_id)
+
+	# Get new item info
+	var new_template = DataRegistry.get_item_template(new_item_id)
+	var new_item_name = new_template.display_name if new_template else new_item_id
+
+	# Create popup window
+	_swap_popup = Window.new()
+	_swap_popup.title = "Replace Item in %s's Bag" % hero_name
+	_swap_popup.size = Vector2i(350, 300)
+	_swap_popup.transient = true
+	_swap_popup.exclusive = true
+	_swap_popup.close_requested.connect(_on_swap_popup_closed)
+
+	var vbox = VBoxContainer.new()
+	vbox.anchor_right = 1.0
+	vbox.anchor_bottom = 1.0
+	vbox.offset_left = 10
+	vbox.offset_top = 10
+	vbox.offset_right = -10
+	vbox.offset_bottom = -10
+	vbox.add_theme_constant_override("separation", 8)
+	_swap_popup.add_child(vbox)
+
+	# Header
+	var header = Label.new()
+	header.text = "Adding: %s" % new_item_name
+	header.modulate = Color(0.5, 1, 0.5)
+	vbox.add_child(header)
+
+	var instruction = Label.new()
+	instruction.text = "Choose an item to replace:"
+	vbox.add_child(instruction)
+
+	# Warning that replaced item will be discarded
+	var warning = Label.new()
+	warning.text = "WARNING: Replaced item will be DISCARDED!"
+	warning.modulate = Color(1.0, 0.4, 0.4)  # Red warning
+	warning.add_theme_font_size_override("font_size", 11)
+	vbox.add_child(warning)
+
+	var sep = HSeparator.new()
+	vbox.add_child(sep)
+
+	# List current bag items with replace buttons
+	for i in range(bag.size()):
+		var entry = bag[i]
+		var item_id = entry.get("item_id", "")
+		var template = DataRegistry.get_item_template(item_id)
+		var item_name = template.display_name if template else item_id
+
+		var row = HBoxContainer.new()
+		row.add_theme_constant_override("separation", 8)
+
+		var label = Label.new()
+		label.text = item_name
+		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(label)
+
+		var replace_btn = Button.new()
+		replace_btn.text = "Replace"
+		replace_btn.custom_minimum_size = Vector2(80, 26)
+		replace_btn.pressed.connect(_on_swap_item_selected.bind(i, item_id))
+		row.add_child(replace_btn)
+
+		vbox.add_child(row)
+
+	# Cancel button
+	var sep2 = HSeparator.new()
+	vbox.add_child(sep2)
+
+	var cancel_btn = Button.new()
+	cancel_btn.text = "Cancel"
+	cancel_btn.custom_minimum_size = Vector2(100, 30)
+	cancel_btn.pressed.connect(_on_swap_popup_closed)
+	vbox.add_child(cancel_btn)
+
+	add_child(_swap_popup)
+	_swap_popup.popup_centered()
+	print("[LootPanel] Swap popup opened for hero=%s new_item=%s" % [hero_id, new_item_id])
+
+
+## Handle item selection in swap popup - replace the selected item (old item is DISCARDED)
+func _on_swap_item_selected(bag_index: int, old_item_id: String) -> void:
+	var hero_id = _swap_pending_hero_id
+	var acq_index = _swap_pending_acq_index
+
+	# Remove and DISCARD the old item from hero bag (no stash loophole)
+	var success = GameContext.remove_item_from_hero_bag(hero_id, old_item_id, 1, 0)
+	if success:
+		print("[LootPanel] DISCARDED old_item=%s from hero=%s" % [old_item_id, hero_id])
+
+		# Now add the new item
+		var ok = GameContext.resolve_acquisition_at(acq_index, "hero_bag", hero_id)
+		if ok:
+			print("[LootPanel] Swap complete: added new item to hero=%s" % hero_id)
+		else:
+			print("[LootPanel] Swap failed: couldn't add new item")
+	else:
+		print("[LootPanel] Swap failed: couldn't remove old item")
+
+	_on_swap_popup_closed()
+	_refresh_loot_panel()
+
+
+## Close the swap popup
+func _on_swap_popup_closed() -> void:
+	if _swap_popup != null and is_instance_valid(_swap_popup):
+		_swap_popup.queue_free()
+		_swap_popup = null
+	_swap_pending_acq_index = -1
+	_swap_pending_hero_id = ""
+	_swap_pending_item_id = ""
+
+
+## v1.2: Discard all remaining pending items (explicit user action).
+func _on_loot_discard_all() -> void:
+	var pending = GameContext.get_all_pending_acquisitions()
+	for acq in pending:
+		var item_id = acq.get("item_id", "")
+		var qty = int(acq.get("qty", 1))
+		var quality = int(acq.get("quality", 0))
+		print("[Loot] discard item=%s qty=%d q=%d" % [item_id, qty, quality])
+	GameContext.clear_pending_acquisitions()
+	_refresh_loot_panel()
+
+
+## Continue after loot routing — only allowed when no pending items remain.
+func _on_loot_continue() -> void:
+	# v1.2: Do NOT auto-resolve to stash; Continue is blocked if pending remain
+	if GameContext.has_pending_acquisition():
+		print("[LootPanel] Continue blocked: %d items still pending" % GameContext.get_all_pending_acquisitions().size())
+		return
+	if _loot_panel != null:
+		_loot_panel.queue_free()
+		_loot_panel = null
+	_do_combat_transition()
+
+
+## Keyboard shortcuts for loot panel (v1.2: only B and 1-4, no S for stash).
+func _loot_panel_input(event: InputEvent) -> void:
+	if _loot_panel == null or not is_instance_valid(_loot_panel):
+		return
+	if not GameContext.has_pending_acquisition():
+		return
+	if event is InputEventKey and event.pressed and not event.echo:
+		var keycode = event.keycode
+		# B = To Shop Bag (first pending)
+		if keycode == KEY_B:
+			GameContext.resolve_acquisition_at(0, "shop_bag")
+			_refresh_loot_panel()
+			get_viewport().set_input_as_handled()
+		# 1..4 = To Hero by party index
+		elif keycode >= KEY_1 and keycode <= KEY_4:
+			var hero_idx = keycode - KEY_1
+			if hero_idx < GameContext.selected_party.size():
+				var hid = GameContext.selected_party[hero_idx]
+				GameContext.resolve_acquisition_at(0, "hero_bag", hid)
+				_refresh_loot_panel()
+				get_viewport().set_input_as_handled()
 
 
 # ============================================================================
@@ -1367,6 +2061,12 @@ func run_smoke_test_ui() -> bool:
 # ============================================================================
 
 func _unhandled_input(event: InputEvent) -> void:
+	# Loot panel keyboard shortcuts (intercept first)
+	if _loot_panel != null and is_instance_valid(_loot_panel):
+		_loot_panel_input(event)
+		if event is InputEventKey and get_viewport().is_input_handled():
+			return
+
 	if event is InputEventKey and event.pressed:
 		match event.keycode:
 			KEY_F5, KEY_F6, KEY_F7:
@@ -1398,28 +2098,6 @@ func _unhandled_input(event: InputEvent) -> void:
 # DEMO BUTTONS - Apply status effects for testing
 # ============================================================================
 
-## Apply stun to first enemy for demonstration.
-func demo_apply_stun() -> void:
-	var snapshot = _combat_controller.get_units_snapshot()
-	if snapshot["enemy"].size() > 0:
-		var enemy_id = snapshot["enemy"][0]["id"]
-		var enemy_name = snapshot["enemy"][0]["name"]
-		_combat_controller.apply_status_to_unit(enemy_id, "stun", 2)
-		_log("[color=orange]DEMO: Applied STUN(2) to %s[/color]" % enemy_name)
-		_refresh_all_panels()
-
-
-## Apply doom to first enemy for demonstration.
-func demo_apply_doom() -> void:
-	var snapshot = _combat_controller.get_units_snapshot()
-	if snapshot["enemy"].size() > 0:
-		var enemy_id = snapshot["enemy"][0]["id"]
-		var enemy_name = snapshot["enemy"][0]["name"]
-		_combat_controller.apply_status_to_unit(enemy_id, "doom", 3)
-		_log("[color=purple]DEMO: Applied DOOM(3) to %s[/color]" % enemy_name)
-		_refresh_all_panels()
-
-
 # ============================================================================
 # STATUS UI v1.8 - Signal Handlers
 # ============================================================================
@@ -1429,6 +2107,7 @@ func demo_apply_doom() -> void:
 func _on_status_changed(unit_id: String) -> void:
 	refresh_unit_status_badges(unit_id)
 	refresh_unit_buff_badges(unit_id)  # Also refresh buffs (may change at same time)
+	_refresh_stats_window()  # v1.3: Update stats window if open
 
 
 ## Handle all statuses ticked at round start.
@@ -1487,6 +2166,64 @@ func _remove_active_highlight(display: Control) -> void:
 	var highlight = display.get_node_or_null("HighlightFrame")
 	if highlight != null:
 		highlight.visible = false
+		# v2.0: Also reset highlight color to normal when removed
+		highlight.color = NORMAL_HIGHLIGHT_COLOR
+
+	# v2.0: Stop hero input highlight if active
+	_stop_hero_input_highlight()
+
+
+## v2.0: Apply enhanced hero input highlight with pulsing animation.
+## This creates a brighter, more visible highlight for the hero awaiting player input.
+func _apply_hero_input_highlight(unit_id: String) -> void:
+	if not _unit_displays.has(unit_id):
+		return
+
+	var display = _unit_displays[unit_id]
+	if not is_instance_valid(display):
+		return
+
+	var highlight = display.get_node_or_null("HighlightFrame")
+	if highlight == null:
+		return
+
+	# Set initial bright color and make visible
+	highlight.color = HERO_INPUT_HIGHLIGHT_COLOR
+	highlight.visible = true
+	_hero_input_highlight_active = true
+
+	# Start pulsing animation
+	_start_hero_input_pulse(highlight)
+
+	print("[UI] Hero input highlight applied to %s" % unit_id)
+
+
+## v2.0: Start pulsing animation on the highlight frame.
+func _start_hero_input_pulse(highlight: ColorRect) -> void:
+	# Stop any existing pulse tween
+	if _hero_input_pulse_tween != null and _hero_input_pulse_tween.is_valid():
+		_hero_input_pulse_tween.kill()
+
+	# Create new tween for pulsing effect
+	_hero_input_pulse_tween = create_tween()
+	_hero_input_pulse_tween.set_loops()  # Loop forever until stopped
+
+	# Pulse from dim to bright and back (0.6 second per direction = 1.2 second full cycle)
+	_hero_input_pulse_tween.tween_property(highlight, "color", HERO_INPUT_HIGHLIGHT_PULSE_MAX, 0.6)
+	_hero_input_pulse_tween.tween_property(highlight, "color", HERO_INPUT_HIGHLIGHT_PULSE_MIN, 0.6)
+
+
+## v2.0: Stop hero input highlight and reset to normal state.
+## v2.0 Fix: Always kill tween if it exists, even if _hero_input_highlight_active is false
+## This prevents crashes when nodes are freed while tween is running.
+func _stop_hero_input_highlight() -> void:
+	# Always stop pulsing animation if tween exists (prevents crash on node free)
+	if _hero_input_pulse_tween != null:
+		if _hero_input_pulse_tween.is_valid():
+			_hero_input_pulse_tween.kill()
+		_hero_input_pulse_tween = null
+
+	_hero_input_highlight_active = false
 
 
 ## v1.9A: Show floating pop text near a unit.
@@ -1534,6 +2271,16 @@ func _create_pop_text_label() -> Label:
 	return label
 
 
+## v2.1: Stop and free all active pop text timers.
+## Called before refreshing panels to prevent lambda capture freed errors.
+func _stop_all_pop_timers() -> void:
+	for timer in _active_pop_timers:
+		if is_instance_valid(timer):
+			timer.stop()
+			timer.queue_free()
+	_active_pop_timers.clear()
+
+
 ## v1.9A: Animate pop text rising and fading, then return to pool.
 func _animate_pop_text(label: Label, parent: Control) -> void:
 	var start_pos = label.position
@@ -1544,6 +2291,7 @@ func _animate_pop_text(label: Label, parent: Control) -> void:
 	timer.wait_time = 0.016  # ~60fps
 	timer.one_shot = false
 	add_child(timer)
+	_active_pop_timers.append(timer)  # v2.1: Track timer for cleanup
 
 	timer.timeout.connect(func():
 		elapsed += timer.wait_time
@@ -1551,6 +2299,7 @@ func _animate_pop_text(label: Label, parent: Control) -> void:
 
 		if progress >= 1.0 or not is_instance_valid(label):
 			timer.stop()
+			_active_pop_timers.erase(timer)  # v2.1: Remove from tracking
 			timer.queue_free()
 			if is_instance_valid(label):
 				label.visible = false
@@ -1592,10 +2341,12 @@ func _show_cast_callout(unit_id: String, ability_name: String) -> void:
 	timer.wait_time = CAST_CALLOUT_DURATION
 	timer.one_shot = true
 	add_child(timer)
+	_active_pop_timers.append(timer)  # v2.1: Track timer for cleanup
 
 	timer.timeout.connect(func():
 		if is_instance_valid(label):
 			label.queue_free()
+		_active_pop_timers.erase(timer)  # v2.1: Remove from tracking
 		timer.queue_free()
 	)
 
@@ -1640,6 +2391,12 @@ func _on_action_performed(action: CombatAction) -> void:
 
 	# v1.9B: Also add to log overlay
 	_on_action_performed_v19b(action)
+
+	# CRITICAL: Refresh HP displays after any action
+	_refresh_all_panels()
+
+	# v1.3: Refresh stats window if open (shows updated buffs/HP)
+	_refresh_stats_window()
 
 
 ## v1.9A: Get display name for an ability from registry.
@@ -2051,3 +2808,898 @@ func _on_action_performed_v19b(action: CombatAction) -> void:
 
 	# Also refresh timeline (unit may have died)
 	_refresh_timeline()
+
+
+# ============================================================================
+# PLAYER ACTIONS v1: Action Selection UI
+# ============================================================================
+
+## Create the action panel with buttons for Basic Attack, Ability A, Ability B.
+func _create_action_panel() -> void:
+	if _action_panel != null:
+		_action_panel.queue_free()
+
+	_action_panel = HBoxContainer.new()
+	_action_panel.name = "ActionPanel"
+	_action_panel.add_theme_constant_override("separation", 10)
+	_action_panel.visible = false
+
+	_action_label = Label.new()
+	_action_label.text = "Choose Action:"
+	_action_label.add_theme_color_override("font_color", Color.CYAN)
+	_action_panel.add_child(_action_label)
+
+	_btn_basic = Button.new()
+	_btn_basic.text = "Basic Attack"
+	_btn_basic.custom_minimum_size = Vector2(120, 32)
+	_btn_basic.pressed.connect(_on_basic_attack_pressed)
+	_action_panel.add_child(_btn_basic)
+
+	_btn_ability_a = Button.new()
+	_btn_ability_a.custom_minimum_size = Vector2(150, 32)
+	_btn_ability_a.pressed.connect(_on_ability_a_pressed)
+	_action_panel.add_child(_btn_ability_a)
+
+	_btn_ability_b = Button.new()
+	_btn_ability_b.custom_minimum_size = Vector2(150, 32)
+	_btn_ability_b.pressed.connect(_on_ability_b_pressed)
+	_action_panel.add_child(_btn_ability_b)
+
+	_btn_pass = Button.new()
+	_btn_pass.text = "Pass"
+	_btn_pass.custom_minimum_size = Vector2(80, 32)
+	_btn_pass.pressed.connect(_on_pass_pressed)
+	_action_panel.add_child(_btn_pass)
+
+	_btn_cancel = Button.new()
+	_btn_cancel.text = "Cancel"
+	_btn_cancel.custom_minimum_size = Vector2(80, 32)
+	_btn_cancel.pressed.connect(_on_cancel_pressed)
+	_btn_cancel.visible = false
+	_action_panel.add_child(_btn_cancel)
+
+	# Add to bottom panel
+	$BottomPanel.add_child(_action_panel)
+
+
+## Handle player_input_required signal - show action buttons.
+func _on_player_input_required(unit: CombatUnit, available_actions: Array) -> void:
+	print("[UI] player_input_required received for %s, auto_running=%s" % [unit.display_name, str(_is_auto_running)])
+	_exit_target_selection_mode()
+
+	# Store the current input unit for tooltip calculations
+	_current_input_unit = unit
+
+	# Auto mode: automatically select basic attack for player units
+	# Use call_deferred to let the current signal complete first, preventing state issues
+	if _is_auto_running:
+		print("[UI] Auto mode: deferring auto-select basic attack for %s" % unit.display_name)
+		call_deferred("_auto_select_action")
+		return
+
+	# Validate action panel exists
+	if _action_panel == null:
+		print("[UI] ERROR: _action_panel is null!")
+		return
+
+	_action_panel.visible = true
+	_btn_cancel.visible = false
+
+	# Reset button visibility
+	_btn_ability_a.visible = false
+	_btn_ability_b.visible = false
+	_btn_pass.visible = false
+
+	# Update button states from available actions
+	for action_info in available_actions:
+		match action_info.type:
+			"basic":
+				_btn_basic.disabled = false
+				_btn_basic.tooltip_text = _build_action_tooltip(unit, null, "basic")
+			"ability_a":
+				_btn_ability_a.text = action_info.name
+				if action_info.cooldown > 0:
+					_btn_ability_a.text += " (CD:%d)" % action_info.cooldown
+				_btn_ability_a.disabled = not action_info.enabled
+				_btn_ability_a.visible = true
+				_btn_ability_a.tooltip_text = _build_action_tooltip(unit, action_info.get("ability"), "ability_a")
+			"ability_b":
+				_btn_ability_b.text = action_info.name
+				if action_info.cooldown > 0:
+					_btn_ability_b.text += " (CD:%d)" % action_info.cooldown
+				_btn_ability_b.disabled = not action_info.enabled
+				_btn_ability_b.visible = true
+				_btn_ability_b.tooltip_text = _build_action_tooltip(unit, action_info.get("ability"), "ability_b")
+			"pass":
+				_btn_pass.visible = true
+				_btn_pass.tooltip_text = "Skip remaining actions and end turn."
+
+	_log("[color=cyan]%s's turn - choose an action[/color]" % unit.display_name)
+	print("[UI] Action panel shown, awaiting player input")
+
+	# v2.0: Apply enhanced hero input highlight
+	_apply_hero_input_highlight(unit.unit_id)
+
+
+## Build tooltip text for an action button.
+## Shows ability description and calculated damage based on current hero stats.
+func _build_action_tooltip(unit: CombatUnit, ability: AbilityData, action_type: String) -> String:
+	if action_type == "basic":
+		# Basic attack: show effective attack as damage
+		var eff_atk = unit.get_effective_attack()
+		return "Attack an enemy.\nDamage: %d" % eff_atk
+
+	if ability == null:
+		return ""
+
+	var tooltip_parts: Array = []
+
+	# Add description if available
+	if ability.description != "":
+		tooltip_parts.append(ability.description)
+
+	# Add damage info if ability deals damage
+	if ability.effect_type == "damage" or ability.effect_type == "damage_and_heal":
+		var damage = _calculate_ability_damage_for_tooltip(unit, ability)
+		if ability.hit_count > 1:
+			tooltip_parts.append("Damage: %d x%d" % [damage, ability.hit_count])
+		else:
+			tooltip_parts.append("Damage: %d" % damage)
+
+	# Add heal info if ability heals
+	if ability.effect_type == "heal" or ability.effect_type == "damage_and_heal":
+		if ability.base_heal > 0:
+			tooltip_parts.append("Heal: %d" % ability.base_heal)
+
+	# Add buff info if ability buffs
+	if ability.effect_type == "buff" and ability.buff_stats.size() > 0:
+		var buff_text = "Buff: "
+		var buff_parts: Array = []
+		for stat in ability.buff_stats.keys():
+			buff_parts.append("+%d %s" % [ability.buff_stats[stat], stat.capitalize()])
+		buff_text += ", ".join(buff_parts)
+		if ability.buff_duration > 0:
+			buff_text += " (%d turns)" % ability.buff_duration
+		tooltip_parts.append(buff_text)
+
+	# Add cooldown info if ability has cooldown
+	if ability.cooldown > 0:
+		tooltip_parts.append("Cooldown: %d turns" % ability.cooldown)
+
+	return "\n".join(tooltip_parts)
+
+
+## Calculate damage for an ability (mirrors CombatController._calculate_ability_damage).
+func _calculate_ability_damage_for_tooltip(unit: CombatUnit, ability: AbilityData) -> int:
+	var base = ability.base_damage
+	var scaling = ability.attack_scaling
+	var eff_atk = unit.get_effective_attack()
+	var total = int(base + (eff_atk * scaling))
+	return maxi(1, total)
+
+
+## Handle target_selection_required signal - enter target mode.
+func _on_target_selection_required(unit: CombatUnit, valid_targets: Array, action_type: String, ability) -> void:
+	print("[UI] _on_target_selection_required: action=%s targets=%d auto_running=%s" % [action_type, valid_targets.size(), str(_is_auto_running)])
+
+	# Check for AoE auto-execute (no target needed) - use deferred to prevent state issues
+	if valid_targets.size() == 1 and valid_targets[0].unit_id == "aoe":
+		print("[UI] Auto-executing AoE action (deferred)")
+		_auto_pending_targets = [{"unit_id": "aoe"}]
+		call_deferred("_auto_select_target")
+		if _action_panel != null:
+			_action_panel.visible = false
+		return
+
+	# Auto mode: automatically select first valid target - use deferred to let signal complete
+	if _is_auto_running and valid_targets.size() > 0:
+		print("[UI] Auto mode: deferring auto-select target %s" % valid_targets[0].unit_id)
+		_auto_pending_targets = valid_targets.duplicate()
+		call_deferred("_auto_select_target")
+		if _action_panel != null:
+			_action_panel.visible = false
+		return
+
+	# Handle edge case: no valid targets
+	if valid_targets.size() == 0:
+		print("[UI] WARNING: No valid targets available!")
+		_log("[color=red]No valid targets![/color]")
+		# Cancel back to action selection
+		if _combat_controller != null:
+			_combat_controller.cancel_player_action()
+		return
+
+	print("[UI] Entering target selection mode")
+	_enter_target_selection_mode(valid_targets)
+	_btn_cancel.visible = true
+
+	var target_type = "enemy"
+	if valid_targets.size() > 0 and valid_targets[0].get("is_ally", false):
+		target_type = "ally"
+	_log("[color=yellow]Click on a %s to target[/color]" % target_type)
+
+
+## Handle multi_action_update signal - update action label.
+func _on_multi_action_update(unit: CombatUnit, remaining: int, total: int) -> void:
+	if _action_label != null:
+		var action_num = total - remaining + 1
+		_action_label.text = "Action %d/%d:" % [action_num, total]
+
+
+## Enter target selection mode - highlight valid targets.
+func _enter_target_selection_mode(valid_targets: Array) -> void:
+	_target_selection_active = true
+	_valid_target_ids.clear()
+
+	for target_info in valid_targets:
+		_valid_target_ids.append(target_info.unit_id)
+
+	# Highlight valid targets, gray out invalid
+	for unit_id in _unit_displays.keys():
+		var display = _unit_displays[unit_id]
+		if unit_id in _valid_target_ids:
+			# Create highlight overlay if needed
+			var highlight = display.get_node_or_null("TargetHighlight")
+			if highlight == null:
+				highlight = ColorRect.new()
+				highlight.name = "TargetHighlight"
+				highlight.color = Color(0.3, 1.0, 0.3, 0.25)  # Green tint
+				highlight.set_anchors_preset(Control.PRESET_FULL_RECT)
+				highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				display.add_child(highlight)
+				display.move_child(highlight, 0)
+			highlight.visible = true
+			_target_highlights[unit_id] = highlight
+
+			# Make clickable - disconnect any existing handler first to prevent duplicates
+			display.mouse_filter = Control.MOUSE_FILTER_STOP
+			var bound_callable = _on_unit_clicked.bind(unit_id)
+			# Disconnect ALL gui_input connections to _on_unit_clicked variants
+			for connection in display.gui_input.get_connections():
+				if connection.callable.get_method() == "_on_unit_clicked":
+					display.gui_input.disconnect(connection.callable)
+			display.gui_input.connect(bound_callable)
+		else:
+			# Gray out non-valid targets
+			display.modulate = Color(0.5, 0.5, 0.5)
+
+
+## Exit target selection mode - restore normal display.
+func _exit_target_selection_mode() -> void:
+	_target_selection_active = false
+	_valid_target_ids.clear()
+
+	for unit_id in _unit_displays.keys():
+		var display = _unit_displays[unit_id]
+		display.modulate = Color.WHITE
+		display.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+		# Disconnect click handlers to prevent accumulation
+		for connection in display.gui_input.get_connections():
+			if connection.callable.get_method() == "_on_unit_clicked":
+				display.gui_input.disconnect(connection.callable)
+
+		# Hide highlight
+		var highlight = display.get_node_or_null("TargetHighlight")
+		if highlight:
+			highlight.visible = false
+
+	_target_highlights.clear()
+
+
+## Handle click on unit display during target selection.
+func _on_unit_clicked(event: InputEvent, unit_id: String) -> void:
+	print("[UI] _on_unit_clicked: unit_id=%s target_selection_active=%s" % [unit_id, str(_target_selection_active)])
+	if not _target_selection_active:
+		print("[UI] Click ignored - not in target selection mode")
+		return
+
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		print("[UI] Left click detected on %s, valid_target_ids=%s" % [unit_id, str(_valid_target_ids)])
+		if unit_id in _valid_target_ids:
+			print("[UI] Valid target clicked - submitting to controller")
+			_exit_target_selection_mode()
+			_action_panel.visible = false
+			_combat_controller.submit_player_target(unit_id)
+		else:
+			print("[UI] Click on invalid target - ignoring")
+
+
+## Handle Basic Attack button press.
+func _on_basic_attack_pressed() -> void:
+	print("[UI] Basic Attack button pressed")
+	_combat_controller.submit_player_action("basic")
+
+
+## Handle Ability A button press.
+func _on_ability_a_pressed() -> void:
+	print("[UI] Ability A button pressed")
+	_combat_controller.submit_player_action("ability_a")
+
+
+## Handle Ability B button press.
+func _on_ability_b_pressed() -> void:
+	print("[UI] Ability B button pressed")
+	_combat_controller.submit_player_action("ability_b")
+
+
+## Handle Pass button press - skip remaining actions.
+func _on_pass_pressed() -> void:
+	_action_panel.visible = false
+	_combat_controller.submit_pass_action()
+
+
+## Handle Cancel button press - return to action selection.
+func _on_cancel_pressed() -> void:
+	_exit_target_selection_mode()
+	_combat_controller.cancel_player_action()
+
+
+# ============================================================================
+# AUTO MODE v2.0: Deferred Action/Target Selection
+# ============================================================================
+
+## Auto mode: deferred action selection to prevent state issues from synchronous signal handling.
+func _auto_select_action() -> void:
+	print("[UI] _auto_select_action called, auto_running=%s, controller=%s" % [
+		str(_is_auto_running), "valid" if _combat_controller != null else "null"])
+
+	# Guard: check if auto mode was disabled while deferred call was pending
+	if not _is_auto_running:
+		print("[UI] _auto_select_action: auto mode disabled, skipping")
+		return
+
+	# Guard: check if combat controller is valid
+	if _combat_controller == null:
+		print("[UI] _auto_select_action: combat controller null, skipping")
+		return
+
+	# Guard: check if still awaiting player input
+	if not _combat_controller.is_awaiting_player_input():
+		print("[UI] _auto_select_action: not awaiting player input, skipping")
+		return
+
+	print("[UI] _auto_select_action: submitting basic attack")
+	_combat_controller.submit_player_action("basic")
+
+
+## Auto mode: deferred target selection to prevent state issues from synchronous signal handling.
+func _auto_select_target() -> void:
+	print("[UI] _auto_select_target called, pending_targets=%d, auto_running=%s" % [
+		_auto_pending_targets.size(), str(_is_auto_running)])
+
+	# Guard: check if we have pending targets
+	if _auto_pending_targets.size() == 0:
+		print("[UI] _auto_select_target: no pending targets, skipping")
+		return
+
+	# Guard: check if combat controller is valid
+	if _combat_controller == null:
+		print("[UI] _auto_select_target: combat controller null, skipping")
+		_auto_pending_targets.clear()
+		return
+
+	# Guard: check if still awaiting player input (for non-AoE)
+	var target_id = _auto_pending_targets[0].get("unit_id", "")
+	if target_id != "aoe" and not _combat_controller.is_awaiting_player_input():
+		print("[UI] _auto_select_target: not awaiting player input, skipping")
+		_auto_pending_targets.clear()
+		return
+
+	print("[UI] _auto_select_target: submitting target %s" % target_id)
+	_combat_controller.submit_player_target(target_id)
+	_auto_pending_targets.clear()
+
+
+# ============================================================================
+# PLAYER ACTIONS v1: Consumable Right-Click Menu
+# ============================================================================
+
+## Handle right-click on hero bag label.
+func _on_bag_right_clicked(event: InputEvent, hero_id: String) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
+		_show_consumable_menu(hero_id, event.global_position)
+
+
+## Show popup menu with consumables from hero bag.
+func _show_consumable_menu(hero_id: String, pos: Vector2) -> void:
+	var bag = GameContext.get_hero_bag(hero_id)
+	if bag.is_empty():
+		_log("[color=gray]No items in bag[/color]")
+		return
+
+	# Only show menu if it's this hero's turn and awaiting input
+	if not _combat_controller.is_awaiting_player_input():
+		_log("[color=gray]Can only use items during your turn[/color]")
+		return
+
+	# Filter to only consumable items
+	var consumables: Array = []
+	for i in range(bag.size()):
+		var entry = bag[i]
+		var item_id = entry.get("item_id", "")
+		var template = DataRegistry.get_item_template(item_id)
+		if template != null and template.item_type == "consumable":
+			consumables.append({"index": i, "item_id": item_id, "template": template})
+
+	if consumables.is_empty():
+		_log("[color=gray]No consumables in bag[/color]")
+		return
+
+	# Clean up old popup
+	if _consumable_popup != null:
+		_consumable_popup.queue_free()
+
+	_consumable_popup = PopupMenu.new()
+	add_child(_consumable_popup)
+
+	var can_use = GameContext.can_hero_use_consumable(hero_id)
+
+	for entry in consumables:
+		var item_name = entry.template.display_name if entry.template else entry.item_id
+		_consumable_popup.add_item("Use %s" % item_name, entry.index)
+
+		# Disable if already used consumable this combat
+		if not can_use:
+			_consumable_popup.set_item_disabled(_consumable_popup.get_item_count() - 1, true)
+
+	if not can_use:
+		_consumable_popup.add_separator()
+		_consumable_popup.add_item("(Already used item this combat)", -1)
+		_consumable_popup.set_item_disabled(_consumable_popup.get_item_count() - 1, true)
+
+	_consumable_popup.id_pressed.connect(_on_consumable_selected.bind(hero_id, bag))
+	_consumable_popup.popup(Rect2i(Vector2i(pos), Vector2i.ZERO))
+
+
+## Handle selection from consumable popup menu.
+func _on_consumable_selected(idx: int, hero_id: String, bag: Array) -> void:
+	if idx < 0 or idx >= bag.size():
+		return
+
+	var item_id = bag[idx].get("item_id", "")
+	_combat_controller.submit_consumable_use(item_id, hero_id)
+
+	if _consumable_popup != null:
+		_consumable_popup.queue_free()
+		_consumable_popup = null
+
+
+# ============================================================================
+# PLAYER ACTIONS v1.1: Auto-Flow Combat
+# ============================================================================
+
+## Handle combat_continue_ready signal - advance to next turn.
+## Player control comes from action selection, not from stepping.
+func _on_combat_continue_ready() -> void:
+	print("[UI] _on_combat_continue_ready called, _auto_step_pending=%s" % str(_auto_step_pending))
+	# Guard against concurrent auto-steps (race condition from rapid signals)
+	if _auto_step_pending:
+		print("[UI] Skipping - auto_step already pending")
+		return
+	_auto_step_pending = true
+
+	# Use a short delay for visual pacing
+	await get_tree().create_timer(0.3).timeout
+	_auto_step_pending = false
+	_auto_step_combat()
+
+
+## Auto-step combat (called when ready to continue).
+func _auto_step_combat() -> void:
+	print("[UI] _auto_step_combat called")
+	if _combat_controller == null:
+		print("[UI] Skipping - _combat_controller is null")
+		return
+	if _scene_transition_pending:
+		print("[UI] Skipping - scene transition pending")
+		return
+
+	# Check if waiting for player input
+	if _combat_controller.is_awaiting_player_input():
+		print("[UI] Skipping auto-step - awaiting player input")
+		return
+
+	# Refresh UI before stepping
+	_refresh_all_panels()
+	_update_top_bar()
+
+	# Step combat
+	print("[UI] Calling step_one_turn()")
+	_combat_controller.step_one_turn()
+
+
+# ============================================================================
+# PLAYER ACTIONS v1.3: Stats Window (Floating, Non-Modal, Auto-Update)
+# ============================================================================
+
+## Handle Stats button press - show floating stats window.
+func _on_stats_button_pressed(hero_id: String, unit_data: Dictionary) -> void:
+	DebugLog.ui("Stats button pressed for hero_id=%s source_id=%s unit_id=%s" % [
+		hero_id, unit_data.get("source_id", "?"), unit_data.get("id", "?")])
+	# Close existing window if open
+	if _stats_window != null and is_instance_valid(_stats_window):
+		_stats_window.queue_free()
+		_stats_window = null
+
+	# Store hero ID for refresh
+	_stats_window_hero_id = hero_id
+
+	# Create floating window
+	_stats_window = Window.new()
+	_stats_window.title = "%s - Stats" % unit_data.get("name", hero_id)
+	_stats_window.size = Vector2i(340, 500)
+	_stats_window.position = Vector2i(100, 100)
+	_stats_window.unresizable = false
+	_stats_window.exclusive = false  # Non-modal - allows interaction with combat
+	_stats_window.always_on_top = true  # Stay in foreground
+	_stats_window.transient = true  # Associated with main window
+
+	# Close when window is closed
+	_stats_window.close_requested.connect(_on_stats_window_closed)
+
+	# Create content container
+	var scroll = ScrollContainer.new()
+	scroll.set_anchors_preset(Control.PRESET_FULL_RECT)
+	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_stats_window.add_child(scroll)
+
+	_stats_window_vbox = VBoxContainer.new()
+	_stats_window_vbox.name = "StatsVBox"
+	_stats_window_vbox.add_theme_constant_override("separation", 4)
+	_stats_window_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(_stats_window_vbox)
+
+	# Populate initial content
+	_populate_stats_window(hero_id)
+
+	# Show window
+	add_child(_stats_window)
+	_stats_window.popup_centered()
+
+	print("[UI] Stats window opened for hero=%s" % hero_id)
+
+
+## Populate or refresh the stats window content.
+func _populate_stats_window(hero_id: String) -> void:
+	if _stats_window_vbox == null or not is_instance_valid(_stats_window_vbox):
+		return
+
+	# Clear existing content
+	for child in _stats_window_vbox.get_children():
+		child.queue_free()
+
+	var vbox = _stats_window_vbox
+
+	# Get hero data from GameContext
+	var hero_data = GameContext.get_hero(hero_id)
+	var class_id = hero_data.get("class_id", "") if not hero_data.is_empty() else ""
+	var race_id = hero_data.get("race_id", "human") if not hero_data.is_empty() else "human"
+	var hero_name = hero_data.get("name", hero_id) if not hero_data.is_empty() else hero_id
+
+	# Get class and race display names
+	var cls_display_name = class_id.capitalize()
+	if class_id != "" and DataRegistry.has_method("get_class_data"):
+		var cls = DataRegistry.get_class_data(class_id)
+		if cls != null and cls.display_name != "":
+			cls_display_name = cls.display_name
+
+	var race_display_name = race_id.capitalize()
+	var race_data: RaceData = null
+	if DataRegistry.has_method("get_race"):
+		race_data = DataRegistry.get_race(race_id)
+		if race_data != null and race_data.display_name != "":
+			race_display_name = race_data.display_name
+
+	# === HERO NAME AND CLASS ===
+	var name_label = Label.new()
+	name_label.text = "%s (%s %s)" % [hero_name, race_display_name, cls_display_name]
+	name_label.add_theme_font_size_override("font_size", 16)
+	name_label.add_theme_color_override("font_color", Color.CYAN)
+	vbox.add_child(name_label)
+
+	vbox.add_child(HSeparator.new())
+
+	# === COMBAT STATS (effective) ===
+	var stats_title = Label.new()
+	stats_title.text = "Combat Stats (Effective)"
+	stats_title.add_theme_font_size_override("font_size", 14)
+	stats_title.add_theme_color_override("font_color", Color.GOLD)
+	vbox.add_child(stats_title)
+
+	# Use safe dictionary method to avoid RefCounted property access issues
+	var combat_stats = _combat_controller.get_unit_combat_stats(hero_id) if _combat_controller else {}
+	if combat_stats.get("valid", false):
+		# Use .get() for all dictionary access for maximum safety
+		var hp = combat_stats.get("current_hp", 0)
+		var max_hp = combat_stats.get("max_hp", 1)
+		var attack = combat_stats.get("attack", 0)
+		var defense = combat_stats.get("defense", 0)
+		var speed = combat_stats.get("speed", 0)
+		_add_stat_line(vbox, "HP", "%d / %d" % [hp, max_hp], Color.LIGHT_GREEN)
+		_add_stat_line(vbox, "Attack", str(attack), Color.SALMON)
+		_add_stat_line(vbox, "Defense", str(defense), Color.LIGHT_BLUE)
+		_add_stat_line(vbox, "Speed", str(speed), Color.YELLOW)
+
+		# Actions per turn based on speed (Speed 0-9: 1, 10-19: 2, 20+: 3)
+		var eff_speed = speed
+		var actions = 1
+		if eff_speed >= 20:
+			actions = 3
+		elif eff_speed >= 10:
+			actions = 2
+		_add_stat_line(vbox, "Actions/Turn", str(actions), Color.CYAN)
+	else:
+		# Combat unit not available (combat may have ended or unit not found)
+		var no_stats = Label.new()
+		no_stats.text = "(Combat stats unavailable)"
+		no_stats.modulate = Color.DIM_GRAY
+		vbox.add_child(no_stats)
+
+	vbox.add_child(HSeparator.new())
+
+	# === EQUIPMENT ===
+	var equip_title = Label.new()
+	equip_title.text = "Equipment"
+	equip_title.add_theme_font_size_override("font_size", 14)
+	equip_title.add_theme_color_override("font_color", Color.GOLD)
+	vbox.add_child(equip_title)
+
+	# Get equipment from GameContext (the authoritative source)
+	var equipment = GameContext.get_hero_equipment(hero_id)
+	var slots = ["weapon", "offhand", "helmet", "armor", "legs", "ring", "amulet"]
+	var slot_names = {"weapon": "WPN", "offhand": "OFF", "helmet": "HELM", "armor": "ARM", "legs": "LEG", "ring": "RING", "amulet": "AMU"}
+
+	for slot in slots:
+		var slot_data = equipment.get(slot, {})
+		var item_id = slot_data.get("id", "") if slot_data is Dictionary else ""
+		var quality = int(slot_data.get("quality", 0)) if slot_data is Dictionary else 0
+		var slot_code = slot_names.get(slot, slot.to_upper())
+		var slot_text = "(empty)"
+		var slot_tooltip = ""
+		if item_id != "":
+			var tpl = DataRegistry.get_item_template(item_id)
+			if tpl != null:
+				var prefix = ItemInstance.QUALITY_PREFIXES[quality] if quality < ItemInstance.QUALITY_PREFIXES.size() else ""
+				slot_text = "Q%d %s%s" % [quality, prefix, tpl.display_name]
+				slot_tooltip = _build_combat_item_tooltip(tpl, quality)
+			else:
+				slot_text = item_id
+		_add_stat_line_with_tooltip(vbox, slot_code, slot_text, Color.SANDY_BROWN if item_id != "" else Color.DIM_GRAY, slot_tooltip)
+
+	# === GEAR BONUSES (green +X format) ===
+	var gear_bonuses = GameContext._get_hero_equipment_stat_bonuses(hero_id)
+	var has_bonuses = gear_bonuses.get("health", 0) != 0 or gear_bonuses.get("attack", 0) != 0 or gear_bonuses.get("defense", 0) != 0 or gear_bonuses.get("speed", 0) != 0
+
+	if has_bonuses:
+		vbox.add_child(HSeparator.new())
+		var bonus_title = Label.new()
+		bonus_title.text = "Gear Bonuses"
+		bonus_title.add_theme_font_size_override("font_size", 14)
+		bonus_title.add_theme_color_override("font_color", Color.GOLD)
+		vbox.add_child(bonus_title)
+
+		if gear_bonuses.get("health", 0) != 0:
+			_add_stat_line(vbox, "HP", "+%d" % gear_bonuses["health"], Color.LIME_GREEN)
+		if gear_bonuses.get("attack", 0) != 0:
+			_add_stat_line(vbox, "Attack", "+%d" % gear_bonuses["attack"], Color.LIME_GREEN)
+		if gear_bonuses.get("defense", 0) != 0:
+			_add_stat_line(vbox, "Defense", "+%d" % gear_bonuses["defense"], Color.LIME_GREEN)
+		if gear_bonuses.get("speed", 0) != 0:
+			_add_stat_line(vbox, "Speed", "+%d" % gear_bonuses["speed"], Color.LIME_GREEN)
+
+	vbox.add_child(HSeparator.new())
+
+	# === ABILITIES ===
+	var ability_title = Label.new()
+	ability_title.text = "Abilities"
+	ability_title.add_theme_font_size_override("font_size", 14)
+	ability_title.add_theme_color_override("font_color", Color.GOLD)
+	vbox.add_child(ability_title)
+
+	# Get class data for abilities
+	var cls_data = DataRegistry.get_class_data(class_id) if class_id != "" and DataRegistry.has_method("get_class_data") else null
+	var ability_a_id = cls_data.ability_a_id if cls_data else ""
+	var ability_b_id = cls_data.ability_b_id if cls_data else ""
+
+	var has_abilities = false
+	if ability_a_id != "":
+		var ability_a = DataRegistry.get_ability(ability_a_id) if DataRegistry.has_method("get_ability") else null
+		var a_name = ability_a.display_name if ability_a else ability_a_id
+		var a_desc = ability_a.description if ability_a else ""
+		var a_cd = "CD: %d" % (ability_a.cooldown if ability_a else 0)
+		_add_ability_line(vbox, "[A] %s" % a_name, a_desc, a_cd)
+		has_abilities = true
+
+	if ability_b_id != "":
+		var ability_b = DataRegistry.get_ability(ability_b_id) if DataRegistry.has_method("get_ability") else null
+		var b_name = ability_b.display_name if ability_b else ability_b_id
+		var b_desc = ability_b.description if ability_b else ""
+		var b_cd = "CD: %d" % (ability_b.cooldown if ability_b else 0)
+		_add_ability_line(vbox, "[B] %s" % b_name, b_desc, b_cd)
+		has_abilities = true
+
+	if not has_abilities:
+		var none_lbl = Label.new()
+		none_lbl.text = "(none)"
+		none_lbl.add_theme_color_override("font_color", Color.DIM_GRAY)
+		vbox.add_child(none_lbl)
+
+	vbox.add_child(HSeparator.new())
+
+	# === PASSIVES (Class + Race) ===
+	var passive_title = Label.new()
+	passive_title.text = "Passives"
+	passive_title.add_theme_font_size_override("font_size", 14)
+	passive_title.add_theme_color_override("font_color", Color.GOLD)
+	vbox.add_child(passive_title)
+
+	var has_passives = false
+
+	# Class passives
+	var passive_a_id = cls_data.passive_a_id if cls_data else ""
+	var passive_b_id = cls_data.passive_b_id if cls_data else ""
+
+	if passive_a_id != "":
+		var p_data = DataRegistry.get_passive(passive_a_id) if DataRegistry.has_method("get_passive") else null
+		var p_name = p_data.display_name if p_data else passive_a_id
+		var p_desc = p_data.description if p_data else ""
+		_add_ability_line(vbox, "[Class] %s" % p_name, p_desc, "")
+		has_passives = true
+
+	if passive_b_id != "":
+		var p_data = DataRegistry.get_passive(passive_b_id) if DataRegistry.has_method("get_passive") else null
+		var p_name = p_data.display_name if p_data else passive_b_id
+		var p_desc = p_data.description if p_data else ""
+		_add_ability_line(vbox, "[Class] %s" % p_name, p_desc, "")
+		has_passives = true
+
+	# Race passive
+	if race_data != null and race_data.racial_passive_id != "":
+		var rp_data = DataRegistry.get_passive(race_data.racial_passive_id) if DataRegistry.has_method("get_passive") else null
+		var rp_name = rp_data.display_name if rp_data else race_data.racial_passive_id
+		var rp_desc = rp_data.description if rp_data else ""
+		_add_ability_line(vbox, "[Race] %s" % rp_name, rp_desc, "")
+		has_passives = true
+
+	if not has_passives:
+		var none_lbl = Label.new()
+		none_lbl.text = "(none)"
+		none_lbl.add_theme_color_override("font_color", Color.DIM_GRAY)
+		vbox.add_child(none_lbl)
+
+
+## Refresh the stats window if open (called after buffs/actions).
+func _refresh_stats_window() -> void:
+	if _stats_window == null or not is_instance_valid(_stats_window):
+		return
+	if _stats_window_hero_id == "":
+		return
+	_populate_stats_window(_stats_window_hero_id)
+
+
+## Helper: Add a stat line to the stats window.
+func _add_stat_line(container: VBoxContainer, stat_name: String, value: String, color: Color) -> void:
+	var hbox = HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 8)
+
+	var name_lbl = Label.new()
+	name_lbl.text = stat_name + ":"
+	name_lbl.custom_minimum_size = Vector2(100, 0)
+	name_lbl.add_theme_font_size_override("font_size", 12)
+	hbox.add_child(name_lbl)
+
+	var val_lbl = Label.new()
+	val_lbl.text = value
+	val_lbl.add_theme_font_size_override("font_size", 12)
+	val_lbl.add_theme_color_override("font_color", color)
+	hbox.add_child(val_lbl)
+
+	container.add_child(hbox)
+
+
+## Helper: Add a stat line with tooltip support (for equipment).
+func _add_stat_line_with_tooltip(container: VBoxContainer, stat_name: String, value: String, color: Color, tooltip: String = "") -> void:
+	var hbox = HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 8)
+
+	var name_lbl = Label.new()
+	name_lbl.text = stat_name + ":"
+	name_lbl.custom_minimum_size = Vector2(100, 0)
+	name_lbl.add_theme_font_size_override("font_size", 12)
+	hbox.add_child(name_lbl)
+
+	var val_lbl = Label.new()
+	val_lbl.text = value
+	val_lbl.add_theme_font_size_override("font_size", 12)
+	val_lbl.add_theme_color_override("font_color", color)
+	if tooltip != "":
+		val_lbl.tooltip_text = tooltip
+		val_lbl.mouse_filter = Control.MOUSE_FILTER_STOP
+	hbox.add_child(val_lbl)
+
+	container.add_child(hbox)
+
+
+## Build tooltip text for equipment items in combat.
+func _build_combat_item_tooltip(template, quality_tier: int) -> String:
+	if template == null:
+		return ""
+
+	var lines: Array[String] = []
+
+	lines.append(template.display_name)
+	if template.description != "":
+		lines.append(template.description)
+	lines.append("")
+
+	# Quality multiplier
+	var quality_names = ["Common", "Uncommon", "Rare", "Epic"]
+	var quality_mults = [1.0, 1.1, 1.2, 1.35]
+	var quality_name = quality_names[quality_tier] if quality_tier < quality_names.size() else "Common"
+	var quality_mult = quality_mults[quality_tier] if quality_tier < quality_mults.size() else 1.0
+	if quality_tier > 0:
+		lines.append("Quality: %s (x%.2f stats)" % [quality_name, quality_mult])
+		lines.append("")
+
+	# Stats with quality scaling
+	var base_stats = template.base_stats if template.base_stats != null else {}
+	var stat_bonuses = template.stat_bonuses if template.stat_bonuses != null else {}
+
+	var all_stats = {}
+	for key in base_stats.keys():
+		all_stats[key] = base_stats[key]
+	for key in stat_bonuses.keys():
+		if not all_stats.has(key):
+			all_stats[key] = stat_bonuses[key]
+
+	if all_stats.size() > 0:
+		lines.append("Stats:")
+		for stat_name in all_stats.keys():
+			var base_value = int(all_stats[stat_name])
+			var scaled_value = int(base_value * quality_mult)
+			lines.append("  +%d %s" % [scaled_value, stat_name.capitalize()])
+
+	return "\n".join(lines)
+
+
+## Helper: Add an ability line with name, description, and cooldown.
+func _add_ability_line(container: VBoxContainer, ability_name: String, desc: String, cd: String) -> void:
+	var ability_vbox = VBoxContainer.new()
+	ability_vbox.add_theme_constant_override("separation", 2)
+
+	var name_hbox = HBoxContainer.new()
+	var name_lbl = Label.new()
+	name_lbl.text = ability_name
+	name_lbl.add_theme_font_size_override("font_size", 12)
+	name_lbl.add_theme_color_override("font_color", Color.WHITE)
+	name_hbox.add_child(name_lbl)
+
+	if cd != "":
+		var cd_lbl = Label.new()
+		cd_lbl.text = "  [%s]" % cd
+		cd_lbl.add_theme_font_size_override("font_size", 10)
+		cd_lbl.add_theme_color_override("font_color", Color.DIM_GRAY)
+		name_hbox.add_child(cd_lbl)
+
+	ability_vbox.add_child(name_hbox)
+
+	if desc != "":
+		var desc_lbl = Label.new()
+		desc_lbl.text = desc
+		desc_lbl.add_theme_font_size_override("font_size", 10)
+		desc_lbl.add_theme_color_override("font_color", Color.LIGHT_GRAY)
+		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		desc_lbl.custom_minimum_size = Vector2(280, 0)
+		ability_vbox.add_child(desc_lbl)
+
+	container.add_child(ability_vbox)
+
+
+## Handle stats window close request.
+func _on_stats_window_closed() -> void:
+	if _stats_window != null and is_instance_valid(_stats_window):
+		_stats_window.queue_free()
+		_stats_window = null
+	print("[UI] Stats window closed")

@@ -1,0 +1,12 @@
+{
+  "id": "lt_undead_parts",
+  "display_name": "Undead Parts",
+  "description": "Bones and cursed remains from the undead.",
+  "min_drops": 1,
+  "max_drops": 2,
+  "entries": [
+    { "item_id": "bone_fragment", "weight": 65, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "cursed_dust", "weight": 15, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 20, "min_qty": 0, "max_qty": 0 }
+  ]
+}

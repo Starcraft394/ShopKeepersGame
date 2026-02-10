@@ -1,14 +1,17 @@
 {
   "id": "stamina_draught",
   "display_name": "Stamina Draught",
-  "description": "A bitter tonic that restores energy and vigor.",
+  "description": "A bitter tonic that grants a burst of speed in combat.",
   "item_type": "consumable",
   "item_subtype": "potion",
+  "category": "consumable",
   "slot": "",
-  "tier": 1,
-  "min_quality": 1,
-  "max_quality": 5,
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
   "base_stats": {},
+  "use_effect": "buff_speed",
+  "use_value": 2,
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -16,7 +19,9 @@
   "allowed_socket_types": [],
   "can_refine": false,
   "max_refinement": 0,
-  "base_value": 18,
+  "base_value": 22,
+  "buy_value": 30,
+  "stack_max": 5,
   "icon_path": "",
-  "tags": ["region_1", "consumable", "stamina", "crafted"]
+  "tags": ["region_1", "consumable", "potion", "buff", "tier_2"]
 }

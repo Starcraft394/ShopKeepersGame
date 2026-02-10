@@ -1,0 +1,19 @@
+{
+  "id": "shadow_mend",
+  "display_name": "Shadow Mend",
+  "description": "Weave shadows into healing energy, restoring an ally but costing your own health.",
+  "ability_type": "class_b",
+  "source_class_id": "dark_channeler",
+  "target_type": "single_ally",
+  "effect_type": "heal",
+  "base_damage": 0,
+  "base_heal": 25,
+  "damage_type": "dark",
+  "attack_scaling": 0.0,
+  "cooldown": 3,
+  "self_damage": 5,
+  "target_team": "ally",
+  "target_rule": "lowest_hp_pct",
+  "can_overheal": false,
+  "allow_self_target": false
+}

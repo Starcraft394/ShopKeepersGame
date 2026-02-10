@@ -140,17 +140,3 @@ text = "Auto"
 custom_minimum_size = Vector2(100, 35)
 layout_mode = 2
 text = "Reset"
-
-[node name="DemoButtons" type="HBoxContainer" parent="BottomPanel"]
-layout_mode = 2
-alignment = 1
-
-[node name="StunButton" type="Button" parent="BottomPanel/DemoButtons"]
-custom_minimum_size = Vector2(120, 30)
-layout_mode = 2
-text = "Demo: Stun"
-
-[node name="DoomButton" type="Button" parent="BottomPanel/DemoButtons"]
-custom_minimum_size = Vector2(120, 30)
-layout_mode = 2
-text = "Demo: Doom"

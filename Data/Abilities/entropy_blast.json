@@ -1,0 +1,20 @@
+{
+  "id": "entropy_blast",
+  "display_name": "Entropy Blast",
+  "description": "Unleash raw entropy, damaging all enemies and reducing their attack.",
+  "ability_type": "class_b",
+  "source_class_id": "void_herald",
+  "target_type": "all_enemies",
+  "effect_type": "damage",
+  "base_damage": 12,
+  "damage_type": "void",
+  "attack_scaling": 1.0,
+  "cooldown": 5,
+  "enemy_debuff": {
+    "stat": "attack",
+    "value": -4,
+    "duration": 2
+  },
+  "applies_status_id": "",
+  "status_stacks": 0
+}

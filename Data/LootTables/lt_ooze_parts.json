@@ -1,0 +1,11 @@
+{
+  "id": "lt_ooze_parts",
+  "display_name": "Ooze Parts",
+  "description": "Alchemical components from slimes and oozes.",
+  "min_drops": 1,
+  "max_drops": 2,
+  "entries": [
+    { "item_id": "slime_gel", "weight": 70, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "", "weight": 30, "min_qty": 0, "max_qty": 0 }
+  ]
+}

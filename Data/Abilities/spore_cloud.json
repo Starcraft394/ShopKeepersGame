@@ -1,0 +1,16 @@
+{
+  "id": "spore_cloud",
+  "display_name": "Spore Cloud",
+  "description": "Release a cloud of toxic spores that poisons all enemies.",
+  "ability_type": "class_b",
+  "source_class_id": "druid",
+  "target_type": "all_enemies",
+  "effect_type": "damage",
+  "base_damage": 6,
+  "damage_type": "magical",
+  "attack_scaling": 0.4,
+  "cooldown": 4,
+  "applies_status_id": "poisoned",
+  "applies_status_duration": 3,
+  "status_stacks": 2
+}

@@ -1,0 +1,15 @@
+{
+  "id": "lightning_bolt",
+  "display_name": "Lightning Bolt",
+  "description": "Hurl a bolt of lightning at a single enemy, dealing heavy magical damage.",
+  "ability_type": "class_a",
+  "source_class_id": "stormcaller",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 14,
+  "damage_type": "magical",
+  "attack_scaling": 1.2,
+  "cooldown": 2,
+  "applies_status_id": "",
+  "status_stacks": 0
+}
