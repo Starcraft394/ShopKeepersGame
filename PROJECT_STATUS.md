@@ -1,17 +1,41 @@
 # Shops & Shadows - Project Status Report
-*Last Updated: 2026-02-08*
+*Last Updated: 2026-02-10*
 
 ## Quick Summary
 | System | Status | Completion |
 |--------|--------|------------|
 | Combat (Player-Controlled) | DONE | 100% |
-| Town & Facilities | DONE | 93% |
-| Equipment System | DONE | 100% |
+| Town & Facilities | DONE | 95% |
+| Equipment Facility UI | DONE | 100% |
 | Shop Slot Allocation | DONE | 100% |
 | Recipe Unlock System | DONE | 100% |
 | Hero Recruitment | DONE | 100% |
 | Dungeon Progression | DONE | 90% |
+| Loot Tables | DONE | 100% |
 | Save/Load | DONE | 100% |
+
+---
+
+## RECENT SESSION WORK (2026-02-10)
+
+### Equipment Facility System - COMPLETED
+- [x] **Per-Recipe Unlocking**: Each recipe has individual `unlock_cost` (no group unlocking)
+- [x] **New Equipment UI**: Tabs (All/Locked/Unlocked) + Type Filters (1H/2H/Helm/Body/Legs/Offhand/Accessory/Backpack)
+- [x] **Huntsman Facility**: Bows, leather armor, backpacks (wolf_pelt, spider_silk, wood)
+- [x] **Enchanter Facility**: Staves, focuses, accessories, rings (herb_sprig, wood, cursed_dust, bone)
+- [x] **Equipment Tooltips**: Stat display using `get_stat_bonuses_with_quality()`
+
+### Data Expansion - COMPLETED
+- [x] 24 new abilities across all class archetypes
+- [x] 24 new passives for combat depth
+- [x] 40+ new item templates (materials, consumables, equipment)
+- [x] 9 loot tables for monster drops
+- [x] 4 foraging monsters (berry_thicket, forest_hare, mushroom_cluster, wild_turkey)
+- [x] All monsters now have loot_table_id assignments
+
+### Consumable Facilities - COMPLETED
+- [x] **Chef Facility**: Food crafting from raw_meat, wild_berries, forest_mushroom
+- [x] **Alchemist Facility**: Potions, antidotes, elixirs from monster drops
 
 ---
 
@@ -42,8 +66,8 @@
 - [x] Tooltip: "Right-click to use consumable" on hero bag display
 
 ### Combat Files
-- `Game/Combat/CombatController.gd` - Core logic (~2800 lines)
-- `Game/UI/Combat/CombatScene.gd` - UI handling
+- `Game/Combat/CombatController.gd` - Core logic (~2900 lines)
+- `Game/UI/Combat/CombatScene.gd` - UI handling (~3700 lines)
 
 ---
 
@@ -52,59 +76,49 @@
 ### General Store (Slot Allocation) - DONE
 - [x] Shop tier system (Tier 1: 4 slots, Tier 2: 6 slots, Tier 3: 8 slots)
 - [x] +/- buttons to allocate slots to facilities
-- [x] Contributing facilities: Blacksmith, Leatherworker, Alchemist
+- [x] Contributing facilities: Blacksmith, Huntsman, Enchanter, Alchemist, Chef
 - [x] Items generated based on allocated slots
 - [x] Per-facility seeded RNG (no cross-contamination)
 - [x] Item tooltips showing stats on hover
 - [x] Sell Items popup window
-- [x] Refresh removed (triggers on dungeon return)
+- [x] Refresh triggers on dungeon return
 
-### Recipe Unlock System - DONE
-- [x] Facilities have purchasable unlocks (costs materials)
-- [x] Unlocked recipes appear in shop based on slot allocation
-- [x] Quality determined by facility tier at time of unlock
-- [x] Default unlocks: healing_tonic, rusty_sword, rusty_shield
+### Equipment Facilities - PER-RECIPE UNLOCK SYSTEM
+| Facility | Type | Produces | Materials |
+|----------|------|----------|-----------|
+| Blacksmith | equipment | Weapons, Shields, Heavy Armor | iron_scrap, wood_bundle |
+| Huntsman | equipment | Bows, Light Armor, Backpacks | wolf_pelt, spider_silk, wood_bundle |
+| Enchanter | equipment | Staves, Focuses, Accessories | herb_sprig, wood_bundle, cursed_dust, bone_fragment |
 
-### Equipment System (7 Slots + Bag) - DONE
-- [x] **Slots**: weapon, offhand, helmet, armor, legs, ring, amulet
-- [x] **Bag**: Separate slot with capacity (base 1, backpack adds more)
-- [x] Per-hero equipment storage
-- [x] Quality tiers: Common (1.0x), Uncommon (1.1x), Rare (1.2x), Epic (1.35x)
-- [x] Stat bonuses from equipment apply in combat
+### Consumable Facilities - DIRECT CRAFTING
+| Facility | Type | Produces | Materials |
+|----------|------|----------|-----------|
+| Alchemist | production | Potions, Antidotes, Elixirs | herb_sprig, slime_gel, spider_fang, bat_wing |
+| Chef | production | Food (HP restoration) | raw_meat, wild_berries, forest_mushroom |
 
-### Facilities Status
-
+### Other Facilities Status
 | Facility | Type | Status | Notes |
 |----------|------|--------|-------|
 | General Store | shop | DONE | Slot allocation, buy/sell |
-| Blacksmith | blacksmith | DONE | Unlock weapons/shields/armor |
-| Alchemist | alchemist | DONE | Unlock consumables |
-| Leatherworker | production | DONE | Unlock armor/accessories/backpacks |
 | Inn | inn | DONE | Recruit heroes, manage party |
 | Storage | storage | DONE | View stash, equip gear, sell |
 | Training Hall | training | DONE | Assign classes from books |
 | Dungeon | dungeon | DONE | Select floor, enter dungeon |
-| Woodsman | woodsman | NOT DONE | Placeholder only |
-
-### NOT Implemented (Town)
-- [ ] Woodsman facility (placeholder)
-- [ ] Crafting execution (recipes defined, no UI to craft)
-- [ ] Hero assignment to facilities (structure exists, no UI)
 
 ---
 
 ## DATA CONTENT
 
-### Items: 63 Templates
+### Items: 78+ Templates
 | Type | Count | Examples |
 |------|-------|----------|
-| Consumables | 27 | Healing tonics, antidotes, class books |
-| Armor | 13 | Leather vest, chainmail, iron helmet |
-| Weapons | 10 | Swords, axes, bows, daggers |
-| Materials | 6 | Wood, herbs, iron scrap |
-| Accessories | 4 | Rings, charms, pendants |
-| Backpacks | 2 | Small, sturdy |
-| Tools | 1 | Torch |
+| Consumables | 27 | Healing tonics, antidotes, class books (15) |
+| Armor | 13+ | Leather vest, chainmail, iron helmet, greaves |
+| Weapons | 12+ | Swords, axes, bows, staves, maces |
+| Materials | 12+ | Wood, herbs, iron, pelts, silk, gel, dust, bone |
+| Accessories | 6+ | Rings, charms, pendants, focuses |
+| Backpacks | 2 | Small (base), Sturdy (+3 capacity) |
+| Food | 6 | Cooked meat, berries, rations, feasts |
 
 ### Classes: 15 Playable
 | Region | Classes |
@@ -121,16 +135,41 @@
 - 1 Basic Attack
 - ~18 Class A abilities (primary)
 - ~17 Class B abilities (secondary)
+- Covers all archetypes: vanguard, striker, mage, healer, support
+
+### Passives: 37 Total
+- Class passives (2 per class)
+- Racial passives (1 per race)
+- Equipment passives
+- Status effect passives
+
+### Loot Tables: 13 Defined
+| Table | Source | Drops |
+|-------|--------|-------|
+| lt_region1_common | Tier 1 monsters | 1-2 items |
+| lt_region1_uncommon | Tier 2 monsters | 1-3 items |
+| lt_region1_elite | Elite monsters | 2-4 items |
+| lt_region1_boss | Bosses | 3-5 items |
+| lt_beast_wolf | Wolves | wolf_pelt |
+| lt_beast_boar | Boars | boar_tusk, raw_meat |
+| lt_spider_parts | Spiders | spider_silk, spider_fang |
+| lt_ooze_parts | Oozes | slime_gel |
+| lt_undead_parts | Undead | bone_fragment, cursed_dust |
+| lt_bat_parts | Bats | bat_wing |
+| lt_cultist_parts | Cultists | cursed_dust |
+| lt_food_meat | Beast foraging | raw_meat |
+| lt_food_plant | Plant foraging | wild_berries, forest_mushroom |
 
 ### Dungeons: 2 Complete
 1. **Greenroot Woods** - 4 floors, forest theme, Boss: Thorn Ent
 2. **Timberfall Depths** - 4 floors, industrial theme, Boss: Iron Foreman
 
-### Enemies: 30+ Types
-- Tier 1: goblin, wolf, slime, spider, bandit, skeleton
-- Tier 2: moss_troll, rootkin, bramble_stalker, cultist
-- Elites: briar_guardian, dire_boar_elite
-- Bosses: thorn_ent, iron_foreman
+### Enemies: 47+ Types
+- **Tier 1**: goblin, wolf, bat_swarm, slime, spider, bandit, skeleton
+- **Tier 2**: moss_troll, rootkin, bramble_stalker, cultist, acid_slime
+- **Elites**: briar_guardian, dire_boar_elite, skeleton_veteran_elite
+- **Bosses**: thorn_ent, iron_foreman, crypt_lord
+- **Foraging**: berry_thicket, forest_hare, mushroom_cluster, wild_turkey
 
 ---
 
@@ -138,7 +177,7 @@
 
 ### M0: Project Boot & Data Spine - COMPLETE
 - [x] Game launches and loads data
-- [x] DataRegistry autoloads JSON
+- [x] DataRegistry autoloads 281 JSON files
 - [x] SeededRNG implemented
 - [x] Core data schemas validate
 
@@ -166,50 +205,71 @@
 - [x] All state persists
 - [x] No duplication bugs
 
-### M5: MVP Validation - IN PROGRESS
+### M5: MVP Validation - 90% COMPLETE
 - [x] Full loop playable
-- [ ] All polish complete
-- [ ] Known issues documented
+- [x] Equipment facility per-recipe unlocking
+- [x] Consumable crafting defined
+- [ ] Event variety expansion
+- [ ] Balance pass
 
 ---
 
 ## REMAINING WORK (Priority Order)
 
-### Completed (This Session)
-- [x] **Shop Refresh on Dungeon Return** - Wired up in `exit_to_town()` (GameContext.gd:4013-4015)
-- [x] **Blacksmith Items Complete** - All weapons/shields/armor have proper stat_bonuses
-- [x] **Blacksmith Recipes** - Added unlock_groups and iron_sword recipe
-- [x] **Item Stats Standardized** - All 27 equippable items now have stat_bonuses
-
 ### High Priority
-1. **Alchemist Recipes** - Add consumable recipes so Alchemist slots are useful in shop
+1. **Consumable Crafting UI** - Alchemist/Chef have recipes, need execution UI
+2. **Event Expansion** - Define 10+ room event variations
+3. **Multi-Floor Testing** - Verify 4-floor dungeon progression
 
 ### Medium Priority
-2. **Woodsman Facility** - Implement material gathering/bonuses
-3. **Crafting System** - Execute recipes at facilities (structure exists)
 4. **Hero Facility Assignment** - Structure exists, needs UI
+5. **Balance Tuning** - Adjust costs, stats, drop rates
 
 ### Low Priority / Polish
-5. **More Equipment Variety** - Add items to diversify shop offerings
-6. **Balance Tuning** - Adjust costs, stats, quality chances
+6. **More Equipment Variety** - Expand tier 2+ items
 7. **UI Polish** - Improve layouts and feedback
+8. **Additional Dungeons** - Region 2+ content
 
 ---
 
 ## KEY FILES
 
 ### Core Systems
-- `Game/Core/GameContext.gd` - Central game state (3700+ lines)
-- `Game/UI/Town/TownScene.gd` - Town UI (4500+ lines)
-- `Game/Combat/CombatController.gd` - Combat logic (2800+ lines)
-- `Game/UI/Combat/CombatScene.gd` - Combat UI
+| File | Lines | Purpose |
+|------|-------|---------|
+| `Game/Core/GameContext.gd` | ~4,755 | Central game state, persistence |
+| `Game/UI/Town/TownScene.gd` | ~5,081 | Town UI, facility panels |
+| `Game/Combat/CombatController.gd` | ~2,902 | Combat logic, turn management |
+| `Game/UI/Combat/CombatScene.gd` | ~3,705 | Combat UI, unit displays |
+| `Game/UI/Dungeon/DungeonCampScene.gd` | ~1,012 | Camp UI, room choices |
 
-### Data
-- `Data/Facilities/*.json` - Facility definitions
-- `Data/Items/Templates/*.json` - Item templates
-- `Data/Classes/*.json` - Class definitions
-- `Data/Abilities/*.json` - Ability definitions
-- `Data/Dungeons/*.json` - Dungeon configurations
+### Data Folders
+| Folder | Files | Content |
+|--------|-------|---------|
+| `Data/Facilities/` | 20 | Facility definitions |
+| `Data/Items/Templates/` | 78+ | Item templates |
+| `Data/Classes/` | 15 | Class definitions |
+| `Data/Abilities/` | 37 | Ability definitions |
+| `Data/Passives/` | 37 | Passive definitions |
+| `Data/Monsters/` | 47+ | Monster definitions |
+| `Data/LootTables/` | 13 | Loot table definitions |
+
+---
+
+## TESTS
+
+### Headless Test Suite
+- **Location**: `DevTools/test_ability_execution_v1.gd`
+- **Runner**: `DevTools/run_headless.bat`
+- **Status**: 87 tests passing
+
+### Coverage Areas
+- Ability execution
+- Status effects
+- Combat mechanics
+- Equipment bonuses
+- Save/load cycles
+- Hero management
 
 ---
 
@@ -218,13 +278,34 @@
 - **Combat IS player-controlled** - Not fully automated
 - **Speed multi-actions work** - Speed 10+ gets extra actions
 - **Consumables work** - Right-click hero bag in combat to use
-- **Shop slot allocation works** - Recent implementation complete
-- **Recipe unlocks work** - Facilities unlock items for shop
-- **Equipment 7+1 slots work** - Per-hero equipment tracking
-- **Item stat_bonuses complete** - All 27 equipment items have stat_bonuses with quality multipliers
-- **Shop refresh on dungeon return** - Automatically increments when exiting dungeon
+- **Equipment Facilities use per-recipe unlocking** - No group system
+- **Consumable Facilities use direct crafting** - Tier-based, inputs array
+- **All monsters have loot_table_id** - Drop materials for crafting
+- **Item stat_bonuses complete** - Quality multipliers apply
 
-*This document should be updated as features are completed.*
+---
+
+## ARCHITECTURE NOTES
+
+### Two Facility Systems
+1. **Equipment Facilities** (Blacksmith, Huntsman, Enchanter)
+   - `facility_type: "equipment"`
+   - Per-recipe `unlock_cost` arrays
+   - Unlocked items appear in General Store
+   - UI: Tabs + Type Filters
+
+2. **Consumable Facilities** (Alchemist, Chef)
+   - `facility_type: "alchemist"` or `"chef"`
+   - Direct crafting with `inputs` arrays
+   - Tier-based recipe availability
+   - UI: Traditional recipe list
+
+### Invariants (Do Not Modify Without Request)
+1. **Combat Semantics** - CombatUnit, TurnQueue, StatusRuntime
+2. **Stash Banking** - Locks during dungeon, banks on extract
+3. **Loot Recipient** - Manual routing only
+4. **Dungeon Bags** - No stacking (stash only)
+5. **Determinism** - All RNG through SeededRNG
 
 ---
 
@@ -232,13 +313,14 @@
 
 ### Active Documents (Root)
 - `PROJECT_STATUS.md` - This file, current implementation status
-- `Shops_And_Shadows_MASTER_GDD.md` - Consolidated game design document (40 sections)
+- `Shops_And_Shadows_MASTER_GDD.md` - Consolidated game design document
 - `MVP_Scope.md` - MVP feature scope definition
 - `CLAUDE.md` - Claude Code instructions
 
 ### Archived Documents
-- `Archive/GDD_Sections/` - Individual GDD section files (18 files)
-- `Archive/Implementation_Planning/` - Roadmaps, integration logs, phase deliverables
-- `Docs/` - Region-specific implementation docs
+- `Archive/GDD_Sections/` - Individual GDD section files
+- `Archive/Implementation_Planning/` - Roadmaps, integration logs
 - `ProjectDocs/` - Recovery and world design docs
 - `MVP/` - MVP milestone and criteria docs
+
+*This document should be updated as features are completed.*
