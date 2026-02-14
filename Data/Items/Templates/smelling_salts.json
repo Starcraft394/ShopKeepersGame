@@ -22,6 +22,6 @@
   "base_value": 10,
   "buy_value": 18,
   "stack_max": 10,
-  "icon_path": "",
+  "icon_path": "res://Assets/Icons/Items/icon_item_smelling_salts.png",
   "tags": ["region_1", "consumable", "utility", "crafted"]
 }

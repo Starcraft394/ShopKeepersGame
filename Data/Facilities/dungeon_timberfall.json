@@ -2,6 +2,7 @@
   "id": "dungeon_timberfall",
   "display_name": "Dungeon Board",
   "description": "Select a starting floor for the Timberfall Depths dungeon.",
+  "icon_path": "res://Assets/Icons/Facilities/icon_facility_dungeon.png",
   "facility_type": "dungeon",
   "max_tier": 1,
   "unlock_region": 1,

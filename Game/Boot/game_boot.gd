@@ -9,6 +9,9 @@ const DEBUG_FORCE_LOCATION := false
 const DEBUG_REGION_ID := "region_1"
 const DEBUG_TOWN_ID := "town_greenroot"
 
+# Debug: Force TownHub MVP UI on startup (set false to resume normal TOWN flow)
+const DEBUG_FORCE_TOWN_HUB := true
+
 # ============================================================================
 # CONFIGURATION
 # ============================================================================
@@ -18,6 +21,7 @@ const TOWN_SCENE_PATH: String = "res://Game/UI/Town/TownScene.tscn"
 const COMBAT_SCENE_PATH: String = "res://Game/UI/Combat/CombatScene.tscn"
 const DUNGEON_CAMP_SCENE_PATH: String = "res://Game/UI/Dungeon/DungeonCampScene.tscn"
 const ROOM_EVENT_SCENE_PATH: String = "res://Game/UI/Rooms/RoomEventScene.tscn"
+const TOWN_HUB_SCENE_PATH: String = "res://Game/UI/TownHub/TownHubScene.tscn"
 
 ## Fallback scene paths to try if primary scenes don't exist.
 const FALLBACK_SCENES: Array[String] = [
@@ -100,6 +104,14 @@ func _run_boot_sequence() -> void:
 		if DEBUG_FORCE_LOCATION and GameContext.has_method("set_location"):
 			GameContext.set_location(DEBUG_REGION_ID, DEBUG_TOWN_ID)
 			print("[BOOT][DEBUG] Forced location: %s/%s" % [DEBUG_REGION_ID, DEBUG_TOWN_ID])
+		if DEBUG_FORCE_TOWN_HUB:
+			var current_phase = GameContext.get_phase()
+			# Only redirect TOWN → TOWN_HUB; let COMBAT and other phases route normally
+			if current_phase == GameContext.GamePhase.TOWN or current_phase == GameContext.GamePhase.TOWN_HUB:
+				GameContext.set_phase(GameContext.GamePhase.TOWN_HUB)
+				print("[BOOT][DEBUG] Forced phase: TOWN_HUB (CraftPix MVP UI)")
+			else:
+				print("[BOOT][DEBUG] DEBUG_FORCE_TOWN_HUB active but phase=%s — routing normally" % GameContext.GamePhase.keys()[current_phase])
 		_transition_to_next_scene()
 	else:
 		print("========================================")
@@ -340,6 +352,11 @@ func _determine_route() -> Dictionary:
 	elif phase == "ROOM_EVENT":
 		if FileAccess.file_exists(ROOM_EVENT_SCENE_PATH):
 			target_scene = ROOM_EVENT_SCENE_PATH
+
+	# TOWN_HUB phase -> TownHubScene (CraftPix MVP UI)
+	elif phase == "TOWN_HUB":
+		if FileAccess.file_exists(TOWN_HUB_SCENE_PATH):
+			target_scene = TOWN_HUB_SCENE_PATH
 
 	# TOWN or DUNGEON_SELECT -> TownScene
 	elif phase in ["TOWN", "DUNGEON_SELECT", "BOOT", "REWARDS", "RETURN_TO_TOWN"]:

@@ -2,6 +2,7 @@
   "id": "training_hall_tf",
   "display_name": "Training Hall (Timberfall)",
   "description": "A sparring ground where heroes hone their skills and learn new classes.",
+  "icon_path": "res://Assets/Icons/Facilities/icon_facility_training_hall.png",
   "facility_type": "training_hall",
   "max_tier": 2,
   "unlock_region": 1,
@@ -37,6 +38,18 @@
   "shop_items": [
     { "item_id": "book_defender", "price_gold": 100, "requires_unlock_group": "books_t1" },
     { "item_id": "book_striker", "price_gold": 100, "requires_unlock_group": "books_t1" },
-    { "item_id": "book_warden", "price_gold": 100, "requires_unlock_group": "books_t1" }
+    { "item_id": "book_warden", "price_gold": 100, "requires_unlock_group": "books_t1" },
+    { "item_id": "book_druid", "price_gold": 150, "requires_unlock_group": "books_t1" },
+    { "item_id": "book_fungal_berserker", "price_gold": 150, "requires_unlock_group": "books_t1" },
+    { "item_id": "book_tidechaser", "price_gold": 150, "requires_unlock_group": "books_t1" },
+    { "item_id": "book_stormcaller", "price_gold": 150, "requires_unlock_group": "books_t1" },
+    { "item_id": "book_pyrewarden", "price_gold": 150, "requires_unlock_group": "books_t1" },
+    { "item_id": "book_ashblade", "price_gold": 150, "requires_unlock_group": "books_t1" },
+    { "item_id": "book_prism_sentinel", "price_gold": 150, "requires_unlock_group": "books_t1" },
+    { "item_id": "book_prism_lancer", "price_gold": 150, "requires_unlock_group": "books_t1" },
+    { "item_id": "book_dark_channeler", "price_gold": 150, "requires_unlock_group": "books_t1" },
+    { "item_id": "book_lich", "price_gold": 150, "requires_unlock_group": "books_t1" },
+    { "item_id": "book_voidwalker", "price_gold": 150, "requires_unlock_group": "books_t1" },
+    { "item_id": "book_void_herald", "price_gold": 150, "requires_unlock_group": "books_t1" }
   ]
 }

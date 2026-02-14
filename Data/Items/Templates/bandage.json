@@ -14,5 +14,6 @@
   "stack_max": 20,
   "use_effect": "cure_bleeding",
   "use_value": 99,
-  "tags": ["consumable", "cure", "region_1"]
+  "tags": ["consumable", "cure", "region_1"],
+  "icon_path": "res://Assets/Icons/Items/icon_item_bandage.png"
 }

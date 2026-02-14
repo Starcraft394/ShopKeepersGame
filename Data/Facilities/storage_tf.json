@@ -2,6 +2,7 @@
   "id": "storage_tf",
   "display_name": "Storage (Timberfall)",
   "description": "A secure warehouse for materials and surplus goods.",
+  "icon_path": "res://Assets/Icons/Facilities/icon_facility_storage.png",
   "facility_type": "storage",
   "max_tier": 1,
   "unlock_region": 1,

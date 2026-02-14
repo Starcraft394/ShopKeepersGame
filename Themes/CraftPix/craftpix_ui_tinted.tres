@@ -1,0 +1,43 @@
+[gd_resource type="Theme" load_steps=7 format=3 uid="uid://craftpix_ui_tinted_001"]
+
+[ext_resource type="StyleBox" path="res://Themes/CraftPix/panel_wood_dark.tres" id="1_panel_dark"]
+[ext_resource type="StyleBox" path="res://Themes/CraftPix/btn_primary_normal_tinted.tres" id="2_btn_nt"]
+[ext_resource type="StyleBox" path="res://Themes/CraftPix/btn_primary_hover_tinted.tres" id="3_btn_ht"]
+[ext_resource type="StyleBox" path="res://Themes/CraftPix/btn_primary_pressed_tinted.tres" id="4_btn_pt"]
+[ext_resource type="StyleBox" path="res://Themes/CraftPix/btn_primary_disabled_tinted.tres" id="5_btn_dt"]
+[ext_resource type="StyleBox" path="res://Themes/CraftPix/slot_inventory.tres" id="6_slot"]
+
+[resource]
+default_font_size = 15
+
+PanelContainer/styles/panel = ExtResource("1_panel_dark")
+Panel/styles/panel = ExtResource("1_panel_dark")
+
+Button/styles/normal = ExtResource("2_btn_nt")
+Button/styles/hover = ExtResource("3_btn_ht")
+Button/styles/pressed = ExtResource("4_btn_pt")
+Button/styles/disabled = ExtResource("5_btn_dt")
+Button/styles/focus = ExtResource("3_btn_ht")
+Button/colors/font_color = Color(0.96, 0.91, 0.82, 1)
+Button/colors/font_hover_color = Color(1, 0.97, 0.9, 1)
+Button/colors/font_pressed_color = Color(0.82, 0.78, 0.7, 1)
+Button/colors/font_disabled_color = Color(0.6, 0.57, 0.52, 0.55)
+Button/colors/font_focus_color = Color(1, 0.97, 0.9, 1)
+Button/font_sizes/font_size = 15
+
+Label/colors/font_color = Color(0.96, 0.91, 0.82, 1)
+Label/colors/font_shadow_color = Color(0.15, 0.12, 0.08, 0.35)
+Label/font_sizes/font_size = 15
+
+RichTextLabel/colors/default_color = Color(0.96, 0.91, 0.82, 1)
+RichTextLabel/font_sizes/normal_font_size = 14
+
+LineEdit/colors/font_color = Color(0.96, 0.91, 0.82, 1)
+LineEdit/colors/font_placeholder_color = Color(0.72, 0.68, 0.6, 0.6)
+LineEdit/colors/caret_color = Color(0.96, 0.91, 0.82, 1)
+LineEdit/colors/selection_color = Color(0.6, 0.45, 0.2, 0.45)
+LineEdit/font_sizes/font_size = 15
+
+TooltipLabel/colors/font_color = Color(0.96, 0.93, 0.85, 1)
+TooltipLabel/font_sizes/font_size = 13
+TooltipPanel/styles/panel = ExtResource("6_slot")

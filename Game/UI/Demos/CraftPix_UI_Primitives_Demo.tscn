@@ -1,0 +1,474 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Theme" path="res://Themes/CraftPix/craftpix_ui.tres" id="1_theme"]
+[ext_resource type="StyleBox" path="res://Themes/CraftPix/panel_wood_medium.tres" id="2_panel_med"]
+[ext_resource type="StyleBox" path="res://Themes/CraftPix/btn_primary_hover.tres" id="3_btn_h"]
+[ext_resource type="StyleBox" path="res://Themes/CraftPix/btn_primary_pressed.tres" id="4_btn_p"]
+[ext_resource type="StyleBox" path="res://Themes/CraftPix/slot_inventory.tres" id="5_slot"]
+[ext_resource type="StyleBox" path="res://Themes/CraftPix/icon_frame.tres" id="6_icon"]
+
+[node name="CraftPixPrimitivesDemo" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_theme")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15, 0.15, 0.2, 1)
+
+[node name="Scroll" type="ScrollContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 24
+
+[node name="Title" type="Label" parent="Scroll/VBox"]
+layout_mode = 2
+text = "CraftPix UI Primitives Demo"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.96, 0.87, 0.7, 1)
+
+[node name="Subtitle" type="Label" parent="Scroll/VBox"]
+layout_mode = 2
+text = "All primitives use NinePatch slicing from CraftPix sprite sheets.
+Panels tinted with Color(0.75, 0.72, 0.68) to sit on dark backgrounds.
+Theme: craftpix_ui.tres — panels and buttons inherit from theme defaults."
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.7, 0.7, 0.75, 1)
+
+[node name="Sep1" type="HSeparator" parent="Scroll/VBox"]
+layout_mode = 2
+
+[node name="PanelDarkSection" type="VBoxContainer" parent="Scroll/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Label" type="Label" parent="Scroll/VBox/PanelDarkSection"]
+layout_mode = 2
+text = "1. Panel / WoodDark  (brown header + beige body) — inherited from theme"
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.96, 0.87, 0.7, 1)
+
+[node name="Row" type="HBoxContainer" parent="Scroll/VBox/PanelDarkSection"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Small" type="PanelContainer" parent="Scroll/VBox/PanelDarkSection/Row"]
+custom_minimum_size = Vector2(120, 80)
+layout_mode = 2
+
+[node name="SmallLabel" type="Label" parent="Scroll/VBox/PanelDarkSection/Row/Small"]
+layout_mode = 2
+text = "120x80"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 11
+
+[node name="Medium" type="PanelContainer" parent="Scroll/VBox/PanelDarkSection/Row"]
+custom_minimum_size = Vector2(200, 120)
+layout_mode = 2
+
+[node name="MedLabel" type="Label" parent="Scroll/VBox/PanelDarkSection/Row/Medium"]
+layout_mode = 2
+text = "200x120"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 11
+
+[node name="Large" type="PanelContainer" parent="Scroll/VBox/PanelDarkSection/Row"]
+custom_minimum_size = Vector2(300, 160)
+layout_mode = 2
+
+[node name="LrgLabel" type="Label" parent="Scroll/VBox/PanelDarkSection/Row/Large"]
+layout_mode = 2
+text = "300x160"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 11
+
+[node name="Sep2" type="HSeparator" parent="Scroll/VBox"]
+layout_mode = 2
+
+[node name="PanelMedSection" type="VBoxContainer" parent="Scroll/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Label" type="Label" parent="Scroll/VBox/PanelMedSection"]
+layout_mode = 2
+text = "2. Panel / WoodMedium  (all-wood, no beige interior) — per-node override"
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.96, 0.87, 0.7, 1)
+
+[node name="Row" type="HBoxContainer" parent="Scroll/VBox/PanelMedSection"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Small" type="PanelContainer" parent="Scroll/VBox/PanelMedSection/Row"]
+custom_minimum_size = Vector2(120, 80)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("2_panel_med")
+
+[node name="SmallLabel" type="Label" parent="Scroll/VBox/PanelMedSection/Row/Small"]
+layout_mode = 2
+text = "120x80"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 11
+
+[node name="Medium" type="PanelContainer" parent="Scroll/VBox/PanelMedSection/Row"]
+custom_minimum_size = Vector2(200, 120)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("2_panel_med")
+
+[node name="MedLabel" type="Label" parent="Scroll/VBox/PanelMedSection/Row/Medium"]
+layout_mode = 2
+text = "200x120"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 11
+
+[node name="Large" type="PanelContainer" parent="Scroll/VBox/PanelMedSection/Row"]
+custom_minimum_size = Vector2(300, 160)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("2_panel_med")
+
+[node name="LrgLabel" type="Label" parent="Scroll/VBox/PanelMedSection/Row/Large"]
+layout_mode = 2
+text = "300x160"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 11
+
+[node name="Sep3" type="HSeparator" parent="Scroll/VBox"]
+layout_mode = 2
+
+[node name="ButtonSection" type="VBoxContainer" parent="Scroll/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Label" type="Label" parent="Scroll/VBox/ButtonSection"]
+layout_mode = 2
+text = "3. Button / Primary  (normal, hover, pressed states) — inherited from theme"
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.96, 0.87, 0.7, 1)
+
+[node name="Row" type="HBoxContainer" parent="Scroll/VBox/ButtonSection"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="BtnNormal" type="Button" parent="Scroll/VBox/ButtonSection/Row"]
+custom_minimum_size = Vector2(140, 36)
+layout_mode = 2
+text = "Normal"
+
+[node name="BtnHover" type="Button" parent="Scroll/VBox/ButtonSection/Row"]
+custom_minimum_size = Vector2(140, 36)
+layout_mode = 2
+theme_override_styles/normal = ExtResource("3_btn_h")
+text = "Hover (preview)"
+
+[node name="BtnPressed" type="Button" parent="Scroll/VBox/ButtonSection/Row"]
+custom_minimum_size = Vector2(140, 36)
+layout_mode = 2
+theme_override_styles/normal = ExtResource("4_btn_p")
+text = "Pressed (preview)"
+
+[node name="BtnWide" type="Button" parent="Scroll/VBox/ButtonSection/Row"]
+custom_minimum_size = Vector2(240, 48)
+layout_mode = 2
+text = "Wide Button (240x48)"
+
+[node name="Sep4" type="HSeparator" parent="Scroll/VBox"]
+layout_mode = 2
+
+[node name="SlotSection" type="VBoxContainer" parent="Scroll/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Label" type="Label" parent="Scroll/VBox/SlotSection"]
+layout_mode = 2
+text = "4. Slot / Inventory  (warm beige grid cell) — per-node override"
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.96, 0.87, 0.7, 1)
+
+[node name="Grid" type="GridContainer" parent="Scroll/VBox/SlotSection"]
+layout_mode = 2
+columns = 8
+theme_override_constants/h_separation = 2
+theme_override_constants/v_separation = 2
+
+[node name="Slot0" type="PanelContainer" parent="Scroll/VBox/SlotSection/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="Slot1" type="PanelContainer" parent="Scroll/VBox/SlotSection/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="Slot2" type="PanelContainer" parent="Scroll/VBox/SlotSection/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="Slot3" type="PanelContainer" parent="Scroll/VBox/SlotSection/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="Slot4" type="PanelContainer" parent="Scroll/VBox/SlotSection/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="Slot5" type="PanelContainer" parent="Scroll/VBox/SlotSection/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="Slot6" type="PanelContainer" parent="Scroll/VBox/SlotSection/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="Slot7" type="PanelContainer" parent="Scroll/VBox/SlotSection/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="Slot8" type="PanelContainer" parent="Scroll/VBox/SlotSection/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="Slot9" type="PanelContainer" parent="Scroll/VBox/SlotSection/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="Slot10" type="PanelContainer" parent="Scroll/VBox/SlotSection/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="Slot11" type="PanelContainer" parent="Scroll/VBox/SlotSection/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="Slot12" type="PanelContainer" parent="Scroll/VBox/SlotSection/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="Slot13" type="PanelContainer" parent="Scroll/VBox/SlotSection/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="Slot14" type="PanelContainer" parent="Scroll/VBox/SlotSection/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="Slot15" type="PanelContainer" parent="Scroll/VBox/SlotSection/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="Sep5" type="HSeparator" parent="Scroll/VBox"]
+layout_mode = 2
+
+[node name="IconSection" type="VBoxContainer" parent="Scroll/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Label" type="Label" parent="Scroll/VBox/IconSection"]
+layout_mode = 2
+text = "5. IconFrame  (small wood panel for icon display) — per-node override"
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.96, 0.87, 0.7, 1)
+
+[node name="Row" type="HBoxContainer" parent="Scroll/VBox/IconSection"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Icon32" type="PanelContainer" parent="Scroll/VBox/IconSection/Row"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("6_icon")
+
+[node name="Lbl" type="Label" parent="Scroll/VBox/IconSection/Row/Icon32"]
+layout_mode = 2
+text = "32"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 10
+
+[node name="Icon48" type="PanelContainer" parent="Scroll/VBox/IconSection/Row"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("6_icon")
+
+[node name="Lbl" type="Label" parent="Scroll/VBox/IconSection/Row/Icon48"]
+layout_mode = 2
+text = "48"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 10
+
+[node name="Icon64" type="PanelContainer" parent="Scroll/VBox/IconSection/Row"]
+custom_minimum_size = Vector2(72, 72)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("6_icon")
+
+[node name="Lbl" type="Label" parent="Scroll/VBox/IconSection/Row/Icon64"]
+layout_mode = 2
+text = "64"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 10
+
+[node name="Sep6" type="HSeparator" parent="Scroll/VBox"]
+layout_mode = 2
+
+[node name="CompositeSection" type="VBoxContainer" parent="Scroll/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Label" type="Label" parent="Scroll/VBox/CompositeSection"]
+layout_mode = 2
+text = "6. Composite Example  (WoodDark panel with slot grid + buttons)"
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.96, 0.87, 0.7, 1)
+
+[node name="CompositePanel" type="PanelContainer" parent="Scroll/VBox/CompositeSection"]
+custom_minimum_size = Vector2(320, 200)
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="Scroll/VBox/CompositeSection/CompositePanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Header" type="Label" parent="Scroll/VBox/CompositeSection/CompositePanel/VBox"]
+layout_mode = 2
+text = "Inventory"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.96, 0.87, 0.7, 1)
+
+[node name="SlotGrid" type="GridContainer" parent="Scroll/VBox/CompositeSection/CompositePanel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+columns = 6
+theme_override_constants/h_separation = 2
+theme_override_constants/v_separation = 2
+
+[node name="S0" type="PanelContainer" parent="Scroll/VBox/CompositeSection/CompositePanel/VBox/SlotGrid"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="S1" type="PanelContainer" parent="Scroll/VBox/CompositeSection/CompositePanel/VBox/SlotGrid"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="S2" type="PanelContainer" parent="Scroll/VBox/CompositeSection/CompositePanel/VBox/SlotGrid"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="S3" type="PanelContainer" parent="Scroll/VBox/CompositeSection/CompositePanel/VBox/SlotGrid"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="S4" type="PanelContainer" parent="Scroll/VBox/CompositeSection/CompositePanel/VBox/SlotGrid"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="S5" type="PanelContainer" parent="Scroll/VBox/CompositeSection/CompositePanel/VBox/SlotGrid"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="S6" type="PanelContainer" parent="Scroll/VBox/CompositeSection/CompositePanel/VBox/SlotGrid"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="S7" type="PanelContainer" parent="Scroll/VBox/CompositeSection/CompositePanel/VBox/SlotGrid"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="S8" type="PanelContainer" parent="Scroll/VBox/CompositeSection/CompositePanel/VBox/SlotGrid"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="S9" type="PanelContainer" parent="Scroll/VBox/CompositeSection/CompositePanel/VBox/SlotGrid"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="S10" type="PanelContainer" parent="Scroll/VBox/CompositeSection/CompositePanel/VBox/SlotGrid"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="S11" type="PanelContainer" parent="Scroll/VBox/CompositeSection/CompositePanel/VBox/SlotGrid"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("5_slot")
+
+[node name="Buttons" type="HBoxContainer" parent="Scroll/VBox/CompositeSection/CompositePanel/VBox"]
+layout_mode = 2
+alignment = 2
+theme_override_constants/separation = 8
+
+[node name="UseBtn" type="Button" parent="Scroll/VBox/CompositeSection/CompositePanel/VBox/Buttons"]
+custom_minimum_size = Vector2(80, 28)
+layout_mode = 2
+text = "Use"
+theme_override_font_sizes/font_size = 12
+
+[node name="DropBtn" type="Button" parent="Scroll/VBox/CompositeSection/CompositePanel/VBox/Buttons"]
+custom_minimum_size = Vector2(80, 28)
+layout_mode = 2
+text = "Drop"
+theme_override_font_sizes/font_size = 12
+
+[node name="Footer" type="Label" parent="Scroll/VBox"]
+layout_mode = 2
+text = "Source: res://Assets/UI/CraftPix/Free_Basic_Pixel_UI_RPG/PNG/
+Resources: res://Themes/CraftPix/
+Theme: res://Themes/CraftPix/craftpix_ui.tres
+Slicing Reference: res://Themes/CraftPix/SLICING_REFERENCE.md"
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.5, 0.5, 0.55, 1)

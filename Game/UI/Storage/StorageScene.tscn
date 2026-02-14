@@ -1,0 +1,235 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Theme" path="res://Themes/CraftPix/craftpix_ui_tinted.tres" id="1_theme"]
+[ext_resource type="StyleBox" path="res://Themes/CraftPix/panel_wood_medium.tres" id="2_wood_med"]
+[ext_resource type="StyleBox" path="res://Themes/CraftPix/header_bar_teal_tinted.tres" id="3_hdr"]
+[ext_resource type="StyleBox" path="res://Themes/CraftPix/slot_inventory.tres" id="4_slot"]
+[ext_resource type="Script" path="res://Game/UI/Storage/StorageScene.gd" id="5_script"]
+
+[node name="StorageScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_theme")
+script = ExtResource("5_script")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15, 0.15, 0.2, 1)
+
+[node name="MainPanel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainMargin" type="MarginContainer" parent="MainPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 8
+
+[node name="MainVBox" type="VBoxContainer" parent="MainPanel/MainMargin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="StorageHeader" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("3_hdr")
+
+[node name="HeaderLabel" type="Label" parent="MainPanel/MainMargin/MainVBox/StorageHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Storage"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 14
+
+[node name="FilterRow" type="HBoxContainer" parent="MainPanel/MainMargin/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BtnSort" type="Button" parent="MainPanel/MainMargin/MainVBox/FilterRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 36)
+layout_mode = 2
+text = "Sort"
+
+[node name="BtnFilter" type="Button" parent="MainPanel/MainMargin/MainVBox/FilterRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 36)
+layout_mode = 2
+text = "Filter"
+
+[node name="BtnSellJunk" type="Button" parent="MainPanel/MainMargin/MainVBox/FilterRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 36)
+layout_mode = 2
+text = "Sell Junk"
+
+[node name="FilterSpacer" type="Control" parent="MainPanel/MainMargin/MainVBox/FilterRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CountLabel" type="Label" parent="MainPanel/MainMargin/MainVBox/FilterRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0 / 24 slots"
+horizontal_alignment = 2
+vertical_alignment = 1
+theme_override_colors/font_color = Color(0.7, 0.7, 0.75, 1)
+
+[node name="GridBg" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = ExtResource("2_wood_med")
+
+[node name="GridMargin" type="MarginContainer" parent="MainPanel/MainMargin/MainVBox/GridBg"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="Grid" type="GridContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+columns = 8
+theme_override_constants/h_separation = 2
+theme_override_constants/v_separation = 2
+
+[node name="S0" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S1" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S2" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S3" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S4" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S5" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S6" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S7" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S8" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S9" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S10" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S11" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S12" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S13" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S14" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S15" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S16" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S17" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S18" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S19" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S20" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S21" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S22" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S23" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")

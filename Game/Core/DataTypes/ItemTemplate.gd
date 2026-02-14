@@ -62,6 +62,38 @@ var bag_capacity_bonus: int = 0
 # Quality tier multipliers: Q0=1.0, Q1=1.1, Q2=1.2, Q3=1.35
 const QUALITY_MULTIPLIERS := [1.0, 1.1, 1.2, 1.35]
 
+# Icon texture cache (shared across all ItemTemplate instances)
+static var _icon_cache: Dictionary = {}  # icon_path -> Texture2D|null
+
+
+## Load and cache the icon texture for this item. Returns null if no icon.
+func get_icon_texture() -> Texture2D:
+	if icon_path == "":
+		return null
+	if _icon_cache.has(icon_path):
+		return _icon_cache[icon_path]
+	var texture: Texture2D = null
+	if ResourceLoader.exists(icon_path):
+		var loaded = ResourceLoader.load(icon_path)
+		if loaded is Texture2D:
+			texture = loaded
+	_icon_cache[icon_path] = texture
+	return texture
+
+
+## Create a TextureRect sized for inline icon display (16x16 default).
+## Returns null if no icon available.
+func create_icon_rect(icon_size: int = 16) -> TextureRect:
+	var tex = get_icon_texture()
+	if tex == null:
+		return null
+	var rect = TextureRect.new()
+	rect.texture = tex
+	rect.custom_minimum_size = Vector2(icon_size, icon_size)
+	rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	return rect
+
 ## Get stat bonuses for this equipment with quality multiplier applied.
 ## Returns empty dict for non-equipment items.
 ## quality_tier: 0=common, 1=uncommon, 2=rare, 3=epic

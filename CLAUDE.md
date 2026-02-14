@@ -63,6 +63,7 @@ See `.claude/agents/` for specialized agent prompts:
 | **Implementer** | Test-driven implementation, minimal diffs |
 | **UI Refiner** | Visual cleanup, theme consistency |
 | **Data Curator** | JSON validation, content extension |
+| **Art Director** | Art asset tracking, integration, consistency |
 
 ## Skills
 

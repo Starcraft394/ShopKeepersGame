@@ -1,0 +1,17 @@
+{
+  "id": "shocked",
+  "display_name": "Shocked",
+  "description": "Taking lightning damage over time. Reduces speed by 2.",
+  "category": "dot",
+  "stacking_mode": "intensity",
+  "max_stacks": 3,
+  "base_duration": 2,
+  "base_value": 2,
+  "value_per_stack": 1,
+  "resolution_timing": "turn_start",
+  "is_cleansable": true,
+  "tags": ["dot", "lightning", "debuff"],
+  "ui_name": "Shocked",
+  "ui_short": "SHK",
+  "ui_icon": "res://Assets/Icons/Status/icon_status_shocked.png"
+}

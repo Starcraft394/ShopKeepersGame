@@ -2,6 +2,7 @@
   "id": "inn_tf",
   "display_name": "Wanderer's Rest Inn (Timberfall)",
   "description": "A cozy tavern where heroes gather, rest, and join your cause.",
+  "icon_path": "res://Assets/Icons/Facilities/icon_facility_inn.png",
   "facility_type": "inn",
   "max_tier": 2,
   "unlock_region": 1,

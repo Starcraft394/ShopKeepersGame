@@ -1,0 +1,15 @@
+[gd_resource type="StyleBoxTexture" load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://Assets/UI/CraftPix/Free_Basic_Pixel_UI_RPG/PNG/Main_tiles.png" id="1_src"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_icon"]
+atlas = ExtResource("1_src")
+region = Rect2(11, 0, 26, 37)
+
+[resource]
+texture = SubResource("AtlasTexture_icon")
+texture_margin_left = 5.0
+texture_margin_top = 8.0
+texture_margin_right = 5.0
+texture_margin_bottom = 6.0
+modulate_color = Color(0.75, 0.72, 0.68, 1)

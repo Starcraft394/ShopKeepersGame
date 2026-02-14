@@ -22,6 +22,6 @@
   "base_value": 22,
   "buy_value": 32,
   "stack_max": 5,
-  "icon_path": "",
+  "icon_path": "res://Assets/Icons/Items/icon_item_hunters_feast.png",
   "tags": ["region_1", "consumable", "food", "tier_2"]
 }

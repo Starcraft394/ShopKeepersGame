@@ -1,0 +1,190 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Theme" path="res://Themes/CraftPix/craftpix_ui_tinted.tres" id="1_theme"]
+[ext_resource type="StyleBox" path="res://Themes/CraftPix/panel_wood_medium.tres" id="2_wood_med"]
+[ext_resource type="StyleBox" path="res://Themes/CraftPix/header_bar_teal_tinted.tres" id="3_hdr"]
+[ext_resource type="StyleBox" path="res://Themes/CraftPix/slot_inventory.tres" id="4_slot"]
+[ext_resource type="Script" path="res://Game/UI/Shop/ShopScene.gd" id="5_script"]
+
+[node name="ShopScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_theme")
+script = ExtResource("5_script")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15, 0.15, 0.2, 1)
+
+[node name="MainLayout" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="InventoryPanel" type="PanelContainer" parent="MainLayout"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="InvMargin" type="MarginContainer" parent="MainLayout/InventoryPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="InvVBox" type="VBoxContainer" parent="MainLayout/InventoryPanel/InvMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="InvHeader" type="PanelContainer" parent="MainLayout/InventoryPanel/InvMargin/InvVBox"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("3_hdr")
+
+[node name="InvHeaderLabel" type="Label" parent="MainLayout/InventoryPanel/InvMargin/InvVBox/InvHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Inventory"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 13
+
+[node name="GridBg" type="PanelContainer" parent="MainLayout/InventoryPanel/InvMargin/InvVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = ExtResource("2_wood_med")
+
+[node name="GridMargin" type="MarginContainer" parent="MainLayout/InventoryPanel/InvMargin/InvVBox/GridBg"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="Grid" type="GridContainer" parent="MainLayout/InventoryPanel/InvMargin/InvVBox/GridBg/GridMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+columns = 4
+theme_override_constants/h_separation = 2
+theme_override_constants/v_separation = 2
+
+[node name="S0" type="PanelContainer" parent="MainLayout/InventoryPanel/InvMargin/InvVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S1" type="PanelContainer" parent="MainLayout/InventoryPanel/InvMargin/InvVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S2" type="PanelContainer" parent="MainLayout/InventoryPanel/InvMargin/InvVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S3" type="PanelContainer" parent="MainLayout/InventoryPanel/InvMargin/InvVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S4" type="PanelContainer" parent="MainLayout/InventoryPanel/InvMargin/InvVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S5" type="PanelContainer" parent="MainLayout/InventoryPanel/InvMargin/InvVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S6" type="PanelContainer" parent="MainLayout/InventoryPanel/InvMargin/InvVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S7" type="PanelContainer" parent="MainLayout/InventoryPanel/InvMargin/InvVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S8" type="PanelContainer" parent="MainLayout/InventoryPanel/InvMargin/InvVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S9" type="PanelContainer" parent="MainLayout/InventoryPanel/InvMargin/InvVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S10" type="PanelContainer" parent="MainLayout/InventoryPanel/InvMargin/InvVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="S11" type="PanelContainer" parent="MainLayout/InventoryPanel/InvMargin/InvVBox/GridBg/GridMargin/Grid"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_slot")
+
+[node name="DetailsPanel" type="PanelContainer" parent="MainLayout"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DetMargin" type="MarginContainer" parent="MainLayout/DetailsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 8
+
+[node name="DetVBox" type="VBoxContainer" parent="MainLayout/DetailsPanel/DetMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="DetHeader" type="PanelContainer" parent="MainLayout/DetailsPanel/DetMargin/DetVBox"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("3_hdr")
+
+[node name="DetHeaderLabel" type="Label" parent="MainLayout/DetailsPanel/DetMargin/DetVBox/DetHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Item Details"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 13
+
+[node name="ItemLabel" type="Label" parent="MainLayout/DetailsPanel/DetMargin/DetVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Select an item to view details."
+autowrap_mode = 2
+
+[node name="Spacer" type="Control" parent="MainLayout/DetailsPanel/DetMargin/DetVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="BuyButton" type="Button" parent="MainLayout/DetailsPanel/DetMargin/DetVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+text = "Buy"

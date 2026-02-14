@@ -69,27 +69,9 @@
       "required_dungeon_floor_unlocked": 1
     },
     {
-      "item_id": "iron_dagger",
-      "weight": 15,
-      "price_gold": 30,
-      "tier": 1,
-      "requires_unlock_group": "weapons_t1",
-      "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 1
-    },
-    {
       "item_id": "iron_sword",
       "weight": 12,
       "price_gold": 65,
-      "tier": 2,
-      "requires_unlock_group": "weapons_t2",
-      "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 2
-    },
-    {
-      "item_id": "hunters_knife",
-      "weight": 12,
-      "price_gold": 55,
       "tier": 2,
       "requires_unlock_group": "weapons_t2",
       "required_town_tier": 1,
@@ -98,24 +80,6 @@
   ],
 
   "offhands": [
-    {
-      "item_id": "rusty_shield",
-      "weight": 15,
-      "price_gold": 40,
-      "tier": 1,
-      "requires_unlock_group": "offhands_t1",
-      "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 1
-    },
-    {
-      "item_id": "iron_buckler",
-      "weight": 12,
-      "price_gold": 70,
-      "tier": 2,
-      "requires_unlock_group": "offhands_t2",
-      "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 2
-    },
     {
       "item_id": "wooden_focus",
       "weight": 10,

@@ -1,0 +1,18 @@
+{
+  "id": "regenerating",
+  "display_name": "Regenerating",
+  "description": "Healing over time. Restores HP each turn.",
+  "category": "buff",
+  "stacking_mode": "intensity",
+  "max_stacks": 3,
+  "base_duration": 2,
+  "base_value": 4,
+  "value_per_stack": 2,
+  "resolution_timing": "turn_start",
+  "is_cleansable": false,
+  "dispel_type": "buff",
+  "tags": ["hot", "healing"],
+  "ui_name": "Regenerating",
+  "ui_short": "REGEN",
+  "ui_icon": "res://Assets/Icons/Status/icon_status_regenerating.png"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "tideling_flow",
+  "display_name": "Tidal Flow",
+  "description": "Tidelings fluid nature grants +1 SPD at combat start and 20% resistance to water damage.",
+  "passive_type": "race_multi_stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "speed": 1,
+    "damage_resist": {
+      "element": "water",
+      "percent": 20
+    }
+  },
+  "category": "racial",
+  "source_type": "race"
+}

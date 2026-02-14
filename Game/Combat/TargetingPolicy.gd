@@ -140,15 +140,22 @@ func _select_grid_default(attacker: CombatUnit, enemies: Array) -> CombatUnit:
 		return _select_ranged_target(enemies)
 
 
-## Melee targeting: must target front row if any alive, else back row.
+## Melee targeting: must target frontmost alive row (Front → Middle → Back).
+## (3-Row Formation v1)
 func _select_melee_target(enemies: Array) -> CombatUnit:
 	var front_row = get_front_row_units(enemies)
+	var middle_row = get_middle_row_units(enemies)
 	var back_row = get_back_row_units(enemies)
 
 	# Prefer front row
 	if not front_row.is_empty():
 		front_row.sort_custom(_compare_by_hp_then_id)
 		return front_row[0]
+
+	# Then middle row
+	if not middle_row.is_empty():
+		middle_row.sort_custom(_compare_by_hp_then_id)
+		return middle_row[0]
 
 	# Fall back to back row
 	if not back_row.is_empty():
@@ -181,7 +188,16 @@ static func get_front_row_units(enemies: Array) -> Array:
 	return front
 
 
-## Get all alive units in back row (y == 1).
+## Get all alive units in middle row (y == 1). (3-Row Formation v1)
+static func get_middle_row_units(enemies: Array) -> Array:
+	var middle: Array = []
+	for enemy in enemies:
+		if enemy.is_alive and enemy.is_middle_row():
+			middle.append(enemy)
+	return middle
+
+
+## Get all alive units in back row (y == 2). (3-Row Formation v1)
 static func get_back_row_units(enemies: Array) -> Array:
 	var back: Array = []
 	for enemy in enemies:

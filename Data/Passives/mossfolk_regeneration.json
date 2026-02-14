@@ -1,0 +1,12 @@
+{
+  "id": "mossfolk_regeneration",
+  "display_name": "Natural Regeneration",
+  "description": "Mossfolk connection to nature heals 3% of max HP at the start of each turn.",
+  "passive_type": "regen",
+  "trigger": "turn_start",
+  "effect": {
+    "heal_percent": 3
+  },
+  "category": "racial",
+  "source_type": "race"
+}

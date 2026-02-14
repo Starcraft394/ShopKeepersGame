@@ -3,16 +3,16 @@
   "display_name": "Void Herald",
   "description": "A harbinger of entropy who tears holes in reality, dealing devastating damage through unstable portals.",
   "archetype": "dps",
-  "unlock_region": 7,
+  "unlock_region": 1,
   "base_stats": {
     "health": 75,
-    "attack": 22,
+    "attack": 18,
     "defense": 4,
     "speed": 13
   },
   "stat_growth": {
     "health": 6,
-    "attack": 7,
+    "attack": 5,
     "defense": 1,
     "speed": 3
   },

@@ -2,6 +2,7 @@
   "id": "shop_timberfall",
   "display_name": "General Store",
   "description": "A humble shop selling basic supplies for adventurers. Browse potions, weapons, shields, and storage upgrades.",
+  "icon_path": "res://Assets/Icons/Facilities/icon_facility_shop.png",
   "facility_type": "shop",
   "max_tier": 2,
   "unlock_region": 1,
@@ -57,9 +58,6 @@
     { "item_id": "antidote", "price_gold": 20, "requires_unlock_group": "consumables_t1" },
     { "item_id": "stamina_draught", "price_gold": 30, "requires_unlock_group": "consumables_t2" },
     { "item_id": "rusty_sword", "price_gold": 35, "requires_unlock_group": "weapons_t1" },
-    { "item_id": "iron_dagger", "price_gold": 30, "requires_unlock_group": "weapons_t1" },
-    { "item_id": "rusty_shield", "price_gold": 40, "requires_unlock_group": "offhands_t1" },
-    { "item_id": "crude_sword", "price_gold": 40, "required_facility_tier": 2 },
     { "item_id": "wooden_shield", "price_gold": 50, "required_facility_tier": 2 },
     { "item_id": "small_backpack", "price_gold": 70, "requires_unlock_group": "backpacks_t1" },
     { "item_id": "sturdy_backpack", "price_gold": 140, "required_facility_tier": 2, "requires_unlock_group": "backpacks_t2" }

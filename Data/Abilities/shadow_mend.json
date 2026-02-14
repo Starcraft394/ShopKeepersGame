@@ -7,7 +7,7 @@
   "target_type": "single_ally",
   "effect_type": "heal",
   "base_damage": 0,
-  "base_heal": 25,
+  "base_heal": 18,
   "damage_type": "dark",
   "attack_scaling": 0.0,
   "cooldown": 3,

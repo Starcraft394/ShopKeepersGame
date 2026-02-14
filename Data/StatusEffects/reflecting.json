@@ -1,0 +1,18 @@
+{
+  "id": "reflecting",
+  "display_name": "Reflecting",
+  "description": "Reflects a portion of damage back to attackers.",
+  "category": "buff",
+  "stacking_mode": "refresh",
+  "max_stacks": 1,
+  "base_duration": 2,
+  "base_value": 50,
+  "value_per_stack": 0,
+  "resolution_timing": "on_damage",
+  "is_cleansable": false,
+  "dispel_type": "buff",
+  "tags": ["reflect", "defensive"],
+  "ui_name": "Reflecting",
+  "ui_short": "REFL",
+  "ui_icon": "res://Assets/Icons/Status/icon_status_reflecting.png"
+}

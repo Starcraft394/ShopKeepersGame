@@ -3,7 +3,7 @@
   "display_name": "Tidechaser",
   "description": "A water-attuned healer who manipulates currents to restore allies and wash away afflictions.",
   "archetype": "healer",
-  "unlock_region": 3,
+  "unlock_region": 1,
   "base_stats": {
     "health": 95,
     "attack": 7,

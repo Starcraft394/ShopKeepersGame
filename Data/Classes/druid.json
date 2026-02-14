@@ -3,7 +3,7 @@
   "display_name": "Druid",
   "description": "A nature guardian who channels the power of plants and fungi to heal allies and control the battlefield.",
   "archetype": "healer",
-  "unlock_region": 2,
+  "unlock_region": 1,
   "base_stats": {
     "health": 90,
     "attack": 6,

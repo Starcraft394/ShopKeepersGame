@@ -1,0 +1,96 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Theme" path="res://Themes/CraftPix/craftpix_ui_tinted.tres" id="1_theme"]
+[ext_resource type="StyleBox" path="res://Themes/CraftPix/panel_wood_medium.tres" id="2_nav_bg"]
+[ext_resource type="StyleBox" path="res://Themes/CraftPix/header_bar_teal_tinted.tres" id="3_hdr"]
+[ext_resource type="Script" path="res://Game/UI/TownHub/TownHubScene.gd" id="4_script"]
+
+[node name="TownHubScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_theme")
+script = ExtResource("4_script")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15, 0.15, 0.2, 1)
+
+[node name="MainLayout" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="NavRail" type="PanelContainer" parent="MainLayout"]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("2_nav_bg")
+
+[node name="NavMargin" type="MarginContainer" parent="MainLayout/NavRail"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="NavScrollContainer" type="ScrollContainer" parent="MainLayout/NavRail/NavMargin"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="NavVBox" type="VBoxContainer" parent="MainLayout/NavRail/NavMargin/NavScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="NavHeader" type="PanelContainer" parent="MainLayout/NavRail/NavMargin/NavScrollContainer/NavVBox"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("3_hdr")
+
+[node name="NavHeaderLabel" type="Label" parent="MainLayout/NavRail/NavMargin/NavScrollContainer/NavVBox/NavHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Navigation"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 13
+
+[node name="ContentPanel" type="PanelContainer" parent="MainLayout"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ContentMargin" type="MarginContainer" parent="MainLayout/ContentPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 8
+
+[node name="ContentVBox" type="VBoxContainer" parent="MainLayout/ContentPanel/ContentMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ContentHeader" type="PanelContainer" parent="MainLayout/ContentPanel/ContentMargin/ContentVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("3_hdr")

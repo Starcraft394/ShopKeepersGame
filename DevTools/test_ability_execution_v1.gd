@@ -712,6 +712,14 @@ static func run_tests() -> Dictionary:
 	else:
 		results["failed"] += 1
 
+	# Test 88: Icon path validation — all populated icon_path fields resolve to existing files
+	var t88 = _test_icon_paths_resolve()
+	results["tests"].append(t88)
+	if t88["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
 	print("")
 	print("=" .repeat(60))
 	print("  TEST RESULTS: %d passed, %d failed" % [results["passed"], results["failed"]])
@@ -2791,7 +2799,7 @@ static func _test_hero_equipment_save_load() -> Dictionary:
 	var test_hero_id = "test_hero_43"
 	GameContext.hero_equipment[test_hero_id] = {
 		"weapon": {"id": "iron_sword", "quality": 2},
-		"offhand": {"id": "iron_buckler", "quality": 1}
+		"offhand": {"id": "wooden_shield", "quality": 1}
 	}
 
 	# Test 1: hero_equipment is saved (verify data exists before save)
@@ -2807,7 +2815,7 @@ static func _test_hero_equipment_save_load() -> Dictionary:
 	var offhand_id = GameContext.get_hero_offhand(test_hero_id)
 	var offhand_q = GameContext.get_hero_offhand_quality(test_hero_id)
 
-	var pass_2 = weapon_id == "iron_sword" and weapon_q == 2 and offhand_id == "iron_buckler" and offhand_q == 1
+	var pass_2 = weapon_id == "iron_sword" and weapon_q == 2 and offhand_id == "wooden_shield" and offhand_q == 1
 	if pass_2:
 		print("[PASS] Getter functions return correct values (weapon=%s q=%d, offhand=%s q=%d)" % [weapon_id, weapon_q, offhand_id, offhand_q])
 	else:
@@ -3074,7 +3082,7 @@ static func _test_combat_gear_label_formatting() -> Dictionary:
 		print("[FAIL] No offhand should be 'OFF: none', got '%s'" % off_none)
 
 	# Test 4: Offhand with quality 0
-	var off_result = CombatScene.format_gear_slot_label("offhand", "rusty_shield", 0)
+	var off_result = CombatScene.format_gear_slot_label("offhand", "wooden_shield", 0)
 	var pass_4 = off_result.begins_with("OFF: Q0 ") and off_result.find("Shield") != -1
 	if pass_4:
 		print("[PASS] Offhand Q0: %s" % off_result)
@@ -4067,7 +4075,7 @@ static func _test_combat_equipment_line_formatting() -> Dictionary:
 		print("[FAIL] Empty WPN slot expected 'WPN: (empty)', got '%s'" % empty_wpn)
 
 	# 2) Equipped slot contains slot code and quality prefix
-	var equipped = CombatSceneScript.format_equipment_line("OFF", "iron_buckler", 2)
+	var equipped = CombatSceneScript.format_equipment_line("OFF", "wooden_shield", 2)
 	var pass_2 = equipped.begins_with("OFF: Q2 ")
 	if pass_2:
 		print("[PASS] Equipped OFF slot -> '%s'" % equipped)
@@ -5581,3 +5589,30 @@ static func _test_facility_unlock_persists_save_load() -> Dictionary:
 	GameContext.save_game()
 
 	return {"name": "Facility Unlock Persists Save/Load", "passed": pass_1 and pass_2 and pass_3}
+
+
+static func _test_icon_paths_resolve() -> Dictionary:
+	print("--- TEST 88: Icon Path Validation ---")
+	var missing: Array[String] = []
+
+	# Check facility icon_path fields
+	var all_facilities = DataRegistry.get_all_facilities() if DataRegistry.has_method("get_all_facilities") else []
+	for fac in all_facilities:
+		if fac.icon_path != "":
+			if not ResourceLoader.exists(fac.icon_path):
+				missing.append("facility/%s: %s" % [fac.facility_id, fac.icon_path])
+
+	# Check status effect ui_icon fields
+	var all_statuses = DataRegistry.get_all_status_effects() if DataRegistry.has_method("get_all_status_effects") else []
+	for se in all_statuses:
+		if se.ui_icon != "":
+			if not ResourceLoader.exists(se.ui_icon):
+				missing.append("status/%s: %s" % [se.effect_id, se.ui_icon])
+
+	if missing.size() > 0:
+		for m in missing:
+			print("[FAIL] Missing icon: %s" % m)
+	else:
+		print("[PASS] All populated icon paths resolve")
+
+	return {"name": "Icon Path Validation", "passed": missing.size() == 0}

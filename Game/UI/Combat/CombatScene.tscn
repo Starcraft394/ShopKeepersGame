@@ -54,7 +54,7 @@ text = "Dungeon | Floor 0/0 | Room 0/0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="MainContent" type="HBoxContainer" parent="."]
+[node name="MainContent" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
@@ -63,42 +63,272 @@ offset_top = 65.0
 offset_bottom = -200.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/separation = 4
 
-[node name="PartyPanel" type="PanelContainer" parent="MainContent"]
+[node name="TeamLabels" type="HBoxContainer" parent="MainContent"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="PartyLabel" type="Label" parent="MainContent/TeamLabels"]
 layout_mode = 2
 size_flags_horizontal = 3
-
-[node name="VBox" type="VBoxContainer" parent="MainContent/PartyPanel"]
-layout_mode = 2
-
-[node name="Title" type="Label" parent="MainContent/PartyPanel/VBox"]
-layout_mode = 2
 text = "=== PARTY ==="
 horizontal_alignment = 1
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.6, 0.8, 1.0, 1)
 
-[node name="UnitList" type="VBoxContainer" parent="MainContent/PartyPanel"]
+[node name="CenterSpacer" type="Control" parent="MainContent/TeamLabels"]
+custom_minimum_size = Vector2(12, 0)
+layout_mode = 2
+
+[node name="EnemyLabel" type="Label" parent="MainContent/TeamLabels"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "=== ENEMIES ==="
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(1.0, 0.6, 0.6, 1)
+
+[node name="Battlefield" type="HBoxContainer" parent="MainContent"]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_constants/separation = 0
 
-[node name="Spacer" type="Control" parent="MainContent"]
-custom_minimum_size = Vector2(20, 0)
+[node name="PartyGrid" type="VBoxContainer" parent="MainContent/Battlefield"]
 layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
 
-[node name="EnemyPanel" type="PanelContainer" parent="MainContent"]
+[node name="PartyColLabels" type="HBoxContainer" parent="MainContent/Battlefield/PartyGrid"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="LabelBack" type="Label" parent="MainContent/Battlefield/PartyGrid/PartyColLabels"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "BACK"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.5, 0.7, 0.9, 0.8)
+
+[node name="LabelMid" type="Label" parent="MainContent/Battlefield/PartyGrid/PartyColLabels"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MID"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 0.8)
+
+[node name="LabelFront" type="Label" parent="MainContent/Battlefield/PartyGrid/PartyColLabels"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "FRONT"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.9, 0.5, 0.5, 0.8)
+
+[node name="PartyRow_0" type="HBoxContainer" parent="MainContent/Battlefield/PartyGrid"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 2
+
+[node name="Cell_c0" type="PanelContainer" parent="MainContent/Battlefield/PartyGrid/PartyRow_0"]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="VBox" type="VBoxContainer" parent="MainContent/EnemyPanel"]
+[node name="Cell_c1" type="PanelContainer" parent="MainContent/Battlefield/PartyGrid/PartyRow_0"]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
+size_flags_horizontal = 3
 
-[node name="Title" type="Label" parent="MainContent/EnemyPanel/VBox"]
+[node name="Cell_c2" type="PanelContainer" parent="MainContent/Battlefield/PartyGrid/PartyRow_0"]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
-text = "=== ENEMIES ==="
-horizontal_alignment = 1
+size_flags_horizontal = 3
 
-[node name="UnitList" type="VBoxContainer" parent="MainContent/EnemyPanel"]
+[node name="PartyRow_1" type="HBoxContainer" parent="MainContent/Battlefield/PartyGrid"]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_constants/separation = 2
+
+[node name="Cell_c0" type="PanelContainer" parent="MainContent/Battlefield/PartyGrid/PartyRow_1"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c1" type="PanelContainer" parent="MainContent/Battlefield/PartyGrid/PartyRow_1"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c2" type="PanelContainer" parent="MainContent/Battlefield/PartyGrid/PartyRow_1"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PartyRow_2" type="HBoxContainer" parent="MainContent/Battlefield/PartyGrid"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 2
+
+[node name="Cell_c0" type="PanelContainer" parent="MainContent/Battlefield/PartyGrid/PartyRow_2"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c1" type="PanelContainer" parent="MainContent/Battlefield/PartyGrid/PartyRow_2"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c2" type="PanelContainer" parent="MainContent/Battlefield/PartyGrid/PartyRow_2"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PartyRow_3" type="HBoxContainer" parent="MainContent/Battlefield/PartyGrid"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 2
+
+[node name="Cell_c0" type="PanelContainer" parent="MainContent/Battlefield/PartyGrid/PartyRow_3"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c1" type="PanelContainer" parent="MainContent/Battlefield/PartyGrid/PartyRow_3"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c2" type="PanelContainer" parent="MainContent/Battlefield/PartyGrid/PartyRow_3"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CenterDivider" type="VSeparator" parent="MainContent/Battlefield"]
+custom_minimum_size = Vector2(12, 0)
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="EnemyGrid" type="VBoxContainer" parent="MainContent/Battlefield"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="EnemyColLabels" type="HBoxContainer" parent="MainContent/Battlefield/EnemyGrid"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="LabelFront" type="Label" parent="MainContent/Battlefield/EnemyGrid/EnemyColLabels"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "FRONT"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.9, 0.5, 0.5, 0.8)
+
+[node name="LabelMid" type="Label" parent="MainContent/Battlefield/EnemyGrid/EnemyColLabels"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MID"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 0.8)
+
+[node name="LabelBack" type="Label" parent="MainContent/Battlefield/EnemyGrid/EnemyColLabels"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "BACK"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.5, 0.7, 0.9, 0.8)
+
+[node name="EnemyRow_0" type="HBoxContainer" parent="MainContent/Battlefield/EnemyGrid"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 2
+
+[node name="Cell_c0" type="PanelContainer" parent="MainContent/Battlefield/EnemyGrid/EnemyRow_0"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c1" type="PanelContainer" parent="MainContent/Battlefield/EnemyGrid/EnemyRow_0"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c2" type="PanelContainer" parent="MainContent/Battlefield/EnemyGrid/EnemyRow_0"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EnemyRow_1" type="HBoxContainer" parent="MainContent/Battlefield/EnemyGrid"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 2
+
+[node name="Cell_c0" type="PanelContainer" parent="MainContent/Battlefield/EnemyGrid/EnemyRow_1"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c1" type="PanelContainer" parent="MainContent/Battlefield/EnemyGrid/EnemyRow_1"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c2" type="PanelContainer" parent="MainContent/Battlefield/EnemyGrid/EnemyRow_1"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EnemyRow_2" type="HBoxContainer" parent="MainContent/Battlefield/EnemyGrid"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 2
+
+[node name="Cell_c0" type="PanelContainer" parent="MainContent/Battlefield/EnemyGrid/EnemyRow_2"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c1" type="PanelContainer" parent="MainContent/Battlefield/EnemyGrid/EnemyRow_2"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c2" type="PanelContainer" parent="MainContent/Battlefield/EnemyGrid/EnemyRow_2"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EnemyRow_3" type="HBoxContainer" parent="MainContent/Battlefield/EnemyGrid"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 2
+
+[node name="Cell_c0" type="PanelContainer" parent="MainContent/Battlefield/EnemyGrid/EnemyRow_3"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c1" type="PanelContainer" parent="MainContent/Battlefield/EnemyGrid/EnemyRow_3"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c2" type="PanelContainer" parent="MainContent/Battlefield/EnemyGrid/EnemyRow_3"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StashLabel" type="Label" parent="MainContent"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.96, 0.87, 0.7, 1)
 
 [node name="BottomPanel" type="VBoxContainer" parent="."]
 layout_mode = 1

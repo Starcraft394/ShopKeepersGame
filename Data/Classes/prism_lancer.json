@@ -3,7 +3,7 @@
   "display_name": "Prism Lancer",
   "description": "A radiant warrior who channels focused light into devastating piercing attacks.",
   "archetype": "dps",
-  "unlock_region": 5,
+  "unlock_region": 1,
   "base_stats": {
     "health": 90,
     "attack": 17,

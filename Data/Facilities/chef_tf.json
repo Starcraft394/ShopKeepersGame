@@ -2,6 +2,7 @@
   "id": "chef_tf",
   "display_name": "Chef (Timberfall)",
   "description": "A humble kitchen where forest ingredients become restorative meals.",
+  "icon_path": "res://Assets/Icons/Facilities/icon_facility_chef.png",
   "facility_type": "production",
   "max_tier": 2,
   "unlock_region": 1,

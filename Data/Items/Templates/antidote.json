@@ -14,5 +14,6 @@
   "stack_max": 10,
   "use_effect": "cure_poison",
   "use_value": 99,
-  "tags": ["consumable", "cure", "potion", "region_1"]
+  "tags": ["consumable", "cure", "potion", "region_1"],
+  "icon_path": "res://Assets/Icons/Items/icon_item_antidote.png"
 }

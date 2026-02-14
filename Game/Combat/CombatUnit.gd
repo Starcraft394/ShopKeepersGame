@@ -113,9 +113,14 @@ func is_front_row() -> bool:
 	return grid_y == 0
 
 
-## Check if unit is in back row (y == 1).
-func is_back_row() -> bool:
+## Check if unit is in middle row (y == 1). (3-Row Formation v1)
+func is_middle_row() -> bool:
 	return grid_y == 1
+
+
+## Check if unit is in back row (y == 2). (3-Row Formation v1)
+func is_back_row() -> bool:
+	return grid_y == 2
 
 
 ## Check if position is assigned.
@@ -451,28 +456,39 @@ func get_buff_snapshot() -> Array:
 		var stats = buff.get("stats", {})
 		var remaining = buff.get("remaining_rounds", 0)
 
-		# Derive UI metadata from AbilityData if available
+		# Derive UI metadata from AbilityData or PassiveData if available
 		var ui_name = source.capitalize()  # Fallback
 		var ui_short = _derive_buff_ui_short(stats)  # Derive from stats
 		var ui_icon = ""  # Optional, default empty
 		var buff_tags: Array = []  # v1.7.1: For tag-driven sorting
 
 		if registry:
-			var ability_data = registry.get_ability(source)
-			if ability_data:
-				# Use display_name if available
-				if ability_data.display_name != "":
-					ui_name = ability_data.display_name
-				# Use ui_* fields from AbilityData if available (v1.7)
-				if "ui_name" in ability_data and ability_data.ui_name != "":
-					ui_name = ability_data.ui_name
-				if "ui_short" in ability_data and ability_data.ui_short != "":
-					ui_short = ability_data.ui_short
-				if "ui_icon" in ability_data and ability_data.ui_icon != "":
-					ui_icon = ability_data.ui_icon
-				# v1.7.1: Include buff_tags for sorting
-				if "buff_tags" in ability_data and ability_data.buff_tags.size() > 0:
-					buff_tags = ability_data.buff_tags.duplicate()
+			# Check if this is a passive buff (source starts with "passive_")
+			if source.begins_with("passive_"):
+				var passive_id = source.substr(8)  # Remove "passive_" prefix
+				var passive_data = registry.get_passive(passive_id)
+				if passive_data:
+					if passive_data.display_name != "":
+						ui_name = passive_data.display_name
+					ui_short = "PASS"  # Short label for passives
+					buff_tags = ["passive"]
+			else:
+				# Try to get ability data
+				var ability_data = registry.get_ability(source)
+				if ability_data:
+					# Use display_name if available
+					if ability_data.display_name != "":
+						ui_name = ability_data.display_name
+					# Use ui_* fields from AbilityData if available (v1.7)
+					if "ui_name" in ability_data and ability_data.ui_name != "":
+						ui_name = ability_data.ui_name
+					if "ui_short" in ability_data and ability_data.ui_short != "":
+						ui_short = ability_data.ui_short
+					if "ui_icon" in ability_data and ability_data.ui_icon != "":
+						ui_icon = ability_data.ui_icon
+					# v1.7.1: Include buff_tags for sorting
+					if "buff_tags" in ability_data and ability_data.buff_tags.size() > 0:
+						buff_tags = ability_data.buff_tags.duplicate()
 
 		result.append({
 			"source": source,

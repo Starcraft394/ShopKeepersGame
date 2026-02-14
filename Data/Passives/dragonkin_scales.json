@@ -1,0 +1,13 @@
+{
+  "id": "dragonkin_scales",
+  "display_name": "Draconic Scales",
+  "description": "Thick scales reduce all incoming damage by 10% and grant immunity to burn status.",
+  "passive_type": "damage_reduction",
+  "trigger": "on_damage_received",
+  "effect": {
+    "damage_reduction_percent": 10,
+    "status_immunity": ["burn"]
+  },
+  "category": "racial",
+  "source_type": "race"
+}

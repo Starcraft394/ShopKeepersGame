@@ -1,0 +1,137 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Texture2D" path="res://Assets/UI/CraftPix/Free_Basic_Pixel_UI_RPG/PNG/Main_tiles.png" id="1_tiles"]
+[ext_resource type="Texture2D" path="res://Assets/UI/CraftPix/Free_Basic_Pixel_UI_RPG/PNG/Buttons.png" id="2_buttons"]
+[ext_resource type="Texture2D" path="res://Assets/UI/CraftPix/Free_Basic_Pixel_UI_RPG/PNG/Icons.png" id="3_icons"]
+[ext_resource type="Texture2D" path="res://Assets/UI/CraftPix/Free_Basic_Pixel_UI_RPG/PNG/Inventory.png" id="4_inventory"]
+[ext_resource type="Texture2D" path="res://Assets/UI/CraftPix/Free_Basic_Pixel_UI_RPG/PNG/Shop.png" id="5_shop"]
+[ext_resource type="Texture2D" path="res://Assets/UI/CraftPix/Free_Basic_Pixel_UI_RPG/PNG/character_panel.png" id="6_charbar"]
+[ext_resource type="Texture2D" path="res://Assets/UI/CraftPix/Free_Basic_Pixel_UI_RPG/PNG/Action_panel.png" id="7_actionbar"]
+
+[node name="CraftPix_UI_Demo" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12, 0.12, 0.15, 1)
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 30.0
+grow_horizontal = 2
+text = "CraftPix UI Demo — Free Basic Pixel Art UI for RPG"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Scroll" type="ScrollContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 35.0
+offset_left = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Content" type="VBoxContainer" parent="Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 20
+
+[node name="SectionTiles" type="Label" parent="Scroll/Content"]
+layout_mode = 2
+text = "=== MAIN TILES (Panels, Frames, 9-Slice Sources) ==="
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.8, 0.7, 0.5, 1)
+
+[node name="TilesPreview" type="TextureRect" parent="Scroll/Content"]
+layout_mode = 2
+texture = ExtResource("1_tiles")
+expand_mode = 3
+stretch_mode = 0
+
+[node name="SectionButtons" type="Label" parent="Scroll/Content"]
+layout_mode = 2
+text = "=== BUTTONS (Normal/Hover/Pressed/Disabled States) ==="
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.8, 0.7, 0.5, 1)
+
+[node name="ButtonsPreview" type="TextureRect" parent="Scroll/Content"]
+layout_mode = 2
+texture = ExtResource("2_buttons")
+expand_mode = 3
+stretch_mode = 0
+
+[node name="SectionIcons" type="Label" parent="Scroll/Content"]
+layout_mode = 2
+text = "=== ICONS (RPG Item/Action Icons) ==="
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.8, 0.7, 0.5, 1)
+
+[node name="IconsPreview" type="TextureRect" parent="Scroll/Content"]
+layout_mode = 2
+texture = ExtResource("3_icons")
+expand_mode = 3
+stretch_mode = 0
+
+[node name="SectionInventory" type="Label" parent="Scroll/Content"]
+layout_mode = 2
+text = "=== INVENTORY PANEL ==="
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.8, 0.7, 0.5, 1)
+
+[node name="InventoryPreview" type="TextureRect" parent="Scroll/Content"]
+layout_mode = 2
+texture = ExtResource("4_inventory")
+expand_mode = 3
+stretch_mode = 0
+
+[node name="SectionShop" type="Label" parent="Scroll/Content"]
+layout_mode = 2
+text = "=== SHOP PANEL ==="
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.8, 0.7, 0.5, 1)
+
+[node name="ShopPreview" type="TextureRect" parent="Scroll/Content"]
+layout_mode = 2
+texture = ExtResource("5_shop")
+expand_mode = 3
+stretch_mode = 0
+
+[node name="SectionCharBar" type="Label" parent="Scroll/Content"]
+layout_mode = 2
+text = "=== CHARACTER PANEL (HP/MP Bars) ==="
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.8, 0.7, 0.5, 1)
+
+[node name="CharBarPreview" type="TextureRect" parent="Scroll/Content"]
+layout_mode = 2
+texture = ExtResource("6_charbar")
+expand_mode = 3
+stretch_mode = 0
+
+[node name="SectionAction" type="Label" parent="Scroll/Content"]
+layout_mode = 2
+text = "=== ACTION PANEL (Ability Bar) ==="
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.8, 0.7, 0.5, 1)
+
+[node name="ActionPreview" type="TextureRect" parent="Scroll/Content"]
+layout_mode = 2
+texture = ExtResource("7_actionbar")
+expand_mode = 3
+stretch_mode = 0

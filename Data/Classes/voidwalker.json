@@ -3,7 +3,7 @@
   "display_name": "Voidwalker",
   "description": "A dimensional warrior who phases between planes to absorb attacks and confuse enemies.",
   "archetype": "vanguard",
-  "unlock_region": 7,
+  "unlock_region": 1,
   "base_stats": {
     "health": 125,
     "attack": 11,

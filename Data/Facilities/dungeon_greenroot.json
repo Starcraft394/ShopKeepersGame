@@ -2,6 +2,7 @@
   "id": "dungeon_greenroot",
   "display_name": "Dungeon Board",
   "description": "Select a starting floor for the Greenroot Depths dungeon.",
+  "icon_path": "res://Assets/Icons/Facilities/icon_facility_dungeon.png",
   "facility_type": "dungeon",
   "max_tier": 1,
   "unlock_region": 1,

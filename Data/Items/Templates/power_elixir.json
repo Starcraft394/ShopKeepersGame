@@ -22,6 +22,6 @@
   "base_value": 28,
   "buy_value": 38,
   "stack_max": 5,
-  "icon_path": "",
+  "icon_path": "res://Assets/Icons/Items/icon_item_power_elixir.png",
   "tags": ["region_1", "consumable", "potion", "buff", "tier_2"]
 }

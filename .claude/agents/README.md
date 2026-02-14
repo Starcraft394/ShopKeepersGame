@@ -8,12 +8,14 @@ The recommended workflow order is:
 
 ```
 Repo Auditor → Implementer → UI Refiner (optional) → Data Curator (optional)
+                                                    → Art Director (optional)
 ```
 
 1. **Repo Auditor** decides WHAT to build next
 2. **Implementer** builds it with tests
 3. **UI Refiner** polishes the visual layer (if needed)
 4. **Data Curator** extends content (if needed)
+5. **Art Director** tracks and integrates visual assets (if needed)
 
 ## Available Agents
 
@@ -23,6 +25,7 @@ Repo Auditor → Implementer → UI Refiner (optional) → Data Curator (optiona
 | Implementer | `implementer.md` | Test-driven implementation, minimal diffs |
 | UI Refiner | `ui-refiner.md` | Visual cleanup, theme consistency |
 | Data Curator | `data-curator.md` | JSON validation, content extension |
+| Art Director | `art-director.md` | Art asset tracking, integration, consistency |
 
 ## Usage
 
@@ -33,6 +36,7 @@ Or reference the agent by saying:
 - "Use the Implementer agent to build [feature]"
 - "Use the UI Refiner agent to clean up [panel]"
 - "Use the Data Curator agent to add [item/monster]"
+- "Use the Art Director agent to integrate art for [feature]"
 
 ## Invariants (All Agents Must Respect)
 

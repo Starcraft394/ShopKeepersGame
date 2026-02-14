@@ -17,6 +17,6 @@
   "can_refine": false,
   "max_refinement": 0,
   "base_value": 6,
-  "icon_path": "",
+  "icon_path": "res://Assets/Icons/Items/icon_item_minor_stamina_snack.png",
   "tags": ["region_1", "consumable"]
 }

@@ -17,7 +17,8 @@ enum GamePhase {
 	DUNGEON_CAMP,
 	ROOM_EVENT,
 	REWARDS,
-	RETURN_TO_TOWN
+	RETURN_TO_TOWN,
+	TOWN_HUB
 }
 
 # ============================================================================
@@ -258,6 +259,24 @@ var selected_party: Array = []
 # Max party size for dungeons
 const MAX_PARTY_SIZE: int = 2
 
+# ============================================================================
+# HERO ROW ASSIGNMENTS (3-Row Formation v1)
+# ============================================================================
+# Tracks which row each hero is assigned to in combat.
+# Key: hero_id, Value: int (0=Front, 1=Middle, 2=Back)
+# Default is Middle (1) for all heroes.
+var hero_row_assignments: Dictionary = {}
+
+
+## Get hero's assigned combat row. Returns 1 (Middle) if not explicitly set.
+func get_hero_row(hero_id: String) -> int:
+	return hero_row_assignments.get(hero_id, 1)  # Default: Middle
+
+
+## Set hero's combat row assignment. Clamped to valid range 0-2.
+func set_hero_row(hero_id: String, row: int) -> void:
+	hero_row_assignments[hero_id] = clampi(row, 0, 2)
+
 # Counter for generating unique hero IDs
 var _hero_id_counter: int = 0
 
@@ -268,6 +287,16 @@ var _hero_id_counter: int = 0
 # Key: hero_id, Value: { "current": int, "max": int }
 # Cleared/reset on town entry.
 var hero_hp: Dictionary = {}
+
+# ============================================================================
+# DEAD HEROES TRACKING (Permadeath / Book of the Dead)
+# ============================================================================
+# Tracks heroes who have died in dungeons. Used for:
+# 1. Removing dead heroes from roster on town return
+# 2. Future "Book of the Dead" memorial feature
+# Array of hero data snapshots: [{ hero_id, name, race_id, class_id, level, cause, timestamp }]
+# Persisted to save file. Cleared on reset_save_game.
+var dead_heroes: Array = []
 
 # ============================================================================
 # HERO STATUS PERSISTENCE (Consumables v2)
@@ -2702,10 +2731,18 @@ func get_recipes_using_material(material_id: String) -> Array:
 ## Called automatically when exiting dungeon (extract or flee).
 ## Also called by TownScene on entry to ensure heroes are always healed in town.
 ## Health Persistence v1: Actually restores all hero HP to max.
+## Permadeath: Removes dead heroes permanently before healing survivors.
 ## Safe to call multiple times (idempotent — no-ops if already cleared).
 func apply_town_entry_reset() -> void:
 	var party_size = selected_party.size()
 	var hero_count = owned_heroes.size()
+
+	# PERMADEATH: Process dead heroes BEFORE clearing HP tracking
+	# This removes heroes who died in dungeon from roster permanently
+	var dead_count = _process_dead_heroes()
+	if dead_count > 0:
+		print("[Permadeath] %d hero(es) permanently lost" % dead_count)
+		save_game()  # Persist roster changes immediately
 
 	# Health Persistence v1: Clear hero HP tracking (all heroes heal to full)
 	var healed_count = hero_hp.size()
@@ -2718,7 +2755,7 @@ func apply_town_entry_reset() -> void:
 	# Clear consumable usage tracking
 	_combat_consumables_used.clear()
 
-	print("[HP] town_heal healed=%d heroes party=%d total=%d" % [healed_count, party_size, hero_count])
+	print("[HP] town_heal healed=%d heroes party=%d total=%d dead=%d" % [healed_count, party_size, hero_count, dead_count])
 	print("[TownReset] cleared_status=true cleared_consumables=true cleared_hero_statuses=%d" % status_count)
 
 
@@ -2748,6 +2785,101 @@ func get_hero_hp_ratio(hero_id: String) -> float:
 	if hp_data.get("max", 0) <= 0:
 		return 1.0
 	return float(hp_data.get("current", 0)) / float(hp_data.get("max", 1))
+
+
+# ============================================================================
+# DEAD HEROES TRACKING (Permadeath)
+# ============================================================================
+
+## Record a hero's death. Called when hero HP reaches 0 in combat.
+## Stores a snapshot for Book of the Dead and marks for removal on town return.
+func record_hero_death(hero_id: String, cause: String = "combat") -> void:
+	# Find hero data
+	var hero_data: Dictionary = {}
+	for hero in owned_heroes:
+		if hero.get("hero_id", "") == hero_id:
+			hero_data = hero.duplicate()
+			break
+
+	if hero_data.is_empty():
+		print("[Permadeath] hero_id=%s not found in roster" % hero_id)
+		return
+
+	# Create death record for Book of the Dead
+	var death_record = {
+		"hero_id": hero_id,
+		"name": hero_data.get("name", "Unknown"),
+		"race_id": hero_data.get("race_id", ""),
+		"class_id": hero_data.get("class_id", ""),
+		"level": hero_data.get("level", 1),
+		"cause": cause,
+		"timestamp": Time.get_unix_time_from_system()
+	}
+	dead_heroes.append(death_record)
+	print("[Permadeath] Recorded death: %s (Lv%d %s) - cause=%s" % [
+		death_record.name, death_record.level, death_record.class_id, cause])
+
+## Check if a hero is marked as dead (pending removal on town return).
+func is_hero_dead(hero_id: String) -> bool:
+	for record in dead_heroes:
+		if record.get("hero_id", "") == hero_id:
+			return true
+	# Also check HP tracking - if current HP <= 0, they're dead
+	var hp_data = get_hero_hp(hero_id)
+	if not hp_data.is_empty() and int(hp_data.get("current", 1)) <= 0:
+		return true
+	return false
+
+## Get all dead hero records (for Book of the Dead UI).
+func get_dead_heroes() -> Array:
+	return dead_heroes.duplicate()
+
+## Process dead heroes on town return - removes them from roster permanently.
+## Called by apply_town_entry_reset().
+func _process_dead_heroes() -> int:
+	var removed_count = 0
+	var heroes_to_remove: Array = []
+
+	# Check hero_hp for any heroes at 0 HP that weren't recorded yet
+	for hero_id in hero_hp.keys():
+		var hp_data = hero_hp[hero_id]
+		if int(hp_data.get("current", 1)) <= 0:
+			# Record death if not already recorded
+			var already_recorded = false
+			for record in dead_heroes:
+				if record.get("hero_id", "") == hero_id:
+					already_recorded = true
+					break
+			if not already_recorded:
+				record_hero_death(hero_id, "combat")
+
+	# Collect hero IDs to remove
+	for record in dead_heroes:
+		var hero_id = record.get("hero_id", "")
+		if hero_id != "" and hero_id not in heroes_to_remove:
+			heroes_to_remove.append(hero_id)
+
+	# Remove dead heroes from roster and party
+	for hero_id in heroes_to_remove:
+		# Remove from party first
+		if hero_id in selected_party:
+			selected_party.erase(hero_id)
+			print("[Permadeath] Removed %s from party" % hero_id)
+
+		# Remove from roster
+		for i in range(owned_heroes.size() - 1, -1, -1):
+			if owned_heroes[i].get("hero_id", "") == hero_id:
+				var hero_name = owned_heroes[i].get("name", "Unknown")
+				owned_heroes.remove_at(i)
+				removed_count += 1
+				print("[Permadeath] %s has been permanently removed from roster" % hero_name)
+				break
+
+		# Clean up equipment and bags
+		hero_equipment.erase(hero_id)
+		hero_bags.erase(hero_id)
+
+	return removed_count
 
 
 # ============================================================================
@@ -3521,6 +3653,7 @@ func save_game() -> void:
 		"owned_heroes": owned_heroes,
 		"selected_party": selected_party,
 		"hero_id_counter": _hero_id_counter,
+		"hero_row_assignments": hero_row_assignments,
 		"housing_upgrades": housing_upgrades,
 		"bonus_stash_capacity": bonus_stash_capacity,
 		"shop_refresh_counts": shop_refresh_counts,
@@ -3536,7 +3669,9 @@ func save_game() -> void:
 		# Loot routing preferences (v5)
 		"loot_pref": loot_pref,
 		# Region progression
-		"current_region": current_region
+		"current_region": current_region,
+		# Dead heroes (Permadeath / Book of the Dead)
+		"dead_heroes": dead_heroes
 	}
 
 	print("[Save] run_items serialized count=%d" % run_items.size())
@@ -3591,6 +3726,20 @@ func reset_save_game() -> void:
 	hero_equipment = {}
 	hero_bags = {}
 	_gear_logged_heroes.clear()
+
+	# Shopkeeper bag (shared consumables + materials)
+	shopkeeper_bag = []
+
+	# Hero combat state (HP, statuses between combats)
+	hero_hp = {}
+	hero_statuses = {}
+	_combat_consumables_used = {}
+
+	# Dead heroes (Permadeath / Book of the Dead)
+	dead_heroes = []
+
+	# Deprecated but still exists in save format
+	loot_pref = {}
 
 	# Unlock groups and recipes
 	unlocked_groups = {}
@@ -3671,6 +3820,7 @@ func reset_save_game() -> void:
 
 	# Log the final state to prove reset worked
 	print("[Dev] Save reset complete unlocked_groups=%s facility_tiers=%s town_tiers=%s shop_refresh_counts=%s" % [unlocked_groups, facility_tiers, town_tiers, shop_refresh_counts])
+	print("[Dev] Cleared: shopkeeper_bag=%d items, unlocked_recipes=%d, hero_hp=%d, hero_statuses=%d, dead_heroes=%d" % [shopkeeper_bag.size(), unlocked_recipes.size(), hero_hp.size(), hero_statuses.size(), dead_heroes.size()])
 	print("[Dev] DEFAULT_UNLOCK_GROUPS (always checked via is_group_unlocked): %s" % str(DEFAULT_UNLOCK_GROUPS))
 
 
@@ -3803,6 +3953,10 @@ func load_game() -> void:
 			selected_party = save_data.selected_party
 		if save_data.has("hero_id_counter"):
 			_hero_id_counter = int(save_data.hero_id_counter)
+		# Load hero row assignments (3-Row Formation v1)
+		# Missing = empty dict; get_hero_row() returns 1 (Middle) for any missing hero
+		if save_data.has("hero_row_assignments") and save_data.hero_row_assignments is Dictionary:
+			hero_row_assignments = save_data.hero_row_assignments
 		# Load stash upgrades (legacy name "housing_upgrades" kept for compat)
 		if save_data.has("housing_upgrades") and save_data.housing_upgrades is Dictionary:
 			housing_upgrades = save_data.housing_upgrades
@@ -3836,9 +3990,12 @@ func load_game() -> void:
 		# Load region progression
 		if save_data.has("current_region"):
 			current_region = clampi(int(save_data.current_region), 1, 7)
-		print("[GameContext] Game loaded from %s (floors=%s groups=%d fac_tiers=%d classes=%d town_tiers=%d heroes=%d party=%d hero_gear=%d shop_refreshes=%d run_gold=%d run_items=%d region=%d)" % [
+		# Load dead heroes (Permadeath / Book of the Dead)
+		if save_data.has("dead_heroes") and save_data.dead_heroes is Array:
+			dead_heroes = save_data.dead_heroes
+		print("[GameContext] Game loaded from %s (floors=%s groups=%d fac_tiers=%d classes=%d town_tiers=%d heroes=%d party=%d hero_gear=%d shop_refreshes=%d run_gold=%d run_items=%d region=%d dead=%d)" % [
 			SAVE_FILE_PATH, str(unlocked_dungeon_floors), unlocked_groups.size(),
-			facility_tiers.size(), learned_classes.size(), town_tiers.size(), owned_heroes.size(), selected_party.size(), hero_equipment.size(), shop_refresh_counts.size(), run_gold, run_items.size(), current_region
+			facility_tiers.size(), learned_classes.size(), town_tiers.size(), owned_heroes.size(), selected_party.size(), hero_equipment.size(), shop_refresh_counts.size(), run_gold, run_items.size(), current_region, dead_heroes.size()
 		])
 	else:
 		push_warning("[GameContext] Save file data is not a Dictionary")
@@ -4614,6 +4771,7 @@ func _phase_to_string(phase: GamePhase) -> String:
 		GamePhase.ROOM_EVENT: return "ROOM_EVENT"
 		GamePhase.REWARDS: return "REWARDS"
 		GamePhase.RETURN_TO_TOWN: return "RETURN_TO_TOWN"
+		GamePhase.TOWN_HUB: return "TOWN_HUB"
 		_: return "UNKNOWN"
 
 

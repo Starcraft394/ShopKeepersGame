@@ -39,21 +39,28 @@ const BOOT_SCENE_PATH = "res://Game/Boot/game_boot.tscn"
 @onready var reset_save_button: Button = %ResetSaveButton
 @onready var add_gold_button: Button = %AddGoldButton
 
-# Facility window (modal popup)
-@onready var facility_window: Window = %FacilityWindow
-@onready var facility_name_label: Label = %FacilityNameLabel
-@onready var facility_type_label: Label = %FacilityTypeLabel
-@onready var facility_desc_label: Label = %FacilityDescLabel
-@onready var facility_tier_label: Label = %FacilityTierLabel
-@onready var facility_services_label: Label = %FacilityServicesLabel
-@onready var close_facility_button: Button = %CloseFacilityButton
+# Facility overlay (CanvasLayer-based modal — built at runtime)
+var _facility_overlay: CanvasLayer = null
+var _facility_panel: PanelContainer = null
+var _facility_backdrop: ColorRect = null
+var _facility_content_vbox: VBoxContainer = null
+var facility_name_label: Label = null
+var facility_type_label: Label = null
+var facility_desc_label: Label = null
+var facility_tier_label: Label = null
+var facility_services_label: Label = null
+var close_facility_button: Button = null
+
+# ============================================================================
+# CRAFTPIX SKIN (optional visual override — default false)
+# ============================================================================
+@export var use_craftpix_skin: bool = false
 
 # Dynamic facility action container (created at runtime)
 var _facility_actions_container: VBoxContainer = null
 var _current_facility_type: String = ""
 var _current_facility = null  # Current facility data (for recipes/shop)
 var _current_facility_id: String = ""  # Facility ID for seeding/logging
-var _last_facility_window_pos: Vector2i = Vector2i(-1, -1)  # -1 means use centered
 
 # Storage filter state
 var _storage_filter: String = "all"  # "all", "materials", "consumables", "equipment", "books"
@@ -80,10 +87,252 @@ func _clear_children_immediate(node: Node) -> void:
 
 
 # ============================================================================
+# FACILITY OVERLAY — CanvasLayer-based modal (replaces Window node)
+# ============================================================================
+# Godot 4 Window nodes break when the scene is embedded inside another scene
+# (popup_centered() silently fails). This overlay renders on a high CanvasLayer
+# so it always appears on top, regardless of scene nesting depth.
+
+func _build_facility_overlay() -> void:
+	# CanvasLayer — renders above everything else
+	_facility_overlay = CanvasLayer.new()
+	_facility_overlay.layer = 10
+	_facility_overlay.name = "FacilityOverlay"
+	add_child(_facility_overlay)
+
+	# Semi-transparent backdrop (click to close)
+	# IMPORTANT: We toggle _facility_backdrop.visible for show/hide.
+	# CanvasLayer.visible may not propagate correctly in all Godot 4 builds,
+	# so we toggle the first CanvasItem child instead.
+	_facility_backdrop = ColorRect.new()
+	_facility_backdrop.name = "FacilityBackdrop"
+	_facility_backdrop.color = Color(0, 0, 0, 0.5)
+	_facility_backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_facility_backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
+	_facility_backdrop.gui_input.connect(_on_facility_backdrop_input)
+	_facility_overlay.add_child(_facility_backdrop)
+
+	# CenterContainer to auto-center the panel
+	var center := CenterContainer.new()
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_facility_backdrop.add_child(center)
+
+	# Main panel — fixed size matching the old Window (520 x 420)
+	_facility_panel = PanelContainer.new()
+	_facility_panel.custom_minimum_size = Vector2(520, 420)
+	_facility_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	# CanvasLayer breaks theme propagation — apply theme explicitly
+	if use_craftpix_skin:
+		_facility_panel.theme = _CRAFTPIX_THEME
+	else:
+		_facility_panel.theme = preload("res://Themes/game_theme.tres")
+	center.add_child(_facility_panel)
+
+	# MarginContainer inside panel
+	var margin := MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 12)
+	margin.add_theme_constant_override("margin_top", 12)
+	margin.add_theme_constant_override("margin_right", 12)
+	margin.add_theme_constant_override("margin_bottom", 12)
+	_facility_panel.add_child(margin)
+
+	# ScrollContainer for long content
+	var scroll := ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	margin.add_child(scroll)
+
+	# Main content VBox
+	_facility_content_vbox = VBoxContainer.new()
+	_facility_content_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_facility_content_vbox.add_theme_constant_override("separation", 8)
+	scroll.add_child(_facility_content_vbox)
+
+	# --- Content labels (same as old Window) ---
+	facility_name_label = Label.new()
+	facility_name_label.text = "Facility Name"
+	facility_name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_facility_content_vbox.add_child(facility_name_label)
+
+	facility_type_label = Label.new()
+	facility_type_label.text = "Type: production"
+	facility_type_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	facility_type_label.modulate = Color(0.7, 0.7, 0.7, 1)
+	_facility_content_vbox.add_child(facility_type_label)
+
+	var sep := HSeparator.new()
+	_facility_content_vbox.add_child(sep)
+
+	facility_desc_label = Label.new()
+	facility_desc_label.text = "Description goes here..."
+	facility_desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_facility_content_vbox.add_child(facility_desc_label)
+
+	facility_tier_label = Label.new()
+	facility_tier_label.text = "Max Tier: 4"
+	_facility_content_vbox.add_child(facility_tier_label)
+
+	facility_services_label = Label.new()
+	facility_services_label.text = "Tier 1 Services: (none)"
+	_facility_content_vbox.add_child(facility_services_label)
+
+	# Spacer
+	var spacer := Control.new()
+	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_facility_content_vbox.add_child(spacer)
+
+	# Close button
+	close_facility_button = Button.new()
+	close_facility_button.text = "Close"
+	close_facility_button.custom_minimum_size = Vector2(100, 30)
+	close_facility_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_facility_content_vbox.add_child(close_facility_button)
+
+	# Start hidden (toggle backdrop, NOT CanvasLayer)
+	_facility_backdrop.visible = false
+	print("[TownScene] Facility overlay built (CanvasLayer layer=10, backdrop toggle)")
+
+
+func _show_facility_overlay() -> void:
+	_facility_backdrop.visible = true
+	print("[FacilityOverlay] SHOW backdrop.visible=%s" % str(_facility_backdrop.visible))
+
+
+func _hide_facility_overlay() -> void:
+	if _facility_backdrop != null:
+		_facility_backdrop.visible = false
+		print("[FacilityOverlay] HIDE")
+
+
+func _is_facility_overlay_visible() -> bool:
+	return _facility_backdrop != null and _facility_backdrop.visible
+
+
+func _on_facility_backdrop_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_on_close_facility_pressed()
+
+
+# ============================================================================
+# CRAFTPIX SKIN — runtime visual override (no .tscn changes)
+# ============================================================================
+
+const _CRAFTPIX_THEME = preload("res://Themes/CraftPix/craftpix_ui_tinted.tres")
+const _CRAFTPIX_HEADER = preload("res://Themes/CraftPix/header_bar_teal_tinted.tres")
+
+
+func _apply_craftpix_skin() -> void:
+	# 1) Swap root theme to CraftPix
+	theme = _CRAFTPIX_THEME
+
+	# 2) Update background colour to CraftPix standard
+	var bg: ColorRect = get_node_or_null("Background")
+	if bg:
+		bg.color = Color(0.15, 0.15, 0.2, 1)
+
+	# 3) Tighten margins (20 → 16, CraftPix standard)
+	var margin: MarginContainer = get_node_or_null("MarginContainer")
+	if margin:
+		margin.add_theme_constant_override("margin_left", 16)
+		margin.add_theme_constant_override("margin_top", 16)
+		margin.add_theme_constant_override("margin_right", 16)
+		margin.add_theme_constant_override("margin_bottom", 16)
+
+	# 4) Get the main VBox that holds all sections
+	var main_vbox: VBoxContainer = get_node_or_null("MarginContainer/ScrollContainer/MainVBox")
+	if main_vbox == null:
+		push_warning("[TownScene] CraftPix skin: MainVBox not found")
+		return
+
+	main_vbox.add_theme_constant_override("separation", 12)
+
+	# 5) Hide the debug-style title label (TownHub shell has its own header)
+	var title_label: Label = main_vbox.get_node_or_null("TitleLabel")
+	if title_label:
+		title_label.visible = false
+
+	# 6) Hide all HSeparators (sections now separated by panel wrappers)
+	for child in main_vbox.get_children():
+		if child is HSeparator:
+			child.visible = false
+
+	# 7) Hide all sections — TownHub nav rail / map grid / facilities replaces everything
+	for section_name in ["LocationSection", "StashSection", "FacilitiesSection", "HeroesSection", "ActionSection", "TownSwitchSection", "DebugSection"]:
+		var section = main_vbox.get_node_or_null(section_name)
+		if section:
+			section.visible = false
+
+	print("[TownScene] CraftPix skin applied")
+
+
+## Wraps an existing section VBox inside a CraftPix panel with a teal header bar.
+## The section is reparented: MainVBox > PanelContainer > VBox > [header, section].
+func _craftpix_wrap_section(parent: VBoxContainer, section_name: String, header_text: String) -> void:
+	var section: Control = parent.get_node_or_null(section_name)
+	if section == null:
+		return
+
+	var idx: int = section.get_index()
+
+	# Hide the old "=== Section ===" header label (first child of each section VBox)
+	if section is VBoxContainer and section.get_child_count() > 0:
+		var first_child: Node = section.get_child(0)
+		if first_child is Label:
+			var label_text: String = first_child.text
+			if label_text.begins_with("===") or label_text.begins_with("--"):
+				first_child.visible = false
+
+	# Create wrapper: PanelContainer > MarginContainer > InnerVBox
+	var panel := PanelContainer.new()
+	panel.name = section_name + "Panel"
+	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	var inner_margin := MarginContainer.new()
+	inner_margin.add_theme_constant_override("margin_left", 8)
+	inner_margin.add_theme_constant_override("margin_top", 0)
+	inner_margin.add_theme_constant_override("margin_right", 8)
+	inner_margin.add_theme_constant_override("margin_bottom", 8)
+	panel.add_child(inner_margin)
+
+	var inner_vbox := VBoxContainer.new()
+	inner_vbox.add_theme_constant_override("separation", 8)
+	inner_margin.add_child(inner_vbox)
+
+	# Create teal header bar
+	var header_panel := PanelContainer.new()
+	header_panel.custom_minimum_size = Vector2(0, 28)
+	header_panel.add_theme_stylebox_override("panel", _CRAFTPIX_HEADER)
+
+	var header_label := Label.new()
+	header_label.text = header_text
+	header_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	header_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	header_label.add_theme_font_size_override("font_size", 13)
+	header_panel.add_child(header_label)
+
+	inner_vbox.add_child(header_panel)
+
+	# Reparent the section into the wrapper
+	parent.remove_child(section)
+	inner_vbox.add_child(section)
+
+	# Insert wrapper at the original index
+	if idx >= parent.get_child_count():
+		parent.add_child(panel)
+	else:
+		parent.add_child(panel)
+		parent.move_child(panel, idx)
+
+
+# ============================================================================
 # LIFECYCLE
 # ============================================================================
 
 func _ready() -> void:
+	# Build the facility overlay (CanvasLayer — replaces old Window node)
+	_build_facility_overlay()
+
 	# Connect button signals
 	enter_dungeon_button.pressed.connect(_on_enter_dungeon_pressed)
 	continue_run_button.pressed.connect(_on_continue_run_pressed)
@@ -94,7 +343,10 @@ func _ready() -> void:
 	reset_save_button.pressed.connect(_on_reset_save_pressed)
 	add_gold_button.pressed.connect(_on_add_gold_pressed)
 	close_facility_button.pressed.connect(_on_close_facility_pressed)
-	facility_window.close_requested.connect(_on_close_facility_pressed)
+
+	# Apply CraftPix skin before any UI population (when embedded in TownHub)
+	if use_craftpix_skin:
+		_apply_craftpix_skin()
 
 	# Ensure all heroes are fully healed when entering town view
 	if GameContext.get_phase() == GameContext.GamePhase.TOWN:
@@ -280,6 +532,17 @@ func _populate_stash_list() -> void:
 		var quality_names = ["Common", "Fine", "Rare", "Epic"]
 		for key in aggregated.keys():
 			var entry = aggregated[key]
+			# Items v7: HBox with icon + label
+			var tpl = DataRegistry.get_item_template(entry.template_id)
+			var item_row = HBoxContainer.new()
+			item_row.add_theme_constant_override("separation", 4)
+
+			# Add item icon if available
+			if tpl != null:
+				var icon_rect = tpl.create_icon_rect(16)
+				if icon_rect != null:
+					item_row.add_child(icon_rect)
+
 			var item_label = Label.new()
 			# Add quality indicator if quality > 0
 			var q_indicator = ""
@@ -288,7 +551,6 @@ func _populate_stash_list() -> void:
 			item_label.text = "%s x%d%s" % [entry.display_name, entry.qty, q_indicator]
 
 			# Items v6: Build tooltip with item details (equipment + consumable aware)
-			var tpl = DataRegistry.get_item_template(entry.template_id)
 			var tooltip_parts: Array[String] = []
 			tooltip_parts.append(entry.display_name)
 			tooltip_parts.append("ID: %s" % entry.template_id)
@@ -327,8 +589,10 @@ func _populate_stash_list() -> void:
 						tooltip_parts.append("Quality: %s" % quality_names[entry.quality_tier])
 				tooltip_parts.append("Sell: %d gold" % tpl.base_value)
 			item_label.tooltip_text = "\n".join(tooltip_parts)
+			item_label.mouse_filter = Control.MOUSE_FILTER_STOP
 
-			stash_list_vbox.add_child(item_label)
+			item_row.add_child(item_label)
+			stash_list_vbox.add_child(item_row)
 		print("[TownUI] Stash list populated with %d unique item types" % aggregated.size())
 
 
@@ -344,6 +608,13 @@ func _on_enter_dungeon_pressed() -> void:
 		print("[TownUI] EnterDungeon FAILED - no dungeon for town '%s'" % town_id)
 		return
 
+	# Guard: Require at least one party member
+	if GameContext.selected_party.size() == 0:
+		print("[TownUI] EnterDungeon BLOCKED - no heroes in party! Visit Inn to recruit.")
+		progress_label.text = "Need at least 1 hero! Visit Inn to recruit."
+		progress_label.modulate = Color(1, 0.5, 0.5, 1)
+		return
+
 	# Enter dungeon
 	GameContext.enter_dungeon(town.dungeon_id)
 	GameContext.set_phase(GameContext.GamePhase.COMBAT)
@@ -356,7 +627,7 @@ func _on_enter_dungeon_pressed() -> void:
 	])
 
 	# Route through boot
-	get_tree().change_scene_to_file(BOOT_SCENE_PATH)
+	get_tree().call_deferred("change_scene_to_file", BOOT_SCENE_PATH)
 
 
 func _on_continue_run_pressed() -> void:
@@ -376,7 +647,7 @@ func _on_continue_run_pressed() -> void:
 	])
 
 	# Route through boot
-	get_tree().change_scene_to_file(BOOT_SCENE_PATH)
+	get_tree().call_deferred("change_scene_to_file", BOOT_SCENE_PATH)
 
 
 func _on_exit_dungeon_pressed() -> void:
@@ -445,9 +716,9 @@ func _on_reset_save_pressed() -> void:
 		push_warning("[TownUI] reset_save_game not found in GameContext")
 		return
 
-	# Close facility window if open
-	if facility_window.visible:
-		facility_window.hide()
+	# Close facility overlay if open
+	if _is_facility_overlay_visible():
+		_hide_facility_overlay()
 
 	# Clear training hall selection state
 	_training_selected_hero_id = ""
@@ -466,14 +737,12 @@ func _on_add_gold_pressed() -> void:
 	print("[TownUI] Added 100 gold to run stash (saved). New total: %d" % GameContext.get_run_gold())
 	_refresh_ui()
 	# Refresh facility panel if open (to update gold display)
-	if facility_window.visible:
+	if _is_facility_overlay_visible():
 		_refresh_facility_panel()
 
 
 func _on_close_facility_pressed() -> void:
-	# Save position for next open
-	_last_facility_window_pos = facility_window.position
-	facility_window.hide()
+	_hide_facility_overlay()
 	print("[FacilityUI] Close")
 
 
@@ -497,30 +766,78 @@ func _populate_facilities_list() -> void:
 		facilities_vbox.add_child(placeholder)
 		return
 
-	# Create button for each facility
-	for facility_id in town.facility_ids:
-		var facility = DataRegistry.get_facility(facility_id) if DataRegistry.has_method("get_facility") else null
+	# CraftPix skin: use 2-column grid of styled buttons
+	if use_craftpix_skin:
+		var grid := GridContainer.new()
+		grid.columns = 2
+		grid.add_theme_constant_override("h_separation", 8)
+		grid.add_theme_constant_override("v_separation", 6)
+		facilities_vbox.add_child(grid)
 
-		var button = Button.new()
-		if facility != null:
-			button.text = "%s (%s)" % [facility.display_name, facility.facility_type]
-		else:
-			button.text = facility_id + " (unknown)"
+		for facility_id in town.facility_ids:
+			var facility = DataRegistry.get_facility(facility_id) if DataRegistry.has_method("get_facility") else null
+			var button = Button.new()
+			if facility != null:
+				button.text = facility.display_name
+				button.tooltip_text = "%s — %s" % [facility.display_name, facility.facility_type]
+			else:
+				button.text = facility_id
+			button.custom_minimum_size = Vector2(0, 36)
+			button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			button.set_meta("facility_id", facility_id)
+			button.pressed.connect(_on_facility_button_pressed.bind(facility_id))
+			grid.add_child(button)
+	else:
+		# Default layout: centered buttons in a VBox
+		for facility_id in town.facility_ids:
+			var facility = DataRegistry.get_facility(facility_id) if DataRegistry.has_method("get_facility") else null
 
-		button.custom_minimum_size = Vector2(200, 28)
-		button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+			var button = Button.new()
+			if facility != null:
+				button.text = "%s (%s)" % [facility.display_name, facility.facility_type]
+			else:
+				button.text = facility_id + " (unknown)"
 
-		# Store facility_id in metadata for the click handler
-		button.set_meta("facility_id", facility_id)
-		button.pressed.connect(_on_facility_button_pressed.bind(facility_id))
+			button.custom_minimum_size = Vector2(200, 28)
+			button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 
-		facilities_vbox.add_child(button)
+			# Store facility_id in metadata for the click handler
+			button.set_meta("facility_id", facility_id)
+			button.pressed.connect(_on_facility_button_pressed.bind(facility_id))
+
+			facilities_vbox.add_child(button)
 
 	print("[TownUI] Populated %d facilities for town '%s'" % [town.facility_ids.size(), town_id])
 
 
 func _on_facility_button_pressed(facility_id: String) -> void:
+	print("[FacilityUI] Button pressed: %s" % facility_id)
 	_show_facility_panel(facility_id)
+
+
+## Public API: open a facility by type (e.g. "shop", "storage", "dungeon").
+## Finds the matching facility_id for the current town and opens it.
+func show_facility_by_type(facility_type: String) -> void:
+	var town_id = GameContext.get_current_town_id()
+	var town = DataRegistry.get_town(town_id) if DataRegistry.has_method("get_town") else null
+	if town == null:
+		return
+	for facility_id in town.facility_ids:
+		var facility = DataRegistry.get_facility(facility_id) if DataRegistry.has_method("get_facility") else null
+		if facility != null and facility.facility_type == facility_type:
+			_show_facility_panel(facility_id)
+			return
+	print("[TownUI] No facility of type '%s' in town '%s'" % [facility_type, town_id])
+
+
+## Public API: open a facility by its exact ID (used by TownHub nav rail / map grid).
+func show_facility_by_id(facility_id: String) -> void:
+	_show_facility_panel(facility_id)
+
+
+## Public API: switch to another town (used by TownHub travel buttons).
+func switch_town(new_town_id: String) -> void:
+	_switch_town(new_town_id)
 
 
 func _show_facility_panel(facility_id: String) -> void:
@@ -559,15 +876,8 @@ func _show_facility_panel(facility_id: String) -> void:
 	# Create dynamic action UI based on facility type
 	_create_facility_actions(facility)
 
-	# Update window title with facility name
-	facility_window.title = facility.display_name if facility != null else "Facility"
-
-	# Show window (restore position if we have one, otherwise center)
-	if _last_facility_window_pos.x >= 0:
-		facility_window.position = _last_facility_window_pos
-		facility_window.show()
-	else:
-		facility_window.popup_centered()
+	# Show overlay
+	_show_facility_overlay()
 
 	print("[FacilityUI] Open %s" % facility_id)
 
@@ -579,10 +889,9 @@ func _create_facility_actions(facility) -> void:
 	if _facility_actions_container == null:
 		_facility_actions_container = VBoxContainer.new()
 		_facility_actions_container.add_theme_constant_override("separation", 6)
-		var vbox = facility_window.get_node("MarginContainer/ScrollContainer/VBox")
 		var close_idx = close_facility_button.get_index()
-		vbox.add_child(_facility_actions_container)
-		vbox.move_child(_facility_actions_container, close_idx)
+		_facility_content_vbox.add_child(_facility_actions_container)
+		_facility_content_vbox.move_child(_facility_actions_container, close_idx)
 	else:
 		_clear_children_immediate(_facility_actions_container)
 
@@ -601,10 +910,6 @@ func _create_facility_actions(facility) -> void:
 			_build_storage_ui()
 		"shop":
 			_build_shop_ui()
-		"alchemist":
-			_build_alchemist_ui()
-		"blacksmith":
-			_build_blacksmith_ui()
 		"equipment":
 			_build_equipment_ui()
 		"training_hall":
@@ -913,152 +1218,6 @@ func _create_item_transfer_row(item_id: String, qty: int, source: String, action
 	row.add_child(btn)
 
 	return row
-
-
-func _build_unlock_ui(facility_name: String) -> void:
-	# Header
-	var header = Label.new()
-	header.text = "=== %s ===" % facility_name
-	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_facility_actions_container.add_child(header)
-
-	if _current_facility == null:
-		var no_data = Label.new()
-		no_data.text = "(No facility data)"
-		no_data.modulate = Color(0.6, 0.6, 0.6, 1)
-		_facility_actions_container.add_child(no_data)
-		return
-
-	# Get tier info
-	var town_id = GameContext.get_current_town_id()
-	var facility_id = _current_facility.facility_id
-	var current_tier = GameContext.get_facility_tier(town_id, facility_id)
-	var max_tier = GameContext.get_facility_max_tier(facility_id)
-
-	# Tier display
-	var tier_label = Label.new()
-	tier_label.text = "Tier %d / %d" % [current_tier, max_tier]
-	tier_label.modulate = Color(1, 0.9, 0.5, 1)
-	_facility_actions_container.add_child(tier_label)
-
-	# Upgrade section (if not at max tier)
-	if current_tier < max_tier:
-		var next_tier = current_tier + 1
-		var cost = GameContext.get_facility_upgrade_cost(facility_id, next_tier)
-		var can_upgrade = GameContext.can_afford_facility_upgrade(cost)
-
-		# Format cost text
-		var cost_parts: Array[String] = []
-		var gold_cost = cost.get("gold", 0)
-		if gold_cost > 0:
-			cost_parts.append("%d gold" % gold_cost)
-		var items_cost = cost.get("items", [])
-		for item in items_cost:
-			var item_id = item.get("item_id", "")
-			var qty = item.get("qty", 1)
-			var item_name = item_id
-			var tpl = DataRegistry.get_item_template(item_id)
-			if tpl != null and tpl.display_name != "":
-				item_name = tpl.display_name
-			cost_parts.append("%s x%d" % [item_name, qty])
-
-		var cost_text = ", ".join(cost_parts) if cost_parts.size() > 0 else "Free"
-
-		var upgrade_row = HBoxContainer.new()
-		upgrade_row.add_theme_constant_override("separation", 8)
-
-		var upgrade_label = Label.new()
-		upgrade_label.text = "Upgrade to Tier %d: %s" % [next_tier, cost_text]
-		upgrade_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		upgrade_row.add_child(upgrade_label)
-
-		var upgrade_btn = Button.new()
-		upgrade_btn.text = "Upgrade" if can_upgrade else "Cannot Afford"
-		upgrade_btn.custom_minimum_size = Vector2(100, 28)
-		upgrade_btn.disabled = not can_upgrade
-		upgrade_btn.pressed.connect(_on_facility_upgrade_pressed.bind(town_id, facility_id))
-		upgrade_row.add_child(upgrade_btn)
-
-		_facility_actions_container.add_child(upgrade_row)
-
-	# Show run stash resources
-	var run_gold = GameContext.get_run_gold()
-	var run_items = GameContext.get_run_items_dict()
-
-	var gold_label = Label.new()
-	gold_label.text = "Banked Gold: %d" % run_gold
-	gold_label.modulate = Color(1, 0.9, 0.5, 1)
-	_facility_actions_container.add_child(gold_label)
-
-	var materials_label = Label.new()
-	if run_items.is_empty():
-		materials_label.text = "Banked Materials: (none)"
-	else:
-		var mat_parts: Array[String] = []
-		for item_id in run_items.keys():
-			var template = DataRegistry.get_item_template(item_id)
-			var mat_name = template.display_name if template != null and template.display_name != "" else item_id
-			mat_parts.append("%s x%d" % [mat_name, run_items[item_id]])
-		materials_label.text = "Banked: %s" % ", ".join(mat_parts)
-	materials_label.modulate = Color(0.8, 0.9, 1, 1)
-	_facility_actions_container.add_child(materials_label)
-
-	# Unlocks section (group-based unlocks)
-	# Filter by required_tier, required_town_tier, required_dungeon_floor_unlocked
-	# Exclude already-unlocked groups
-	var all_unlocks = _current_facility.unlocks if _current_facility != null else []
-	var unlocks: Array = []
-	var gated_count = 0
-	for unlock in all_unlocks:
-		var unlock_group = unlock.get("unlock_group", "")
-		var required_tier = unlock.get("required_tier", 1)
-		var required_town_tier = unlock.get("required_town_tier", 1)
-		var required_floor = unlock.get("required_dungeon_floor_unlocked", 1)
-
-		# Skip if group already unlocked (including defaults)
-		if GameContext.has_unlocked_group(unlock_group):
-			continue
-		# Skip unlocks requiring higher facility tier
-		if required_tier > current_tier:
-			gated_count += 1
-			continue
-		# Check town tier gating (optional - if > 1)
-		if required_town_tier > 1:
-			if not GameContext.meets_town_tier_requirement(town_id, required_town_tier):
-				var have = GameContext.get_town_tier(town_id)
-				print("[Gate] unlock=%s reason=town_tier required=%d have=%d" % [unlock_group, required_town_tier, have])
-				gated_count += 1
-				continue
-		# Check dungeon floor gating (optional - if > 1)
-		if required_floor > 1:
-			# Use current dungeon or first available dungeon in town
-			var town = DataRegistry.get_town(town_id) if DataRegistry.has_method("get_town") else null
-			var dungeon_id = town.dungeon_id if town != null else ""
-			if not GameContext.meets_dungeon_floor_requirement(dungeon_id, required_floor):
-				var have = GameContext.get_unlocked_floor(dungeon_id)
-				print("[Gate] unlock=%s reason=dungeon_floor required=%d have=%d dungeon=%s" % [unlock_group, required_floor, have, dungeon_id])
-				gated_count += 1
-				continue
-		unlocks.append(unlock)
-
-	if gated_count > 0:
-		print("[Unlock] shown=%d gated=%d total=%d" % [unlocks.size(), gated_count, all_unlocks.size()])
-
-	if unlocks.size() > 0:
-		var unlocks_header = Label.new()
-		unlocks_header.text = "-- Unlocks --"
-		unlocks_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		unlocks_header.modulate = Color(0.7, 0.7, 0.7, 1)
-		_facility_actions_container.add_child(unlocks_header)
-
-		for unlock in unlocks:
-			var row = _create_unlock_row(unlock)
-			_facility_actions_container.add_child(row)
-	else:
-		var no_unlocks = Label.new()
-		no_unlocks.text = "(No unlocks available at this tier)"
-		no_unlocks.modulate = Color(0.6, 0.6, 0.6, 1)
-		_facility_actions_container.add_child(no_unlocks)
 
 
 func _build_shop_ui() -> void:
@@ -1928,7 +2087,12 @@ func _create_shop_row(shop_item: Dictionary, shop_id: String = "") -> HBoxContai
 	# Build tooltip with item stats
 	var tooltip_text = _build_item_tooltip(template, quality_tier)
 
-	# Item name label with quality
+	# Item icon + name label with quality
+	if template != null:
+		var icon_rect = template.create_icon_rect(18)
+		if icon_rect != null:
+			row.add_child(icon_rect)
+
 	var name_label = Label.new()
 	if quality_tier > 0 or shop_item.get("from_recipe", false):
 		name_label.text = "Q%d %s%s (%d gold)" % [quality_tier, quality_prefix, display_name, price]
@@ -2216,10 +2380,6 @@ func _on_stash_upgrade_pressed(upgrade_id: String, price: int, bonus_value: int)
 	_refresh_facility_panel()
 
 
-func _build_alchemist_ui() -> void:
-	_build_unlock_ui("Alchemist")
-
-
 # ============================================================================
 # EQUIPMENT FACILITY UI (Blacksmith, Huntsman, Enchanter - Per-Recipe Unlocking)
 # ============================================================================
@@ -2411,10 +2571,19 @@ func _create_equipment_recipe_row(recipe_data: Dictionary, facility_id: String, 
 	# Type label
 	var type_str = _get_equipment_type_label(equipment_type)
 
-	# Name label with status
+	# Icon + name row with status
+	var name_row = HBoxContainer.new()
+	name_row.add_theme_constant_override("separation", 4)
+
+	if output_template != null:
+		var icon_rect = output_template.create_icon_rect(18)
+		if icon_rect != null:
+			name_row.add_child(icon_rect)
+
 	var name_label = Label.new()
 	if is_unlocked:
-		name_label.text = "[UNLOCKED] %s (%s)" % [output_name, type_str]
+		var status = "[DEFAULT]" if GameContext.DEFAULT_UNLOCKED_RECIPES.has(output_id) else "[UNLOCKED]"
+		name_label.text = "%s %s (%s)" % [status, output_name, type_str]
 		name_label.modulate = Color(0.5, 0.9, 0.5, 1)
 	elif is_tier_locked:
 		name_label.text = "[TIER %d] %s (%s)" % [required_tier, output_name, type_str]
@@ -2422,7 +2591,8 @@ func _create_equipment_recipe_row(recipe_data: Dictionary, facility_id: String, 
 		container.modulate = Color(0.6, 0.6, 0.6, 1)
 	else:
 		name_label.text = "%s (%s)" % [output_name, type_str]
-	container.add_child(name_label)
+	name_row.add_child(name_label)
+	container.add_child(name_row)
 
 	# Add tooltip with item stats
 	if output_template != null:
@@ -2601,101 +2771,16 @@ func _on_equipment_unlock_pressed(output_id: String, unlock_cost: Array, facilit
 
 func _on_equipment_facility_upgrade_pressed(facility_id: String, new_tier: int, gold_cost: int, item_costs: Array) -> void:
 	var town_id = GameContext.get_current_town_id()
+	var tier_before = GameContext.get_facility_tier(town_id, facility_id)
 
-	# Check gold
-	if gold_cost > 0 and GameContext.get_run_gold() < gold_cost:
-		print("[EquipmentUI] upgrade_failed facility=%s reason=insufficient_gold" % facility_id)
-		return
-
-	# Check materials
-	var run_items_dict = GameContext.get_run_items_dict()
-	for item_cost in item_costs:
-		var item_id = item_cost.get("item_id", "")
-		var qty_needed = item_cost.get("qty", 1)
-		var qty_have = run_items_dict.get(item_id, 0)
-		if qty_have < qty_needed:
-			print("[EquipmentUI] upgrade_failed facility=%s reason=missing_%s" % [facility_id, item_id])
-			return
-
-	# Spend gold
-	if gold_cost > 0:
-		GameContext.spend_run_gold(gold_cost)
-
-	# Spend materials
-	for item_cost in item_costs:
-		var item_id = item_cost.get("item_id", "")
-		var qty = item_cost.get("qty", 0)
-		if item_id != "" and qty > 0:
-			GameContext.remove_run_item(item_id, qty)
-
-	# Upgrade facility
-	GameContext.set_facility_tier(town_id, facility_id, new_tier)
-
-	print("[EquipmentUI] upgraded facility=%s tier=%d gold_spent=%d" % [facility_id, new_tier, gold_cost])
-	_refresh_facility_panel()
-
-
-func _build_blacksmith_ui() -> void:
-	_build_unlock_ui("Blacksmith")
-
-	# Add crafting recipes section
-	if _current_facility == null:
-		return
-
-	var crafting_recipes = _current_facility.crafting_recipes
-	if crafting_recipes.size() == 0:
-		return
-
-	# Get current facility tier
-	var town_id = GameContext.get_current_town_id()
-	var facility_id = _current_facility.facility_id
-	var current_tier = GameContext.get_facility_tier(town_id, facility_id)
-
-	# Facilities v4: Separate recipes into available and locked
-	var available_recipes: Array = []
-	var locked_recipes: Array = []
-	for recipe in crafting_recipes:
-		var required_tier = recipe.get("required_tier", 1)
-		if required_tier <= current_tier:
-			available_recipes.append(recipe)
-		else:
-			locked_recipes.append(recipe)
-
-	# Separator and header
-	var sep = HSeparator.new()
-	_facility_actions_container.add_child(sep)
-
-	var craft_header = Label.new()
-	craft_header.text = "-- Recipes (Tier %d / %d) --" % [current_tier, _current_facility.max_tier]
-	craft_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	craft_header.modulate = Color(0.7, 0.7, 0.7, 1)
-	_facility_actions_container.add_child(craft_header)
-
-	# Explanation label
-	var explain_label = Label.new()
-	explain_label.text = "Unlock recipes to add items to the General Store"
-	explain_label.add_theme_font_size_override("font_size", 11)
-	explain_label.modulate = Color(0.6, 0.8, 0.6, 1)
-	explain_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_facility_actions_container.add_child(explain_label)
-
-	# Show available recipes
-	if available_recipes.size() == 0:
-		var no_recipes = Label.new()
-		no_recipes.text = "(No recipes available at this tier)"
-		no_recipes.modulate = Color(0.6, 0.6, 0.6, 1)
-		_facility_actions_container.add_child(no_recipes)
+	# Use the centralized upgrade_facility which handles validation, spending, and saving
+	if GameContext.upgrade_facility(town_id, facility_id):
+		var tier_after = GameContext.get_facility_tier(town_id, facility_id)
+		print("[EquipmentUI] upgraded facility=%s tier=%d->%d gold_cost=%d" % [facility_id, tier_before, tier_after, gold_cost])
 	else:
-		for recipe in available_recipes:
-			var recipe_row = _create_crafting_recipe_row(recipe)
-			_facility_actions_container.add_child(recipe_row)
+		print("[EquipmentUI] upgrade_failed facility=%s tier=%d" % [facility_id, tier_before])
 
-	# Facilities v4: Show locked recipes as grayed-out rows
-	for recipe in locked_recipes:
-		var locked_row = _create_locked_recipe_row(recipe)
-		_facility_actions_container.add_child(locked_row)
-
-	print("[Blacksmith] tier=%d recipes_shown=%d recipes_locked=%d" % [current_tier, available_recipes.size(), locked_recipes.size()])
+	_refresh_facility_panel()
 
 
 func _create_crafting_recipe_row(recipe: Dictionary) -> VBoxContainer:
@@ -2718,7 +2803,8 @@ func _create_crafting_recipe_row(recipe: Dictionary) -> VBoxContainer:
 	# Recipe name with unlock status
 	var name_label = Label.new()
 	if is_unlocked:
-		name_label.text = "Recipe: %s [UNLOCKED]" % output_name
+		var status = "[DEFAULT]" if GameContext.DEFAULT_UNLOCKED_RECIPES.has(output_id) else "[UNLOCKED]"
+		name_label.text = "Recipe: %s %s" % [output_name, status]
 		name_label.modulate = Color(0.5, 0.9, 0.5, 1)  # Green for unlocked
 	else:
 		name_label.text = "Recipe: %s" % output_name
@@ -3225,7 +3311,11 @@ func _create_book_assign_row(book_id: String, qty: int) -> HBoxContainer:
 	if tpl != null and tpl.display_name != "":
 		display_name = tpl.display_name
 
-	# Label: book name x qty
+	# Label: book name x qty with icon
+	if tpl != null:
+		var icon_rect = tpl.create_icon_rect(18)
+		if icon_rect != null:
+			row.add_child(icon_rect)
 	var label = Label.new()
 	label.text = "%s x%d" % [display_name, qty]
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -3655,6 +3745,14 @@ func _build_inn_ui() -> void:
 	owned_header.modulate = Color(0.7, 0.7, 0.7, 1)
 	_facility_actions_container.add_child(owned_header)
 
+	# Permadeath warning
+	var permadeath_warning = Label.new()
+	permadeath_warning.text = "⚠ Heroes who fall in the dungeon are lost forever!"
+	permadeath_warning.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	permadeath_warning.add_theme_font_size_override("font_size", 11)
+	permadeath_warning.modulate = Color(1.0, 0.6, 0.4, 1)
+	_facility_actions_container.add_child(permadeath_warning)
+
 	var owned_heroes = GameContext.get_owned_heroes()
 	var selected_party = GameContext.get_selected_party()
 
@@ -3715,6 +3813,13 @@ func _create_hero_row(hero: Dictionary, selected_party: Array) -> PanelContainer
 	var hero_xp = int(hero.get("xp", 0))
 	var in_party = hero_id in selected_party
 
+	# Check if hero is dead (only matters outside town phase)
+	var is_hero_dead = false
+	if GameContext.get_phase() != GameContext.GamePhase.TOWN:
+		var hp_check = GameContext.get_hero_hp(hero_id)
+		if not hp_check.is_empty() and int(hp_check.get("current", 1)) <= 0:
+			is_hero_dead = true
+
 	# Get display names from DataRegistry with fallback
 	var race_name = race_id.capitalize()
 	var race_data = DataRegistry.get_race(race_id)
@@ -3730,10 +3835,17 @@ func _create_hero_row(hero: Dictionary, selected_party: Array) -> PanelContainer
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(280, 0)
 
-	# Add subtle border style based on party status
+	# Add subtle border style based on party status and death
 	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.15, 0.15, 0.15, 1) if not in_party else Color(0.1, 0.25, 0.1, 1)
-	style.border_color = Color(0.3, 0.3, 0.3, 1) if not in_party else Color(0.3, 0.6, 0.3, 1)
+	if is_hero_dead:
+		style.bg_color = Color(0.3, 0.1, 0.1, 1)  # Dark red background
+		style.border_color = Color(0.6, 0.2, 0.2, 1)  # Red border
+	elif in_party:
+		style.bg_color = Color(0.1, 0.25, 0.1, 1)
+		style.border_color = Color(0.3, 0.6, 0.3, 1)
+	else:
+		style.bg_color = Color(0.15, 0.15, 0.15, 1)
+		style.border_color = Color(0.3, 0.3, 0.3, 1)
 	style.set_border_width_all(1)
 	style.set_corner_radius_all(4)
 	style.set_content_margin_all(8)
@@ -3804,6 +3916,8 @@ func _create_hero_row(hero: Dictionary, selected_party: Array) -> PanelContainer
 			current_hp = int(hp_data.get("current", max_hp))
 	var hp_label = Label.new()
 	hp_label.text = format_hp_line(current_hp, max_hp)
+	hp_label.tooltip_text = build_inn_stat_tooltip("Health", hero_id)
+	hp_label.mouse_filter = Control.MOUSE_FILTER_STOP
 	if current_hp >= max_hp:
 		hp_label.modulate = Color(0.5, 1.0, 0.5, 1)  # Green = full
 	elif current_hp > max_hp * 0.5:
@@ -3812,6 +3926,52 @@ func _create_hero_row(hero: Dictionary, selected_party: Array) -> PanelContainer
 		hp_label.modulate = Color(1.0, 0.4, 0.4, 1)  # Red = critical
 	info_vbox.add_child(hp_label)
 	print("[InnUI] hero=%s xp_text='%s' hp_text='%s' phase=%s" % [hero_id, xp_label.text, hp_label.text, str(GameContext.get_phase())])
+
+	# Combat stats summary (ATK/DEF/SPD with individual tooltips)
+	var atk = int(eff_stats.get("attack", 0))
+	var def = int(eff_stats.get("defense", 0))
+	var spd = int(eff_stats.get("speed", 0))
+
+	var stats_hbox = HBoxContainer.new()
+	stats_hbox.add_theme_constant_override("separation", 4)
+
+	var atk_label = Label.new()
+	atk_label.text = "ATK: %d" % atk
+	atk_label.add_theme_font_size_override("font_size", 12)
+	atk_label.modulate = Color(1.0, 0.6, 0.6, 1)  # Red for attack
+	atk_label.tooltip_text = build_inn_stat_tooltip("Attack", hero_id)
+	atk_label.mouse_filter = Control.MOUSE_FILTER_STOP
+	stats_hbox.add_child(atk_label)
+
+	var sep1 = Label.new()
+	sep1.text = "|"
+	sep1.add_theme_font_size_override("font_size", 12)
+	sep1.modulate = Color(0.6, 0.6, 0.6, 1)
+	stats_hbox.add_child(sep1)
+
+	var def_label = Label.new()
+	def_label.text = "DEF: %d" % def
+	def_label.add_theme_font_size_override("font_size", 12)
+	def_label.modulate = Color(0.6, 0.8, 1.0, 1)  # Blue for defense
+	def_label.tooltip_text = build_inn_stat_tooltip("Defense", hero_id)
+	def_label.mouse_filter = Control.MOUSE_FILTER_STOP
+	stats_hbox.add_child(def_label)
+
+	var sep2 = Label.new()
+	sep2.text = "|"
+	sep2.add_theme_font_size_override("font_size", 12)
+	sep2.modulate = Color(0.6, 0.6, 0.6, 1)
+	stats_hbox.add_child(sep2)
+
+	var spd_label = Label.new()
+	spd_label.text = "SPD: %d" % spd
+	spd_label.add_theme_font_size_override("font_size", 12)
+	spd_label.modulate = Color(0.6, 1.0, 0.6, 1)  # Green for speed
+	spd_label.tooltip_text = build_inn_stat_tooltip("Speed", hero_id)
+	spd_label.mouse_filter = Control.MOUSE_FILTER_STOP
+	stats_hbox.add_child(spd_label)
+
+	info_vbox.add_child(stats_hbox)
 
 	# Equipment display (all 7 slots + bag)
 	var equip = GameContext.get_hero_equipment(hero_id)
@@ -3900,6 +4060,34 @@ func _create_hero_row(hero: Dictionary, selected_party: Array) -> PanelContainer
 		party_btn.pressed.connect(_on_add_to_party_pressed.bind(hero_id))
 	btn_vbox.add_child(party_btn)
 
+	# Row selector (3-Row Formation v1) - only for party members
+	if in_party:
+		var row_hbox = HBoxContainer.new()
+		row_hbox.add_theme_constant_override("separation", 4)
+
+		var row_label = Label.new()
+		row_label.text = "Row:"
+		row_label.add_theme_font_size_override("font_size", 11)
+		row_hbox.add_child(row_label)
+
+		var row_select = OptionButton.new()
+		row_select.custom_minimum_size = Vector2(70, 24)
+		row_select.add_item("Front", 0)
+		row_select.add_item("Middle", 1)
+		row_select.add_item("Back", 2)
+		row_select.selected = GameContext.get_hero_row(hero_id)
+		row_select.item_selected.connect(_on_hero_row_changed.bind(hero_id))
+		row_hbox.add_child(row_select)
+
+		btn_vbox.add_child(row_hbox)
+
+		# Row explanation text (3-Row Formation v1)
+		var row_explain = Label.new()
+		row_explain.text = "Front: Targeted first by melee.\nMiddle: Targeted after Front.\nBack: Targeted last by melee."
+		row_explain.add_theme_font_size_override("font_size", 9)
+		row_explain.add_theme_color_override("font_color", Color.GRAY)
+		btn_vbox.add_child(row_explain)
+
 	# Equipment buttons (only for party members)
 	if in_party:
 		# Manage Gear button opens slot selection popup
@@ -3952,6 +4140,20 @@ func _create_hero_row(hero: Dictionary, selected_party: Array) -> PanelContainer
 	if hp_count != 1:
 		print("[InnUI] DUP_HP hero=%s count=%d all_labels=%s node=%s" % [hero_id, hp_count, str(all_labels), str(panel.get_path()) if panel.is_inside_tree() else "not_in_tree"])
 
+	# Add DEAD overlay if hero is dead
+	if is_hero_dead:
+		var dead_label = Label.new()
+		dead_label.text = "DEAD — Lost Forever"
+		dead_label.add_theme_font_size_override("font_size", 28)
+		dead_label.modulate = Color(1.0, 0.3, 0.3, 0.9)
+		dead_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		dead_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		dead_label.set_anchors_preset(Control.PRESET_CENTER)
+		dead_label.z_index = 10
+		panel.add_child(dead_label)
+		# Dim the content behind
+		hbox.modulate = Color(0.5, 0.5, 0.5, 0.7)
+
 	return panel
 
 
@@ -4001,6 +4203,13 @@ func _on_add_to_party_pressed(hero_id: String) -> void:
 func _on_remove_from_party_pressed(hero_id: String) -> void:
 	GameContext.remove_from_party(hero_id)
 	_refresh_facility_panel()
+
+
+## Handle hero row assignment change (3-Row Formation v1)
+func _on_hero_row_changed(row_index: int, hero_id: String) -> void:
+	GameContext.set_hero_row(hero_id, row_index)
+	var row_names = ["Front", "Middle", "Back"]
+	print("[Inn] Hero %s assigned to %s row" % [hero_id, row_names[row_index]])
 
 
 func _on_equip_slot_pressed(hero_id: String, slot: String) -> void:
@@ -4491,21 +4700,36 @@ func _passive_exists(passive_id: String) -> bool:
 func _build_production_ui() -> void:
 	print("[Production] opened")
 
+	if _current_facility == null:
+		var no_data = Label.new()
+		no_data.text = "(No facility data)"
+		no_data.modulate = Color(0.6, 0.6, 0.6, 1)
+		_facility_actions_container.add_child(no_data)
+		return
+
+	var facility = _current_facility
+	var facility_id = facility.facility_id
+	var town_id = GameContext.get_current_town_id()
+	var current_tier = GameContext.get_facility_tier(town_id, facility_id)
+	var max_tier = facility.max_tier
+
+	# Header with tier info
 	var header = Label.new()
-	header.text = "=== %s ===" % (_current_facility.display_name if _current_facility != null else "Production")
+	header.text = "=== %s (Tier %d / %d) ===" % [facility.display_name, current_tier, max_tier]
 	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_facility_actions_container.add_child(header)
 
-	if _current_facility != null:
-		var services_label = Label.new()
-		var tier_1_services = []
-		if _current_facility.services_per_tier.has("1"):
-			tier_1_services = _current_facility.services_per_tier["1"]
-		elif _current_facility.services_per_tier.has(1):
-			tier_1_services = _current_facility.services_per_tier[1]
-		services_label.text = "Services: %s" % ", ".join(tier_1_services) if tier_1_services.size() > 0 else "Services: (none)"
-		services_label.modulate = Color(0.7, 0.7, 0.7, 1)
-		_facility_actions_container.add_child(services_label)
+	# Gold display
+	var run_gold = GameContext.get_run_gold()
+	var gold_label = Label.new()
+	gold_label.text = "Gold: %d" % run_gold
+	gold_label.modulate = Color(1, 0.9, 0.5, 1)
+	_facility_actions_container.add_child(gold_label)
+
+	# Upgrade button (if not max tier)
+	if current_tier < max_tier:
+		var upgrade_row = _create_production_facility_upgrade_row(facility, current_tier)
+		_facility_actions_container.add_child(upgrade_row)
 
 	# === UNLOCKS SECTION (v1) ===
 	_build_facility_unlocks_section()
@@ -4568,6 +4792,64 @@ func _build_crafting_recipes_section() -> void:
 	print("[Production] tier=%d recipes_shown=%d recipes_locked=%d" % [current_tier, available_recipes.size(), locked_recipes.size()])
 
 
+## Create the upgrade row for a production facility (Chef, Alchemist)
+func _create_production_facility_upgrade_row(facility, current_tier: int) -> HBoxContainer:
+	var row = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+
+	var town_id = GameContext.get_current_town_id()
+	var next_tier = current_tier + 1
+	var tier_key = str(next_tier)
+
+	# Get upgrade cost
+	var upgrade_cost = {}
+	if facility.upgrade_costs.has(tier_key):
+		upgrade_cost = facility.upgrade_costs[tier_key]
+	elif facility.upgrade_costs.has(next_tier):
+		upgrade_cost = facility.upgrade_costs[next_tier]
+
+	var gold_cost = int(upgrade_cost.get("gold", 0))
+	var item_costs = upgrade_cost.get("items", [])
+
+	# Cost display
+	var cost_parts = []
+	if gold_cost > 0:
+		cost_parts.append("%dg" % gold_cost)
+
+	var can_afford = GameContext.get_run_gold() >= gold_cost
+	var run_items_dict = GameContext.get_run_items_dict()
+
+	for item_cost in item_costs:
+		var item_id = item_cost.get("item_id", "")
+		var qty_needed = item_cost.get("qty", 1)
+		var qty_have = run_items_dict.get(item_id, 0)
+
+		var item_name = item_id
+		var item_template = DataRegistry.get_item_template(item_id)
+		if item_template != null and item_template.display_name != "":
+			item_name = item_template.display_name
+
+		cost_parts.append("%s %d/%d" % [item_name, qty_have, qty_needed])
+		if qty_have < qty_needed:
+			can_afford = false
+
+	var cost_label = Label.new()
+	var cost_text = ", ".join(cost_parts) if cost_parts.size() > 0 else "Free"
+	cost_label.text = "Upgrade to Tier %d: %s" % [next_tier, cost_text]
+	cost_label.modulate = Color(0.8, 0.8, 0.8, 1) if can_afford else Color(1, 0.5, 0.5, 1)
+	row.add_child(cost_label)
+
+	var upgrade_btn = Button.new()
+	upgrade_btn.text = "Upgrade"
+	upgrade_btn.custom_minimum_size = Vector2(80, 26)
+	upgrade_btn.disabled = not can_afford
+	# Use the generic facility upgrade handler which calls GameContext.upgrade_facility()
+	upgrade_btn.pressed.connect(_on_facility_upgrade_pressed.bind(town_id, facility.facility_id))
+	row.add_child(upgrade_btn)
+
+	return row
+
+
 ## Create a row for a production recipe (direct crafting, no unlock required)
 func _create_production_recipe_row(recipe: Dictionary) -> VBoxContainer:
 	var container = VBoxContainer.new()
@@ -4583,10 +4865,17 @@ func _create_production_recipe_row(recipe: Dictionary) -> VBoxContainer:
 	if output_template != null and output_template.display_name != "":
 		output_name = output_template.display_name
 
-	# Recipe name
+	# Recipe name with icon
+	var name_row = HBoxContainer.new()
+	name_row.add_theme_constant_override("separation", 4)
+	if output_template != null:
+		var icon_rect = output_template.create_icon_rect(18)
+		if icon_rect != null:
+			name_row.add_child(icon_rect)
 	var name_label = Label.new()
 	name_label.text = "Recipe: %s" % output_name
-	container.add_child(name_label)
+	name_row.add_child(name_label)
+	container.add_child(name_row)
 
 	# Show material costs and craft button
 	var run_items_dict = GameContext.get_run_items_dict()
@@ -4786,12 +5075,19 @@ func _build_dungeon_ui() -> void:
 	var in_this_dungeon = current_dungeon == dungeon_id
 
 	# Enter Dungeon button
+	var has_party: bool = GameContext.selected_party.size() > 0
 	var enter_btn = Button.new()
 	enter_btn.text = "Enter Dungeon"
 	enter_btn.custom_minimum_size = Vector2(180, 32)
-	enter_btn.disabled = current_dungeon != ""
+	enter_btn.disabled = current_dungeon != "" or not has_party
 	enter_btn.pressed.connect(_on_dungeon_enter_pressed.bind(dungeon_id))
 	_facility_actions_container.add_child(enter_btn)
+
+	if not has_party:
+		var warn = Label.new()
+		warn.text = "Recruit heroes at the Inn first!"
+		warn.modulate = Color(1, 0.6, 0.4, 1)
+		_facility_actions_container.add_child(warn)
 
 	# Continue Run button (only if in this dungeon)
 	if in_this_dungeon:
@@ -4815,18 +5111,23 @@ func _on_dungeon_floor_selected(dungeon_id: String, floor_num: int) -> void:
 
 
 func _on_dungeon_enter_pressed(dungeon_id: String) -> void:
+	if GameContext.selected_party.size() == 0:
+		print("[DungeonFacility] Enter BLOCKED - no heroes in party!")
+		facility_desc_label.text = "Need at least 1 hero! Visit Inn to recruit."
+		facility_desc_label.modulate = Color(1, 0.5, 0.5, 1)
+		return
 	GameContext.enter_dungeon(dungeon_id)
 	GameContext.set_phase(GameContext.GamePhase.COMBAT)
 	print("[DungeonFacility] Entering %s at floor %d" % [dungeon_id, GameContext.get_current_floor()])
-	facility_window.hide()
-	get_tree().change_scene_to_file(BOOT_SCENE_PATH)
+	_hide_facility_overlay()
+	get_tree().call_deferred("change_scene_to_file", BOOT_SCENE_PATH)
 
 
 func _on_dungeon_continue_pressed() -> void:
 	GameContext.set_phase(GameContext.GamePhase.COMBAT)
 	print("[DungeonFacility] Continuing run at floor %d" % GameContext.get_current_floor())
-	facility_window.hide()
-	get_tree().change_scene_to_file(BOOT_SCENE_PATH)
+	_hide_facility_overlay()
+	get_tree().call_deferred("change_scene_to_file", BOOT_SCENE_PATH)
 
 
 func _on_dungeon_exit_pressed() -> void:
@@ -5008,7 +5309,7 @@ func _debug_enter_dungeon() -> void:
 	])
 
 	# Route through boot
-	get_tree().change_scene_to_file(BOOT_SCENE_PATH)
+	get_tree().call_deferred("change_scene_to_file", BOOT_SCENE_PATH)
 
 
 func _debug_advance_floor() -> void:
@@ -5029,7 +5330,7 @@ func _debug_advance_floor() -> void:
 	])
 
 	# Route through boot
-	get_tree().change_scene_to_file(BOOT_SCENE_PATH)
+	get_tree().call_deferred("change_scene_to_file", BOOT_SCENE_PATH)
 
 
 func _debug_advance_room() -> void:
@@ -5050,7 +5351,7 @@ func _debug_advance_room() -> void:
 	])
 
 	# Route through boot
-	get_tree().change_scene_to_file(BOOT_SCENE_PATH)
+	get_tree().call_deferred("change_scene_to_file", BOOT_SCENE_PATH)
 
 
 func _debug_exit_to_town() -> void:
@@ -5079,3 +5380,73 @@ static func format_xp_line(xp: int, next_level_xp: int, is_max_level: bool) -> S
 ## Static helper: format the HP line for a hero card.
 static func format_hp_line(current_hp: int, max_hp: int) -> String:
 	return "HP: %d / %d" % [current_hp, max_hp]
+
+
+## Build a stat breakdown tooltip for Inn hero cards.
+## Shows where each stat comes from: class base, race modifiers, gear bonuses.
+static func build_inn_stat_tooltip(stat_name: String, hero_id: String) -> String:
+	var hero = GameContext.get_hero(hero_id)
+	if hero.is_empty():
+		return stat_name
+
+	var class_id = hero.get("class_id", "")
+	var race_id = hero.get("race_id", "human")
+	var level = int(hero.get("level", 1))
+
+	var class_data = DataRegistry.get_class_data(class_id)
+	var race_data = DataRegistry.get_race(race_id)
+
+	var stat_key = stat_name.to_lower()  # "attack", "defense", "speed"
+
+	# Get class base at level
+	var base_value = 0
+	if class_data != null:
+		var base_stats = class_data.get_stats_at_level(level)
+		base_value = int(base_stats.get(stat_key, 0))
+
+	# Get race modifier
+	var race_bonus = 0
+	var race_name = race_id.capitalize()
+	if race_data != null:
+		race_bonus = int(race_data.stat_modifiers.get(stat_key, 0))
+		if race_data.display_name != "":
+			race_name = race_data.display_name
+
+	# Get gear bonus
+	var eff_stats = GameContext.get_hero_effective_stats(hero_id)
+	var gear_bonus_dict = eff_stats.get("gear_bonus", {})
+	var gear_bonus = int(gear_bonus_dict.get(stat_key, 0))
+
+	# Build tooltip
+	var parts: Array = [stat_name]
+	parts.append("Base (Lv %d): %d" % [level, base_value])
+
+	if race_bonus != 0:
+		if race_bonus > 0:
+			parts.append("%s: +%d" % [race_name, race_bonus])
+		else:
+			parts.append("%s: %d" % [race_name, race_bonus])
+
+	if gear_bonus != 0:
+		if gear_bonus > 0:
+			parts.append("Gear: +%d" % gear_bonus)
+		else:
+			parts.append("Gear: %d" % gear_bonus)
+
+	var total = base_value + race_bonus + gear_bonus
+	if race_bonus != 0 or gear_bonus != 0:
+		parts.append("Total: %d" % total)
+
+	return "\n".join(parts)
+
+
+## Build a combined stat breakdown tooltip for all combat stats (ATK/DEF/SPD).
+## Used for the single stats line in Inn hero cards.
+static func build_inn_stats_combined_tooltip(hero_id: String) -> String:
+	var sections: Array = []
+	sections.append(build_inn_stat_tooltip("Attack", hero_id))
+	sections.append("")
+	sections.append(build_inn_stat_tooltip("Defense", hero_id))
+	sections.append("")
+	sections.append(build_inn_stat_tooltip("Speed", hero_id))
+	return "\n".join(sections)

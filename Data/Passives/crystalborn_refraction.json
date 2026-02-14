@@ -1,0 +1,13 @@
+{
+  "id": "crystalborn_refraction",
+  "display_name": "Prismatic Refraction",
+  "description": "Crystalline body refracts magical energy, reducing magic damage taken by 15% and granting +2 DEF at combat start.",
+  "passive_type": "race_multi_stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "defense": 2,
+    "magic_damage_reduction_percent": 15
+  },
+  "category": "racial",
+  "source_type": "race"
+}

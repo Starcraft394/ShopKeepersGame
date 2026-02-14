@@ -3,7 +3,7 @@
   "display_name": "Ashblade",
   "description": "A swift assassin wreathed in smoke and cinders, striking from shadows with burning precision.",
   "archetype": "dps",
-  "unlock_region": 4,
+  "unlock_region": 1,
   "base_stats": {
     "health": 80,
     "attack": 18,

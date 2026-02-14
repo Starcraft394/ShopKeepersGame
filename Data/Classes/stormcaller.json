@@ -3,7 +3,7 @@
   "display_name": "Stormcaller",
   "description": "A tempest mage who commands lightning and wind to devastate enemies with elemental fury.",
   "archetype": "dps",
-  "unlock_region": 3,
+  "unlock_region": 1,
   "base_stats": {
     "health": 85,
     "attack": 16,

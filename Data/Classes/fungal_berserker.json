@@ -3,7 +3,7 @@
   "display_name": "Fungal Berserker",
   "description": "A rage-fueled warrior enhanced by symbiotic fungi, trading defense for overwhelming offensive power.",
   "archetype": "dps",
-  "unlock_region": 2,
+  "unlock_region": 1,
   "base_stats": {
     "health": 100,
     "attack": 14,

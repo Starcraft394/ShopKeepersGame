@@ -2,7 +2,7 @@
   "id": "crystalborn",
   "display_name": "Crystalborn",
   "description": "Beings formed from living crystal, resonating with prismatic energy. They refract magic and possess unparalleled clarity of purpose.",
-  "unlock_region": 5,
+  "unlock_region": 1,
   "stat_modifiers": {
     "health": 0,
     "attack": 3,

@@ -15,10 +15,11 @@ extends RefCounted
 # ============================================================================
 
 const DEFAULT_GRID_WIDTH = 4
-const DEFAULT_GRID_HEIGHT = 2
+const DEFAULT_GRID_HEIGHT = 3  # 3-Row Formation v1: Front/Middle/Back
 
 const FRONT_ROW = 0
-const BACK_ROW = 1
+const MIDDLE_ROW = 1  # 3-Row Formation v1
+const BACK_ROW = 2    # 3-Row Formation v1: was 1, now 2
 
 # ============================================================================
 # PUBLIC API
@@ -99,7 +100,16 @@ static func get_front_row_units(units: Array) -> Array:
 	return front
 
 
-## Get all units in back row (y == 1).
+## Get all units in middle row (y == 1). (3-Row Formation v1)
+static func get_middle_row_units(units: Array) -> Array:
+	var middle: Array = []
+	for unit in units:
+		if unit.is_alive and unit.is_middle_row():
+			middle.append(unit)
+	return middle
+
+
+## Get all units in back row (y == 2). (3-Row Formation v1)
 static func get_back_row_units(units: Array) -> Array:
 	var back: Array = []
 	for unit in units:
@@ -116,7 +126,15 @@ static func has_front_row_alive(units: Array) -> bool:
 	return false
 
 
-## Check if any units are alive in back row.
+## Check if any units are alive in middle row. (3-Row Formation v1)
+static func has_middle_row_alive(units: Array) -> bool:
+	for unit in units:
+		if unit.is_alive and unit.is_middle_row():
+			return true
+	return false
+
+
+## Check if any units are alive in back row. (3-Row Formation v1)
 static func has_back_row_alive(units: Array) -> bool:
 	for unit in units:
 		if unit.is_alive and unit.is_back_row():

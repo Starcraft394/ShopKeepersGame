@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ShopKeepers — Item Icon Reference & Art Pack Browser</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, sans-serif;
+    padding: 24px; line-height: 1.5;
+  }
+  h1 { color: #f0c040; text-align: center; margin-bottom: 8px; font-size: 28px; }
+  .subtitle { text-align: center; color: #888; margin-bottom: 24px; font-size: 14px; }
+
+  .stats-bar {
+    display: flex; justify-content: center; gap: 32px; margin-bottom: 32px; flex-wrap: wrap;
+  }
+  .stat-box {
+    background: #16213e; border: 1px solid #333; border-radius: 8px;
+    padding: 12px 20px; text-align: center; min-width: 140px;
+  }
+  .stat-box .num { font-size: 28px; font-weight: bold; }
+  .stat-box .label { font-size: 12px; color: #888; text-transform: uppercase; }
+  .stat-green .num { color: #4caf50; }
+  .stat-yellow .num { color: #ff9800; }
+  .stat-red .num { color: #f44336; }
+  .stat-blue .num { color: #42a5f5; }
+
+  h2 {
+    color: #f0c040; border-bottom: 2px solid #f0c04044; padding-bottom: 6px;
+    margin: 32px 0 16px 0; font-size: 20px;
+  }
+
+  /* ===== ITEM CARDS ===== */
+  .item-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 12px; margin-bottom: 16px;
+  }
+  .item-card {
+    background: #16213e; border: 1px solid #333; border-radius: 8px;
+    padding: 12px; display: flex; gap: 12px; align-items: center;
+    transition: border-color 0.2s;
+  }
+  .item-card:hover { border-color: #f0c040; }
+  .item-card.has-icon { border-left: 3px solid #4caf50; }
+  .item-card.no-icon { border-left: 3px solid #f44336; }
+
+  .icon-area {
+    flex-shrink: 0; width: 48px; height: 48px;
+    display: flex; align-items: center; justify-content: center;
+    background: #0f0f23; border-radius: 6px; border: 1px solid #333; overflow: hidden;
+  }
+  .icon-area img { max-width: 44px; max-height: 44px; image-rendering: pixelated; }
+  .icon-area .placeholder { color: #555; font-size: 24px; }
+
+  .item-info { flex: 1; min-width: 0; }
+  .item-name { font-weight: bold; color: #fff; font-size: 14px; }
+  .item-id { color: #666; font-size: 11px; font-family: monospace; }
+  .item-meta { font-size: 12px; color: #888; margin-top: 2px; }
+
+  .icon-status { flex-shrink: 0; font-size: 11px; text-align: right; max-width: 120px; }
+  .status-ok { color: #4caf50; }
+  .status-missing { color: #f44336; }
+
+  /* ===== FILTER BAR ===== */
+  .filter-bar {
+    display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; justify-content: center;
+  }
+  .filter-btn {
+    background: #16213e; border: 1px solid #444; color: #ccc;
+    padding: 6px 14px; border-radius: 16px; cursor: pointer;
+    font-size: 13px; transition: all 0.2s;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    background: #f0c040; color: #1a1a2e; border-color: #f0c040;
+  }
+
+  .legend {
+    display: flex; gap: 20px; margin: 16px 0; flex-wrap: wrap; font-size: 13px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-swatch { width: 16px; height: 16px; border-radius: 3px; }
+
+  /* ===== TAB NAVIGATION ===== */
+  .tab-bar {
+    display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 2px solid #333;
+    padding-bottom: 0;
+  }
+  .tab-btn {
+    background: #16213e; border: 1px solid #333; border-bottom: none;
+    color: #ccc; padding: 10px 20px; border-radius: 8px 8px 0 0;
+    cursor: pointer; font-size: 15px; font-weight: bold; transition: all 0.2s;
+  }
+  .tab-btn:hover { background: #1f2b4d; }
+  .tab-btn.active { background: #f0c040; color: #1a1a2e; border-color: #f0c040; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ===== ART PACK GALLERY ===== */
+  .pack-section {
+    margin-bottom: 24px; background: #16213e; border: 1px solid #333;
+    border-radius: 8px; overflow: hidden;
+  }
+  .pack-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 16px; cursor: pointer; user-select: none;
+    background: #1a2544; transition: background 0.2s;
+  }
+  .pack-header:hover { background: #1f2b4d; }
+  .pack-title { font-size: 16px; font-weight: bold; color: #f0c040; }
+  .pack-subtitle { font-size: 12px; color: #888; }
+  .pack-toggle { color: #888; font-size: 20px; transition: transform 0.2s; }
+  .pack-section.open .pack-toggle { transform: rotate(180deg); }
+  .pack-body { display: none; padding: 12px 16px; }
+  .pack-section.open .pack-body { display: block; }
+
+  .pack-hint {
+    font-size: 12px; color: #666; margin-bottom: 8px; font-style: italic;
+  }
+  .pack-items-label {
+    font-size: 13px; color: #90caf9; margin-bottom: 8px; font-weight: bold;
+  }
+
+  .sprite-grid {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .sprite-tile {
+    width: 64px; text-align: center; cursor: pointer;
+    border: 2px solid transparent; border-radius: 6px; padding: 4px;
+    transition: all 0.2s; position: relative;
+  }
+  .sprite-tile:hover { border-color: #f0c040; background: #0f0f23; }
+  .sprite-tile.selected { border-color: #4caf50; background: #0f2f0f; }
+  .sprite-tile img {
+    width: 48px; height: 48px; image-rendering: pixelated;
+    display: block; margin: 0 auto;
+  }
+  .sprite-tile .sprite-label {
+    font-size: 10px; color: #888; margin-top: 2px;
+  }
+  .sprite-tile .sprite-path {
+    display: none; position: absolute; bottom: 100%; left: 50%;
+    transform: translateX(-50%); background: #000; color: #f0c040;
+    padding: 4px 8px; border-radius: 4px; font-size: 10px;
+    white-space: nowrap; z-index: 100; pointer-events: none;
+    font-family: monospace;
+  }
+  .sprite-tile:hover .sprite-path { display: block; }
+</style>
+</head>
+<body>
+
+<h1>ShopKeepers — Item Icon Reference & Art Pack Browser</h1>
+<p class="subtitle">All 83 items + full art pack sprite galleries from Assets/_ArtPacks/</p>
+
+<div class="stats-bar">
+  <div class="stat-box stat-blue"><div class="num">83</div><div class="label">Total Items</div></div>
+  <div class="stat-box stat-green"><div class="num">22</div><div class="label">Have Icons</div></div>
+  <div class="stat-box stat-red"><div class="num">61</div><div class="label">Need Icons</div></div>
+  <div class="stat-box stat-yellow"><div class="num">1200+</div><div class="label">Available Sprites</div></div>
+</div>
+
+<!-- ===== TAB NAVIGATION ===== -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="showTab('items')">Items Needing Icons</button>
+  <button class="tab-btn" onclick="showTab('gallery')">Art Pack Browser</button>
+</div>
+
+<!-- ========================================================================= -->
+<!-- TAB 1: ITEMS                                                              -->
+<!-- ========================================================================= -->
+<div id="tab-items" class="tab-content active">
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-swatch" style="background:#4caf50"></div> Has icon assigned</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#f44336"></div> Needs icon from art packs</div>
+</div>
+
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="filterItems('all',this)">All (83)</button>
+  <button class="filter-btn" onclick="filterItems('consumable',this)">Consumables (22)</button>
+  <button class="filter-btn" onclick="filterItems('book',this)">Books (16)</button>
+  <button class="filter-btn" onclick="filterItems('weapon',this)">Weapons (8)</button>
+  <button class="filter-btn" onclick="filterItems('armor',this)">Armor (6)</button>
+  <button class="filter-btn" onclick="filterItems('offhand',this)">Offhand (4)</button>
+  <button class="filter-btn" onclick="filterItems('accessory',this)">Accessories (4)</button>
+  <button class="filter-btn" onclick="filterItems('bag',this)">Bags (2)</button>
+  <button class="filter-btn" onclick="filterItems('material',this)">Materials (18)</button>
+  <button class="filter-btn" onclick="filterItems('tool',this)">Tools (1)</button>
+  <button class="filter-btn" onclick="filterItems('no-icon',this)">Missing (61)</button>
+</div>
+
+<!-- Consumables — Have Icons -->
+<h2>Consumables (22 items — all have icons)</h2>
+<div class="item-grid" id="consumables-grid"></div>
+
+<!-- Weapons -->
+<h2>Weapons (8 items — need icons)</h2>
+<p style="color:#888;font-size:13px;margin-bottom:8px;">Browse: Swords (48), Bows (48), Maces (48), Axes (48), Spears (48) in Art Pack tab</p>
+<div class="item-grid" id="weapons-grid"></div>
+
+<!-- Armor -->
+<h2>Armor (6 items — need icons)</h2>
+<p style="color:#888;font-size:13px;margin-bottom:8px;">Browse: Helmets (48), Cuirass (48), Sabatons (48) in Art Pack tab</p>
+<div class="item-grid" id="armor-grid"></div>
+
+<!-- Offhand -->
+<h2>Offhand (4 items — need icons)</h2>
+<p style="color:#888;font-size:13px;margin-bottom:8px;">Browse: Bracers (48), MagicArtifacts (48) in Art Pack tab</p>
+<div class="item-grid" id="offhand-grid"></div>
+
+<!-- Accessories -->
+<h2>Accessories (4 items — need icons)</h2>
+<p style="color:#888;font-size:13px;margin-bottom:8px;">Browse: Rings (48), Gems (48), MagicArtifacts (48) in Art Pack tab</p>
+<div class="item-grid" id="accessories-grid"></div>
+
+<!-- Bags -->
+<h2>Bags (2 items — need icons)</h2>
+<p style="color:#888;font-size:13px;margin-bottom:8px;">Browse: Loot_Chaos (50), CraftingMaterials (48) in Art Pack tab</p>
+<div class="item-grid" id="bags-grid"></div>
+
+<!-- Materials -->
+<h2>Materials (18 items — need icons)</h2>
+<p style="color:#888;font-size:13px;margin-bottom:8px;">Browse: Herbs (48), Mushrooms (48), Food (48), Berries (48), MeatSkins (48), CraftingMaterials (48), Loot_Chaos (50), AlchemyItems (48) in Art Pack tab</p>
+<div class="item-grid" id="materials-grid"></div>
+
+<!-- Books -->
+<h2>Class Books (16 items — need icons)</h2>
+<p style="color:#888;font-size:13px;margin-bottom:8px;">Browse: MagicBooks (48) in Art Pack tab — pick 16 visually distinct ones!</p>
+<div class="item-grid" id="books-grid"></div>
+
+<!-- Tool -->
+<h2>Tools (1 item — has icon)</h2>
+<div class="item-grid" id="tools-grid"></div>
+
+</div><!-- end tab-items -->
+
+<!-- ========================================================================= -->
+<!-- TAB 2: ART PACK BROWSER                                                   -->
+<!-- ========================================================================= -->
+<div id="tab-gallery" class="tab-content">
+
+<p style="color:#888; margin-bottom:16px; font-size:14px;">
+  Click any pack to expand its gallery. Hover over sprites to see the full path. Each pack has 48 sprites (Icon1–Icon48).<br>
+  <strong>Tip:</strong> Note the pack name + icon number (e.g. "Swords/Icon3") and tell Claude which to assign to which item.
+</p>
+
+<div id="gallery-container"></div>
+
+</div><!-- end tab-gallery -->
+
+<hr style="border-color:#333; margin:32px 0;">
+<p style="color:#555; font-size:12px; text-align:center;">
+  Generated by Claude Code &middot; ShopKeepers Game Item Icon Reference
+</p>
+
+<script>
+// ============================================================================
+// DATA
+// ============================================================================
+
+const ITEMS = [
+  // Consumables — have icons
+  {id:"minor_healing_tonic", name:"Minor Healing Tonic", cat:"consumable", meta:"heal 15", icon:"icon_item_minor_healing_tonic.png"},
+  {id:"healing_tonic", name:"Healing Tonic", cat:"consumable", meta:"heal 25", icon:"icon_item_healing_tonic.png"},
+  {id:"strong_healing_tonic", name:"Strong Healing Tonic", cat:"consumable", meta:"heal 40 | crafted", icon:"icon_item_strong_healing_tonic.png"},
+  {id:"bandage", name:"Bandage", cat:"consumable", meta:"cure_bleeding", icon:"icon_item_bandage.png"},
+  {id:"antidote", name:"Antidote", cat:"consumable", meta:"cure_poison", icon:"icon_item_antidote.png"},
+  {id:"antidote_vial", name:"Antidote Vial", cat:"consumable", meta:"cure_poison", icon:"icon_item_antidote_vial.png"},
+  {id:"smelling_salts", name:"Smelling Salts", cat:"consumable", meta:"cure_stun | crafted", icon:"icon_item_smelling_salts.png"},
+  {id:"cooked_meat", name:"Cooked Meat", cat:"consumable", meta:"food | heal 12", icon:"icon_item_cooked_meat.png"},
+  {id:"berry_tart", name:"Berry Tart", cat:"consumable", meta:"food | heal 10", icon:"icon_item_berry_tart.png"},
+  {id:"mushroom_stew", name:"Mushroom Stew", cat:"consumable", meta:"food | heal 8", icon:"icon_item_mushroom_stew.png"},
+  {id:"trail_rations", name:"Trail Rations", cat:"consumable", meta:"food | heal 6", icon:"icon_item_trail_rations.png"},
+  {id:"hunters_feast", name:"Hunter's Feast", cat:"consumable", meta:"food | heal 20", icon:"icon_item_hunters_feast.png"},
+  {id:"forest_bounty", name:"Forest Bounty", cat:"consumable", meta:"food | heal 15", icon:"icon_item_forest_bounty.png"},
+  {id:"focus_elixir", name:"Focus Elixir", cat:"consumable", meta:"buff_speed | crafted", icon:"icon_item_focus_elixir.png"},
+  {id:"stamina_draught", name:"Stamina Draught", cat:"consumable", meta:"stamina | buff", icon:"icon_item_stamina_draught.png"},
+  {id:"power_elixir", name:"Power Elixir", cat:"consumable", meta:"buff_attack | tier 2", icon:"icon_item_power_elixir.png"},
+  {id:"resistance_salve", name:"Resistance Salve", cat:"consumable", meta:"buff_defense | crafted", icon:"icon_item_resistance_salve.png"},
+  {id:"shadow_oil", name:"Shadow Oil", cat:"consumable", meta:"buff_evasion | crafted", icon:"icon_item_shadow_oil.png"},
+  {id:"minor_venom_flask", name:"Minor Venom Flask", cat:"consumable", meta:"poison_weapon | crafted", icon:"icon_item_minor_venom_flask.png"},
+  {id:"smoke_bomb", name:"Smoke Bomb", cat:"consumable", meta:"escape", icon:"icon_item_smoke_bomb.png"},
+  {id:"minor_stamina_snack", name:"Minor Stamina Snack", cat:"consumable", meta:"stamina", icon:"icon_item_minor_stamina_snack.png"},
+  // Tool
+  {id:"torch", name:"Torch", cat:"tool", meta:"visibility", icon:"icon_item_torch.png"},
+  // Weapons — no icons
+  {id:"rusty_sword", name:"Rusty Sword", cat:"weapon", meta:"sword | ATK +3 | tier 1", icon:null, emoji:"\u2694"},
+  {id:"iron_sword", name:"Iron Sword", cat:"weapon", meta:"sword | ATK +6 | tier 2", icon:null, emoji:"\u2694"},
+  {id:"hunting_bow", name:"Hunting Bow", cat:"weapon", meta:"ranged | ATK +3 SPD +1 | tier 1", icon:null, emoji:"\uD83C\uDFF9"},
+  {id:"composite_bow", name:"Composite Bow", cat:"weapon", meta:"ranged | ATK +5 SPD +2 | tier 2", icon:null, emoji:"\uD83C\uDFF9"},
+  {id:"oak_staff", name:"Oak Staff", cat:"weapon", meta:"staff | ATK +2 | tier 1", icon:null, emoji:"\uD83E\uDE84"},
+  {id:"arcane_staff", name:"Arcane Staff", cat:"weapon", meta:"staff | ATK +5 | tier 2", icon:null, emoji:"\uD83E\uDE84"},
+  {id:"wooden_mace", name:"Wooden Mace", cat:"weapon", meta:"2h melee | ATK +4 | tier 1", icon:null, emoji:"\uD83D\uDD28"},
+  {id:"iron_greataxe", name:"Iron Greataxe", cat:"weapon", meta:"2h melee | ATK +8 | tier 2", icon:null, emoji:"\uD83E\uDE93"},
+  // Armor
+  {id:"iron_helmet", name:"Iron Helmet", cat:"armor", meta:"helmet | DEF +3", icon:null, emoji:"\uD83E\uDEE0"},
+  {id:"tanned_leather_hood", name:"Tanned Leather Hood", cat:"armor", meta:"helmet | DEF +1 SPD +1", icon:null, emoji:"\uD83E\uDEE0"},
+  {id:"chainmail_vest", name:"Chainmail Vest", cat:"armor", meta:"chest | DEF +5", icon:null, emoji:"\uD83E\uDDE5"},
+  {id:"leather_vest", name:"Leather Vest", cat:"armor", meta:"chest | DEF +2 SPD +1", icon:null, emoji:"\uD83E\uDDE5"},
+  {id:"iron_greaves", name:"Iron Greaves", cat:"armor", meta:"legs | DEF +2", icon:null, emoji:"\uD83D\uDC62"},
+  {id:"tanned_leather_greaves", name:"Tanned Leather Greaves", cat:"armor", meta:"legs | DEF +1 SPD +1", icon:null, emoji:"\uD83D\uDC62"},
+  // Offhand
+  {id:"wooden_shield", name:"Wooden Shield", cat:"offhand", meta:"shield | DEF +3", icon:null, emoji:"\uD83D\uDEE1"},
+  {id:"reinforced_shield", name:"Reinforced Shield", cat:"offhand", meta:"shield | DEF +5 | tier 2", icon:null, emoji:"\uD83D\uDEE1"},
+  {id:"apprentice_focus", name:"Apprentice Focus", cat:"offhand", meta:"focus | ATK +1 | tier 1", icon:null, emoji:"\uD83D\uDD2E"},
+  {id:"wooden_focus", name:"Wooden Focus", cat:"offhand", meta:"focus | ATK +2 | tier 2", icon:null, emoji:"\uD83D\uDD2E"},
+  // Accessories
+  {id:"simple_ring", name:"Simple Ring", cat:"accessory", meta:"ring | DEF +1", icon:null, emoji:"\uD83D\uDC8D"},
+  {id:"silver_ring", name:"Silver Ring", cat:"accessory", meta:"ring | DEF +2", icon:null, emoji:"\uD83D\uDC8D"},
+  {id:"lucky_charm", name:"Lucky Charm", cat:"accessory", meta:"amulet | SPD +2", icon:null, emoji:"\uD83E\uDDFF"},
+  {id:"warriors_pendant", name:"Warrior's Pendant", cat:"accessory", meta:"amulet | ATK +2", icon:null, emoji:"\uD83E\uDDFF"},
+  // Bags
+  {id:"small_backpack", name:"Small Backpack", cat:"bag", meta:"bag | +2 capacity", icon:null, emoji:"\uD83C\uDF92"},
+  {id:"sturdy_backpack", name:"Sturdy Backpack", cat:"bag", meta:"bag | +4 capacity", icon:null, emoji:"\uD83C\uDF92"},
+  // Materials — crafting
+  {id:"herb", name:"Medicinal Herb", cat:"material", meta:"alchemy", icon:null, emoji:"\uD83C\uDF3F"},
+  {id:"herb_sprig", name:"Herb Sprig", cat:"material", meta:"greenroot | forest", icon:null, emoji:"\uD83C\uDF3F"},
+  {id:"wood", name:"Wood", cat:"material", meta:"smithing", icon:null, emoji:"\uD83E\uDEB5"},
+  {id:"wood_bundle", name:"Bundle of Wood", cat:"material", meta:"crafting", icon:null, emoji:"\uD83E\uDEB5"},
+  {id:"mushroom", name:"Forest Mushroom (mat)", cat:"material", meta:"alchemy", icon:null, emoji:"\uD83C\uDF44"},
+  {id:"iron_scrap", name:"Iron Scrap", cat:"material", meta:"crafting", icon:null, emoji:"\u2699"},
+  // Materials — food
+  {id:"raw_meat", name:"Raw Meat", cat:"material", meta:"food_material | meat", icon:null, emoji:"\uD83E\uDD69"},
+  {id:"wild_berries", name:"Wild Berries", cat:"material", meta:"food_material | plant", icon:null, emoji:"\uD83C\uDF53"},
+  {id:"forest_mushroom", name:"Forest Mushroom", cat:"material", meta:"food_material | plant", icon:null, emoji:"\uD83C\uDF44"},
+  // Materials — monster parts
+  {id:"slime_gel", name:"Slime Gel", cat:"material", meta:"monster_part", icon:null, emoji:"\uD83E\uDDEA"},
+  {id:"wolf_pelt", name:"Wolf Pelt", cat:"material", meta:"monster_part", icon:null, emoji:"\uD83D\uDC3A"},
+  {id:"boar_tusk", name:"Boar Tusk", cat:"material", meta:"monster_part", icon:null, emoji:"\uD83D\uDC17"},
+  {id:"spider_fang", name:"Spider Fang", cat:"material", meta:"monster_part", icon:null, emoji:"\uD83D\uDD77"},
+  {id:"spider_silk", name:"Spider Silk", cat:"material", meta:"monster_part", icon:null, emoji:"\uD83D\uDD78"},
+  {id:"bone_fragment", name:"Bone Fragment", cat:"material", meta:"monster_part", icon:null, emoji:"\uD83E\uDDB4"},
+  {id:"cursed_dust", name:"Cursed Dust", cat:"material", meta:"monster_part", icon:null, emoji:"\u2728"},
+  {id:"bat_wing", name:"Bat Wing", cat:"material", meta:"monster_part", icon:null, emoji:"\uD83E\uDD87"},
+  // Books
+  {id:"book_defender", name:"Defender's Tome", cat:"book", meta:"class: defender", icon:null, emoji:"\uD83D\uDCD6"},
+  {id:"book_striker", name:"Striker's Codex", cat:"book", meta:"class: striker", icon:null, emoji:"\uD83D\uDCD6"},
+  {id:"book_warden", name:"Warden's Codex", cat:"book", meta:"class: warden", icon:null, emoji:"\uD83D\uDCD6"},
+  {id:"book_mender", name:"Warden's Codex (Legacy)", cat:"book", meta:"class: warden | legacy", icon:null, emoji:"\uD83D\uDCD6"},
+  {id:"book_druid", name:"Druid's Grimoire", cat:"book", meta:"class: druid", icon:null, emoji:"\uD83D\uDCD6"},
+  {id:"book_fungal_berserker", name:"Spore-Marked Journal", cat:"book", meta:"class: fungal_berserker", icon:null, emoji:"\uD83D\uDCD6"},
+  {id:"book_tidechaser", name:"Tidechaser's Codex", cat:"book", meta:"class: tidechaser", icon:null, emoji:"\uD83D\uDCD6"},
+  {id:"book_stormcaller", name:"Stormcaller's Manual", cat:"book", meta:"class: stormcaller", icon:null, emoji:"\uD83D\uDCD6"},
+  {id:"book_pyrewarden", name:"Pyrewarden's Doctrine", cat:"book", meta:"class: pyrewarden", icon:null, emoji:"\uD83D\uDCD6"},
+  {id:"book_ashblade", name:"Ashblade's Teachings", cat:"book", meta:"class: ashblade", icon:null, emoji:"\uD83D\uDCD6"},
+  {id:"book_prism_sentinel", name:"Prism Sentinel's Codex", cat:"book", meta:"class: prism_sentinel", icon:null, emoji:"\uD83D\uDCD6"},
+  {id:"book_prism_lancer", name:"Prism Lancer's Guide", cat:"book", meta:"class: prism_lancer", icon:null, emoji:"\uD83D\uDCD6"},
+  {id:"book_dark_channeler", name:"Dark Channeler's Grimoire", cat:"book", meta:"class: dark_channeler", icon:null, emoji:"\uD83D\uDCD6"},
+  {id:"book_lich", name:"Lich's Necronomicon", cat:"book", meta:"class: lich", icon:null, emoji:"\uD83D\uDCD6"},
+  {id:"book_voidwalker", name:"Voidwalker's Compendium", cat:"book", meta:"class: voidwalker", icon:null, emoji:"\uD83D\uDCD6"},
+  {id:"book_void_herald", name:"Void Herald's Manuscript", cat:"book", meta:"class: void_herald", icon:null, emoji:"\uD83D\uDCD6"},
+];
+
+const ART_PACKS = [
+  // === EQUIPMENT ===
+  {name:"Swords", count:48, forItems:"rusty_sword, iron_sword", desc:"1H swords, daggers, blades"},
+  {name:"Daggers", count:48, forItems:"future dagger weapons", desc:"Daggers, knives, stilettos"},
+  {name:"Axes", count:48, forItems:"iron_greataxe", desc:"Axes, hatchets, greataxes"},
+  {name:"Bows", count:48, forItems:"hunting_bow, composite_bow", desc:"Bows, crossbows, ranged"},
+  {name:"Maces", count:48, forItems:"wooden_mace", desc:"Maces, hammers, flails"},
+  {name:"Spears", count:48, forItems:"oak_staff, arcane_staff", desc:"Spears, staves, polearms"},
+  {name:"Helmets", count:48, forItems:"iron_helmet, tanned_leather_hood", desc:"Helmets, hoods, headgear"},
+  {name:"Cuirass", count:48, forItems:"chainmail_vest, leather_vest", desc:"Chest armor, vests, tunics"},
+  {name:"Trousers", count:48, forItems:"iron_greaves, tanned_leather_greaves", desc:"Trousers, pants, leg armor"},
+  {name:"Sabatons", count:48, forItems:"iron_greaves alt, boots", desc:"Boots, greaves, leg armor"},
+  {name:"Bracers", count:48, forItems:"wooden_shield, reinforced_shield", desc:"Bracers, shields, arm guards"},
+  {name:"Rings", count:48, forItems:"simple_ring, silver_ring", desc:"Rings, bands"},
+  {name:"MagicArtifacts", count:48, forItems:"lucky_charm, warriors_pendant, apprentice_focus, wooden_focus", desc:"Amulets, orbs, magical items"},
+  {name:"MagicBooks", count:48, forItems:"All 16 class books", desc:"Tomes, grimoires, codexes"},
+  {name:"Runes", count:48, forItems:"enchanting, magic runes", desc:"Runes, glyphs, enchantment stones"},
+  // === MATERIALS & CONSUMABLES ===
+  {name:"Herbs", count:48, forItems:"herb, herb_sprig", desc:"Leaves, herbs, plant materials"},
+  {name:"Mushrooms", count:48, forItems:"mushroom, forest_mushroom", desc:"Mushrooms, fungi"},
+  {name:"Berries", count:48, forItems:"wild_berries", desc:"Berries, fruits"},
+  {name:"FruitsVegetables", count:48, forItems:"food ingredients expansion", desc:"Fruits, vegetables, produce"},
+  {name:"Food", count:48, forItems:"raw_meat", desc:"Cooked food, meat, rations"},
+  {name:"MeatSkins", count:48, forItems:"wolf_pelt, raw_meat alt", desc:"Pelts, hides, raw meat"},
+  {name:"CraftingMaterials", count:48, forItems:"iron_scrap, wood_bundle", desc:"Ingots, lumber, ore"},
+  {name:"CraftingMaterials2", count:48, forItems:"additional materials", desc:"More crafting supplies"},
+  {name:"AlchemyItems", count:48, forItems:"potion ingredients", desc:"Vials, reagents, alchemy tools"},
+  {name:"Potions", count:48, forItems:"(consumables already have icons)", desc:"Potions, elixirs, flasks"},
+  {name:"Gems", count:48, forItems:"accessories alt", desc:"Gems, jewels, precious stones"},
+  // === LOOT & TREASURE ===
+  {name:"Loot_Chaos", count:50, forItems:"slime_gel, bone_fragment, spider parts, bat_wing", desc:"Monster drops, chaos loot"},
+  {name:"Loot_Demon", count:48, forItems:"demon monster drops", desc:"Demon-themed loot icons"},
+  {name:"Loot_Goblin", count:48, forItems:"goblin monster drops", desc:"Goblin-themed loot icons"},
+  {name:"Loot_Undead", count:48, forItems:"undead monster drops", desc:"Undead-themed loot icons"},
+  {name:"LootDrops", count:48, forItems:"generic loot drops", desc:"General loot drop icons"},
+  {name:"Treasure", count:40, forItems:"bags, chests, keys, gold, scrolls", desc:"Treasure assets (named files)", customPath:"Treasure/PNG/Transperent", customFiles:["bag1","bag2","bag3","black_pearl","blue_stone","Chest1","Chest1_open","Chest2","Chest2_open","Chest3","Chest3_open","Chest4","Chest4_open","Chest5","Chest5_open","crown1","crown2","crown3","diamond","emerald","gold_bars","gold1","gold2","gold3","jevellery1","jevellery2","key1","key2","key3","key4","pink_stone","ring1","ring2","ruby","scepter","scroll","scull","vessel1","vessel2","violet_stone"]},
+  // === STATUS & BUFFS ===
+  {name:"BuffIcons", count:48, forItems:"buff/status effect icons", desc:"Buff icons (48)", customPath:"BuffIcons/PNG"},
+  {name:"BuffSkills", count:48, forItems:"additional buff/status icons", desc:"Buff skill icons"},
+  {name:"Sigils", count:48, forItems:"magic items, enchantments", desc:"Runes, sigils, glyphs"},
+  {name:"Curses", count:48, forItems:"cursed_dust, dark items", desc:"Curse effects, dark magic"},
+  // === SKILLS ===
+  {name:"Skills_Aeromancer", count:48, forItems:"wind/air class abilities", desc:"Aeromancer wind magic skills"},
+  {name:"Skills_Crossbowman", count:48, forItems:"ranged class abilities", desc:"Crossbowman ranged skills"},
+  {name:"Skills_Demon", count:48, forItems:"dark/demon class abilities", desc:"Demon skill icons"},
+  {name:"Skills_Earthbender", count:48, forItems:"earth class abilities", desc:"Earthbender stone/ground skills"},
+  {name:"Skills_Summoner", count:48, forItems:"summoner class abilities", desc:"Summoner conjuring skills"},
+  // === GATHERING ===
+  {name:"Farming", count:48, forItems:"town farming/economy", desc:"Farming tools, crops, seeds"},
+  {name:"Fishing", count:48, forItems:"fishing/gathering", desc:"Fishing tools, catches"},
+  {name:"Mining", count:48, forItems:"mining/resource gathering", desc:"Pickaxes, ores, mining tools"},
+];
+
+// ============================================================================
+// RENDER ITEMS
+// ============================================================================
+
+const GRID_MAP = {
+  consumable: 'consumables-grid', weapon: 'weapons-grid', armor: 'armor-grid',
+  offhand: 'offhand-grid', accessory: 'accessories-grid', bag: 'bags-grid',
+  material: 'materials-grid', book: 'books-grid', tool: 'tools-grid'
+};
+
+function renderItems() {
+  for (const item of ITEMS) {
+    const gridId = GRID_MAP[item.cat];
+    const grid = document.getElementById(gridId);
+    if (!grid) continue;
+
+    const hasIcon = !!item.icon;
+    const card = document.createElement('div');
+    card.className = `item-card ${hasIcon ? 'has-icon' : 'no-icon'}`;
+    card.setAttribute('data-filter', `${item.cat}${hasIcon ? '' : ' no-icon'}`);
+
+    const iconHtml = hasIcon
+      ? `<img src="../Assets/Icons/Items/${item.icon}" alt="icon">`
+      : `<div class="placeholder">${item.emoji || '?'}</div>`;
+
+    card.innerHTML = `
+      <div class="icon-area">${iconHtml}</div>
+      <div class="item-info">
+        <div class="item-name">${item.name}</div>
+        <div class="item-id">${item.id}</div>
+        <div class="item-meta">${item.meta}</div>
+      </div>
+      <div class="icon-status ${hasIcon ? 'status-ok' : 'status-missing'}">${hasIcon ? 'HAS ICON' : 'NEEDS ICON'}</div>
+    `;
+    grid.appendChild(card);
+  }
+}
+
+// ============================================================================
+// RENDER ART PACK GALLERIES
+// ============================================================================
+
+function renderGalleries() {
+  const container = document.getElementById('gallery-container');
+
+  for (const pack of ART_PACKS) {
+    const section = document.createElement('div');
+    section.className = 'pack-section';
+
+    // Support customPath (e.g. BuffIcons/PNG) or default path pattern
+    const relDir = pack.customPath
+      ? `Assets/_ArtPacks/${pack.customPath}`
+      : `Assets/_ArtPacks/${pack.name}/PNG/Transperent`;
+    const basePath = `../${relDir}`;
+
+    let spritesHtml = '';
+
+    if (pack.customFiles) {
+      // Named files (e.g. Treasure: bag1.png, Chest1.png, ...)
+      for (let i = 0; i < pack.customFiles.length; i++) {
+        const fname = pack.customFiles[i];
+        const filename = `${fname}.png`;
+        const fullPath = `${relDir}/${filename}`;
+        spritesHtml += `
+          <div class="sprite-tile" onclick="selectSprite(this,'${pack.name}','${fname}')">
+            <img src="${basePath}/${filename}" alt="${filename}" loading="lazy">
+            <div class="sprite-label">${fname}</div>
+            <div class="sprite-path">${fullPath}</div>
+          </div>`;
+      }
+    } else {
+      // Standard numbered icons (Icon1..IconN)
+      for (let i = 1; i <= pack.count; i++) {
+        const filename = `Icon${i}.png`;
+        const fullPath = `${relDir}/${filename}`;
+        spritesHtml += `
+          <div class="sprite-tile" onclick="selectSprite(this,'${pack.name}',${i})">
+            <img src="${basePath}/${filename}" alt="${filename}" loading="lazy">
+            <div class="sprite-label">#${i}</div>
+            <div class="sprite-path">${fullPath}</div>
+          </div>`;
+      }
+    }
+
+    section.innerHTML = `
+      <div class="pack-header" onclick="togglePack(this)">
+        <div>
+          <div class="pack-title">${pack.name}</div>
+          <div class="pack-subtitle">${pack.count} sprites &mdash; ${pack.desc}</div>
+        </div>
+        <div class="pack-toggle">\u25BC</div>
+      </div>
+      <div class="pack-body">
+        <div class="pack-items-label">Items that need these: ${pack.forItems}</div>
+        <div class="pack-hint">Hover for full path. Click to highlight. Tell Claude: "${pack.name}/Icon# \u2192 item_id"</div>
+        <div class="sprite-grid">${spritesHtml}</div>
+      </div>`;
+
+    container.appendChild(section);
+  }
+}
+
+// ============================================================================
+// INTERACTIONS
+// ============================================================================
+
+function showTab(tabName) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`tab-${tabName === 'items' ? 'items' : 'gallery'}`).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function filterItems(filter, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  document.querySelectorAll('.item-card').forEach(card => {
+    if (filter === 'all') { card.style.display = 'flex'; return; }
+    const f = card.getAttribute('data-filter') || '';
+    card.style.display = f.includes(filter) ? 'flex' : 'none';
+  });
+}
+
+function togglePack(header) {
+  header.parentElement.classList.toggle('open');
+}
+
+function selectSprite(tile, pack, num) {
+  tile.classList.toggle('selected');
+}
+
+// ============================================================================
+// INIT
+// ============================================================================
+renderItems();
+renderGalleries();
+</script>
+
+</body>
+</html>

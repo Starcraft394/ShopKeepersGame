@@ -3,7 +3,7 @@
   "display_name": "Pyrewarden",
   "description": "A flame-forged tank who draws enemy aggression and retaliates with burning vengeance.",
   "archetype": "vanguard",
-  "unlock_region": 4,
+  "unlock_region": 1,
   "base_stats": {
     "health": 130,
     "attack": 10,

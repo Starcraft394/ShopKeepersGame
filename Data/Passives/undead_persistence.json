@@ -1,0 +1,13 @@
+{
+  "id": "undead_persistence",
+  "display_name": "Deathless Persistence",
+  "description": "Having already died once, undead are immune to poison and bleed effects, and gain +2 ATK at combat start.",
+  "passive_type": "race_multi_stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "attack": 2,
+    "status_immunity": ["poison", "bleed"]
+  },
+  "category": "racial",
+  "source_type": "race"
+}

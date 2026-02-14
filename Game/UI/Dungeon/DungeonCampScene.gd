@@ -486,6 +486,13 @@ func _create_hero_row(hero_id: String) -> HBoxContainer:
 			var template = DataRegistry.get_item_template(item_id)
 			var display_name = template.display_name if template else item_id
 
+			# Item icon (Button.icon property)
+			if template != null:
+				var icon_tex = template.get_icon_texture()
+				if icon_tex != null:
+					slot_btn.icon = icon_tex
+					slot_btn.expand_icon = true
+
 			# Show abbreviated name (first 3 chars) or qty
 			if qty > 1:
 				slot_btn.text = str(qty)
@@ -661,10 +668,10 @@ func _on_hero_info_pressed(hero_id: String) -> void:
 	var hp_data = GameContext.get_hero_hp(hero_id)
 	var stats = GameContext.get_hero_effective_stats(hero_id)
 
-	_add_camp_stat_line(vbox, "HP", "%d / %d" % [hp_data.get("current", 0), hp_data.get("max", 0)], Color.LIGHT_GREEN)
-	_add_camp_stat_line(vbox, "Attack", str(stats.get("attack", 0)), Color.SALMON)
-	_add_camp_stat_line(vbox, "Defense", str(stats.get("defense", 0)), Color.LIGHT_BLUE)
-	_add_camp_stat_line(vbox, "Speed", str(stats.get("speed", 0)), Color.YELLOW)
+	_add_camp_stat_line(vbox, "HP", "%d / %d" % [hp_data.get("current", 0), hp_data.get("max", 0)], Color.LIGHT_GREEN, _build_camp_stat_tooltip("Health", hero_id))
+	_add_camp_stat_line(vbox, "Attack", str(stats.get("attack", 0)), Color.SALMON, _build_camp_stat_tooltip("Attack", hero_id))
+	_add_camp_stat_line(vbox, "Defense", str(stats.get("defense", 0)), Color.LIGHT_BLUE, _build_camp_stat_tooltip("Defense", hero_id))
+	_add_camp_stat_line(vbox, "Speed", str(stats.get("speed", 0)), Color.YELLOW, _build_camp_stat_tooltip("Speed", hero_id))
 
 	vbox.add_child(HSeparator.new())
 
@@ -748,8 +755,8 @@ func _on_hero_info_window_closed() -> void:
 		_hero_info_window = null
 
 
-## Helper: Add a stat line to the hero info window
-func _add_camp_stat_line(container: VBoxContainer, stat_name: String, value: String, color: Color) -> void:
+## Helper: Add a stat line to the hero info window with optional tooltip
+func _add_camp_stat_line(container: VBoxContainer, stat_name: String, value: String, color: Color, tooltip: String = "") -> void:
 	var hbox = HBoxContainer.new()
 	hbox.add_theme_constant_override("separation", 8)
 
@@ -763,6 +770,9 @@ func _add_camp_stat_line(container: VBoxContainer, stat_name: String, value: Str
 	val_lbl.text = value
 	val_lbl.add_theme_font_size_override("font_size", 12)
 	val_lbl.add_theme_color_override("font_color", color)
+	if tooltip != "":
+		val_lbl.tooltip_text = tooltip
+		val_lbl.mouse_filter = Control.MOUSE_FILTER_STOP
 	hbox.add_child(val_lbl)
 
 	container.add_child(hbox)
@@ -822,6 +832,63 @@ func _add_camp_equipment_line(container: VBoxContainer, slot_name: String, value
 	hbox.add_child(val_lbl)
 
 	container.add_child(hbox)
+
+
+## Build tooltip showing stat breakdown (class base + race + gear)
+func _build_camp_stat_tooltip(stat_name: String, hero_id: String) -> String:
+	var hero = GameContext.get_hero(hero_id)
+	if hero.is_empty():
+		return stat_name
+
+	var class_id = hero.get("class_id", "")
+	var race_id = hero.get("race_id", "human")
+	var level = int(hero.get("level", 1))
+
+	var class_data = DataRegistry.get_class_data(class_id)
+	var race_data = DataRegistry.get_race(race_id)
+
+	var stat_key = stat_name.to_lower()  # "health", "attack", "defense", "speed"
+
+	# Get class base at level
+	var base_value = 0
+	if class_data != null:
+		var base_stats = class_data.get_stats_at_level(level)
+		base_value = int(base_stats.get(stat_key, 0))
+
+	# Get race modifier and name
+	var race_bonus = 0
+	var race_name = race_id.capitalize()
+	if race_data != null:
+		race_bonus = int(race_data.stat_modifiers.get(stat_key, 0))
+		if race_data.display_name != "":
+			race_name = race_data.display_name
+
+	# Get gear bonus
+	var eff_stats = GameContext.get_hero_effective_stats(hero_id)
+	var gear_bonus_dict = eff_stats.get("gear_bonus", {})
+	var gear_bonus = int(gear_bonus_dict.get(stat_key, 0))
+
+	# Build tooltip
+	var parts: Array = [stat_name]
+	parts.append("Base (Lv %d): %d" % [level, base_value])
+
+	if race_bonus != 0:
+		if race_bonus > 0:
+			parts.append("%s: +%d" % [race_name, race_bonus])
+		else:
+			parts.append("%s: %d" % [race_name, race_bonus])
+
+	if gear_bonus != 0:
+		if gear_bonus > 0:
+			parts.append("Gear: +%d" % gear_bonus)
+		else:
+			parts.append("Gear: %d" % gear_bonus)
+
+	var total = base_value + race_bonus + gear_bonus
+	if race_bonus != 0 or gear_bonus != 0:
+		parts.append("Total: %d" % total)
+
+	return "\n".join(parts)
 
 
 ## Build tooltip text showing item stats for equipment
@@ -904,6 +971,13 @@ func _populate_shopkeeper_bag() -> void:
 
 		var slot_btn = Button.new()
 		slot_btn.custom_minimum_size = Vector2(60, 32)
+
+		# Item icon (Button.icon property)
+		if template != null:
+			var icon_tex = template.get_icon_texture()
+			if icon_tex != null:
+				slot_btn.icon = icon_tex
+				slot_btn.expand_icon = true
 
 		# Show name + qty
 		if qty > 1:

@@ -114,7 +114,14 @@ func initialize_combat(hero_ids: Array, enemy_ids: Array, rng: RandomNumberGener
 
 	# Assign grid positions (M3)
 	FormationAssigner.assign_default_formation(_player_units, _enemy_units)
-	print("[CombatController] Formation assigned (4x2 grid)")
+
+	# Apply hero row assignments (3-Row Formation v1)
+	# Override row for player units based on saved assignments
+	for unit in _player_units:
+		var hero_id = unit.source_id
+		var assigned_row = GameContext.get_hero_row(hero_id)
+		unit.grid_y = assigned_row
+	print("[CombatController] Formation assigned (3-row: Front/Middle/Back)")
 
 	# Apply passive stat bonuses (M4)
 	_apply_all_passives()
@@ -279,61 +286,51 @@ func _apply_single_passive(unit: CombatUnit, passive_id: String) -> void:
 				unit.display_name, passive.display_name, unit.grid_y])
 			return
 
-	# Apply stat bonus
+	# Apply stat bonus using buff system for tracking
 	var stat = passive.get_bonus_stat()
 	var bonus = passive.get_bonus_value()
 
-	match stat:
-		"health":
-			unit.max_health += bonus
-			unit.current_health += bonus
-			print("[CombatController] %s: +%d HP from %s" % [unit.display_name, bonus, passive.display_name])
-		"attack":
-			unit.attack += bonus
-			print("[CombatController] %s: +%d ATK from %s" % [unit.display_name, bonus, passive.display_name])
-		"defense":
-			unit.defense += bonus
-			print("[CombatController] %s: +%d DEF from %s" % [unit.display_name, bonus, passive.display_name])
-		"speed":
-			unit.speed += bonus
-			print("[CombatController] %s: +%d SPD from %s" % [unit.display_name, bonus, passive.display_name])
+	if stat == "" or bonus == 0:
+		return
 
+	# Health bonuses are applied directly (not tracked as buff since they affect max HP)
+	if stat == "health":
+		unit.max_health += bonus
+		unit.current_health += bonus
+		print("[CombatController] %s: +%d HP from %s (direct)" % [unit.display_name, bonus, passive.display_name])
+		passive_triggered.emit(unit, passive_id, "+%d HP" % bonus)
+		return
+
+	# Apply non-health bonuses as a tracked buff
+	var buff_stats = {stat: bonus}
+	var buff_id = "passive_" + passive_id
+	unit.apply_buff(buff_id, buff_stats, 999)  # 999 = effectively permanent for combat
+
+	print("[CombatController] %s: +%d %s from %s (tracked as buff)" % [unit.display_name, bonus, stat.to_upper(), passive.display_name])
 	passive_triggered.emit(unit, passive_id, "+%d %s" % [bonus, stat.to_upper()])
 
 
-## Apply a level-scaled stat bonus passive (e.g., bulwark_stance).
-## Formula: bonus = base_bonus + level
+## Apply a level-scaled stat bonus passive (e.g., bulwark_stance, burning_presence).
+## Formula: bonus = base_bonus + (level / divisor)
+## Uses buff system for tracking so bonuses appear in stat tooltips.
 func _apply_level_scaled_passive(unit: CombatUnit, passive: PassiveData) -> void:
 	var stat = passive.get_bonus_stat()
 	var base_bonus = passive.get_bonus_value()
 	var level = unit.hero_level
-	var scaled_bonus = base_bonus + level
+	var level_divisor = max(1, passive.get_level_divisor())
+	var scaled_bonus = base_bonus + int(level / level_divisor)
 
-	var before_val: int = 0
-	var after_val: int = 0
+	if stat == "" or scaled_bonus == 0:
+		return
 
-	match stat:
-		"defense":
-			before_val = unit.defense
-			unit.defense += scaled_bonus
-			after_val = unit.defense
-		"attack":
-			before_val = unit.attack
-			unit.attack += scaled_bonus
-			after_val = unit.attack
-		"health":
-			before_val = unit.max_health
-			unit.max_health += scaled_bonus
-			unit.current_health += scaled_bonus
-			after_val = unit.max_health
-		"speed":
-			before_val = unit.speed
-			unit.speed += scaled_bonus
-			after_val = unit.speed
+	# Apply as a tracked buff with very long duration (combat-permanent)
+	# This allows the bonus to show in stat tooltips
+	var buff_stats = {stat: scaled_bonus}
+	var buff_id = "passive_" + passive.passive_id
+	unit.apply_buff(buff_id, buff_stats, 999)  # 999 = effectively permanent for combat
 
-	print("[Passive] %s hero=%s name=%s level=%d %s_before=%d %s_after=%d" % [
-		passive.passive_id, unit.source_id, unit.display_name, level,
-		stat, before_val, stat, after_val])
+	print("[Passive] %s hero=%s name=%s level=%d +%d %s (tracked as buff)" % [
+		passive.passive_id, unit.source_id, unit.display_name, level, scaled_bonus, stat])
 	passive_triggered.emit(unit, passive.passive_id, "+%d %s (level-scaled)" % [scaled_bonus, stat.to_upper()])
 
 
@@ -379,40 +376,29 @@ func _apply_race_passive_to_unit(unit: CombatUnit) -> void:
 
 
 ## Apply race multi-stat bonus passive (human_adaptability, dwarf_deep_miner).
+## Uses buff system for tracking so bonuses appear in stat tooltips.
 func _apply_race_multi_stat_passive(unit: CombatUnit, passive: PassiveData) -> void:
 	var level = unit.hero_level
 	var changes: Array[String] = []
-	var before_stats = {
-		"health": unit.max_health,
-		"attack": unit.attack,
-		"defense": unit.defense,
-		"speed": unit.speed
-	}
+	var buff_stats: Dictionary = {}
 
-	# Apply flat stat bonuses
+	# Collect flat stat bonuses
 	if passive.effect.has("attack"):
 		var bonus = int(passive.effect.get("attack", 0))
 		if bonus != 0:
-			unit.attack += bonus
+			buff_stats["attack"] = buff_stats.get("attack", 0) + bonus
 			changes.append("+%d ATK" % bonus)
 
 	if passive.effect.has("defense"):
 		var bonus = int(passive.effect.get("defense", 0))
 		if bonus != 0:
-			unit.defense += bonus
+			buff_stats["defense"] = buff_stats.get("defense", 0) + bonus
 			changes.append("+%d DEF" % bonus)
-
-	if passive.effect.has("health"):
-		var bonus = int(passive.effect.get("health", 0))
-		if bonus != 0:
-			unit.max_health += bonus
-			unit.current_health += bonus
-			changes.append("+%d HP" % bonus)
 
 	if passive.effect.has("speed"):
 		var bonus = int(passive.effect.get("speed", 0))
 		if bonus != 0:
-			unit.speed += bonus
+			buff_stats["speed"] = buff_stats.get("speed", 0) + bonus
 			changes.append("+%d SPD" % bonus)
 
 	# Apply conditional speed bonus at level threshold (human_adaptability)
@@ -421,8 +407,16 @@ func _apply_race_multi_stat_passive(unit: CombatUnit, passive: PassiveData) -> v
 		var min_level = int(speed_data.get("min_level", 99))
 		var spd_bonus = int(speed_data.get("bonus", 0))
 		if level >= min_level and spd_bonus != 0:
-			unit.speed += spd_bonus
+			buff_stats["speed"] = buff_stats.get("speed", 0) + spd_bonus
 			changes.append("+%d SPD (Lv%d+)" % [spd_bonus, min_level])
+
+	# Health bonuses are applied directly (not tracked as buff since they affect max HP)
+	if passive.effect.has("health"):
+		var bonus = int(passive.effect.get("health", 0))
+		if bonus != 0:
+			unit.max_health += bonus
+			unit.current_health += bonus
+			changes.append("+%d HP" % bonus)
 
 	# Apply level-scaled health bonus (dwarf_deep_miner)
 	if passive.effect.has("health_scaled"):
@@ -435,52 +429,43 @@ func _apply_race_multi_stat_passive(unit: CombatUnit, passive: PassiveData) -> v
 			unit.current_health += hp_bonus
 			changes.append("+%d HP (scaled)" % hp_bonus)
 
-	var after_stats = {
-		"health": unit.max_health,
-		"attack": unit.attack,
-		"defense": unit.defense,
-		"speed": unit.speed
-	}
+	# Apply non-health bonuses as a tracked buff
+	if not buff_stats.is_empty():
+		var buff_id = "passive_" + passive.passive_id
+		unit.apply_buff(buff_id, buff_stats, 999)  # 999 = effectively permanent for combat
 
 	if changes.size() > 0:
-		print("[RacePassive] id=%s hero=%s name=%s race=%s level=%d before={HP:%d ATK:%d DEF:%d SPD:%d} after={HP:%d ATK:%d DEF:%d SPD:%d}" % [
-			passive.passive_id, unit.source_id, unit.display_name, unit.race_id, level,
-			before_stats["health"], before_stats["attack"], before_stats["defense"], before_stats["speed"],
-			after_stats["health"], after_stats["attack"], after_stats["defense"], after_stats["speed"]])
+		print("[RacePassive] id=%s hero=%s name=%s race=%s level=%d bonuses=%s (tracked as buff)" % [
+			passive.passive_id, unit.source_id, unit.display_name, unit.race_id, level, ", ".join(changes)])
 		passive_triggered.emit(unit, passive.passive_id, ", ".join(changes))
 
 
 ## Apply simple race stat bonus passive (elf_keen_sight).
+## Uses buff system for tracking so bonuses appear in stat tooltips.
 func _apply_race_stat_bonus_passive(unit: CombatUnit, passive: PassiveData) -> void:
 	var stat = passive.get_bonus_stat()
 	var bonus = passive.get_bonus_value()
 	var level = unit.hero_level
 
-	var before_val: int = 0
-	var after_val: int = 0
+	if stat == "" or bonus == 0:
+		return
 
-	match stat:
-		"health":
-			before_val = unit.max_health
-			unit.max_health += bonus
-			unit.current_health += bonus
-			after_val = unit.max_health
-		"attack":
-			before_val = unit.attack
-			unit.attack += bonus
-			after_val = unit.attack
-		"defense":
-			before_val = unit.defense
-			unit.defense += bonus
-			after_val = unit.defense
-		"speed":
-			before_val = unit.speed
-			unit.speed += bonus
-			after_val = unit.speed
+	# Health bonuses are applied directly (not tracked as buff since they affect max HP)
+	if stat == "health":
+		unit.max_health += bonus
+		unit.current_health += bonus
+		print("[RacePassive] id=%s hero=%s name=%s race=%s level=%d +%d HP (direct)" % [
+			passive.passive_id, unit.source_id, unit.display_name, unit.race_id, level, bonus])
+		passive_triggered.emit(unit, passive.passive_id, "+%d HP" % bonus)
+		return
 
-	print("[RacePassive] id=%s hero=%s name=%s race=%s level=%d before={%s:%d} after={%s:%d}" % [
-		passive.passive_id, unit.source_id, unit.display_name, unit.race_id, level,
-		stat, before_val, stat, after_val])
+	# Apply non-health bonuses as a tracked buff
+	var buff_stats = {stat: bonus}
+	var buff_id = "passive_" + passive.passive_id
+	unit.apply_buff(buff_id, buff_stats, 999)  # 999 = effectively permanent for combat
+
+	print("[RacePassive] id=%s hero=%s name=%s race=%s level=%d +%d %s (tracked as buff)" % [
+		passive.passive_id, unit.source_id, unit.display_name, unit.race_id, level, bonus, stat.to_upper()])
 	passive_triggered.emit(unit, passive.passive_id, "+%d %s" % [bonus, stat.to_upper()])
 
 
@@ -726,18 +711,28 @@ func _trigger_on_kill_passives(killer: CombatUnit, target_id: String = "") -> vo
 		if not passive.is_on_kill():
 			continue
 
-		# Handle killer_instinct: stacking ATK buff on kill
+		# Handle on_kill_stacking_buff: stacking stat buff on kill (e.g., killer_instinct, void_resonance)
 		if passive.passive_type == "on_kill_stacking_buff":
-			var level = killer.hero_level
-			var atk_per_stack = 1 + int(level / 2)  # (1 + floor(level/2))
+			var max_stacks = passive.get_effect_max_stacks()
+			# Check if already at max stacks
+			if killer.killer_instinct_stacks >= max_stacks:
+				print("[Passive] %s hero=%s name=%s stacks=%d (max reached)" % [
+					passive_id, killer.source_id, killer.display_name, killer.killer_instinct_stacks])
+				continue
+			# void_resonance uses flat bonus; all others use legacy level-scaled formula
+			var atk_per_stack: int
+			if passive_id == "void_resonance":
+				atk_per_stack = passive.get_bonus_value()
+			else:
+				atk_per_stack = passive.get_bonus_value() + int(killer.hero_level / 2)
 			var atk_before = killer.attack
 			killer.killer_instinct_stacks += 1
 			killer.attack += atk_per_stack
 			var atk_after = killer.attack
-			print("[Passive] %s hero=%s name=%s level=%d stacks=%d atk_before=%d atk_after=%d target=%s" % [
-				passive_id, killer.source_id, killer.display_name, level,
-				killer.killer_instinct_stacks, atk_before, atk_after, target_id])
-			passive_triggered.emit(killer, passive_id, "+%d ATK (stack %d)" % [atk_per_stack, killer.killer_instinct_stacks])
+			print("[Passive] %s hero=%s name=%s stacks=%d/%d atk_before=%d atk_after=%d target=%s" % [
+				passive_id, killer.source_id, killer.display_name,
+				killer.killer_instinct_stacks, max_stacks, atk_before, atk_after, target_id])
+			passive_triggered.emit(killer, passive_id, "+%d ATK (stack %d/%d)" % [atk_per_stack, killer.killer_instinct_stacks, max_stacks])
 			continue
 
 		# Legacy: Apply on_kill weapon cooldown reduction
@@ -960,6 +955,27 @@ func _find_unit_by_id(unit_id: String) -> CombatUnit:
 ## Returns the CombatUnit or null if not found.
 func get_unit_by_id(unit_id: String) -> CombatUnit:
 	return _find_unit_by_id(unit_id)
+
+
+## DEV TOOL: Buff all enemy stats by a multiplier (e.g., 1.25 = +25%).
+## Increases ATK, DEF, SPD, and HP (both max and current proportionally).
+func buff_all_enemies(multiplier: float) -> void:
+	for unit in _enemy_units:
+		if unit == null or not unit.is_alive:
+			continue
+		# Store HP ratio to preserve after max HP change
+		var hp_ratio = float(unit.current_health) / float(unit.max_health) if unit.max_health > 0 else 1.0
+
+		# Buff stats
+		unit.attack = int(unit.attack * multiplier)
+		unit.defense = int(unit.defense * multiplier)
+		unit.speed = int(unit.speed * multiplier)
+		unit.max_health = int(unit.max_health * multiplier)
+		unit.current_health = int(unit.max_health * hp_ratio)  # Maintain HP ratio
+
+		print("[DevBuff] %s: ATK=%d DEF=%d SPD=%d HP=%d/%d" % [
+			unit.display_name, unit.attack, unit.defense, unit.speed,
+			unit.current_health, unit.max_health])
 
 
 ## Get CombatUnit by source_id (hero_id or monster_id).
@@ -1654,6 +1670,9 @@ func _execute_heal_ability(unit: CombatUnit, ability: AbilityData, ability_type:
 	_result.add_action(action)
 	action_performed.emit(action)
 
+	# Apply self effects (self_buff, self_debuff) if present
+	_apply_self_effects(unit, ability)
+
 	# Put ability on cooldown and log
 	_put_ability_on_cooldown(unit, ability_type)
 	print("[CD] set ability=%s unit=%s cd=%d" % [ability.ability_id, unit.display_name,
@@ -1706,6 +1725,9 @@ func _execute_buff_ability(unit: CombatUnit, ability: AbilityData, ability_type:
 	_result.add_action(action)
 	action_performed.emit(action)
 
+	# Apply self effects (self_buff, self_debuff) if present
+	_apply_self_effects(unit, ability)
+
 	# Put ability on cooldown and log
 	_put_ability_on_cooldown(unit, ability_type)
 	print("[CD] set ability=%s unit=%s cd=%d" % [ability.ability_id, unit.display_name,
@@ -1741,6 +1763,9 @@ func _execute_aoe_heal_ability(unit: CombatUnit, ability: AbilityData, ability_t
 	_pending_actions.append(action)
 	_result.add_action(action)
 	action_performed.emit(action)
+
+	# Apply self effects (self_buff, self_debuff) if present
+	_apply_self_effects(unit, ability)
 
 	# Put ability on cooldown
 	_put_ability_on_cooldown(unit, ability_type)
@@ -1788,6 +1813,9 @@ func _execute_aoe_buff_ability(unit: CombatUnit, ability: AbilityData, ability_t
 	_pending_actions.append(action)
 	_result.add_action(action)
 	action_performed.emit(action)
+
+	# Apply self effects (self_buff, self_debuff) if present
+	_apply_self_effects(unit, ability)
 
 	# Put ability on cooldown
 	_put_ability_on_cooldown(unit, ability_type)

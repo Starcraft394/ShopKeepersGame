@@ -2,6 +2,7 @@
   "id": "enchanter_tf",
   "display_name": "Enchanter (Timberfall)",
   "description": "A mystical workshop where magical items are imbued with power. Specializes in staves, focuses, and accessories.",
+  "icon_path": "res://Assets/Icons/Facilities/icon_facility_enchanter.png",
   "facility_type": "equipment",
   "max_tier": 2,
   "unlock_region": 1,

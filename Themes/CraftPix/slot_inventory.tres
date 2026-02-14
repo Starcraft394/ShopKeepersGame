@@ -1,0 +1,15 @@
+[gd_resource type="StyleBoxTexture" load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://Assets/UI/CraftPix/Free_Basic_Pixel_UI_RPG/PNG/Inventory.png" id="1_src"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_slot"]
+atlas = ExtResource("1_src")
+region = Rect2(176, 32, 16, 16)
+
+[resource]
+texture = SubResource("AtlasTexture_slot")
+texture_margin_left = 2.0
+texture_margin_top = 2.0
+texture_margin_right = 2.0
+texture_margin_bottom = 2.0
+modulate_color = Color(0.75, 0.72, 0.68, 1)

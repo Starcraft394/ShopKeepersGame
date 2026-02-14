@@ -3,16 +3,16 @@
   "display_name": "Lich",
   "description": "A master of death magic who raises the fallen and unleashes necrotic devastation upon the living.",
   "archetype": "dps",
-  "unlock_region": 6,
+  "unlock_region": 1,
   "base_stats": {
     "health": 70,
-    "attack": 20,
+    "attack": 16,
     "defense": 5,
     "speed": 10
   },
   "stat_growth": {
     "health": 5,
-    "attack": 6,
+    "attack": 4,
     "defense": 1,
     "speed": 2
   },

@@ -43,8 +43,23 @@ This file must be updated whenever a new game-icons.net icon is added to the pro
 
 ---
 
+## CraftPix — Free Basic Pixel Art UI for RPG
+
+- **Source**: https://craftpix.net/freebies/free-basic-pixel-art-ui-for-rpg/
+- **Author**: CraftPix (craftpix.net)
+- **License**: CraftPix Free License (https://craftpix.net/file-licenses/)
+- **Location**: `res://Assets/UI/CraftPix/Free_Basic_Pixel_UI_RPG/`
+- **Contents**: Pixel art UI sprite sheets (panels, buttons, icons, inventory, equipment, shop, craft, settings, action bars, health bars, menus) in PNG + PSD source
+- **Attribution Required**: No — but credited here as good practice
+- **Restrictions**: Source files (PNG/PSD) may NOT be resold or redistributed standalone. Embedded use in games is permitted for personal and commercial projects.
+- **Date Added**: 2026-02-12
+- **License Copy**: `res://Assets/UI/CraftPix/Free_Basic_Pixel_UI_RPG/Docs/License.txt`
+
+---
+
 ## Notes
 
 - CC0 assets require no attribution but we credit them anyway
 - CC BY 3.0 assets require visible attribution in game credits or documentation
+- CraftPix Free License permits commercial game use but prohibits source file redistribution
 - All assets are free for commercial use

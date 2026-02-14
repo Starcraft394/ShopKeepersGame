@@ -1,0 +1,18 @@
+{
+  "id": "evasive",
+  "display_name": "Evasive",
+  "description": "Increased dodge chance. 50% chance to avoid attacks.",
+  "category": "buff",
+  "stacking_mode": "refresh",
+  "max_stacks": 1,
+  "base_duration": 1,
+  "base_value": 50,
+  "value_per_stack": 0,
+  "resolution_timing": "turn_end",
+  "is_cleansable": false,
+  "dispel_type": "buff",
+  "tags": ["evasion", "defensive"],
+  "ui_name": "Evasive",
+  "ui_short": "EVD",
+  "ui_icon": "res://Assets/Icons/Status/icon_status_evasive.png"
+}

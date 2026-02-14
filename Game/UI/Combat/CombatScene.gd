@@ -17,14 +17,15 @@ const CombatControllerScript = preload("res://Game/Combat/CombatController.gd")
 # ============================================================================
 
 @onready var top_bar: Label = $TopBar
-@onready var party_panel: VBoxContainer = $MainContent/PartyPanel/UnitList
-@onready var enemy_panel: VBoxContainer = $MainContent/EnemyPanel/UnitList
+# Grid Formation v1: Two side-by-side grids (Party left, Enemy right) with depth as columns
+@onready var battlefield: HBoxContainer = $MainContent/Battlefield
+@onready var stash_label: Label = $MainContent/StashLabel
 @onready var combat_log: RichTextLabel = $BottomPanel/CombatLog
 @onready var step_button: Button = $BottomPanel/ButtonRow/StepButton
 @onready var auto_button: Button = $BottomPanel/ButtonRow/AutoButton
 @onready var reset_button: Button = $BottomPanel/ButtonRow/ResetButton
 @onready var dungeon_progress_label: Label = $DungeonProgressLabel
-@onready var main_content: HBoxContainer = $MainContent  # v1.9C: Reference for layout adjustment
+@onready var main_content: VBoxContainer = $MainContent  # v2: Now VBoxContainer
 
 # ============================================================================
 # STATE
@@ -37,6 +38,7 @@ var _auto_delay: float = 0.5  # Seconds between auto steps
 var _scene_transition_pending: bool = false
 var _loot_panel: Control = null  # Loot routing panel (shown after victory with drops)
 var _loot_result = null  # CombatResult reference for loot panel
+var _defeat_panel: Control = null  # Defeat screen (shown when all heroes die)
 
 # Swap popup for full bags - allows replacing existing items
 var _swap_popup: Window = null
@@ -129,6 +131,19 @@ var _last_dot_unit: String = ""  # Track last DOT unit for combining
 var _last_dot_count: int = 0
 
 # ============================================================================
+# ATTACK LINE v1: Visual action intent line
+# ============================================================================
+
+var _attack_line_layer: Control = null
+var _attack_line: Line2D = null
+const ATTACK_LINE_FADE_IN: float = 0.05
+const ATTACK_LINE_HOLD: float = 0.15
+const ATTACK_LINE_FADE_OUT: float = 0.10
+const ATTACK_LINE_WIDTH: float = 3.0
+const ATTACK_LINE_COLOR: Color = Color(1.0, 0.8, 0.2, 0.9)  # Golden yellow
+const ATTACK_LINE_HEAL_COLOR: Color = Color(0.2, 1.0, 0.4, 0.9)  # Green for heals
+
+# ============================================================================
 # PLAYER ACTIONS v1: Action Selection + Target Mode
 # ============================================================================
 
@@ -154,6 +169,136 @@ var _current_input_unit: CombatUnit = null  # Current unit awaiting player input
 # Auto mode deferred selection state
 var _auto_pending_targets: Array = []  # Valid targets for deferred auto-selection
 
+# DEV TOOL: Monster buff tracking
+var _monster_buff_percent: int = 0  # Cumulative buff percentage (0, 25, 50, 75, ...)
+var _monster_buff_btn: Button = null  # Reference to dev button for updating text
+
+# ============================================================================
+# GRID FORMATION v1: Two Side-by-Side Grids with Depth as Columns
+# ============================================================================
+# Layout: [Party: Back|Mid|Front] || [Enemy: Front|Mid|Back]
+# pos.y (0=Front,1=Mid,2=Back) maps to UI COLUMNS (depth left-to-right)
+# pos.x (0..3) maps to UI ROWS (slot positions top-to-bottom)
+
+const GRID_COLS: int = 3   # Depth columns per side (Back/Mid/Front)
+const GRID_ROWS: int = 4   # Slot rows per side (pos.x 0..3)
+
+
+## Map gameplay row (pos.y = depth) to UI column index.
+## Party: Back=col0, Mid=col1, Front=col2 (Front nearest center seam)
+## Enemy: Front=col0, Mid=col1, Back=col2 (Front nearest center seam)
+func _map_ui_col(team: String, pos_y: int) -> int:
+	if team == "party":
+		return 2 - pos_y  # pos_y 0(Front)->col2, 1(Mid)->col1, 2(Back)->col0
+	else:
+		return pos_y  # pos_y 0(Front)->col0, 1(Mid)->col1, 2(Back)->col2
+
+
+## Get a cell container by team, UI row, and UI column.
+## team: "party" or "enemy"
+## ui_row: 0-3 (maps from pos.x)
+## ui_col: 0-2 (maps from pos.y via _map_ui_col)
+func _get_cell(team: String, ui_row: int, ui_col: int) -> PanelContainer:
+	var row_clamped = clampi(ui_row, 0, GRID_ROWS - 1)
+	var col_clamped = clampi(ui_col, 0, GRID_COLS - 1)
+	var grid_name = "PartyGrid" if team == "party" else "EnemyGrid"
+	var row_prefix = "PartyRow" if team == "party" else "EnemyRow"
+	var row_name = "%s_%d" % [row_prefix, row_clamped]
+	var cell_name = "Cell_c%d" % col_clamped
+	return battlefield.get_node("%s/%s/%s" % [grid_name, row_name, cell_name]) as PanelContainer
+
+
+## Clear all cell contents (but not the cells themselves) for one team.
+func _clear_team_slots(team: String) -> void:
+	var grid_name = "PartyGrid" if team == "party" else "EnemyGrid"
+	var row_prefix = "PartyRow" if team == "party" else "EnemyRow"
+	for ui_row in range(GRID_ROWS):
+		var row_node = battlefield.get_node_or_null("%s/%s_%d" % [grid_name, row_prefix, ui_row])
+		if row_node == null:
+			continue
+		for ui_col in range(GRID_COLS):
+			var cell = row_node.get_node_or_null("Cell_c%d" % ui_col) as PanelContainer
+			if cell == null:
+				continue
+			for child in cell.get_children():
+				child.queue_free()
+
+
+## Create an empty cell placeholder (subtle visual for empty cells).
+func _create_empty_slot_placeholder() -> Control:
+	var placeholder = ColorRect.new()
+	placeholder.name = "EmptyPlaceholder"
+	placeholder.color = Color(0.2, 0.2, 0.25, 0.3)  # Subtle dark tint
+	placeholder.custom_minimum_size = Vector2(0, 60)  # Minimal height to show cell exists
+	placeholder.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	placeholder.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	placeholder.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Don't block clicks
+	return placeholder
+
+
+# ============================================================================
+# ATTACK LINE v1: Visual Action Intent Line
+# ============================================================================
+
+## Create the attack line overlay layer (called once in _ready).
+func _create_attack_line_layer() -> void:
+	_attack_line_layer = Control.new()
+	_attack_line_layer.name = "AttackLineLayer"
+	_attack_line_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_attack_line_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_attack_line_layer)
+	# Move below tooltips/popups but above battlefield
+	move_child(_attack_line_layer, get_child_count() - 2)
+
+
+## Get the global center position of a unit display.
+func _get_unit_display_center(unit_id: String) -> Vector2:
+	if not _unit_displays.has(unit_id):
+		return Vector2.ZERO
+	var display = _unit_displays[unit_id]
+	if not is_instance_valid(display):
+		return Vector2.ZERO
+	var global_rect = display.get_global_rect()
+	return global_rect.get_center()
+
+
+## Show an attack/ability line from actor to target with animation.
+func _show_attack_line(actor_id: String, target_id: String, is_heal: bool = false) -> void:
+	if actor_id == "" or target_id == "":
+		return
+	if actor_id == target_id:
+		return  # Self-target, no line needed
+
+	var start_pos = _get_unit_display_center(actor_id)
+	var end_pos = _get_unit_display_center(target_id)
+
+	if start_pos == Vector2.ZERO or end_pos == Vector2.ZERO:
+		return
+
+	# Convert global coordinates to local coordinates relative to attack line layer
+	# Control nodes don't have to_local(); subtract global_position manually
+	var layer_origin = _attack_line_layer.global_position
+	start_pos -= layer_origin
+	end_pos -= layer_origin
+
+	# Create Line2D
+	var line = Line2D.new()
+	line.name = "AttackLine"
+	line.width = ATTACK_LINE_WIDTH
+	line.default_color = ATTACK_LINE_HEAL_COLOR if is_heal else ATTACK_LINE_COLOR
+	line.add_point(start_pos)
+	line.add_point(end_pos)
+	line.modulate.a = 0.0  # Start invisible
+	_attack_line_layer.add_child(line)
+
+	# Animate: fade in -> hold -> fade out -> free
+	var tween = create_tween()
+	tween.tween_property(line, "modulate:a", 1.0, ATTACK_LINE_FADE_IN)
+	tween.tween_interval(ATTACK_LINE_HOLD)
+	tween.tween_property(line, "modulate:a", 0.0, ATTACK_LINE_FADE_OUT)
+	tween.tween_callback(line.queue_free)
+
+
 # ============================================================================
 # LIFECYCLE
 # ============================================================================
@@ -165,6 +310,16 @@ func _ready() -> void:
 	step_button.pressed.connect(_on_step_pressed)
 	auto_button.pressed.connect(_on_auto_pressed)
 	reset_button.pressed.connect(_on_reset_pressed)
+
+	# Attack Line v1: Create overlay layer for action lines
+	_create_attack_line_layer()
+
+	# DEV TOOL: Add monster buff button
+	_monster_buff_btn = Button.new()
+	_monster_buff_btn.text = "Buff Monsters"
+	_monster_buff_btn.custom_minimum_size = Vector2(110, 0)
+	_monster_buff_btn.pressed.connect(_on_monster_buff_pressed)
+	$BottomPanel/ButtonRow.add_child(_monster_buff_btn)
 
 	# Start initial encounter
 	_start_encounter()
@@ -192,6 +347,15 @@ func _start_encounter() -> void:
 	_update_dungeon_progress_label()
 	print("[CombatScene] Starting new encounter...")
 
+	# Guard: Abort if no party members (prevents crash)
+	if GameContext.selected_party.size() == 0:
+		print("[CombatScene] ERROR: No party members! Returning to town.")
+		_log("[color=red]ERROR: No heroes in party! Returning to town...[/color]")
+		GameContext.exit_dungeon()
+		GameContext.set_phase(GameContext.GamePhase.TOWN)
+		get_tree().change_scene_to_file("res://Game/Boot/game_boot.tscn")
+		return
+
 	# Clear previous state
 	if _combat_controller != null:
 		_combat_controller.queue_free()
@@ -201,6 +365,10 @@ func _start_encounter() -> void:
 	_auto_step_pending = false  # Reset auto-step guard
 	_auto_pending_targets.clear()  # Clear any pending auto-selection targets
 	_stop_hero_input_highlight()  # Ensure tween is stopped before encounter reset
+
+	# DEV TOOL: Reset monster buff on new encounter
+	_monster_buff_percent = 0
+	_update_monster_buff_button()
 
 	# Update auto button text
 	auto_button.text = "Auto"
@@ -240,9 +408,19 @@ func _start_encounter() -> void:
 	# Hide Step button - using player action buttons instead
 	step_button.visible = false
 
-	# Get RNG from context
+	# Get RNG with per-room unique seed for enemy variety
 	var run_seed = GameContext.get_run_seed() if GameContext.is_run_active() else 12345
-	var rng = SeededRNG.create_rng(run_seed)
+	var dungeon_id = GameContext.get_current_dungeon_id()
+	var floor_num = GameContext.get_current_floor()
+	var room_idx = GameContext.get_current_room_index()
+	var region_id = GameContext.get_current_region_id()
+
+	# Use encounter_seed to get unique seed per room (deterministic but varies per location)
+	var encounter_derived_seed = SeededRNG.encounter_seed(region_id, dungeon_id, floor_num, room_idx, run_seed)
+	var rng = SeededRNG.create_rng(encounter_derived_seed)
+	print("[Combat] RNG seed: run=%d derived=%d (region=%s dungeon=%s floor=%d room=%d)" % [
+		run_seed, encounter_derived_seed, region_id, dungeon_id, floor_num, room_idx
+	])
 
 	# Get selected party from GameContext (recruited heroes)
 	var hero_ids = GameContext.get_selected_party()
@@ -545,36 +723,80 @@ func _refresh_all_panels() -> void:
 
 
 func _refresh_party_panel(units: Array) -> void:
-	# Clear existing
-	for child in party_panel.get_children():
-		child.queue_free()
+	# Grid Formation v1: Clear party cells
+	_clear_team_slots("party")
 
-	# Add unit displays
+	# Build lookup: "pos_y,pos_x" -> unit_data
+	# pos_y = depth (0=Front,1=Mid,2=Back), pos_x = slot position (0..3)
+	var occupied_cells: Dictionary = {}
 	for unit_data in units:
-		var display = _create_unit_display(unit_data)
-		party_panel.add_child(display)
-		_unit_displays[unit_data["id"]] = display  # Status UI v1.6: Store reference
+		var pos = unit_data.get("pos", {})
+		var pos_y = clampi(pos.get("y", 1), 0, 2)
+		var pos_x = clampi(pos.get("x", 0), 0, GRID_ROWS - 1)
+		var key = "%d,%d" % [pos_y, pos_x]
+		if occupied_cells.has(key):
+			push_warning("[CombatScene] Duplicate party cell %s: %s overwrites %s" % [
+				key, unit_data.get("id", "?"), occupied_cells[key].get("id", "?")])
+		occupied_cells[key] = unit_data
 
-	# Hero Loadout v1: Shopkeeper Bag summary (shared run stash)
+	# Fill all cells: unit display if occupied, placeholder if empty
+	# UI row = pos.x (slot position), UI col = mapped from pos.y (depth)
+	for pos_y in range(3):  # depth: Front/Mid/Back
+		for pos_x in range(GRID_ROWS):  # slot row
+			var ui_row = pos_x
+			var ui_col = _map_ui_col("party", pos_y)
+			var cell = _get_cell("party", ui_row, ui_col)
+			if cell == null:
+				continue
+
+			var key = "%d,%d" % [pos_y, pos_x]
+			if occupied_cells.has(key):
+				var unit_data = occupied_cells[key]
+				var display = _create_unit_display(unit_data)
+				cell.add_child(display)
+				_unit_displays[unit_data["id"]] = display
+			else:
+				cell.add_child(_create_empty_slot_placeholder())
+
+	# Hero Loadout v1: Shopkeeper Bag summary (update existing label in scene)
 	var stash = GameContext.get_run_stash_detailed_summary()
-	var stash_label = Label.new()
 	stash_label.text = format_shopkeeper_bag(stash)
-	stash_label.add_theme_font_size_override("font_size", 10)
-	stash_label.add_theme_color_override("font_color", Color.WHEAT)
-	stash_label.autowrap_mode = TextServer.AUTOWRAP_WORD
-	party_panel.add_child(stash_label)
 
 
 func _refresh_enemy_panel(units: Array) -> void:
-	# Clear existing
-	for child in enemy_panel.get_children():
-		child.queue_free()
+	# Grid Formation v1: Clear enemy cells
+	_clear_team_slots("enemy")
 
-	# Add unit displays
+	# Build lookup: "pos_y,pos_x" -> unit_data
+	var occupied_cells: Dictionary = {}
 	for unit_data in units:
-		var display = _create_unit_display(unit_data)
-		enemy_panel.add_child(display)
-		_unit_displays[unit_data["id"]] = display  # Status UI v1.6: Store reference
+		var pos = unit_data.get("pos", {})
+		var pos_y = clampi(pos.get("y", 1), 0, 2)
+		var pos_x = clampi(pos.get("x", 0), 0, GRID_ROWS - 1)
+		var key = "%d,%d" % [pos_y, pos_x]
+		if occupied_cells.has(key):
+			push_warning("[CombatScene] Duplicate enemy cell %s: %s overwrites %s" % [
+				key, unit_data.get("id", "?"), occupied_cells[key].get("id", "?")])
+		occupied_cells[key] = unit_data
+
+	# Fill all cells: unit display if occupied, placeholder if empty
+	# UI row = pos.x (slot position), UI col = mapped from pos.y (depth)
+	for pos_y in range(3):  # depth: Front/Mid/Back
+		for pos_x in range(GRID_ROWS):  # slot row
+			var ui_row = pos_x
+			var ui_col = _map_ui_col("enemy", pos_y)
+			var cell = _get_cell("enemy", ui_row, ui_col)
+			if cell == null:
+				continue
+
+			var key = "%d,%d" % [pos_y, pos_x]
+			if occupied_cells.has(key):
+				var unit_data = occupied_cells[key]
+				var display = _create_unit_display(unit_data)
+				cell.add_child(display)
+				_unit_displays[unit_data["id"]] = display
+			else:
+				cell.add_child(_create_empty_slot_placeholder())
 
 
 func _create_unit_display(unit_data: Dictionary) -> Control:
@@ -604,12 +826,21 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 	container.add_theme_constant_override("separation", 2)
 	container.name = "UnitContent_%s" % unit_data["id"]
 
-	# Name + Class line
+	# Name + Class line with row indicator (3-Row Formation v1)
 	var name_label = Label.new()
 	var alive_color = Color.WHITE if unit_data["is_alive"] else Color.GRAY
 	var dead_text = " [DEAD]" if not unit_data["is_alive"] else ""
 	var class_suffix = ""
 	var display_name = unit_data["name"]
+
+	# Row indicator: [F]=Front, [M]=Middle, [B]=Back
+	var row_indicator = ""
+	var pos = unit_data.get("pos", {})
+	var row_y = pos.get("y", 1)  # Default to middle
+	match row_y:
+		0: row_indicator = " [F]"
+		1: row_indicator = " [M]"
+		2: row_indicator = " [B]"
 
 	if unit_data["team"] == "player" and unit_data.get("class_id", "") != "":
 		var cls_name = unit_data["class_id"].capitalize()
@@ -624,15 +855,19 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 			var enemy_num = int(unit_id.replace("enemy_", "")) + 1  # Convert to 1-based
 			display_name = "%s #%d" % [unit_data["name"], enemy_num]
 
-	name_label.text = "%s%s%s" % [display_name, class_suffix, dead_text]
+	name_label.text = "%s%s%s%s" % [display_name, class_suffix, row_indicator, dead_text]
 	name_label.add_theme_color_override("font_color", alive_color)
 	container.add_child(name_label)
 
-	# HP bar
+	# HP bar with tooltip for player units
 	var hp_container = HBoxContainer.new()
 	var hp_label = Label.new()
 	hp_label.text = "HP: %d/%d" % [unit_data["hp"], unit_data["max_hp"]]
 	hp_label.add_theme_font_size_override("font_size", 12)
+	# Add HP tooltip for player units showing health breakdown
+	if unit_data.get("team", "") == "player":
+		hp_label.tooltip_text = _build_stat_breakdown_tooltip("Health", unit_data.get("max_hp", 0), unit_data.get("max_hp", 0), unit_data.get("active_buffs_v1", []), unit_data)
+		hp_label.mouse_filter = Control.MOUSE_FILTER_STOP
 	hp_container.add_child(hp_label)
 
 	var hp_bar = ProgressBar.new()
@@ -664,15 +899,18 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 		"buff_row": buff_badge_row
 	}
 
-	# Stat line showing ATK, DEF, SPD for player units
+	# Stat line showing ATK, DEF, SPD for player units (with buff breakdown tooltips)
 	if unit_data["team"] == "player":
 		var stat_line = HBoxContainer.new()
 		stat_line.add_theme_constant_override("separation", 8)
+		var buffs = unit_data.get("active_buffs_v1", [])
 
 		var atk_label = Label.new()
 		atk_label.text = "ATK: %d" % unit_data.get("attack", 0)
 		atk_label.add_theme_font_size_override("font_size", 11)
 		atk_label.add_theme_color_override("font_color", Color.SALMON)
+		atk_label.mouse_filter = Control.MOUSE_FILTER_STOP
+		atk_label.tooltip_text = _build_stat_breakdown_tooltip("Attack", unit_data.get("base_attack", 0), unit_data.get("attack", 0), buffs, unit_data)
 		stat_line.add_child(atk_label)
 
 		var sep1 = Label.new()
@@ -685,6 +923,8 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 		def_label.text = "DEF: %d" % unit_data.get("defense", 0)
 		def_label.add_theme_font_size_override("font_size", 11)
 		def_label.add_theme_color_override("font_color", Color.LIGHT_BLUE)
+		def_label.mouse_filter = Control.MOUSE_FILTER_STOP
+		def_label.tooltip_text = _build_stat_breakdown_tooltip("Defense", unit_data.get("base_defense", 0), unit_data.get("defense", 0), buffs, unit_data)
 		stat_line.add_child(def_label)
 
 		var sep2 = Label.new()
@@ -697,19 +937,24 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 		spd_label.text = "SPD: %d" % unit_data.get("speed", 0)
 		spd_label.add_theme_font_size_override("font_size", 11)
 		spd_label.add_theme_color_override("font_color", Color.YELLOW)
+		spd_label.mouse_filter = Control.MOUSE_FILTER_STOP
+		spd_label.tooltip_text = _build_stat_breakdown_tooltip("Speed", unit_data.get("base_speed", 0), unit_data.get("speed", 0), buffs, unit_data)
 		stat_line.add_child(spd_label)
 
 		container.add_child(stat_line)
 
-	# Stat line showing ATK, DEF, SPD for enemy units
+	# Stat line showing ATK, DEF, SPD for enemy units (with buff breakdown tooltips)
 	elif unit_data["team"] == "enemy":
 		var stat_line = HBoxContainer.new()
 		stat_line.add_theme_constant_override("separation", 8)
+		var buffs = unit_data.get("active_buffs_v1", [])
 
 		var atk_label = Label.new()
 		atk_label.text = "ATK: %d" % unit_data.get("attack", 0)
 		atk_label.add_theme_font_size_override("font_size", 11)
 		atk_label.add_theme_color_override("font_color", Color.SALMON)
+		atk_label.mouse_filter = Control.MOUSE_FILTER_STOP
+		atk_label.tooltip_text = _build_stat_breakdown_tooltip("Attack", unit_data.get("base_attack", 0), unit_data.get("attack", 0), buffs, unit_data)
 		stat_line.add_child(atk_label)
 
 		var sep1 = Label.new()
@@ -722,6 +967,8 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 		def_label.text = "DEF: %d" % unit_data.get("defense", 0)
 		def_label.add_theme_font_size_override("font_size", 11)
 		def_label.add_theme_color_override("font_color", Color.LIGHT_BLUE)
+		def_label.mouse_filter = Control.MOUSE_FILTER_STOP
+		def_label.tooltip_text = _build_stat_breakdown_tooltip("Defense", unit_data.get("base_defense", 0), unit_data.get("defense", 0), buffs, unit_data)
 		stat_line.add_child(def_label)
 
 		var sep2 = Label.new()
@@ -734,6 +981,8 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 		spd_label.text = "SPD: %d" % unit_data.get("speed", 0)
 		spd_label.add_theme_font_size_override("font_size", 11)
 		spd_label.add_theme_color_override("font_color", Color.YELLOW)
+		spd_label.mouse_filter = Control.MOUSE_FILTER_STOP
+		spd_label.tooltip_text = _build_stat_breakdown_tooltip("Speed", unit_data.get("base_speed", 0), unit_data.get("speed", 0), buffs, unit_data)
 		stat_line.add_child(spd_label)
 
 		container.add_child(stat_line)
@@ -756,12 +1005,8 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 			a_label.add_theme_font_size_override("font_size", 11)
 			a_label.add_theme_color_override("font_color", Color.CYAN)
 			a_label.mouse_filter = Control.MOUSE_FILTER_STOP
-			# Build tooltip with description and cooldown
-			var a_tooltip = a_name
-			if ability_a:
-				if ability_a.description != "":
-					a_tooltip += "\n%s" % ability_a.description
-				a_tooltip += "\nCooldown: %d turns" % ability_a.cooldown
+			# Build tooltip with description, status effects, and cooldown
+			var a_tooltip = _build_static_ability_tooltip(ability_a, a_name)
 			a_label.tooltip_text = a_tooltip
 			abilities_row.add_child(a_label)
 
@@ -775,12 +1020,8 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 			b_label.add_theme_font_size_override("font_size", 11)
 			b_label.add_theme_color_override("font_color", Color.CYAN)
 			b_label.mouse_filter = Control.MOUSE_FILTER_STOP
-			# Build tooltip with description and cooldown
-			var b_tooltip = b_name
-			if ability_b:
-				if ability_b.description != "":
-					b_tooltip += "\n%s" % ability_b.description
-				b_tooltip += "\nCooldown: %d turns" % ability_b.cooldown
+			# Build tooltip with description, status effects, and cooldown
+			var b_tooltip = _build_static_ability_tooltip(ability_b, b_name)
 			b_label.tooltip_text = b_tooltip
 			abilities_row.add_child(b_label)
 
@@ -793,6 +1034,12 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 		var passive_a_id = unit_data.get("passive_a_id", "")
 		var passive_b_id = unit_data.get("passive_b_id", "")
 
+		# Get hero level for tooltip formula calculation
+		var hero_level = 1
+		if GameContext.has_method("get_hero_effective_stats"):
+			var stats = GameContext.get_hero_effective_stats(hero_id)
+			hero_level = stats.get("level", 1)
+
 		if passive_a_id != "":
 			var passive_a = DataRegistry.get_passive(passive_a_id) if DataRegistry.has_method("get_passive") else null
 			var pa_label = Label.new()
@@ -803,7 +1050,8 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 			pa_label.mouse_filter = Control.MOUSE_FILTER_STOP
 			var pa_tooltip = pa_name
 			if passive_a and passive_a.description != "":
-				pa_tooltip += "\n%s" % passive_a.description
+				var desc = _resolve_formula_in_description(passive_a.description, hero_level)
+				pa_tooltip += "\n%s" % desc
 			pa_label.tooltip_text = pa_tooltip
 			passives_row.add_child(pa_label)
 
@@ -817,7 +1065,8 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 			pb_label.mouse_filter = Control.MOUSE_FILTER_STOP
 			var pb_tooltip = pb_name
 			if passive_b and passive_b.description != "":
-				pb_tooltip += "\n%s" % passive_b.description
+				var desc = _resolve_formula_in_description(passive_b.description, hero_level)
+				pb_tooltip += "\n%s" % desc
 			pb_label.tooltip_text = pb_tooltip
 			passives_row.add_child(pb_label)
 
@@ -939,6 +1188,7 @@ func _emit_sanity_report_if_needed() -> void:
 
 ## v1.8: Build tooltip string for badge (unified for status and buff).
 ## kind: "status" or "buff"
+## Enhanced v2.0: Detailed tooltips with descriptions and damage info
 func _build_badge_tooltip(snapshot: Dictionary, kind: String) -> String:
 	if kind == "status":
 		var status_id = snapshot.get("id", "unknown")
@@ -948,11 +1198,39 @@ func _build_badge_tooltip(snapshot: Dictionary, kind: String) -> String:
 		var tags = snapshot.get("tags", [])
 
 		var display_name = ui_name if ui_name != "" else status_id.capitalize()
-		var tags_str = ", ".join(tags) if tags.size() > 0 else "none"
 
-		return "%s (%s)\nStacks: %d  Rounds: %d\nTags: %s" % [
-			display_name, status_id, stacks, remaining, tags_str
-		]
+		# Start with name
+		var tooltip_parts: Array = [display_name]
+
+		# Get detailed info from status registry
+		var status_data = DataRegistry.get_status_effect(status_id) if DataRegistry.has_method("get_status_effect") else null
+		if status_data != null:
+			# Add description
+			if status_data.description != "":
+				tooltip_parts.append(status_data.description)
+
+			# Add damage info for DoT effects
+			if "dot" in tags or status_data.category == "dot":
+				var base_dmg = status_data.base_value
+				var per_stack = status_data.value_per_stack
+				var total_dmg = base_dmg + (per_stack * (stacks - 1)) if stacks > 1 else base_dmg
+				if total_dmg > 0:
+					tooltip_parts.append("Damage: %d per turn" % total_dmg)
+					if stacks > 1 and per_stack > 0:
+						tooltip_parts.append("  (Base: %d + %d per stack)" % [base_dmg, per_stack])
+
+			# Add stun/control info
+			if "control" in tags or status_data.category == "control":
+				tooltip_parts.append("Effect: Cannot act while active")
+
+		# Add stacks and duration
+		tooltip_parts.append("Stacks: %d | Turns remaining: %d" % [stacks, remaining])
+
+		# Add cleansable info if status data available
+		if status_data != null and status_data.is_cleansable:
+			tooltip_parts.append("(Can be cleansed)")
+
+		return "\n".join(tooltip_parts)
 	else:  # buff
 		var source = snapshot.get("source", "unknown")
 		var ui_name = snapshot.get("ui_name", source.capitalize())
@@ -960,14 +1238,18 @@ func _build_badge_tooltip(snapshot: Dictionary, kind: String) -> String:
 		var remaining = snapshot.get("remaining_rounds", 0)
 		var buff_tags = snapshot.get("buff_tags", [])
 
+		# Start with name
+		var tooltip_parts: Array = [ui_name]
+
+		# Add stat bonuses in readable format
 		var stats_str = _format_buff_stats_for_tooltip(stats)
-		var tooltip = "%s (%s)\nStats: %s\nRounds: %d" % [ui_name, source, stats_str, remaining]
+		if stats_str != "none":
+			tooltip_parts.append("Bonuses: %s" % stats_str)
 
-		# Include tags if present
-		if buff_tags.size() > 0:
-			tooltip += "\nTags: %s" % ", ".join(buff_tags)
+		# Add duration
+		tooltip_parts.append("Turns remaining: %d" % remaining)
 
-		return tooltip
+		return "\n".join(tooltip_parts)
 
 
 ## v1.8: Format badge label text (unified for status and buff).
@@ -985,6 +1267,9 @@ func _format_badge_text(snapshot: Dictionary, kind: String) -> String:
 	else:  # buff
 		var ui_short = snapshot.get("ui_short", "BUFF")
 		var remaining = snapshot.get("remaining_rounds", 0)
+		# Hide duration for permanent buffs (999+)
+		if remaining >= 999:
+			return ui_short
 		return "%s (%d)" % [ui_short, remaining]
 
 
@@ -1315,8 +1600,18 @@ static func _format_buff_stats_for_tooltip(stats: Dictionary) -> String:
 
 
 ## v1.8: Populate buff badges (wrapper for unified pipeline).
+## Filters out passive/permanent buffs (remaining_rounds >= 999) since they don't need badges.
 func _populate_buff_badges(badge_row: HBoxContainer, buffs: Array, unit_id: String = "") -> void:
-	_populate_badges_unified(badge_row, buffs, "buff", unit_id)
+	# Filter out permanent/passive buffs - they don't need badge display
+	var filtered_buffs: Array = []
+	for buff in buffs:
+		var remaining = buff.get("remaining_rounds", 0)
+		var tags = buff.get("buff_tags", [])
+		# Skip passive buffs (permanent combat effects)
+		if remaining >= 999 or "passive" in tags:
+			continue
+		filtered_buffs.append(buff)
+	_populate_badges_unified(badge_row, filtered_buffs, "buff", unit_id)
 
 
 ## Status UI v1.6.3: Static helper to create badge from snapshot dict (for testing).
@@ -1557,6 +1852,33 @@ func _on_reset_pressed() -> void:
 	_start_encounter()
 
 
+## DEV TOOL: Buff all monsters by 25% each click
+func _on_monster_buff_pressed() -> void:
+	if _combat_controller == null:
+		return
+
+	# Apply 25% buff (multiplier = 1.25)
+	_combat_controller.buff_all_enemies(1.25)
+	_monster_buff_percent += 25
+
+	# Update button text to show current buff level
+	_update_monster_buff_button()
+
+	# Refresh enemy display to show new stats
+	_refresh_all_panels()
+
+	_log("[color=orange][DEV] Monsters buffed to +%d%%[/color]" % _monster_buff_percent)
+
+
+func _update_monster_buff_button() -> void:
+	if _monster_buff_btn == null:
+		return
+	if _monster_buff_percent == 0:
+		_monster_buff_btn.text = "Buff Monsters"
+	else:
+		_monster_buff_btn.text = "Buff +%d%%" % _monster_buff_percent
+
+
 func _on_combat_ended(_result) -> void:
 	_is_auto_running = false
 	auto_button.text = "Auto"
@@ -1585,8 +1907,11 @@ func _on_combat_ended(_result) -> void:
 	if _result != null and _result.is_victory and GameContext.has_pending_acquisition():
 		_loot_result = _result
 		_show_loot_panel()
+	elif _result != null and not _result.is_victory:
+		# DEFEAT — show defeat screen before returning to town
+		_show_defeat_panel()
 	else:
-		# No pending loot or defeat — auto-resolve anything leftover and transition
+		# No pending loot — auto-resolve anything leftover and transition
 		GameContext.resolve_all_to_stash()
 		_do_combat_transition()
 
@@ -1687,6 +2012,12 @@ func _show_loot_panel() -> void:
 
 			var item_hbox = HBoxContainer.new()
 			item_hbox.add_theme_constant_override("separation", 8)
+
+			# Item icon (if available)
+			if tpl != null:
+				var icon_rect = tpl.create_icon_rect(20)
+				if icon_rect != null:
+					item_hbox.add_child(icon_rect)
 
 			# Item label
 			var item_label = Label.new()
@@ -1999,6 +2330,270 @@ func _loot_panel_input(event: InputEvent) -> void:
 				GameContext.resolve_acquisition_at(0, "hero_bag", hid)
 				_refresh_loot_panel()
 				get_viewport().set_input_as_handled()
+
+
+# ============================================================================
+# DEFEAT PANEL — Show losses when all heroes die
+# ============================================================================
+
+## Show the defeat screen with lost heroes and their equipment.
+func _show_defeat_panel() -> void:
+	# Remove old panel if exists
+	if _defeat_panel != null:
+		_defeat_panel.queue_free()
+		_defeat_panel = null
+
+	# Create full-screen overlay
+	_defeat_panel = PanelContainer.new()
+	_defeat_panel.name = "DefeatPanel"
+	_defeat_panel.anchor_right = 1.0
+	_defeat_panel.anchor_bottom = 1.0
+	_defeat_panel.offset_left = 0
+	_defeat_panel.offset_right = 0
+	_defeat_panel.offset_top = 0
+	_defeat_panel.offset_bottom = 0
+
+	# Dark red background style
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.15, 0.05, 0.05, 0.95)
+	style.set_content_margin_all(20)
+	_defeat_panel.add_theme_stylebox_override("panel", style)
+
+	var scroll = ScrollContainer.new()
+	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_defeat_panel.add_child(scroll)
+
+	var vbox = VBoxContainer.new()
+	vbox.name = "DefeatVBox"
+	vbox.add_theme_constant_override("separation", 12)
+	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(vbox)
+
+	# Title
+	var title = Label.new()
+	title.text = "DEFEAT"
+	title.add_theme_font_size_override("font_size", 32)
+	title.modulate = Color(1.0, 0.3, 0.3)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+
+	var subtitle = Label.new()
+	subtitle.text = "Your party has fallen..."
+	subtitle.add_theme_font_size_override("font_size", 14)
+	subtitle.modulate = Color(0.8, 0.6, 0.6)
+	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(subtitle)
+
+	var sep1 = HSeparator.new()
+	vbox.add_child(sep1)
+
+	# Section: Heroes Lost
+	var heroes_header = Label.new()
+	heroes_header.text = "— Heroes Lost Forever —"
+	heroes_header.add_theme_font_size_override("font_size", 18)
+	heroes_header.modulate = Color(1.0, 0.5, 0.5)
+	heroes_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(heroes_header)
+
+	# Get party heroes who died (HP <= 0)
+	var lost_heroes: Array = []
+	for hero_id in GameContext.selected_party:
+		var hp_data = GameContext.get_hero_hp(hero_id)
+		if not hp_data.is_empty() and int(hp_data.get("current", 1)) <= 0:
+			lost_heroes.append(hero_id)
+
+	if lost_heroes.is_empty():
+		var no_loss = Label.new()
+		no_loss.text = "(No permanent losses)"
+		no_loss.modulate = Color(0.6, 0.8, 0.6)
+		no_loss.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		vbox.add_child(no_loss)
+	else:
+		for hero_id in lost_heroes:
+			var hero_panel = _create_lost_hero_panel(hero_id)
+			vbox.add_child(hero_panel)
+
+	var sep2 = HSeparator.new()
+	vbox.add_child(sep2)
+
+	# Section: Items Saved (Shopkeeper Bag)
+	var saved_header = Label.new()
+	saved_header.text = "— Items Saved (Shop Bag) —"
+	saved_header.add_theme_font_size_override("font_size", 16)
+	saved_header.modulate = Color(0.5, 0.8, 0.5)
+	saved_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(saved_header)
+
+	var shop_bag = GameContext.shopkeeper_bag
+	if shop_bag.is_empty():
+		var no_items = Label.new()
+		no_items.text = "(No items in shopkeeper bag)"
+		no_items.modulate = Color(0.6, 0.6, 0.6)
+		no_items.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		vbox.add_child(no_items)
+	else:
+		for entry in shop_bag:
+			var item_id = entry.get("item_id", "")
+			var qty = int(entry.get("qty", 1))
+			var quality = int(entry.get("quality", 0))
+			var tpl = DataRegistry.get_item_template(item_id)
+			var display_name = tpl.display_name if tpl != null else item_id.replace("_", " ").capitalize()
+
+			var item_label = Label.new()
+			item_label.text = "  • %s x%d (Q%d)" % [display_name, qty, quality]
+			item_label.modulate = Color(0.7, 0.9, 0.7)
+			vbox.add_child(item_label)
+
+	var sep3 = HSeparator.new()
+	vbox.add_child(sep3)
+
+	# Continue button
+	var btn_row = HBoxContainer.new()
+	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_child(btn_row)
+
+	var continue_btn = Button.new()
+	continue_btn.text = "Return to Town"
+	continue_btn.custom_minimum_size = Vector2(200, 40)
+	continue_btn.pressed.connect(_on_defeat_continue)
+	btn_row.add_child(continue_btn)
+
+	add_child(_defeat_panel)
+	print("[Defeat] Panel shown - lost_heroes=%d saved_items=%d" % [lost_heroes.size(), shop_bag.size()])
+
+
+## Create a panel showing a lost hero and their equipment.
+func _create_lost_hero_panel(hero_id: String) -> PanelContainer:
+	var panel = PanelContainer.new()
+
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.2, 0.1, 0.1, 0.8)
+	style.border_color = Color(0.5, 0.2, 0.2)
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(4)
+	style.set_content_margin_all(10)
+	panel.add_theme_stylebox_override("panel", style)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 4)
+	panel.add_child(vbox)
+
+	# Get hero data
+	var hero_data: Dictionary = {}
+	for hero in GameContext.owned_heroes:
+		if hero.get("hero_id", "") == hero_id:
+			hero_data = hero
+			break
+
+	var hero_name = hero_data.get("name", "Unknown Hero")
+	var race_id = hero_data.get("race_id", "")
+	var class_id = hero_data.get("class_id", "")
+	var level = int(hero_data.get("level", 1))
+
+	# Get display names
+	var race_name = race_id.capitalize()
+	var race_data = DataRegistry.get_race(race_id)
+	if race_data != null and race_data.display_name != "":
+		race_name = race_data.display_name
+
+	var cls_name = class_id.capitalize()
+	var class_data = DataRegistry.get_class_data(class_id)
+	if class_data != null and class_data.display_name != "":
+		cls_name = class_data.display_name
+
+	# Hero name and info
+	var name_label = Label.new()
+	name_label.text = "%s — Lv%d %s %s" % [hero_name, level, race_name, cls_name]
+	name_label.add_theme_font_size_override("font_size", 16)
+	name_label.modulate = Color(1.0, 0.7, 0.7)
+	vbox.add_child(name_label)
+
+	# Equipment lost
+	var equip_header = Label.new()
+	equip_header.text = "Equipment Lost:"
+	equip_header.add_theme_font_size_override("font_size", 12)
+	equip_header.modulate = Color(0.8, 0.6, 0.6)
+	vbox.add_child(equip_header)
+
+	var equipment = GameContext.get_hero_equipment(hero_id)
+	var has_equipment = false
+
+	for slot in GameContext.EQUIPMENT_SLOTS:
+		var slot_data = equipment.get(slot, {})
+		var item_id = slot_data.get("id", "")
+		if item_id != "":
+			has_equipment = true
+			var quality = int(slot_data.get("quality", 0))
+			var tpl = DataRegistry.get_item_template(item_id)
+			var display_name = tpl.display_name if tpl != null else item_id.replace("_", " ").capitalize()
+			var prefix = ItemInstance.QUALITY_PREFIXES[quality] if quality < ItemInstance.QUALITY_PREFIXES.size() else ""
+
+			var equip_label = Label.new()
+			equip_label.text = "  • %s: Q%d %s%s" % [slot.capitalize(), quality, prefix, display_name]
+			equip_label.add_theme_font_size_override("font_size", 11)
+			equip_label.modulate = Color(0.9, 0.6, 0.5)
+			vbox.add_child(equip_label)
+
+	# Check hero bag too
+	var bag_item_id = GameContext.get_hero_bag_item(hero_id)
+	if bag_item_id != "":
+		has_equipment = true
+		var bag_quality = GameContext.get_hero_bag_quality(hero_id)
+		var bag_tpl = DataRegistry.get_item_template(bag_item_id)
+		var bag_name = bag_tpl.display_name if bag_tpl != null else bag_item_id
+		var prefix = ItemInstance.QUALITY_PREFIXES[bag_quality] if bag_quality < ItemInstance.QUALITY_PREFIXES.size() else ""
+
+		var bag_label = Label.new()
+		bag_label.text = "  • Bag: Q%d %s%s" % [bag_quality, prefix, bag_name]
+		bag_label.add_theme_font_size_override("font_size", 11)
+		bag_label.modulate = Color(0.9, 0.6, 0.5)
+		vbox.add_child(bag_label)
+
+		# Show bag contents
+		var bag_contents = GameContext.get_hero_bag(hero_id)
+		for entry in bag_contents:
+			var entry_id = entry.get("item_id", "")
+			var entry_qty = int(entry.get("qty", 1))
+			var entry_tpl = DataRegistry.get_item_template(entry_id)
+			var entry_name = entry_tpl.display_name if entry_tpl != null else entry_id
+
+			var content_label = Label.new()
+			content_label.text = "      └ %s x%d" % [entry_name, entry_qty]
+			content_label.add_theme_font_size_override("font_size", 10)
+			content_label.modulate = Color(0.7, 0.5, 0.4)
+			vbox.add_child(content_label)
+
+	if not has_equipment:
+		var no_equip = Label.new()
+		no_equip.text = "  (No equipment)"
+		no_equip.add_theme_font_size_override("font_size", 11)
+		no_equip.modulate = Color(0.5, 0.5, 0.5)
+		vbox.add_child(no_equip)
+
+	return panel
+
+
+## Continue from defeat screen — return to town.
+func _on_defeat_continue() -> void:
+	if _defeat_panel != null:
+		_defeat_panel.queue_free()
+		_defeat_panel = null
+
+	# Clear any pending acquisitions (dungeon loot is lost on defeat)
+	GameContext.clear_pending_acquisitions()
+
+	# Clear dungeon stash (provisional rewards lost)
+	GameContext.clear_dungeon_stash()
+
+	# Exit dungeon and return to town (defeat = lose dungeon progress)
+	# Clear dungeon state so _do_combat_transition goes to TOWN not DUNGEON_CAMP
+	GameContext.current_dungeon_id = ""
+	GameContext.current_floor = 0
+	GameContext.current_room_index = 0
+	GameContext.set_phase(GameContext.GamePhase.TOWN)
+
+	_do_combat_transition()
 
 
 # ============================================================================
@@ -2365,6 +2960,11 @@ func _on_turn_started(unit: CombatUnit) -> void:
 func _on_action_performed(action: CombatAction) -> void:
 	if action == null:
 		return
+
+	# Attack Line v1: Draw visual line from actor to target
+	if action.target_id != "" and action.actor_id != "":
+		var is_heal = action.healing_done > 0 and action.damage_dealt == 0
+		_show_attack_line(action.actor_id, action.target_id, is_heal)
 
 	# Damage pop text (on target)
 	if action.damage_dealt > 0:
@@ -2923,11 +3523,12 @@ func _on_player_input_required(unit: CombatUnit, available_actions: Array) -> vo
 
 ## Build tooltip text for an action button.
 ## Shows ability description and calculated damage based on current hero stats.
+## Enhanced v2.0: Detailed tooltips with status effects, armor piercing, and mechanics
 func _build_action_tooltip(unit: CombatUnit, ability: AbilityData, action_type: String) -> String:
 	if action_type == "basic":
 		# Basic attack: show effective attack as damage
 		var eff_atk = unit.get_effective_attack()
-		return "Attack an enemy.\nDamage: %d" % eff_atk
+		return "Attack an enemy.\nDamage: %d (reduced by target DEF)" % eff_atk
 
 	if ability == null:
 		return ""
@@ -2938,18 +3539,27 @@ func _build_action_tooltip(unit: CombatUnit, ability: AbilityData, action_type: 
 	if ability.description != "":
 		tooltip_parts.append(ability.description)
 
+	tooltip_parts.append("")  # Blank line separator
+
 	# Add damage info if ability deals damage
 	if ability.effect_type == "damage" or ability.effect_type == "damage_and_heal":
 		var damage = _calculate_ability_damage_for_tooltip(unit, ability)
+		var damage_text = "Damage: %d" % damage
 		if ability.hit_count > 1:
-			tooltip_parts.append("Damage: %d x%d" % [damage, ability.hit_count])
+			damage_text = "Damage: %d x%d hits" % [damage, ability.hit_count]
+			damage_text += " (Total: %d)" % (damage * ability.hit_count)
+		tooltip_parts.append(damage_text)
+
+		# Show armor piercing info
+		if ability.armor_piercing:
+			tooltip_parts.append("  [Armor Piercing - ignores DEF]")
 		else:
-			tooltip_parts.append("Damage: %d" % damage)
+			tooltip_parts.append("  (Reduced by target DEF)")
 
 	# Add heal info if ability heals
 	if ability.effect_type == "heal" or ability.effect_type == "damage_and_heal":
 		if ability.base_heal > 0:
-			tooltip_parts.append("Heal: %d" % ability.base_heal)
+			tooltip_parts.append("Heal: %d HP" % ability.base_heal)
 
 	# Add buff info if ability buffs
 	if ability.effect_type == "buff" and ability.buff_stats.size() > 0:
@@ -2962,11 +3572,148 @@ func _build_action_tooltip(unit: CombatUnit, ability: AbilityData, action_type: 
 			buff_text += " (%d turns)" % ability.buff_duration
 		tooltip_parts.append(buff_text)
 
+	# Add self-buff info
+	if ability.self_buff.size() > 0:
+		var stat = ability.self_buff.get("stat", "")
+		var value = ability.self_buff.get("value", 0)
+		var duration = ability.self_buff.get("duration", 0)
+		if stat != "" and value != 0:
+			tooltip_parts.append("Self: +%d %s (%d turns)" % [value, stat.capitalize(), duration])
+
+	# Add self-debuff info
+	if ability.self_debuff.size() > 0:
+		var stat = ability.self_debuff.get("stat", "")
+		var value = ability.self_debuff.get("value", 0)
+		var duration = ability.self_debuff.get("duration", 0)
+		if stat != "" and value != 0:
+			tooltip_parts.append("Self: %d %s (%d turns)" % [value, stat.capitalize(), duration])
+
+	# Add enemy debuff info
+	if ability.enemy_debuff.size() > 0:
+		var stat = ability.enemy_debuff.get("stat", "")
+		var value = ability.enemy_debuff.get("value", 0)
+		var duration = ability.enemy_debuff.get("duration", 0)
+		if stat != "" and value != 0:
+			tooltip_parts.append("Enemy: %d %s (%d turns)" % [value, stat.capitalize(), duration])
+
+	# Add status effect info with detailed description
+	if ability.applies_status_id != "":
+		var status_text = _build_status_effect_tooltip_text(ability.applies_status_id, ability.status_stacks, ability.status_chance, ability.applies_status_duration)
+		if status_text != "":
+			tooltip_parts.append(status_text)
+
+	# Add shield info
+	if ability.shield_value > 0:
+		tooltip_parts.append("Shield: %d HP (%d turns)" % [ability.shield_value, ability.shield_duration])
+
+	# Add cleanse info
+	if ability.cleanses_debuffs > 0:
+		tooltip_parts.append("Cleanses: %d debuff(s)" % ability.cleanses_debuffs)
+
+	# Add reflect info
+	if ability.reflect_percent > 0:
+		tooltip_parts.append("Reflects: %d%% damage taken" % ability.reflect_percent)
+
+	# Add self-damage cost
+	if ability.self_damage > 0:
+		tooltip_parts.append("HP Cost: %d" % ability.self_damage)
+
 	# Add cooldown info if ability has cooldown
 	if ability.cooldown > 0:
+		tooltip_parts.append("")
 		tooltip_parts.append("Cooldown: %d turns" % ability.cooldown)
 
 	return "\n".join(tooltip_parts)
+
+
+## Build tooltip text for a status effect applied by an ability.
+## Returns formatted string with status name, description, damage, duration, and stacking info.
+## Enhanced v2.1: More detailed info with duration override support
+func _build_status_effect_tooltip_text(status_id: String, stacks: int, chance: float, duration_override: int = 0) -> String:
+	var status_data = DataRegistry.get_status_effect(status_id) if DataRegistry.has_method("get_status_effect") else null
+
+	var parts: Array = []
+
+	# Chance prefix
+	var chance_text = ""
+	if chance < 1.0:
+		chance_text = "%d%% chance: " % int(chance * 100)
+
+	if status_data != null:
+		# Status name
+		var status_name = status_data.display_name if status_data.display_name != "" else status_id.capitalize()
+		parts.append("%sApplies %s" % [chance_text, status_name])
+
+		# Description
+		if status_data.description != "":
+			parts.append("  %s" % status_data.description)
+
+		# Determine actual duration (ability override takes precedence)
+		var actual_duration = duration_override if duration_override > 0 else status_data.base_duration
+
+		# Damage info for DoTs - show formula breakdown
+		if status_data.category == "dot" or "dot" in status_data.tags:
+			var base_dmg = status_data.base_value
+			var per_stack = status_data.value_per_stack
+			var actual_stacks = maxi(1, stacks)
+			var total_dmg = base_dmg + (per_stack * (actual_stacks - 1)) if actual_stacks > 1 else base_dmg
+			if total_dmg > 0:
+				var dmg_text = "  Damage: %d/turn" % total_dmg
+				if per_stack > 0 and actual_stacks > 1:
+					dmg_text += " (%d base + %d per stack)" % [base_dmg, per_stack]
+				parts.append(dmg_text)
+
+		# Healing info for HoTs
+		if status_data.category == "buff" and "hot" in status_data.tags:
+			var base_heal = status_data.base_value
+			var per_stack = status_data.value_per_stack
+			var actual_stacks = maxi(1, stacks)
+			var total_heal = base_heal + (per_stack * (actual_stacks - 1)) if actual_stacks > 1 else base_heal
+			if total_heal > 0:
+				parts.append("  Heals: %d HP/turn" % total_heal)
+
+		# Control info
+		if status_data.category == "control":
+			parts.append("  Effect: Cannot act while active")
+
+		# Taunt info
+		if "taunt" in status_data.tags:
+			parts.append("  Effect: Forces enemies to attack this unit")
+
+		# Evasion info
+		if "evasion" in status_data.tags and status_data.base_value > 0:
+			parts.append("  Effect: %d%% chance to dodge attacks" % status_data.base_value)
+
+		# Reflect info
+		if "reflect" in status_data.tags and status_data.base_value > 0:
+			parts.append("  Effect: Reflects %d%% damage to attackers" % status_data.base_value)
+
+		# Blind info
+		if "blind" in status_data.tags and status_data.base_value > 0:
+			parts.append("  Effect: %d%% chance to miss attacks" % status_data.base_value)
+
+		# Duration and stacking info
+		var info_parts: Array = []
+		if actual_duration > 0:
+			info_parts.append("%d turns" % actual_duration)
+		if stacks > 1:
+			info_parts.append("%d stacks" % stacks)
+		if status_data.stacking_mode == "intensity" and status_data.max_stacks > 1:
+			info_parts.append("max %d stacks" % status_data.max_stacks)
+		if info_parts.size() > 0:
+			parts.append("  (%s)" % ", ".join(info_parts))
+	else:
+		# Fallback for unknown status - provide basic info
+		parts.append("%sApplies %s" % [chance_text, status_id.replace("_", " ").capitalize()])
+		var info_parts: Array = []
+		if duration_override > 0:
+			info_parts.append("%d turns" % duration_override)
+		if stacks > 1:
+			info_parts.append("%d stacks" % stacks)
+		if info_parts.size() > 0:
+			parts.append("  (%s)" % ", ".join(info_parts))
+
+	return "\n".join(parts)
 
 
 ## Calculate damage for an ability (mirrors CombatController._calculate_ability_damage).
@@ -2976,6 +3723,179 @@ func _calculate_ability_damage_for_tooltip(unit: CombatUnit, ability: AbilityDat
 	var eff_atk = unit.get_effective_attack()
 	var total = int(base + (eff_atk * scaling))
 	return maxi(1, total)
+
+
+## Build tooltip for static ability display on hero cards (without live damage calc).
+## Shows description, status effects, special mechanics, and cooldown.
+func _build_static_ability_tooltip(ability: AbilityData, fallback_name: String) -> String:
+	if ability == null:
+		return fallback_name
+
+	var parts: Array = [ability.display_name if ability.display_name != "" else fallback_name]
+
+	# Add description
+	if ability.description != "":
+		parts.append(ability.description)
+
+	# Add damage info (without live calculation, show base damage + scaling)
+	if ability.effect_type == "damage" or ability.effect_type == "damage_and_heal":
+		var dmg_text = "Base Damage: %d" % ability.base_damage
+		if ability.attack_scaling != 1.0:
+			dmg_text += " (+%.0f%% ATK)" % (ability.attack_scaling * 100)
+		if ability.hit_count > 1:
+			dmg_text += " x%d hits" % ability.hit_count
+		parts.append(dmg_text)
+
+	# Add heal info
+	if (ability.effect_type == "heal" or ability.effect_type == "damage_and_heal") and ability.base_heal > 0:
+		parts.append("Heal: %d HP" % ability.base_heal)
+
+	# Add buff info
+	if ability.buff_stats.size() > 0:
+		var buff_parts: Array = []
+		for stat in ability.buff_stats.keys():
+			buff_parts.append("+%d %s" % [ability.buff_stats[stat], stat.capitalize()])
+		var buff_text = "Buff: %s" % ", ".join(buff_parts)
+		if ability.buff_duration > 0:
+			buff_text += " (%d turns)" % ability.buff_duration
+		parts.append(buff_text)
+
+	# Add status effect info
+	if ability.applies_status_id != "":
+		var status_text = _build_status_effect_tooltip_text(ability.applies_status_id, ability.status_stacks, ability.status_chance, ability.applies_status_duration)
+		if status_text != "":
+			parts.append(status_text)
+
+	# Add special mechanics
+	if ability.armor_piercing:
+		parts.append("[Armor Piercing]")
+	if ability.shield_value > 0:
+		parts.append("Shield: %d HP (%d turns)" % [ability.shield_value, ability.shield_duration])
+	if ability.cleanses_debuffs > 0:
+		parts.append("Cleanses: %d debuff(s)" % ability.cleanses_debuffs)
+
+	# Add cooldown
+	if ability.cooldown > 0:
+		parts.append("Cooldown: %d turns" % ability.cooldown)
+
+	return "\n".join(parts)
+
+
+## Resolve formulas in passive/ability descriptions by calculating actual values.
+## Replaces patterns like "(2 + level/2)" or "(1 + hero level/2)" with calculated numbers.
+## Example: "(2 + level/2)" with level=4 becomes "4"
+func _resolve_formula_in_description(description: String, level: int) -> String:
+	var result = description
+
+	# Pattern: (X + level/Y) or (X + hero level/Y)
+	# We'll use simple string matching since GDScript regex is limited
+	var patterns = [
+		{"search": "(1 + level/2)", "base": 1, "divisor": 2},
+		{"search": "(2 + level/2)", "base": 2, "divisor": 2},
+		{"search": "(3 + level/2)", "base": 3, "divisor": 2},
+		{"search": "(1 + hero level/2)", "base": 1, "divisor": 2},
+		{"search": "(2 + hero level/2)", "base": 2, "divisor": 2},
+		{"search": "(3 + hero level/2)", "base": 3, "divisor": 2},
+		{"search": "(1 + level/3)", "base": 1, "divisor": 3},
+		{"search": "(2 + level/3)", "base": 2, "divisor": 3},
+	]
+
+	for pattern in patterns:
+		if result.contains(pattern["search"]):
+			var calculated = pattern["base"] + int(level / pattern["divisor"])
+			result = result.replace(pattern["search"], str(calculated))
+
+	return result
+
+
+## Build a tooltip showing stat breakdown with base value and all buff sources.
+## stat_name: "Health", "Attack", "Defense", or "Speed"
+## effective_value: the unit's current stat including buffs
+## buffs: array of buff snapshots from unit_data["active_buffs_v1"]
+## unit_data: full unit snapshot dictionary for looking up hero/class/race info
+func _build_stat_breakdown_tooltip(stat_name: String, base_value: int, effective_value: int, buffs: Array, unit_data: Dictionary = {}) -> String:
+	var stat_key = stat_name.to_lower()  # "health", "attack", "defense", "speed"
+	var parts: Array = [stat_name]
+
+	# For player units, show detailed breakdown (class base + race + gear)
+	var is_player = unit_data.get("team", "") == "player"
+	var hero_id = unit_data.get("source_id", "")
+	var class_id = unit_data.get("class_id", "")
+
+	if is_player and hero_id != "":
+		var hero = GameContext.get_hero(hero_id)
+		var level = int(hero.get("level", 1))
+		var race_id = hero.get("race_id", "human")
+
+		# Get class base at level
+		var class_base = 0
+		var class_data = DataRegistry.get_class_data(class_id)
+		if class_data != null:
+			var base_stats = class_data.get_stats_at_level(level)
+			class_base = int(base_stats.get(stat_key, 0))
+
+		# Get race modifier and name
+		var race_bonus = 0
+		var race_name = race_id.capitalize()
+		var race_data = DataRegistry.get_race(race_id)
+		if race_data != null:
+			race_bonus = int(race_data.stat_modifiers.get(stat_key, 0))
+			if race_data.display_name != "":
+				race_name = race_data.display_name
+
+		# Get gear bonus
+		var eff_stats = GameContext.get_hero_effective_stats(hero_id)
+		var gear_bonus_dict = eff_stats.get("gear_bonus", {})
+		var gear_bonus = int(gear_bonus_dict.get(stat_key, 0))
+
+		# Build detailed breakdown
+		parts.append("Base (Lv %d): %d" % [level, class_base])
+
+		if race_bonus != 0:
+			if race_bonus > 0:
+				parts.append("%s: +%d" % [race_name, race_bonus])
+			else:
+				parts.append("%s: %d" % [race_name, race_bonus])
+
+		if gear_bonus != 0:
+			if gear_bonus > 0:
+				parts.append("Gear: +%d" % gear_bonus)
+			else:
+				parts.append("Gear: %d" % gear_bonus)
+	else:
+		# For enemies or when hero data unavailable, show simple base
+		parts.append("Base: %d" % base_value)
+
+	# Find all buffs that affect this stat
+	var buff_total = 0
+	for buff in buffs:
+		var stats = buff.get("stats", {})
+		if stats.has(stat_key):
+			var bonus = int(stats[stat_key])
+			buff_total += bonus
+			var source_name = buff.get("ui_name", buff.get("source", "Unknown"))
+			var remaining = buff.get("remaining_rounds", 0)
+			# Format duration - hide for permanent/passive buffs (999+)
+			var duration_str = ""
+			if remaining < 999:
+				duration_str = " (%d turns)" % remaining
+			if bonus >= 0:
+				parts.append("%s: +%d%s" % [source_name, bonus, duration_str])
+			else:
+				parts.append("%s: %d%s" % [source_name, bonus, duration_str])
+
+	# Handle edge case where base != effective but no tracked buffs (enemies only)
+	if not is_player and buff_total == 0 and base_value != effective_value:
+		var diff = effective_value - base_value
+		if diff > 0:
+			parts.append("Other bonuses: +%d" % diff)
+		else:
+			parts.append("Other modifiers: %d" % diff)
+
+	# Show total
+	parts.append("Total: %d" % effective_value)
+
+	return "\n".join(parts)
 
 
 ## Handle target_selection_required signal - enter target mode.
@@ -3026,7 +3946,8 @@ func _on_multi_action_update(unit: CombatUnit, remaining: int, total: int) -> vo
 		_action_label.text = "Action %d/%d:" % [action_num, total]
 
 
-## Enter target selection mode - highlight valid targets.
+## Enter target selection mode - highlight valid targets with hover effects.
+## v2.1: Subtle initial highlight, brighter on hover for clear target indication
 func _enter_target_selection_mode(valid_targets: Array) -> void:
 	_target_selection_active = true
 	_valid_target_ids.clear()
@@ -3043,25 +3964,56 @@ func _enter_target_selection_mode(valid_targets: Array) -> void:
 			if highlight == null:
 				highlight = ColorRect.new()
 				highlight.name = "TargetHighlight"
-				highlight.color = Color(0.3, 1.0, 0.3, 0.25)  # Green tint
 				highlight.set_anchors_preset(Control.PRESET_FULL_RECT)
 				highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
 				display.add_child(highlight)
 				display.move_child(highlight, 0)
+			# Subtle initial highlight - indicates valid target
+			highlight.color = Color(0.2, 0.8, 0.2, 0.15)  # Subtle green tint
 			highlight.visible = true
 			_target_highlights[unit_id] = highlight
 
-			# Make clickable - disconnect any existing handler first to prevent duplicates
+			# Make clickable and hoverable
 			display.mouse_filter = Control.MOUSE_FILTER_STOP
-			var bound_callable = _on_unit_clicked.bind(unit_id)
-			# Disconnect ALL gui_input connections to _on_unit_clicked variants
+
+			# Disconnect old handlers to prevent duplicates
 			for connection in display.gui_input.get_connections():
 				if connection.callable.get_method() == "_on_unit_clicked":
 					display.gui_input.disconnect(connection.callable)
-			display.gui_input.connect(bound_callable)
+			for connection in display.mouse_entered.get_connections():
+				if connection.callable.get_method() == "_on_target_mouse_entered":
+					display.mouse_entered.disconnect(connection.callable)
+			for connection in display.mouse_exited.get_connections():
+				if connection.callable.get_method() == "_on_target_mouse_exited":
+					display.mouse_exited.disconnect(connection.callable)
+
+			# Connect click and hover handlers
+			display.gui_input.connect(_on_unit_clicked.bind(unit_id))
+			display.mouse_entered.connect(_on_target_mouse_entered.bind(unit_id))
+			display.mouse_exited.connect(_on_target_mouse_exited.bind(unit_id))
 		else:
 			# Gray out non-valid targets
 			display.modulate = Color(0.5, 0.5, 0.5)
+
+
+## Handle mouse entering a valid target during target selection.
+func _on_target_mouse_entered(unit_id: String) -> void:
+	if not _target_selection_active or unit_id not in _valid_target_ids:
+		return
+	# Brighten the highlight for the hovered target
+	var highlight = _target_highlights.get(unit_id)
+	if highlight:
+		highlight.color = Color(0.4, 1.0, 0.4, 0.4)  # Brighter green on hover
+
+
+## Handle mouse exiting a valid target during target selection.
+func _on_target_mouse_exited(unit_id: String) -> void:
+	if not _target_selection_active or unit_id not in _valid_target_ids:
+		return
+	# Return to subtle highlight
+	var highlight = _target_highlights.get(unit_id)
+	if highlight:
+		highlight.color = Color(0.2, 0.8, 0.2, 0.15)  # Subtle green again
 
 
 ## Exit target selection mode - restore normal display.
@@ -3074,10 +4026,16 @@ func _exit_target_selection_mode() -> void:
 		display.modulate = Color.WHITE
 		display.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-		# Disconnect click handlers to prevent accumulation
+		# Disconnect all target selection handlers to prevent accumulation
 		for connection in display.gui_input.get_connections():
 			if connection.callable.get_method() == "_on_unit_clicked":
 				display.gui_input.disconnect(connection.callable)
+		for connection in display.mouse_entered.get_connections():
+			if connection.callable.get_method() == "_on_target_mouse_entered":
+				display.mouse_entered.disconnect(connection.callable)
+		for connection in display.mouse_exited.get_connections():
+			if connection.callable.get_method() == "_on_target_mouse_exited":
+				display.mouse_exited.disconnect(connection.callable)
 
 		# Hide highlight
 		var highlight = display.get_node_or_null("TargetHighlight")
@@ -3398,6 +4356,16 @@ func _populate_stats_window(hero_id: String) -> void:
 	name_label.add_theme_font_size_override("font_size", 16)
 	name_label.add_theme_color_override("font_color", Color.CYAN)
 	vbox.add_child(name_label)
+
+	# === LEVEL AND XP ===
+	var hero_level = hero_data.get("level", 1) if not hero_data.is_empty() else 1
+	var hero_xp = hero_data.get("xp", 0) if not hero_data.is_empty() else 0
+	var xp_for_next = GameContext.get_xp_for_level(hero_level + 1) if GameContext.has_method("get_xp_for_level") else 100
+	var level_label = Label.new()
+	level_label.text = "Level %d  |  XP: %d / %d" % [hero_level, hero_xp, xp_for_next]
+	level_label.add_theme_font_size_override("font_size", 12)
+	level_label.add_theme_color_override("font_color", Color.LIGHT_GRAY)
+	vbox.add_child(level_label)
 
 	vbox.add_child(HSeparator.new())
 

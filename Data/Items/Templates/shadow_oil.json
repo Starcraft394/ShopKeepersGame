@@ -22,6 +22,6 @@
   "base_value": 35,
   "buy_value": 50,
   "stack_max": 5,
-  "icon_path": "",
+  "icon_path": "res://Assets/Icons/Items/icon_item_shadow_oil.png",
   "tags": ["region_1", "consumable", "buff", "crafted"]
 }

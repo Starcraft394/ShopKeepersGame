@@ -97,6 +97,14 @@ func requires_front_row() -> bool:
 func get_weapon_cooldown_reduction() -> int:
 	return effect.get("reduce_weapon_cooldown", 0)
 
+## Get level divisor for scaled passives (default 1 = full level scaling)
+func get_level_divisor() -> int:
+	return effect.get("level_divisor", 1)
+
+## Get max stacks for stacking passives (from effect dict, default 999 = no cap)
+func get_effect_max_stacks() -> int:
+	return effect.get("max_stacks", 999)
+
 # Debug string
 func _to_string() -> String:
 	return "PassiveData(%s: %s [%s])" % [passive_id, display_name, passive_type]

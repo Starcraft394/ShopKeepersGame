@@ -22,6 +22,6 @@
   "base_value": 6,
   "buy_value": 10,
   "stack_max": 10,
-  "icon_path": "",
+  "icon_path": "res://Assets/Icons/Items/icon_item_berry_tart.png",
   "tags": ["region_1", "consumable", "food", "tier_1"]
 }

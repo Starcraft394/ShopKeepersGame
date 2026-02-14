@@ -2,6 +2,7 @@
   "id": "huntsman",
   "display_name": "Huntsman",
   "description": "A skilled craftsman who fashions bows, light armor, and travel gear from forest materials and animal pelts.",
+  "icon_path": "res://Assets/Icons/Facilities/icon_facility_huntsman.png",
   "facility_type": "equipment",
   "max_tier": 2,
   "unlock_region": 1,

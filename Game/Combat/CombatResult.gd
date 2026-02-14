@@ -168,7 +168,7 @@ func add_action(action: CombatAction) -> void:
 # ============================================================================
 
 # Region 1 equipment whitelist for gear drops
-const REGION1_GEAR_WHITELIST := ["crude_sword", "wooden_shield", "iron_dagger", "reinforced_shield"]
+const REGION1_GEAR_WHITELIST := ["rusty_sword", "wooden_shield", "leather_vest", "hunting_bow"]
 
 # Gear drop chance by encounter type: normal=8%, elite=15%, boss=25%
 const GEAR_DROP_CHANCE_NORMAL := 0.08

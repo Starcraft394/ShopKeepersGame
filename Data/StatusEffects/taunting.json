@@ -1,0 +1,18 @@
+{
+  "id": "taunting",
+  "display_name": "Taunting",
+  "description": "Forces enemies to target this unit. Draws all enemy attacks.",
+  "category": "buff",
+  "stacking_mode": "refresh",
+  "max_stacks": 1,
+  "base_duration": 2,
+  "base_value": 0,
+  "value_per_stack": 0,
+  "resolution_timing": "turn_end",
+  "is_cleansable": false,
+  "dispel_type": "buff",
+  "tags": ["taunt", "defensive"],
+  "ui_name": "Taunting",
+  "ui_short": "TAUNT",
+  "ui_icon": "res://Assets/Icons/Status/icon_status_taunting.png"
+}

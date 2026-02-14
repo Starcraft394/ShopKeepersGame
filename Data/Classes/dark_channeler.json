@@ -3,7 +3,7 @@
   "display_name": "Dark Channeler",
   "description": "A shadow priest who drains life from enemies to heal allies, walking the line between life and death.",
   "archetype": "healer",
-  "unlock_region": 6,
+  "unlock_region": 1,
   "base_stats": {
     "health": 85,
     "attack": 10,

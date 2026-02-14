@@ -1,0 +1,17 @@
+{
+  "id": "blinded",
+  "display_name": "Blinded",
+  "description": "Reduced accuracy. 50% chance to miss attacks.",
+  "category": "debuff",
+  "stacking_mode": "refresh",
+  "max_stacks": 1,
+  "base_duration": 1,
+  "base_value": 50,
+  "value_per_stack": 0,
+  "resolution_timing": "turn_end",
+  "is_cleansable": true,
+  "tags": ["blind", "control"],
+  "ui_name": "Blinded",
+  "ui_short": "BLND",
+  "ui_icon": "res://Assets/Icons/Status/icon_status_blinded.png"
+}

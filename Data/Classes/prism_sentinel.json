@@ -3,9 +3,9 @@
   "display_name": "Prism Sentinel",
   "description": "A crystalline guardian who refracts damage and creates protective barriers of light.",
   "archetype": "vanguard",
-  "unlock_region": 5,
+  "unlock_region": 1,
   "base_stats": {
-    "health": 140,
+    "health": 120,
     "attack": 9,
     "defense": 18,
     "speed": 4
@@ -13,7 +13,7 @@
   "stat_growth": {
     "health": 15,
     "attack": 2,
-    "defense": 5,
+    "defense": 3,
     "speed": 1
   },
   "ability_a_id": "prism_barrier",

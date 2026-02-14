@@ -22,6 +22,6 @@
   "base_value": 12,
   "buy_value": 18,
   "stack_max": 10,
-  "icon_path": "",
+  "icon_path": "res://Assets/Icons/Items/icon_item_mushroom_stew.png",
   "tags": ["region_1", "consumable", "food", "tier_1"]
 }

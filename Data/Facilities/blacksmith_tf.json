@@ -2,6 +2,7 @@
   "id": "blacksmith_tf",
   "display_name": "Blacksmith (Timberfall)",
   "description": "A humble forge capable of basic repairs and simple craftsmanship. Specializes in melee weapons, shields, and heavy armor.",
+  "icon_path": "res://Assets/Icons/Facilities/icon_facility_blacksmith.png",
   "facility_type": "equipment",
   "max_tier": 2,
   "unlock_region": 1,
