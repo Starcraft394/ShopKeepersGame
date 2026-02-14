@@ -2,6 +2,7 @@
   "id": "tf_rustwood_construct",
   "display_name": "Rustwood Construct",
   "description": "A lumber-hauling automaton corrupted by dark influence, creaking with menace.",
+  "icon_hint": "rusted wooden automaton with dark-veined timber limbs and glowing red joints",
   "family": "construct",
   "region_id": "region_1",
   "tier": 2,

@@ -2,6 +2,7 @@
   "id": "burning_wounds",
   "display_name": "Burning Wounds",
   "description": "Attacks against burning enemies deal (2 + level/2) bonus fire damage. Exploit the flames.",
+  "icon_hint": "smoldering blade wound with orange fire spreading along the cut edges",
   "passive_type": "conditional_damage_bonus",
   "trigger": "on_attack",
   "condition": "target_has_status",

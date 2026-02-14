@@ -2,6 +2,7 @@
   "id": "ocean_blessing",
   "display_name": "Ocean Blessing",
   "description": "At combat start, all allies gain (1 + hero level) DEF. The ocean shields its chosen.",
+  "icon_hint": "shimmering teal ocean shell radiating protective blue light over allied silhouettes",
   "passive_type": "level_scaled_stat_bonus",
   "trigger": "combat_start",
   "effect": {

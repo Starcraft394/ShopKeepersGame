@@ -2,6 +2,7 @@
   "id": "ash_veil",
   "display_name": "Ash Veil",
   "description": "At combat start, gain SPEED equal to (2 + hero level). Cinders obscure your movements.",
+  "icon_hint": "swirling gray ash cloud with orange ember sparks obscuring a shadowy figure",
   "passive_type": "level_scaled_stat_bonus",
   "trigger": "combat_start",
   "effect": {

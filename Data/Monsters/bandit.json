@@ -2,6 +2,7 @@
   "id": "bandit",
   "display_name": "Bandit",
   "description": "A desperate outlaw who preys on travelers.",
+  "icon_hint": "hooded outlaw in tattered brown cloak with a rusty short sword",
   "family": "beast",
   "region_id": "region_1",
   "tier": 1,

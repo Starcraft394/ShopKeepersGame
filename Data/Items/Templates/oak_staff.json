@@ -2,6 +2,7 @@
   "id": "oak_staff",
   "display_name": "Oak Staff",
   "description": "A sturdy staff carved from forest oak. Channels magical energy.",
+  "icon_hint": "tall oak staff with a spiraling carved shaft and a faintly glowing tip",
   "item_type": "weapon",
   "item_subtype": "staff",
   "category": "equipment",

@@ -2,6 +2,7 @@
   "id": "slime_elite",
   "display_name": "Elder Slime",
   "description": "Denser gel, tougher skin, slower to split apart.",
+  "icon_hint": "oversized translucent green slime with a dense glowing core and hardened shell",
   "family": "ooze",
   "region_id": "region_1",
   "tier": 1,

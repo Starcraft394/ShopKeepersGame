@@ -2,6 +2,7 @@
   "id": "smoke_dash",
   "display_name": "Smoke Dash",
   "description": "Vanish in a cloud of smoke, gaining evasion and speed for the next turn.",
+  "icon_hint": "billowing gray smoke cloud with a fading silhouette and speed streaks",
   "ability_type": "class_b",
   "source_class_id": "ashblade",
   "target_type": "self",

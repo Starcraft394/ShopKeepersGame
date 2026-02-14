@@ -2,6 +2,7 @@
   "id": "resistance_salve",
   "display_name": "Resistance Salve",
   "description": "A thick ointment that hardens skin against damage for a short time.",
+  "icon_hint": "small clay pot of thick amber salve with a wooden spatula lid",
   "item_type": "consumable",
   "item_subtype": "salve",
   "category": "consumable",

@@ -2,6 +2,7 @@
   "id": "cultist_enforcer_elite",
   "display_name": "Cultist Enforcer (Elite)",
   "description": "A fanatic champion who hits first and hits last.",
+  "icon_hint": "armored cult champion with glowing green sigils on dark plate and twin blades",
   "family": "humanoid",
   "region_id": "region_1",
   "tier": 2,

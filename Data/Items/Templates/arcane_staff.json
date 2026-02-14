@@ -2,6 +2,7 @@
   "id": "arcane_staff",
   "display_name": "Arcane Staff",
   "description": "A staff imbued with magical crystals. Amplifies spellcasting.",
+  "icon_hint": "dark oak staff crowned with a glowing blue crystal held by twisted branches",
   "item_type": "weapon",
   "item_subtype": "staff",
   "category": "equipment",

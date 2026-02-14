@@ -2,6 +2,7 @@
   "id": "dwarf",
   "display_name": "Dwarf",
   "description": "Durable and stubborn, dwarves are natural miners who find extra ore in the depths. Their resilience is legendary.",
+  "icon_hint": "iron anvil crest with crossed mining picks and stone border",
   "unlock_region": 1,
   "stat_modifiers": {
     "health": 10,

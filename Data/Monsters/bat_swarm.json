@@ -2,6 +2,7 @@
   "id": "bat_swarm",
   "display_name": "Bat Swarm",
   "description": "A cloud of wings that harasses and distracts.",
+  "icon_hint": "swirling cloud of small dark bats with tiny amber eyes",
   "family": "beast",
   "region_id": "region_1",
   "tier": 1,

@@ -2,6 +2,7 @@
   "id": "ashblade",
   "display_name": "Ashblade",
   "description": "A swift assassin wreathed in smoke and cinders, striking from shadows with burning precision.",
+  "icon_hint": "curved dagger trailing gray smoke and glowing ember sparks",
   "archetype": "dps",
   "unlock_region": 1,
   "base_stats": {

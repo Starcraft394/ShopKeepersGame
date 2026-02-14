@@ -2,6 +2,7 @@
   "id": "acid_slime",
   "display_name": "Acid Slime",
   "description": "A corrosive ooze that turns armor to mush.",
+  "icon_hint": "bubbling yellow-green slime with wisps of corrosive steam rising off it",
   "family": "ooze",
   "region_id": "region_1",
   "tier": 2,

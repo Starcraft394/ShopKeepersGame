@@ -2,6 +2,7 @@
   "id": "dimensional_shift",
   "display_name": "Dimensional Shift",
   "description": "At combat start, gain DEF equal to (3 + hero level). Partially phase out of reality.",
+  "icon_hint": "half-phased silhouette split between solid form and shimmering void space",
   "passive_type": "level_scaled_stat_bonus",
   "trigger": "combat_start",
   "effect": {

@@ -2,6 +2,7 @@
   "id": "bandage",
   "display_name": "Bandage",
   "description": "Simple cloth bandages. Use in camp to stop bleeding.",
+  "icon_hint": "rolled white linen bandage with a red-stained edge on a tray",
   "item_type": "consumable",
   "category": "consumable",
   "rarity": "common",

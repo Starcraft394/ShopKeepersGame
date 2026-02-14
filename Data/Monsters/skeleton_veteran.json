@@ -2,6 +2,7 @@
   "id": "skeleton_veteran",
   "display_name": "Skeleton Veteran",
   "description": "A disciplined revenant that strikes with practiced timing.",
+  "icon_hint": "armored skeleton warrior with a notched sword and dented iron shield",
   "family": "undead",
   "region_id": "region_1",
   "tier": 2,

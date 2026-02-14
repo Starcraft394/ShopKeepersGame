@@ -2,6 +2,7 @@
   "id": "dark_pact",
   "display_name": "Dark Pact",
   "description": "At combat start, gain ATK equal to (2 + hero level) but lose 5 max HP. Power has a price.",
+  "icon_hint": "dark swirling shadow pact sigil with a cracked heart bleeding dark energy",
   "passive_type": "level_scaled_stat_bonus_with_cost",
   "trigger": "combat_start",
   "effect": {

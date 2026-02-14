@@ -2,6 +2,7 @@
   "id": "death_bolt",
   "display_name": "Death Bolt",
   "description": "Hurl a bolt of necrotic energy that deals massive damage to a single target.",
+  "icon_hint": "crackling bolt of necrotic green energy with swirling skull wisps",
   "ability_type": "class_a",
   "source_class_id": "lich",
   "target_type": "single_enemy",

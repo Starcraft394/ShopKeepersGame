@@ -2,6 +2,7 @@
   "id": "book_druid",
   "display_name": "Druid's Grimoire",
   "description": "A moss-covered tome filled with nature's secrets and fungal lore. Teaches the Druid class.",
+  "icon_hint": "moss-covered green tome with vine tendrils curling around the spine",
   "item_type": "consumable",
   "rarity": "uncommon",
   "use_effect_id": "learn_class_druid",

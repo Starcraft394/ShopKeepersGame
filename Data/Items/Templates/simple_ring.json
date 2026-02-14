@@ -2,6 +2,7 @@
   "id": "simple_ring",
   "display_name": "Simple Ring",
   "description": "A plain band traded in small towns.",
+  "icon_hint": "plain copper ring with a thin rounded band and dull patina",
   "item_type": "accessory",
   "item_subtype": "ring",
   "category": "equipment",

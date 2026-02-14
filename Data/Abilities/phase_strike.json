@@ -2,6 +2,7 @@
   "id": "phase_strike",
   "display_name": "Phase Strike",
   "description": "Phase through dimensions to strike an enemy, ignoring armor.",
+  "icon_hint": "ghostly purple blade phasing through a dimensional tear with void ripples",
   "ability_type": "class_b",
   "source_class_id": "voidwalker",
   "target_type": "single_enemy",

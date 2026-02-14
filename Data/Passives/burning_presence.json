@@ -2,6 +2,7 @@
   "id": "burning_presence",
   "display_name": "Burning Presence",
   "description": "At combat start, gain DEF equal to (3 + hero level). Flames harden into armor.",
+  "icon_hint": "smoldering ember armor plates with orange flames hardening into a protective shell",
   "passive_type": "level_scaled_stat_bonus",
   "trigger": "combat_start",
   "effect": {

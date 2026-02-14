@@ -2,6 +2,7 @@
   "id": "def_front_line_bonus",
   "display_name": "Front Line",
   "description": "When in the front row, gain +10 max HP.",
+  "icon_hint": "forward-facing shield wall with a glowing amber heart behind it",
   "passive_type": "conditional_stat_bonus",
   "trigger": "on_front_row",
   "effect": {

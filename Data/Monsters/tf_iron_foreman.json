@@ -2,6 +2,7 @@
   "id": "tf_iron_foreman",
   "display_name": "Iron Foreman",
   "description": "The tyrannical overseer of Timberfall's cursed mills, armored in riveted plate and fury.",
+  "icon_hint": "imposing armored foreman in riveted dark plate wielding a heavy iron hammer",
   "family": "humanoid",
   "region_id": "region_1",
   "tier": 3,

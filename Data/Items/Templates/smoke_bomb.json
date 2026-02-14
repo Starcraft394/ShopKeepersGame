@@ -2,6 +2,7 @@
   "id": "smoke_bomb",
   "display_name": "Smoke Bomb",
   "description": "A small bomb that bursts into thick smoke.",
+  "icon_hint": "round iron ball with a short cloth fuse and wisps of gray smoke",
   "item_type": "consumable",
   "item_subtype": "utility",
   "slot": "",

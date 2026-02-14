@@ -2,6 +2,7 @@
   "id": "iron_greataxe",
   "display_name": "Iron Greataxe",
   "description": "A massive two-handed axe. Devastating but unwieldy.",
+  "icon_hint": "massive double-bladed iron greataxe on a long ash haft with leather grip",
   "item_type": "weapon",
   "item_subtype": "axe",
   "category": "equipment",

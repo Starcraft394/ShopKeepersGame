@@ -2,6 +2,7 @@
   "id": "rat_swarm",
   "display_name": "Rat Swarm",
   "description": "A chittering pack that overwhelms distracted fighters.",
+  "icon_hint": "tangled mass of brown rats with beady amber eyes swarming together",
   "family": "beast",
   "region_id": "region_1",
   "tier": 1,

@@ -2,6 +2,7 @@
   "id": "book_stormcaller",
   "display_name": "Stormcaller's Manual",
   "description": "A crackling tome that sparks when touched, teaching the ways of the tempest. Teaches the Stormcaller class.",
+  "icon_hint": "storm-gray tome with crackling lightning bolts arcing across the cover",
   "item_type": "consumable",
   "rarity": "rare",
   "use_effect_id": "learn_class_stormcaller",

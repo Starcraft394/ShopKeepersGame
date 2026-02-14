@@ -2,6 +2,7 @@
   "id": "finishers_instinct",
   "display_name": "Finisher's Instinct",
   "description": "Your killing instinct grants +3 ATK against weakened foes. Applied as flat ATK bonus at combat start.",
+  "icon_hint": "crimson crosshair targeting a cracked enemy silhouette with amber strike lines",
   "passive_type": "stat_bonus",
   "trigger": "always",
   "effect": {

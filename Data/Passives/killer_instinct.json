@@ -2,6 +2,7 @@
   "id": "killer_instinct",
   "display_name": "Killer Instinct",
   "description": "On killing an enemy, gain ATK equal to (1 + level/2). Stacks persist for the duration of combat.",
+  "icon_hint": "predator eye with stacking crimson blade marks circling around it",
   "passive_type": "on_kill_stacking_buff",
   "trigger": "on_kill",
   "effect": {

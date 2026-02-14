@@ -2,6 +2,7 @@
   "id": "book_defender",
   "display_name": "Defender's Tome",
   "description": "A weighty manual detailing defensive stances and shield techniques. Teaches the Defender class.",
+  "icon_hint": "iron-clasped leather tome with an embossed shield crest on the cover",
   "item_type": "consumable",
   "rarity": "uncommon",
   "use_effect_id": "learn_class_defender",

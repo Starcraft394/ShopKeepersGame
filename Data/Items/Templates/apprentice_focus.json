@@ -2,6 +2,7 @@
   "id": "apprentice_focus",
   "display_name": "Apprentice Focus",
   "description": "A simple crystal orb used by novice spellcasters.",
+  "icon_hint": "small cloudy crystal sphere resting on a brass pedestal ring",
   "item_type": "offhand",
   "item_subtype": "focus",
   "category": "equipment",

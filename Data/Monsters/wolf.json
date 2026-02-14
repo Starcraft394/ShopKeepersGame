@@ -2,6 +2,7 @@
   "id": "wolf",
   "display_name": "Wolf",
   "description": "A fierce predator that hunts in packs.",
+  "icon_hint": "lean gray-brown wolf with bared fangs and alert amber eyes",
   "family": "beast",
   "region_id": "region_1",
   "tier": 1,

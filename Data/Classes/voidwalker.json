@@ -2,6 +2,7 @@
   "id": "voidwalker",
   "display_name": "Voidwalker",
   "description": "A dimensional warrior who phases between planes to absorb attacks and confuse enemies.",
+  "icon_hint": "heavy shield half-phased into a dark purple void rift",
   "archetype": "vanguard",
   "unlock_region": 1,
   "base_stats": {

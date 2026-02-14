@@ -2,6 +2,7 @@
   "id": "leather_vest",
   "display_name": "Leather Vest",
   "description": "Light armor stitched from cured hides.",
+  "icon_hint": "fitted brown leather vest with visible stitching and a laced front",
   "item_type": "armor",
   "item_subtype": "light_chest",
   "category": "equipment",

@@ -2,6 +2,7 @@
   "id": "boar_tusk",
   "display_name": "Boar Tusk",
   "description": "A curved ivory tusk from a wild boar. Hard as stone.",
+  "icon_hint": "curved yellowed ivory boar tusk with a rough hollow base",
   "item_type": "material",
   "item_subtype": "monster_part",
   "category": "material",

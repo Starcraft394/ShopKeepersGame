@@ -2,6 +2,7 @@
   "id": "silver_ring",
   "display_name": "Silver Ring",
   "description": "A polished silver band that bolsters vitality.",
+  "icon_hint": "polished silver ring with a faint inner glow and smooth rounded band",
   "item_type": "accessory",
   "item_subtype": "ring",
   "slot": "accessory_1",

@@ -2,6 +2,7 @@
   "id": "berry_thicket",
   "display_name": "Berry Thicket",
   "description": "A dense patch of wild berries protected by thorny vines.",
+  "icon_hint": "tangled green thorny bush with clusters of bright red berries",
   "family": "plant",
   "region_id": "region_1",
   "tier": 1,

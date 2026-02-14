@@ -2,6 +2,7 @@
   "id": "boar",
   "display_name": "Boar",
   "description": "A bruising charge wrapped in muscle and tusk.",
+  "icon_hint": "stocky brown boar with curved tusks and bristling fur",
   "family": "beast",
   "region_id": "region_1",
   "tier": 1,

@@ -2,6 +2,7 @@
   "id": "forest_mushroom",
   "display_name": "Forest Mushroom",
   "description": "Edible mushrooms found growing on forest floors. Nutritious and versatile.",
+  "icon_hint": "brown-capped forest mushroom with a pale stalk and mossy base",
   "item_type": "material",
   "item_subtype": "food_material",
   "category": "material",

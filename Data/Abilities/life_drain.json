@@ -2,6 +2,7 @@
   "id": "life_drain",
   "display_name": "Life Drain",
   "description": "Drain life force from an enemy, dealing damage and healing an ally.",
+  "icon_hint": "wisp of draining purple energy flowing from a dark hand to a green glow",
   "ability_type": "class_a",
   "source_class_id": "dark_channeler",
   "target_type": "single_enemy",

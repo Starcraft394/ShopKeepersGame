@@ -2,6 +2,7 @@
   "id": "raise_dead",
   "display_name": "Raise Dead",
   "description": "Channel necrotic energy to empower all allies, granting attack and speed.",
+  "icon_hint": "skeletal hands rising from dark ground with green necrotic aura",
   "ability_type": "class_b",
   "source_class_id": "lich",
   "target_type": "all_allies",

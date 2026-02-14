@@ -2,6 +2,7 @@
   "id": "slime_gel",
   "display_name": "Slime Gel",
   "description": "A translucent, viscous substance extracted from slimes. Useful in alchemy.",
+  "icon_hint": "glob of translucent green gel in a small glass jar with a cork lid",
   "item_type": "material",
   "item_subtype": "monster_part",
   "category": "material",

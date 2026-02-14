@@ -2,6 +2,7 @@
   "id": "gr_bramble_stalker",
   "display_name": "Bramble Stalker",
   "description": "A thorny predator that moves silently through dense underbrush.",
+  "icon_hint": "sleek vine-covered predator with thorn claws and glowing green eyes",
   "family": "beast",
   "region_id": "region_1",
   "tier": 2,

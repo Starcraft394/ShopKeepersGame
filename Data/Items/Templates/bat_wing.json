@@ -2,6 +2,7 @@
   "id": "bat_wing",
   "display_name": "Bat Wing",
   "description": "A leathery wing membrane. Light as air despite its size.",
+  "icon_hint": "stretched dark brown leathery bat wing with thin bone ridges",
   "item_type": "material",
   "item_subtype": "monster_part",
   "category": "material",

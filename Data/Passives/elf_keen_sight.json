@@ -2,6 +2,7 @@
   "id": "elf_keen_sight",
   "display_name": "Keen Sight",
   "description": "Elven perception grants +2 SPD at combat start, allowing quicker reactions.",
+  "icon_hint": "luminous green elven eye with swirling wind trails emanating outward",
   "passive_type": "stat_bonus",
   "trigger": "combat_start",
   "effect": {

@@ -2,6 +2,7 @@
   "id": "void_resonance",
   "display_name": "Void Resonance",
   "description": "On killing an enemy, gain +1 ATK for the rest of combat (max 5 stacks). The void hungers.",
+  "icon_hint": "pulsing dark purple void orb with stacking resonance rings expanding outward",
   "passive_type": "on_kill_stacking_buff",
   "trigger": "on_kill",
   "effect": {

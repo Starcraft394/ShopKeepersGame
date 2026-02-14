@@ -2,6 +2,7 @@
   "id": "spider_silk",
   "display_name": "Spider Silk",
   "description": "Incredibly strong silk threads harvested from spider webs.",
+  "icon_hint": "spool of shimmering white spider silk thread with a silvery sheen",
   "item_type": "material",
   "item_subtype": "monster_part",
   "category": "material",

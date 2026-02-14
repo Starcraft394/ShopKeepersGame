@@ -2,6 +2,7 @@
   "id": "raw_meat",
   "display_name": "Raw Meat",
   "description": "Fresh meat from forest game. Can be cooked into hearty meals.",
+  "icon_hint": "raw red cut of meat with a bone sticking out on brown parchment",
   "item_type": "material",
   "item_subtype": "food_material",
   "category": "material",

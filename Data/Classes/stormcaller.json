@@ -2,6 +2,7 @@
   "id": "stormcaller",
   "display_name": "Stormcaller",
   "description": "A tempest mage who commands lightning and wind to devastate enemies with elemental fury.",
+  "icon_hint": "crackling electric blue storm cloud with lightning bolts arcing downward",
   "archetype": "dps",
   "unlock_region": 1,
   "base_stats": {

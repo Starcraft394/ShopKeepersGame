@@ -2,6 +2,7 @@
   "id": "voidwalker_phase",
   "display_name": "Phase Shift",
   "description": "Voidwalkers can briefly phase out of reality, granting 15% chance to completely avoid any attack and +2 SPD at combat start.",
+  "icon_hint": "flickering shadow figure phasing between reality and void with purple trails",
   "passive_type": "race_multi_stat_bonus",
   "trigger": "combat_start",
   "effect": {

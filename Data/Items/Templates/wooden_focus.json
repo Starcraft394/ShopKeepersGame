@@ -2,6 +2,7 @@
   "id": "wooden_focus",
   "display_name": "Wooden Focus",
   "description": "A carved wooden orb imbued with faint magical resonance. Aids spellcasting.",
+  "icon_hint": "smooth carved oak orb with faintly glowing rune lines on its surface",
   "item_type": "offhand",
   "item_subtype": "focus",
   "category": "equipment",

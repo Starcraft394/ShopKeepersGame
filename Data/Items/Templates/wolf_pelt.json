@@ -2,6 +2,7 @@
   "id": "wolf_pelt",
   "display_name": "Wolf Pelt",
   "description": "A thick fur pelt from a forest wolf. Prized by craftsmen.",
+  "icon_hint": "folded gray wolf fur pelt with rough edges and thick undercoat visible",
   "item_type": "material",
   "item_subtype": "monster_part",
   "category": "material",

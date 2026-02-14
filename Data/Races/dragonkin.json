@@ -2,6 +2,7 @@
   "id": "dragonkin",
   "display_name": "Dragonkin",
   "description": "Descendants of ancient dragons, blessed with scales and inner fire. They command respect through raw power and elemental fury.",
+  "icon_hint": "red dragon scale crest with ember horns",
   "unlock_region": 1,
   "stat_modifiers": {
     "health": 10,

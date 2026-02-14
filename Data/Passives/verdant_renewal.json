@@ -2,6 +2,7 @@
   "id": "verdant_renewal",
   "display_name": "Verdant Renewal",
   "description": "At the start of each round, heal the lowest HP% ally by (3 + hero level). Nature's embrace sustains the party.",
+  "icon_hint": "glowing green aura of regenerating life energy around a heart",
   "passive_type": "round_start_heal",
   "trigger": "round_start",
   "effect": {

@@ -2,6 +2,7 @@
   "id": "shadow_oil",
   "display_name": "Shadow Oil",
   "description": "A dark, shimmering oil that bends light around the user. Increases evasion.",
+  "icon_hint": "dark glass bottle of inky black oil with faint purple shimmer inside",
   "item_type": "consumable",
   "item_subtype": "oil",
   "category": "consumable",

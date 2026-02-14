@@ -2,6 +2,7 @@
   "id": "gr_briar_guardian",
   "display_name": "Briar Guardian",
   "description": "A thorn-plated sentinel grown to defend sacred groves.",
+  "icon_hint": "massive thorn-covered wooden sentinel with glowing amber heart in chest",
   "family": "construct",
   "region_id": "region_1",
   "tier": 3,

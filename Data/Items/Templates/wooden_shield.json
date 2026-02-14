@@ -2,6 +2,7 @@
   "id": "wooden_shield",
   "display_name": "Wooden Shield",
   "description": "A simple wooden buckler reinforced with iron bands.",
+  "icon_hint": "round oak buckler with iron bands and a brass center boss",
   "item_type": "armor",
   "item_subtype": "shield",
   "category": "equipment",

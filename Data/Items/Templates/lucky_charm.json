@@ -2,6 +2,7 @@
   "id": "lucky_charm",
   "display_name": "Lucky Charm",
   "description": "A trinket said to turn mishaps aside.",
+  "icon_hint": "small brass horseshoe charm on a frayed twine loop",
   "item_type": "accessory",
   "item_subtype": "charm",
   "category": "equipment",

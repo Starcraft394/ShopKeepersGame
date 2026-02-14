@@ -2,6 +2,7 @@
   "id": "prism_lancer",
   "display_name": "Prism Lancer",
   "description": "A radiant warrior who channels focused light into devastating piercing attacks.",
+  "icon_hint": "crystalline lance refracting a focused beam of prismatic light",
   "archetype": "dps",
   "unlock_region": 1,
   "base_stats": {

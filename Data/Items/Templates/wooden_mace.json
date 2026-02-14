@@ -2,6 +2,7 @@
   "id": "wooden_mace",
   "display_name": "Wooden Mace",
   "description": "A heavy club reinforced with iron bands. Slow but powerful.",
+  "icon_hint": "thick oak mace head wrapped with iron bands on a short wooden haft",
   "item_type": "weapon",
   "item_subtype": "mace",
   "category": "equipment",

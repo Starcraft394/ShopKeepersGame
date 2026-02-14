@@ -2,6 +2,7 @@
   "id": "wolf_elite",
   "display_name": "Dire Wolf",
   "description": "Bigger jaws. Faster feet. No hesitation.",
+  "icon_hint": "massive dark-furred dire wolf with glowing amber eyes and bared fangs",
   "family": "beast",
   "region_id": "region_1",
   "tier": 1,

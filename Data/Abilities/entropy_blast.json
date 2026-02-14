@@ -2,6 +2,7 @@
   "id": "entropy_blast",
   "display_name": "Entropy Blast",
   "description": "Unleash raw entropy, damaging all enemies and reducing their attack.",
+  "icon_hint": "expanding wave of chaotic purple void energy distorting reality outward",
   "ability_type": "class_b",
   "source_class_id": "void_herald",
   "target_type": "all_enemies",

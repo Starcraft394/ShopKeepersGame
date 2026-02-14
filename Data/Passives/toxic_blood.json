@@ -2,6 +2,7 @@
   "id": "toxic_blood",
   "display_name": "Toxic Blood",
   "description": "When hit by a melee attack, the attacker takes (2 + level/2) poison damage. Fungal spores infest wounds.",
+  "icon_hint": "drop of sickly green blood with toxic spore particles radiating from it",
   "passive_type": "on_hit_retaliation",
   "trigger": "on_melee_hit_received",
   "effect": {

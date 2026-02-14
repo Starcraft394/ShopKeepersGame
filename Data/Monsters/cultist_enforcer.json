@@ -2,6 +2,7 @@
   "id": "cultist_enforcer",
   "display_name": "Cultist Enforcer",
   "description": "A hardened zealot that hits hard and doesn't flinch.",
+  "icon_hint": "broad-shouldered zealot in dark studded leather with a heavy ritual mace",
   "family": "humanoid",
   "region_id": "region_1",
   "tier": 2,

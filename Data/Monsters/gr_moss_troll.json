@@ -2,6 +2,7 @@
   "id": "gr_moss_troll",
   "display_name": "Moss Troll",
   "description": "A hulking brute wrapped in wet moss and stubborn rage.",
+  "icon_hint": "hulking green-skinned troll draped in dripping moss with heavy fists",
   "family": "beast",
   "region_id": "region_1",
   "tier": 2,

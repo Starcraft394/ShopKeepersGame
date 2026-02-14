@@ -2,6 +2,7 @@
   "id": "shadow_mend",
   "display_name": "Shadow Mend",
   "description": "Weave shadows into healing energy, restoring an ally but costing your own health.",
+  "icon_hint": "dark purple shadows weaving into soft green healing threads with sacrifice motif",
   "ability_type": "class_b",
   "source_class_id": "dark_channeler",
   "target_type": "single_ally",

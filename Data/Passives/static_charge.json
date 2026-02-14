@@ -2,6 +2,7 @@
   "id": "static_charge",
   "display_name": "Static Charge",
   "description": "At combat start, gain ATK equal to (3 + hero level). The storm builds within.",
+  "icon_hint": "crackling lightning bolt coiled around a fist with electric sparks arcing outward",
   "passive_type": "level_scaled_stat_bonus",
   "trigger": "combat_start",
   "effect": {

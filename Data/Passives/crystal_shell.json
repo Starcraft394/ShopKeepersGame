@@ -2,6 +2,7 @@
   "id": "crystal_shell",
   "display_name": "Crystal Shell",
   "description": "At combat start, gain DEF equal to (2 + hero level/2). Crystalline armor forms around you.",
+  "icon_hint": "translucent prismatic crystal shell forming protective faceted armor plates",
   "passive_type": "level_scaled_stat_bonus",
   "trigger": "combat_start",
   "effect": {

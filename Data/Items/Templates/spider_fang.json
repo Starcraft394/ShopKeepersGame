@@ -2,6 +2,7 @@
   "id": "spider_fang",
   "display_name": "Spider Fang",
   "description": "A hollow fang dripping with residual venom. Handle with care.",
+  "icon_hint": "curved black spider fang with a hollow tip dripping green venom",
   "item_type": "material",
   "item_subtype": "monster_part",
   "category": "material",

@@ -2,6 +2,7 @@
   "id": "mushroom_stew",
   "display_name": "Mushroom Stew",
   "description": "A hearty stew packed with forest mushrooms. Very filling.",
+  "icon_hint": "steaming wooden bowl of thick brown stew with mushroom slices floating",
   "item_type": "consumable",
   "item_subtype": "food",
   "category": "consumable",

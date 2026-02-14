@@ -2,6 +2,7 @@
   "id": "cooked_meat",
   "display_name": "Cooked Meat",
   "description": "Simple roasted meat that restores health.",
+  "icon_hint": "seared brown meat drumstick with char marks on a wooden plate",
   "item_type": "consumable",
   "item_subtype": "food",
   "category": "consumable",

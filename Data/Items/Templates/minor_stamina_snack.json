@@ -2,6 +2,7 @@
   "id": "minor_stamina_snack",
   "display_name": "Minor Stamina Snack",
   "description": "A salty bite that helps you push on.",
+  "icon_hint": "small strip of salted jerky wrapped in brown parchment paper",
   "item_type": "consumable",
   "item_subtype": "food",
   "slot": "",

@@ -2,6 +2,7 @@
   "id": "wood",
   "display_name": "Wood",
   "description": "Sturdy timber suitable for crafting.",
+  "icon_hint": "rough-cut oak plank with visible grain and bark edges",
   "item_type": "material",
   "rarity": "common",
   "base_stats": {},

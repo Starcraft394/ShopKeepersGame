@@ -2,6 +2,7 @@
   "id": "wild_turkey",
   "display_name": "Wild Turkey",
   "description": "A plump forest bird that makes excellent eating.",
+  "icon_hint": "plump brown-feathered turkey with a red wattle amid forest undergrowth",
   "family": "beast",
   "region_id": "region_1",
   "tier": 1,

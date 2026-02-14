@@ -2,6 +2,7 @@
   "id": "light_refraction",
   "display_name": "Light Refraction",
   "description": "Refract incoming damage back at attackers. The next attacker takes reflected damage.",
+  "icon_hint": "glowing crystal prism splitting a light beam into reflected rainbow shards",
   "ability_type": "class_b",
   "source_class_id": "prism_sentinel",
   "target_type": "self",

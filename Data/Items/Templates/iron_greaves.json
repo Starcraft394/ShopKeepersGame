@@ -2,6 +2,7 @@
   "id": "iron_greaves",
   "display_name": "Iron Greaves",
   "description": "Heavy leg armor that sacrifices mobility for protection.",
+  "icon_hint": "heavy iron greaves with knee guards and leather straps at the calf",
   "item_type": "armor",
   "item_subtype": "heavy_legs",
   "slot": "legs",

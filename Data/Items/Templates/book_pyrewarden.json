@@ -2,6 +2,7 @@
   "id": "book_pyrewarden",
   "display_name": "Pyrewarden's Doctrine",
   "description": "A flame-tempered tome with pages that glow like embers. Teaches the Pyrewarden class.",
+  "icon_hint": "charred orange leather tome with ember sigils glowing on the cover",
   "item_type": "consumable",
   "rarity": "rare",
   "use_effect_id": "learn_class_pyrewarden",

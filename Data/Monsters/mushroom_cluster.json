@@ -2,6 +2,7 @@
   "id": "mushroom_cluster",
   "display_name": "Mushroom Cluster",
   "description": "A cluster of edible forest mushrooms that release spores when disturbed.",
+  "icon_hint": "cluster of brown and amber mushrooms releasing faint green spore clouds",
   "family": "plant",
   "region_id": "region_1",
   "tier": 1,

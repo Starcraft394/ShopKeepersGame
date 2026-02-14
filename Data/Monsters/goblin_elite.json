@@ -2,6 +2,7 @@
   "id": "goblin_elite",
   "display_name": "Goblin Elite",
   "description": "Sharper blades, meaner grin, fewer mistakes.",
+  "icon_hint": "scarred goblin veteran with serrated twin blades and crude bone armor",
   "family": "humanoid",
   "region_id": "region_1",
   "tier": 1,

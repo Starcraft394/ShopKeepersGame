@@ -2,6 +2,7 @@
   "id": "acid_slime_elite",
   "display_name": "Acid Slime (Elite)",
   "description": "A dense corrosive mass that dissolves defenses over time.",
+  "icon_hint": "large pulsating yellow-green ooze with dissolved armor fragments visible inside",
   "family": "ooze",
   "region_id": "region_1",
   "tier": 2,

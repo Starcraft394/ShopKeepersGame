@@ -2,6 +2,7 @@
   "id": "cursed_dust",
   "display_name": "Cursed Dust",
   "description": "Fine powder infused with dark magic. Alchemists prize its potency.",
+  "icon_hint": "small leather pouch spilling dark purple shimmering dust with faint sparks",
   "item_type": "material",
   "item_subtype": "monster_part",
   "category": "material",

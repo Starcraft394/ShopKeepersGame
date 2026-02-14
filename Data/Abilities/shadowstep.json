@@ -2,6 +2,7 @@
   "id": "shadowstep",
   "display_name": "Shadowstep",
   "description": "Vanish into the shadows, gaining +4 ATK and +3 SPD for 3 turns.",
+  "icon_hint": "dark silhouette dissolving into wispy black shadows with speed lines",
   "ability_type": "class_b",
   "source_class_id": "striker",
   "target_type": "self",

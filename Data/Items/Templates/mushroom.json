@@ -2,6 +2,7 @@
   "id": "mushroom",
   "display_name": "Forest Mushroom",
   "description": "A common mushroom used in alchemy.",
+  "icon_hint": "tan forest mushroom with a rounded cap and pale stalk",
   "item_type": "material",
   "rarity": "common",
   "base_stats": {},

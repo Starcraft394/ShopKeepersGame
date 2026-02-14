@@ -2,6 +2,7 @@
   "id": "focused_light",
   "display_name": "Focused Light",
   "description": "At combat start, gain ATK equal to (3 + hero level). Light concentrates into power.",
+  "icon_hint": "concentrated beam of white light focusing through a crystal into a sharp point",
   "passive_type": "level_scaled_stat_bonus",
   "trigger": "combat_start",
   "effect": {

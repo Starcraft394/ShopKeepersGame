@@ -2,6 +2,7 @@
   "id": "skeleton_veteran_elite",
   "display_name": "Skeleton Veteran (Elite)",
   "description": "A revenant officer that punishes sloppy lines.",
+  "icon_hint": "commanding skeleton officer in dark iron pauldrons with a glowing amber blade",
   "family": "undead",
   "region_id": "region_1",
   "tier": 2,

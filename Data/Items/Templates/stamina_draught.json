@@ -2,6 +2,7 @@
   "id": "stamina_draught",
   "display_name": "Stamina Draught",
   "description": "A bitter tonic that grants a burst of speed in combat.",
+  "icon_hint": "tall slim glass flask of bright yellow-green liquid with a cork stopper",
   "item_type": "consumable",
   "item_subtype": "potion",
   "category": "consumable",

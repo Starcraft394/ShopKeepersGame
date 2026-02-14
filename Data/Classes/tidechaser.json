@@ -2,6 +2,7 @@
   "id": "tidechaser",
   "display_name": "Tidechaser",
   "description": "A water-attuned healer who manipulates currents to restore allies and wash away afflictions.",
+  "icon_hint": "flowing teal wave crest encircling a glowing pearl of healing light",
   "archetype": "healer",
   "unlock_region": 1,
   "base_stats": {

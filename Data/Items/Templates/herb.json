@@ -2,6 +2,7 @@
   "id": "herb",
   "display_name": "Medicinal Herb",
   "description": "A common herb with healing properties.",
+  "icon_hint": "bundle of green herbs tied with twine on a linen cloth",
   "item_type": "material",
   "rarity": "common",
   "base_stats": {},

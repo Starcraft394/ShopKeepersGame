@@ -2,6 +2,7 @@
   "id": "lich",
   "display_name": "Lich",
   "description": "A master of death magic who raises the fallen and unleashes necrotic devastation upon the living.",
+  "icon_hint": "necrotic green skull wreathed in dark flame atop a bone staff",
   "archetype": "dps",
   "unlock_region": 1,
   "base_stats": {

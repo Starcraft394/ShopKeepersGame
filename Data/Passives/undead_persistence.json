@@ -2,6 +2,7 @@
   "id": "undead_persistence",
   "display_name": "Deathless Persistence",
   "description": "Having already died once, undead are immune to poison and bleed effects, and gain +2 ATK at combat start.",
+  "icon_hint": "pallid bone-white skull with dark hollow eyes unaffected by green poison wisps",
   "passive_type": "race_multi_stat_bonus",
   "trigger": "combat_start",
   "effect": {

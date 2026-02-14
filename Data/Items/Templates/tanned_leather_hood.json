@@ -2,6 +2,7 @@
   "id": "tanned_leather_hood",
   "display_name": "Tanned Leather Hood",
   "description": "Light head protection, easy to repair.",
+  "icon_hint": "tanned brown leather hood with a pointed brim and drawstring ties",
   "item_type": "armor",
   "item_subtype": "light_head",
   "category": "equipment",

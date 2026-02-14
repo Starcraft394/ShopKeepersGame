@@ -2,6 +2,7 @@
   "id": "weapon_sword_strike",
   "display_name": "Sword Strike",
   "description": "A powerful weapon attack dealing 150% damage.",
+  "icon_hint": "heavy sword cleaving downward in a wide silver arc",
   "ability_type": "attack",
   "damage_type": "physical",
   "target_type": "single_enemy",

@@ -2,6 +2,7 @@
   "id": "prismatic_burst",
   "display_name": "Prismatic Burst",
   "description": "Shatter light into a thousand fragments, damaging all enemies.",
+  "icon_hint": "shattering crystal exploding outward in a blinding burst of rainbow shards",
   "ability_type": "class_b",
   "source_class_id": "prism_lancer",
   "target_type": "all_enemies",

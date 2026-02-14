@@ -2,6 +2,7 @@
   "id": "bandit_elite",
   "display_name": "Bandit Captain",
   "description": "A ruthless leader who fights like every hit is a wager.",
+  "icon_hint": "grizzled bandit captain in brown leather coat with a notched longsword",
   "family": "humanoid",
   "region_id": "region_1",
   "tier": 1,

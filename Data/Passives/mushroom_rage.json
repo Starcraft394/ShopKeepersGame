@@ -2,6 +2,7 @@
   "id": "mushroom_rage",
   "display_name": "Mushroom Rage",
   "description": "When HP drops below 50%, gain (4 + hero level) ATK. The fungi sense danger and amplify fury.",
+  "icon_hint": "cracked mushroom cap exploding with red spore rage and pulsing green veins",
   "passive_type": "low_hp_stat_bonus",
   "trigger": "hp_threshold",
   "threshold": 0.5,

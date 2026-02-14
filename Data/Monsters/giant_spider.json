@@ -2,6 +2,7 @@
   "id": "giant_spider",
   "display_name": "Giant Spider",
   "description": "A venomous arachnid that lurks in dark places.",
+  "icon_hint": "large brown spider with green venom dripping from curved fangs",
   "family": "beast",
   "region_id": "region_1",
   "tier": 1,

@@ -2,6 +2,7 @@
   "id": "antidote_vial",
   "display_name": "Antidote Vial",
   "description": "Cures common poisons and toxins.",
+  "icon_hint": "small glass vial of pale green liquid with a tiny cork and herb label",
   "item_type": "consumable",
   "rarity": "common",
   "use_effect_id": "cleanse_poison",

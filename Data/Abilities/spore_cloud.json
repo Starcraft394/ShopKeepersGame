@@ -2,6 +2,7 @@
   "id": "spore_cloud",
   "display_name": "Spore Cloud",
   "description": "Release a cloud of toxic spores that poisons all enemies.",
+  "icon_hint": "billowing cloud of green and purple toxic spores with mushroom caps",
   "ability_type": "class_b",
   "source_class_id": "druid",
   "target_type": "all_enemies",

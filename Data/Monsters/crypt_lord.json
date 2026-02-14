@@ -2,6 +2,7 @@
   "id": "crypt_lord",
   "display_name": "Crypt Lord",
   "description": "An ancient commander bound to bone and oath.",
+  "icon_hint": "towering skeletal lord in dark crown and tattered royal armor with amber soul-fire",
   "family": "undead",
   "region_id": "region_1",
   "tier": 3,

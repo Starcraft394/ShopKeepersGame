@@ -2,6 +2,7 @@
   "id": "hunting_bow",
   "display_name": "Hunting Bow",
   "description": "A flexible bow favored by forest scouts.",
+  "icon_hint": "curved ash shortbow with a braided sinew string and notched grip",
   "item_type": "weapon",
   "item_subtype": "bow",
   "category": "equipment",

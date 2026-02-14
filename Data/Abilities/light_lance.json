@@ -2,6 +2,7 @@
   "id": "light_lance",
   "display_name": "Light Lance",
   "description": "Hurl a focused beam of light that pierces through enemies.",
+  "icon_hint": "concentrated beam of white-gold light piercing forward like a lance",
   "ability_type": "class_a",
   "source_class_id": "prism_lancer",
   "target_type": "single_enemy",

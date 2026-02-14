@@ -2,6 +2,7 @@
   "id": "elf",
   "display_name": "Elf",
   "description": "Agile and perceptive, elves have keen senses that reveal hidden paths. Their natural grace aids in precision work.",
+  "icon_hint": "silver leaf-shaped emblem with flowing vine border",
   "unlock_region": 1,
   "stat_modifiers": {
     "health": -5,

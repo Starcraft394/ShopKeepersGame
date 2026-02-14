@@ -2,6 +2,7 @@
   "id": "iron_helmet",
   "display_name": "Iron Helmet",
   "description": "A sturdy helmet forged from iron plates.",
+  "icon_hint": "domed iron helmet with a flat nose guard and riveted cheek plates",
   "item_type": "armor",
   "item_subtype": "heavy_head",
   "slot": "head",

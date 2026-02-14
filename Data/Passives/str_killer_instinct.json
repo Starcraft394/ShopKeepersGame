@@ -2,6 +2,7 @@
   "id": "str_killer_instinct",
   "display_name": "Killer Instinct",
   "description": "Deadly precision grants +2 ATK.",
+  "icon_hint": "crimson blade edge with a sharp amber gleam along the cutting line",
   "passive_type": "stat_bonus",
   "trigger": "always",
   "effect": {

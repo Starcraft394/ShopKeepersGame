@@ -2,6 +2,7 @@
   "id": "strong_healing_tonic",
   "display_name": "Strong Healing Tonic",
   "description": "A potent healing draught that restores significant health.",
+  "icon_hint": "large round glass flask of bright red liquid with a wax-sealed cork",
   "item_type": "consumable",
   "item_subtype": "potion",
   "category": "consumable",

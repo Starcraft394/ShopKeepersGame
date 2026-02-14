@@ -2,6 +2,7 @@
   "id": "zombie",
   "display_name": "Zombie",
   "description": "Slow, stubborn, and hard to put down.",
+  "icon_hint": "rotting shambling corpse with torn brown clothing and green-tinged flesh",
   "family": "undead",
   "region_id": "region_1",
   "tier": 1,

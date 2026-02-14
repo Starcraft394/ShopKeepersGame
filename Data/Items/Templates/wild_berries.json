@@ -2,6 +2,7 @@
   "id": "wild_berries",
   "display_name": "Wild Berries",
   "description": "Sweet forest berries. Used in cooking and brewing.",
+  "icon_hint": "cluster of plump purple and red berries on a small leafy stem",
   "item_type": "material",
   "item_subtype": "food_material",
   "category": "material",

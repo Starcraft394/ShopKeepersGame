@@ -2,6 +2,7 @@
   "id": "power_elixir",
   "display_name": "Power Elixir",
   "description": "A potent brew that temporarily enhances combat strength.",
+  "icon_hint": "angular glass flask of swirling orange liquid with a leather-wrapped neck",
   "item_type": "consumable",
   "item_subtype": "potion",
   "category": "consumable",

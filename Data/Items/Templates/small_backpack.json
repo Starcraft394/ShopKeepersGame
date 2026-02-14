@@ -2,6 +2,7 @@
   "id": "small_backpack",
   "display_name": "Small Backpack",
   "description": "A small pack with just enough room for essentials.",
+  "icon_hint": "small brown leather satchel with a brass buckle and single strap",
   "item_type": "backpack",
   "item_subtype": "small",
   "slot": "backpack",

@@ -2,6 +2,7 @@
   "id": "void_herald",
   "display_name": "Void Herald",
   "description": "A harbinger of entropy who tears holes in reality, dealing devastating damage through unstable portals.",
+  "icon_hint": "jagged dimensional tear with unstable purple energy spilling outward",
   "archetype": "dps",
   "unlock_region": 1,
   "base_stats": {

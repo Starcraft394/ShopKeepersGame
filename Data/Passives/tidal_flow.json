@@ -2,6 +2,7 @@
   "id": "tidal_flow",
   "display_name": "Tidal Flow",
   "description": "At round start, heal the lowest HP% ally by (2 + hero level). The tide never stops.",
+  "icon_hint": "gentle teal wave crest with healing water droplets lifting a glowing heart",
   "passive_type": "round_start_heal",
   "trigger": "round_start",
   "effect": {

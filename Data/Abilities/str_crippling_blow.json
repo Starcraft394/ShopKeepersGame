@@ -2,6 +2,7 @@
   "id": "str_crippling_blow",
   "display_name": "Crippling Blow",
   "description": "A vicious strike that deals moderate damage.",
+  "icon_hint": "jagged blade slashing downward with red blood trail",
   "ability_type": "class_b",
   "source_class_id": "striker",
   "target_type": "single_enemy",

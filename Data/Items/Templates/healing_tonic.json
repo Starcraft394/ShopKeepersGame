@@ -2,6 +2,7 @@
   "id": "healing_tonic",
   "display_name": "Healing Tonic",
   "description": "A basic healing potion that restores health. Use in camp to heal a hero.",
+  "icon_hint": "round glass flask of glowing red liquid with a cork stopper",
   "item_type": "consumable",
   "category": "consumable",
   "rarity": "common",

@@ -2,6 +2,7 @@
   "id": "human",
   "display_name": "Human",
   "description": "Versatile and adaptable, humans excel through determination and balance. Their quick learning makes them natural adventurers.",
+  "icon_hint": "simple golden crest with balanced compass rose",
   "unlock_region": 1,
   "stat_modifiers": {
     "health": 0,

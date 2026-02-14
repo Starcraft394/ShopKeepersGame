@@ -2,6 +2,7 @@
   "id": "defender",
   "display_name": "Defender",
   "description": "A stalwart protector who excels at absorbing damage and protecting allies.",
+  "icon_hint": "heavy iron tower shield with golden trim and protection rune",
   "archetype": "vanguard",
   "unlock_region": 1,
   "base_stats": {

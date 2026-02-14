@@ -2,6 +2,7 @@
   "id": "human_adaptability",
   "display_name": "Adaptability",
   "description": "Versatile nature grants +1 ATK and +1 DEF at combat start. At level 3+, also gain +1 SPD.",
+  "icon_hint": "balanced golden scale with a sword on one side and shield on the other",
   "passive_type": "race_multi_stat_bonus",
   "trigger": "combat_start",
   "effect": {

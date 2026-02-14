@@ -2,6 +2,7 @@
   "id": "mossfolk_regeneration",
   "display_name": "Natural Regeneration",
   "description": "Mossfolk connection to nature heals 3% of max HP at the start of each turn.",
+  "icon_hint": "soft green moss patch with tiny glowing spores rising upward in healing light",
   "passive_type": "regen",
   "trigger": "turn_start",
   "effect": {

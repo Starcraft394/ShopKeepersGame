@@ -2,6 +2,7 @@
   "id": "prism_sentinel",
   "display_name": "Prism Sentinel",
   "description": "A crystalline guardian who refracts damage and creates protective barriers of light.",
+  "icon_hint": "faceted crystal tower shield radiating prismatic light barriers",
   "archetype": "vanguard",
   "unlock_region": 1,
   "base_stats": {

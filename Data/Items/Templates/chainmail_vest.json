@@ -2,6 +2,7 @@
   "id": "chainmail_vest",
   "display_name": "Chainmail Vest",
   "description": "Interlocking metal rings provide solid protection.",
+  "icon_hint": "sleeveless iron chainmail vest with interlocking rings and leather trim",
   "item_type": "armor",
   "item_subtype": "medium_chest",
   "slot": "chest",

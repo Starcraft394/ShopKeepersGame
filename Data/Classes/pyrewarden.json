@@ -2,6 +2,7 @@
   "id": "pyrewarden",
   "display_name": "Pyrewarden",
   "description": "A flame-forged tank who draws enemy aggression and retaliates with burning vengeance.",
+  "icon_hint": "molten iron shield engulfed in roaring orange flames with ember core",
   "archetype": "vanguard",
   "unlock_region": 1,
   "base_stats": {

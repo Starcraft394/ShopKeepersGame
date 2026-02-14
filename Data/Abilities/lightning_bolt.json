@@ -2,6 +2,7 @@
   "id": "lightning_bolt",
   "display_name": "Lightning Bolt",
   "description": "Hurl a bolt of lightning at a single enemy, dealing heavy magical damage.",
+  "icon_hint": "crackling blue lightning bolt striking downward with electric sparks",
   "ability_type": "class_a",
   "source_class_id": "stormcaller",
   "target_type": "single_enemy",

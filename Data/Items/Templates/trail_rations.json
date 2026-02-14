@@ -2,6 +2,7 @@
   "id": "trail_rations",
   "display_name": "Trail Rations",
   "description": "Preserved food perfect for long dungeon expeditions.",
+  "icon_hint": "burlap-wrapped bundle of dried meat, hardtack, and dried fruit",
   "item_type": "consumable",
   "item_subtype": "food",
   "category": "consumable",

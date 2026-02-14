@@ -2,6 +2,7 @@
   "id": "verdant_growth",
   "display_name": "Verdant Growth",
   "description": "At combat start, all allies gain (2 + hero level) bonus health from nature's blessing.",
+  "icon_hint": "spreading green canopy of leaves with golden pollen motes drifting down",
   "passive_type": "level_scaled_stat_bonus",
   "trigger": "combat_start",
   "effect": {

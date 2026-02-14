@@ -2,6 +2,7 @@
   "id": "dire_boar_elite",
   "display_name": "Dire Boar (Elite)",
   "description": "A plated tusker that shrugs off punishment and keeps charging.",
+  "icon_hint": "enormous battle-scarred boar with bony plate armor and blood-tipped tusks",
   "family": "beast",
   "region_id": "region_1",
   "tier": 2,

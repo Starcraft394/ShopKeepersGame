@@ -2,6 +2,7 @@
   "id": "pyre_slam",
   "display_name": "Pyre Slam",
   "description": "Slam your weapon down in a burst of flame, dealing damage and applying burn.",
+  "icon_hint": "flaming hammer smashing ground with erupting orange fire burst",
   "ability_type": "class_b",
   "source_class_id": "pyrewarden",
   "target_type": "single_enemy",

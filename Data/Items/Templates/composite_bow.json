@@ -2,6 +2,7 @@
   "id": "composite_bow",
   "display_name": "Composite Bow",
   "description": "A powerful bow crafted from layered wood and horn. Greater range and punch.",
+  "icon_hint": "recurved composite bow with layered horn and oak limbs and waxed string",
   "item_type": "weapon",
   "item_subtype": "bow",
   "category": "equipment",

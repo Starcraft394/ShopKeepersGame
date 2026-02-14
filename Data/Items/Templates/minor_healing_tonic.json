@@ -2,6 +2,7 @@
   "id": "minor_healing_tonic",
   "display_name": "Minor Healing Tonic",
   "description": "Restores a small amount of health.",
+  "icon_hint": "small round glass vial of pale pink liquid with a simple cork",
   "item_type": "consumable",
   "rarity": "common",
   "use_effect_id": "heal_small",

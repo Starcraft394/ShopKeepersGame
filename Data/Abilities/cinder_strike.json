@@ -2,6 +2,7 @@
   "id": "cinder_strike",
   "display_name": "Cinder Strike",
   "description": "Strike with a burning blade, dealing high damage and applying burn.",
+  "icon_hint": "blazing dagger slashing with trailing ember sparks and ash wisps",
   "ability_type": "class_a",
   "source_class_id": "ashblade",
   "target_type": "single_enemy",

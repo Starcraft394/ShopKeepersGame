@@ -2,6 +2,7 @@
   "id": "tf_bandit_raider",
   "display_name": "Bandit Raider",
   "description": "A timber-thief turned knife-fighter, quick and mean.",
+  "icon_hint": "wiry hooded raider with twin daggers and brown leather armor",
   "family": "humanoid",
   "region_id": "region_1",
   "tier": 2,

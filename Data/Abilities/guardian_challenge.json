@@ -2,6 +2,7 @@
   "id": "guardian_challenge",
   "display_name": "Guardian's Challenge",
   "description": "Challenge an enemy with a defensive strike. Deals light damage and inflicts bleeding for 2 turns.",
+  "icon_hint": "iron gauntlet raised in challenge with red bleeding slash mark",
   "ability_type": "class_a",
   "source_class_id": "defender",
   "target_type": "single_enemy",

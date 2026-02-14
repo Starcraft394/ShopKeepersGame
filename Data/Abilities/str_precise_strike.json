@@ -2,6 +2,7 @@
   "id": "str_precise_strike",
   "display_name": "Precise Strike",
   "description": "A carefully aimed attack that deals high damage to a single target.",
+  "icon_hint": "gleaming dagger thrusting at a precise red crosshair target",
   "ability_type": "class_a",
   "source_class_id": "striker",
   "target_type": "single_enemy",

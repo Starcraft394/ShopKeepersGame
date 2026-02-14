@@ -2,6 +2,7 @@
   "id": "dire_boar",
   "display_name": "Dire Boar",
   "description": "A brutal tusker that shrugs off weak hits.",
+  "icon_hint": "massive scarred boar with thick hide and jagged amber-stained tusks",
   "family": "beast",
   "region_id": "region_1",
   "tier": 2,

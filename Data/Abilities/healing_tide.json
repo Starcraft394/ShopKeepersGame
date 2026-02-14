@@ -2,6 +2,7 @@
   "id": "healing_tide",
   "display_name": "Healing Tide",
   "description": "Call forth restorative waters to heal the most wounded ally.",
+  "icon_hint": "rising teal wave crest carrying sparkling droplets of healing light",
   "ability_type": "class_a",
   "source_class_id": "tidechaser",
   "target_type": "single_ally",

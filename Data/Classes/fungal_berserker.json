@@ -2,6 +2,7 @@
   "id": "fungal_berserker",
   "display_name": "Fungal Berserker",
   "description": "A rage-fueled warrior enhanced by symbiotic fungi, trading defense for overwhelming offensive power.",
+  "icon_hint": "spiked fist wreathed in purple mushroom caps and toxic green spores",
   "archetype": "dps",
   "unlock_region": 1,
   "base_stats": {

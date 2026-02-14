@@ -2,6 +2,7 @@
   "id": "tanned_leather_greaves",
   "display_name": "Tanned Leather Greaves",
   "description": "Leg guards made for travel through brush.",
+  "icon_hint": "tanned leather leg guards with buckled straps and scuffed knee patches",
   "item_type": "armor",
   "item_subtype": "light_legs",
   "category": "equipment",

@@ -2,6 +2,7 @@
   "id": "natures_embrace",
   "display_name": "Nature's Embrace",
   "description": "Wrap an ally in healing vines, restoring health over time.",
+  "icon_hint": "warm green vines gently wrapping around a soft golden healing glow",
   "ability_type": "class_a",
   "source_class_id": "druid",
   "target_type": "single_ally",

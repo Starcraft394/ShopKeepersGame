@@ -2,6 +2,7 @@
   "id": "crystal_resonance",
   "display_name": "Crystal Resonance",
   "description": "On killing an enemy, your next ability deals (3 + level/2) bonus damage. Light amplifies.",
+  "icon_hint": "vibrating crystal lance tip resonating with prismatic energy after a kill",
   "passive_type": "on_kill_next_ability_bonus",
   "trigger": "on_kill",
   "effect": {

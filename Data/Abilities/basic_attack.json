@@ -2,6 +2,7 @@
   "id": "basic_attack",
   "display_name": "Basic Attack",
   "description": "A standard melee attack dealing physical damage.",
+  "icon_hint": "simple horizontal sword slash with white motion trail",
   "ability_type": "attack",
   "damage_type": "physical",
   "target_type": "single_enemy",

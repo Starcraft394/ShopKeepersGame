@@ -2,6 +2,7 @@
   "id": "forest_hare",
   "display_name": "Forest Hare",
   "description": "A quick woodland creature. Prized for its tender meat.",
+  "icon_hint": "small fluffy brown hare with alert ears among green forest ferns",
   "family": "beast",
   "region_id": "region_1",
   "tier": 1,

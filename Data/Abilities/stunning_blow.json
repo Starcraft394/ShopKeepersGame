@@ -2,6 +2,7 @@
   "id": "stunning_blow",
   "display_name": "Stunning Blow",
   "description": "A heavy strike that stuns the target for 1 turn.",
+  "icon_hint": "iron hammer smashing down with radiating yellow stun stars",
   "ability_type": "attack",
   "damage_type": "physical",
   "target_type": "single_enemy",

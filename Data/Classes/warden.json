@@ -2,6 +2,7 @@
   "id": "warden",
   "display_name": "Warden",
   "description": "A forest guardian with organic, grounded healing. Supports allies through nature magic and protective wards.",
+  "icon_hint": "oak staff entwined with green healing vines and soft golden glow",
   "archetype": "warden",
   "unlock_region": 1,
   "base_stats": {

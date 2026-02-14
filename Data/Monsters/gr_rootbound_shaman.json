@@ -2,6 +2,7 @@
   "id": "gr_rootbound_shaman",
   "display_name": "Rootbound Shaman",
   "description": "A forest mystic fused with living roots, channeling primal fury.",
+  "icon_hint": "hunched figure entwined with living roots wielding a gnarled amber staff",
   "family": "beast",
   "region_id": "region_1",
   "tier": 2,

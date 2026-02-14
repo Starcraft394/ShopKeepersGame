@@ -2,6 +2,7 @@
   "id": "cultist",
   "display_name": "Cultist",
   "description": "A frantic devotee who strikes hard and falls fast.",
+  "icon_hint": "wild-eyed cultist in dark green robes clutching a curved ritual dagger",
   "family": "humanoid",
   "region_id": "region_1",
   "tier": 1,

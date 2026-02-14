@@ -2,6 +2,7 @@
   "id": "black_ooze",
   "display_name": "Black Ooze",
   "description": "A tar-dark mass that clings and refuses to die.",
+  "icon_hint": "writhing black tar blob with faint amber veins pulsing within",
   "family": "ooze",
   "region_id": "region_1",
   "tier": 3,

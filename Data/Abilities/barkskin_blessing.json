@@ -2,6 +2,7 @@
   "id": "barkskin_blessing",
   "display_name": "Barkskin Blessing",
   "description": "Bestow the protective bark of ancient trees upon the lowest HP ally, granting +5 DEF for 3 turns.",
+  "icon_hint": "thick bark armor forming around a figure with green leaf accents",
   "ability_type": "class_b",
   "source_class_id": "warden",
   "target_type": "single_ally",

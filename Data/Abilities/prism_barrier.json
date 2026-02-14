@@ -2,6 +2,7 @@
   "id": "prism_barrier",
   "display_name": "Prism Barrier",
   "description": "Erect a crystalline barrier that absorbs damage and taunts enemies.",
+  "icon_hint": "crystalline barrier forming a prismatic dome with refracting light",
   "ability_type": "class_a",
   "source_class_id": "prism_sentinel",
   "target_type": "self",

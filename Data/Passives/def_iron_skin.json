@@ -2,6 +2,7 @@
   "id": "def_iron_skin",
   "display_name": "Iron Skin",
   "description": "Hardened defenses grant +2 DEF.",
+  "icon_hint": "gleaming iron shield emblem with layered metal plates radiating strength",
   "passive_type": "stat_bonus",
   "trigger": "always",
   "effect": {

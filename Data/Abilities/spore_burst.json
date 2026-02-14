@@ -2,6 +2,7 @@
   "id": "spore_burst",
   "display_name": "Spore Burst",
   "description": "Explode in a cloud of toxic spores, damaging all enemies and poisoning them.",
+  "icon_hint": "exploding mushroom cap releasing a ring of toxic green-purple spores",
   "ability_type": "class_b",
   "source_class_id": "fungal_berserker",
   "target_type": "all_enemies",

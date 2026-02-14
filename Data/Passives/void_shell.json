@@ -2,6 +2,7 @@
   "id": "void_shell",
   "display_name": "Void Shell",
   "description": "When hit, 20% chance to negate the damage entirely by phasing out. The void protects.",
+  "icon_hint": "dark void sphere encasing a figure with attacks passing harmlessly through",
   "passive_type": "damage_negation_chance",
   "trigger": "on_hit_received",
   "effect": {

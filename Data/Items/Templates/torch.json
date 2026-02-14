@@ -2,6 +2,7 @@
   "id": "torch",
   "display_name": "Torch",
   "description": "A simple torch for dark paths.",
+  "icon_hint": "oak-handled torch with oil-soaked rags burning a warm amber flame",
   "item_type": "tool",
   "item_subtype": "light",
   "slot": "",

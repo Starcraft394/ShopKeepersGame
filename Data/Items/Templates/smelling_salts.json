@@ -2,6 +2,7 @@
   "id": "smelling_salts",
   "display_name": "Smelling Salts",
   "description": "A pungent mixture that jolts the senses awake. Cures stun effects.",
+  "icon_hint": "small open tin of white crystalline salt with sharp vapors rising",
   "item_type": "consumable",
   "item_subtype": "potion",
   "category": "consumable",

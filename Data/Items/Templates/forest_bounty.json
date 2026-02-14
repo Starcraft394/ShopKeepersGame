@@ -2,6 +2,7 @@
   "id": "forest_bounty",
   "display_name": "Forest Bounty",
   "description": "A diverse spread of forest delicacies. Restores body and spirit.",
+  "icon_hint": "woven basket overflowing with berries, mushrooms, and herbs on a cloth",
   "item_type": "consumable",
   "item_subtype": "food",
   "category": "consumable",

@@ -2,6 +2,7 @@
   "id": "iron_scrap",
   "display_name": "Iron Scrap",
   "description": "Salvaged metal suitable for basic forging.",
+  "icon_hint": "jagged shard of dark iron with rust spots and rough broken edges",
   "item_type": "material",
   "category": "material",
   "base_stats": {},

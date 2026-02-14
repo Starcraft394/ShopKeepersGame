@@ -2,6 +2,7 @@
   "id": "warriors_pendant",
   "display_name": "Warrior's Pendant",
   "description": "An amulet said to strengthen the wearer's resolve.",
+  "icon_hint": "bronze amulet on a leather cord with an iron fist emblem inset",
   "item_type": "accessory",
   "item_subtype": "amulet",
   "slot": "accessory_2",

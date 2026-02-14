@@ -2,6 +2,7 @@
   "id": "reinforced_shield",
   "display_name": "Reinforced Shield",
   "description": "A sturdy wooden shield reinforced with iron bands and rivets.",
+  "icon_hint": "kite-shaped oak shield with crossed iron bands and riveted edges",
   "item_type": "armor",
   "item_subtype": "shield",
   "category": "equipment",

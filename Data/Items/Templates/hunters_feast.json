@@ -2,6 +2,7 @@
   "id": "hunters_feast",
   "display_name": "Hunter's Feast",
   "description": "A massive meal of roasted game. Fills you with vigor for battle.",
+  "icon_hint": "large wooden platter of roasted meat, bread, and root vegetables by firelight",
   "item_type": "consumable",
   "item_subtype": "food",
   "category": "consumable",

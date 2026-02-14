@@ -2,6 +2,7 @@
   "id": "void_anchor",
   "display_name": "Void Anchor",
   "description": "Anchor enemies to this dimension, taunting them and reducing their speed.",
+  "icon_hint": "dark purple anchor of void energy pinning down with gravity distortion",
   "ability_type": "class_a",
   "source_class_id": "voidwalker",
   "target_type": "all_enemies",

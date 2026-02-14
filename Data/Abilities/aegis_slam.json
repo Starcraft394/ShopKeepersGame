@@ -2,6 +2,7 @@
   "id": "aegis_slam",
   "display_name": "Aegis Slam",
   "description": "Slam your shield into the ground, dealing heavy damage and stunning the target for 1 round.",
+  "icon_hint": "golden tower shield slamming ground with radiating shockwave cracks",
   "ability_type": "class_b",
   "source_class_id": "defender",
   "target_type": "single_enemy",

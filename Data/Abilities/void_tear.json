@@ -2,6 +2,7 @@
   "id": "void_tear",
   "display_name": "Void Tear",
   "description": "Tear a hole in reality, dealing massive void damage to a single target.",
+  "icon_hint": "jagged rift torn in reality revealing swirling dark purple void within",
   "ability_type": "class_a",
   "source_class_id": "void_herald",
   "target_type": "single_enemy",

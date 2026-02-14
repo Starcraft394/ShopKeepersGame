@@ -2,6 +2,7 @@
   "id": "herb_sprig",
   "display_name": "Herb Sprig",
   "description": "A fragrant medicinal herb.",
+  "icon_hint": "small green sprig with tiny leaves and a thin brown stem",
   "item_type": "material",
   "rarity": "common",
   "base_stats": {},

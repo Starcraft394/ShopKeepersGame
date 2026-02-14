@@ -2,6 +2,7 @@
   "id": "gr_rootkin_sprite",
   "display_name": "Rootkin Sprite",
   "description": "A mischievous forest wisp that strikes and slips away.",
+  "icon_hint": "tiny glowing green forest sprite with leafy wings and amber eyes",
   "family": "beast",
   "region_id": "region_1",
   "tier": 2,

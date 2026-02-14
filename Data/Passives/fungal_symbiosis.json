@@ -2,6 +2,7 @@
   "id": "fungal_symbiosis",
   "display_name": "Fungal Symbiosis",
   "description": "When this hero heals an ally, they also heal for (1 + level/3) health. The fungi share life force.",
+  "icon_hint": "mushroom tendrils wrapped around a pulsing green core with shared life energy",
   "passive_type": "on_heal_self_heal",
   "trigger": "on_heal_ally",
   "effect": {

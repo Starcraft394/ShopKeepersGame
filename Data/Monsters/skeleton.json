@@ -2,6 +2,7 @@
   "id": "skeleton",
   "display_name": "Skeleton",
   "description": "Reanimated bones held together by dark magic.",
+  "icon_hint": "shambling bone-white skeleton with dim amber glow in empty eye sockets",
   "family": "undead",
   "region_id": "region_1",
   "tier": 1,

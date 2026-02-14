@@ -2,6 +2,7 @@
   "id": "webspinner_elite",
   "display_name": "Webspinner (Elite)",
   "description": "A silent hunter that never wastes a turn.",
+  "icon_hint": "large dark spider with barbed legs and thick silk trailing from spinnerets",
   "family": "beast",
   "region_id": "region_1",
   "tier": 2,

@@ -2,6 +2,7 @@
   "id": "phase_spider",
   "display_name": "Phase Spider",
   "description": "It vanishes between heartbeats and reappears in your blind spot.",
+  "icon_hint": "semi-transparent spectral spider with flickering green-amber phase trails",
   "family": "beast",
   "region_id": "region_1",
   "tier": 3,

@@ -2,6 +2,7 @@
   "id": "phylactery",
   "display_name": "Phylactery",
   "description": "Upon first death in combat, revive with 15% HP. The soul jar preserves you once.",
+  "icon_hint": "cracked bone-white soul jar with dark purple necrotic energy swirling inside",
   "passive_type": "death_prevention",
   "trigger": "on_death",
   "effect": {

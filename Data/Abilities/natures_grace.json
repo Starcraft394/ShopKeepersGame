@@ -2,6 +2,7 @@
   "id": "natures_grace",
   "display_name": "Nature's Grace",
   "description": "Channel the healing power of nature to restore an ally's health.",
+  "icon_hint": "gentle green glow of mending life energy with floating leaves",
   "ability_type": "class_a",
   "source_class_id": "warden",
   "target_type": "single_ally",

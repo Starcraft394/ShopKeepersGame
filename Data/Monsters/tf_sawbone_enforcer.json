@@ -2,6 +2,7 @@
   "id": "tf_sawbone_enforcer",
   "display_name": "Sawbone Enforcer",
   "description": "A brutal foreman who fights with splintered tools and cruelty.",
+  "icon_hint": "scarred muscular enforcer wielding a jagged sawblade on a pole",
   "family": "humanoid",
   "region_id": "region_1",
   "tier": 3,

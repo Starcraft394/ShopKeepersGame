@@ -2,6 +2,7 @@
   "id": "fungal_frenzy",
   "display_name": "Fungal Frenzy",
   "description": "Enter a spore-induced rage, striking with increased ferocity but lowering defense.",
+  "icon_hint": "raging fist bursting through purple mushroom caps with green spore mist",
   "ability_type": "class_a",
   "source_class_id": "fungal_berserker",
   "target_type": "single_enemy",

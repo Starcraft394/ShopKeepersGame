@@ -2,6 +2,7 @@
   "id": "druid",
   "display_name": "Druid",
   "description": "A nature guardian who channels the power of plants and fungi to heal allies and control the battlefield.",
+  "icon_hint": "gnarled wooden staff crowned with blooming flowers and curling moss",
   "archetype": "healer",
   "unlock_region": 1,
   "base_stats": {

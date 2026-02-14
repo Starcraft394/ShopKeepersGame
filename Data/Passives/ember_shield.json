@@ -2,6 +2,7 @@
   "id": "ember_shield",
   "display_name": "Ember Shield",
   "description": "When hit by a melee attack, the attacker takes (3 + level/2) fire damage. Flames bite back.",
+  "icon_hint": "blazing orange shield wreathed in retaliating flames lashing outward",
   "passive_type": "on_hit_retaliation",
   "trigger": "on_melee_hit_received",
   "effect": {

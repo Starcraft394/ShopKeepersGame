@@ -2,6 +2,7 @@
   "id": "eye_of_storm",
   "display_name": "Eye of the Storm",
   "description": "On killing an enemy, reduce all ability cooldowns by 1. The tempest accelerates.",
+  "icon_hint": "calm eye of a swirling storm vortex with lightning flickering at the edges",
   "passive_type": "on_kill_cooldown_reduction",
   "trigger": "on_kill",
   "effect": {

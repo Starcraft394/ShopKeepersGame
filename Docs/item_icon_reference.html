@@ -57,6 +57,7 @@
   .item-name { font-weight: bold; color: #fff; font-size: 14px; }
   .item-id { color: #666; font-size: 11px; font-family: monospace; }
   .item-meta { font-size: 12px; color: #888; margin-top: 2px; }
+  .item-hint { font-size: 11px; color: #f0c040; font-style: italic; margin-top: 3px; opacity: 0.85; }
 
   .icon-status { flex-shrink: 0; font-size: 11px; text-align: right; max-width: 120px; }
   .status-ok { color: #4caf50; }
@@ -352,6 +353,89 @@ const ITEMS = [
   {id:"book_void_herald", name:"Void Herald's Manuscript", cat:"book", meta:"class: void_herald", icon:null, emoji:"\uD83D\uDCD6"},
 ];
 
+// Icon hint descriptions from Data/Items/Templates/*.json (auto-generated from game lore)
+const HINTS = {
+  apprentice_focus:"small cloudy crystal sphere resting on a brass pedestal ring",
+  antidote_vial:"small glass vial of pale green liquid with a tiny cork and herb label",
+  boar_tusk:"curved yellowed ivory boar tusk with a rough hollow base",
+  book_defender:"iron-clasped leather tome with an embossed shield crest on the cover",
+  bandage:"rolled white linen bandage with a red-stained edge on a tray",
+  antidote:"round glass bottle of bright green liquid with a white cloth stopper",
+  book_dark_channeler:"shadow-wreathed black leather tome with swirling dark energy on the cover",
+  berry_tart:"golden-brown pastry tart filled with purple berry jam on parchment",
+  book_lich:"bone-clasped ancient leather tome with a necrotic green skull on the cover",
+  arcane_staff:"dark oak staff crowned with a glowing blue crystal held by twisted branches",
+  bat_wing:"stretched dark brown leathery bat wing with thin bone ridges",
+  book_druid:"moss-covered green tome with vine tendrils curling around the spine",
+  book_ashblade:"smoke-stained dark leather tome with a smoldering blade etched on the cover",
+  bone_fragment:"jagged pale bone shard with faint green necrotic veins running through it",
+  book_fungal_berserker:"sickly purple journal with mushroom spores blooming from the binding",
+  book_pyrewarden:"charred orange leather tome with ember sigils glowing on the cover",
+  book_mender:"faded teal tome with a soft golden glow and herbal leaf motif",
+  book_prism_sentinel:"crystalline white tome with prismatic light refracting from a shield emblem",
+  book_prism_lancer:"luminous crystal-paged tome with a prismatic lance beam on the cover",
+  book_striker:"battered red leather journal with crossed swords branded on the cover",
+  book_stormcaller:"storm-gray tome with crackling lightning bolts arcing across the cover",
+  book_warden:"teal-dyed leather tome with flowing water-ward sigils on the cover",
+  book_voidwalker:"translucent purple tome that flickers with void energy and shadow wisps",
+  book_void_herald:"dark purple tome with a dimensional rift tearing across the cover",
+  composite_bow:"recurved composite bow with layered horn and oak limbs and waxed string",
+  cursed_dust:"small leather pouch spilling dark purple shimmering dust with faint sparks",
+  book_tidechaser:"waterlogged teal tome with coral accents and wave patterns on the cover",
+  cooked_meat:"seared brown meat drumstick with char marks on a wooden plate",
+  chainmail_vest:"sleeveless iron chainmail vest with interlocking rings and leather trim",
+  forest_mushroom:"brown-capped forest mushroom with a pale stalk and mossy base",
+  forest_bounty:"woven basket overflowing with berries, mushrooms, and herbs on a cloth",
+  healing_tonic:"round glass flask of glowing red liquid with a cork stopper",
+  herb:"bundle of green herbs tied with twine on a linen cloth",
+  focus_elixir:"elegant glass flask of shimmering blue liquid with arcane motes floating inside",
+  herb_sprig:"small green sprig with tiny leaves and a thin brown stem",
+  hunters_feast:"large wooden platter of roasted meat, bread, and root vegetables by firelight",
+  hunting_bow:"curved ash shortbow with a braided sinew string and notched grip",
+  iron_greataxe:"massive double-bladed iron greataxe on a long ash haft with leather grip",
+  iron_greaves:"heavy iron greaves with knee guards and leather straps at the calf",
+  iron_scrap:"jagged shard of dark iron with rust spots and rough broken edges",
+  iron_helmet:"domed iron helmet with a flat nose guard and riveted cheek plates",
+  leather_vest:"fitted brown leather vest with visible stitching and a laced front",
+  lucky_charm:"small brass horseshoe charm on a frayed twine loop",
+  minor_healing_tonic:"small round glass vial of pale pink liquid with a simple cork",
+  iron_sword:"straight iron blade with brown leather-wrapped crossguard grip",
+  minor_stamina_snack:"small strip of salted jerky wrapped in brown parchment paper",
+  mushroom:"tan forest mushroom with a rounded cap and pale stalk",
+  minor_venom_flask:"small glass vial of sickly green liquid with a thin wax seal",
+  oak_staff:"tall oak staff with a spiraling carved shaft and a faintly glowing tip",
+  power_elixir:"angular glass flask of swirling orange liquid with a leather-wrapped neck",
+  mushroom_stew:"steaming wooden bowl of thick brown stew with mushroom slices floating",
+  resistance_salve:"small clay pot of thick amber salve with a wooden spatula lid",
+  shadow_oil:"dark glass bottle of inky black oil with faint purple shimmer inside",
+  raw_meat:"raw red cut of meat with a bone sticking out on brown parchment",
+  rusty_sword:"rust-spotted iron shortsword with a worn leather grip and chipped edge",
+  simple_ring:"plain copper ring with a thin rounded band and dull patina",
+  slime_gel:"glob of translucent green gel in a small glass jar with a cork lid",
+  silver_ring:"polished silver ring with a faint inner glow and smooth rounded band",
+  reinforced_shield:"kite-shaped oak shield with crossed iron bands and riveted edges",
+  spider_silk:"spool of shimmering white spider silk thread with a silvery sheen",
+  small_backpack:"small brown leather satchel with a brass buckle and single strap",
+  stamina_draught:"tall slim glass flask of bright yellow-green liquid with a cork stopper",
+  smelling_salts:"small open tin of white crystalline salt with sharp vapors rising",
+  smoke_bomb:"round iron ball with a short cloth fuse and wisps of gray smoke",
+  spider_fang:"curved black spider fang with a hollow tip dripping green venom",
+  strong_healing_tonic:"large round glass flask of bright red liquid with a wax-sealed cork",
+  sturdy_backpack:"large brown leather backpack with iron buckles and reinforced stitching",
+  tanned_leather_hood:"tanned brown leather hood with a pointed brim and drawstring ties",
+  warriors_pendant:"bronze amulet on a leather cord with an iron fist emblem inset",
+  wood_bundle:"three oak logs bundled with coarse rope showing fresh-cut pale ends",
+  trail_rations:"burlap-wrapped bundle of dried meat, hardtack, and dried fruit",
+  tanned_leather_greaves:"tanned leather leg guards with buckled straps and scuffed knee patches",
+  wooden_shield:"round oak buckler with iron bands and a brass center boss",
+  torch:"oak-handled torch with oil-soaked rags burning a warm amber flame",
+  wooden_focus:"smooth carved oak orb with faintly glowing rune lines on its surface",
+  wooden_mace:"thick oak mace head wrapped with iron bands on a short wooden haft",
+  wild_berries:"cluster of plump purple and red berries on a small leafy stem",
+  wood:"rough-cut oak plank with visible grain and bark edges",
+  wolf_pelt:"folded gray wolf fur pelt with rough edges and thick undercoat visible",
+};
+
 const ART_PACKS = [
   // === EQUIPMENT ===
   {name:"Swords", count:48, forItems:"rusty_sword, iron_sword", desc:"1H swords, daggers, blades"},
@@ -368,7 +452,7 @@ const ART_PACKS = [
   {name:"Rings", count:48, forItems:"simple_ring, silver_ring", desc:"Rings, bands"},
   {name:"MagicArtifacts", count:48, forItems:"lucky_charm, warriors_pendant, apprentice_focus, wooden_focus", desc:"Amulets, orbs, magical items"},
   {name:"MagicBooks", count:48, forItems:"All 16 class books", desc:"Tomes, grimoires, codexes"},
-  {name:"Runes", count:48, forItems:"enchanting, magic runes", desc:"Runes, glyphs, enchantment stones"},
+  {name:"Runes", count:48, forItems:"enchanting, magic runes", desc:"Runes, glyphs, enchantment stones", customPath:"Runes/PNG/Transperent/runes"},
   // === MATERIALS & CONSUMABLES ===
   {name:"Herbs", count:48, forItems:"herb, herb_sprig", desc:"Leaves, herbs, plant materials"},
   {name:"Mushrooms", count:48, forItems:"mushroom, forest_mushroom", desc:"Mushrooms, fungi"},
@@ -390,15 +474,15 @@ const ART_PACKS = [
   {name:"Treasure", count:40, forItems:"bags, chests, keys, gold, scrolls", desc:"Treasure assets (named files)", customPath:"Treasure/PNG/Transperent", customFiles:["bag1","bag2","bag3","black_pearl","blue_stone","Chest1","Chest1_open","Chest2","Chest2_open","Chest3","Chest3_open","Chest4","Chest4_open","Chest5","Chest5_open","crown1","crown2","crown3","diamond","emerald","gold_bars","gold1","gold2","gold3","jevellery1","jevellery2","key1","key2","key3","key4","pink_stone","ring1","ring2","ruby","scepter","scroll","scull","vessel1","vessel2","violet_stone"]},
   // === STATUS & BUFFS ===
   {name:"BuffIcons", count:48, forItems:"buff/status effect icons", desc:"Buff icons (48)", customPath:"BuffIcons/PNG"},
-  {name:"BuffSkills", count:48, forItems:"additional buff/status icons", desc:"Buff skill icons"},
+  {name:"BuffSkills", count:48, forItems:"additional buff/status icons", desc:"Buff skill icons", customPath:"BuffSkills/PNG"},
   {name:"Sigils", count:48, forItems:"magic items, enchantments", desc:"Runes, sigils, glyphs"},
-  {name:"Curses", count:48, forItems:"cursed_dust, dark items", desc:"Curse effects, dark magic"},
+  {name:"Curses", count:48, forItems:"cursed_dust, dark items", desc:"Curse effects, dark magic", customPath:"Curses/PNG"},
   // === SKILLS ===
-  {name:"Skills_Aeromancer", count:48, forItems:"wind/air class abilities", desc:"Aeromancer wind magic skills"},
-  {name:"Skills_Crossbowman", count:48, forItems:"ranged class abilities", desc:"Crossbowman ranged skills"},
-  {name:"Skills_Demon", count:48, forItems:"dark/demon class abilities", desc:"Demon skill icons"},
-  {name:"Skills_Earthbender", count:48, forItems:"earth class abilities", desc:"Earthbender stone/ground skills"},
-  {name:"Skills_Summoner", count:48, forItems:"summoner class abilities", desc:"Summoner conjuring skills"},
+  {name:"Skills_Aeromancer", count:48, forItems:"wind/air class abilities", desc:"Aeromancer wind magic skills", customPath:"Skills_Aeromancer/PNG"},
+  {name:"Skills_Crossbowman", count:48, forItems:"ranged class abilities", desc:"Crossbowman ranged skills", customPath:"Skills_Crossbowman/PNG"},
+  {name:"Skills_Demon", count:48, forItems:"dark/demon class abilities", desc:"Demon skill icons", customPath:"Skills_Demon/PNG"},
+  {name:"Skills_Earthbender", count:48, forItems:"earth class abilities", desc:"Earthbender stone/ground skills", customPath:"Skills_Earthbender/PNG"},
+  {name:"Skills_Summoner", count:48, forItems:"summoner class abilities", desc:"Summoner conjuring skills", customPath:"Skills_Summoner/PNG"},
   // === GATHERING ===
   {name:"Farming", count:48, forItems:"town farming/economy", desc:"Farming tools, crops, seeds"},
   {name:"Fishing", count:48, forItems:"fishing/gathering", desc:"Fishing tools, catches"},
@@ -430,12 +514,16 @@ function renderItems() {
       ? `<img src="../Assets/Icons/Items/${item.icon}" alt="icon">`
       : `<div class="placeholder">${item.emoji || '?'}</div>`;
 
+    const hint = HINTS[item.id] || '';
+    const hintHtml = hint ? `<div class="item-hint">${hint}</div>` : '';
+
     card.innerHTML = `
       <div class="icon-area">${iconHtml}</div>
       <div class="item-info">
         <div class="item-name">${item.name}</div>
         <div class="item-id">${item.id}</div>
         <div class="item-meta">${item.meta}</div>
+        ${hintHtml}
       </div>
       <div class="icon-status ${hasIcon ? 'status-ok' : 'status-missing'}">${hasIcon ? 'HAS ICON' : 'NEEDS ICON'}</div>
     `;

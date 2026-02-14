@@ -2,6 +2,7 @@
   "id": "book_voidwalker",
   "display_name": "Voidwalker's Compendium",
   "description": "A tome that seems to phase in and out of existence. Teaches the Voidwalker class.",
+  "icon_hint": "translucent purple tome that flickers with void energy and shadow wisps",
   "item_type": "consumable",
   "rarity": "legendary",
   "use_effect_id": "learn_class_voidwalker",

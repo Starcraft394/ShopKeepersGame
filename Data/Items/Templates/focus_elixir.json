@@ -2,6 +2,7 @@
   "id": "focus_elixir",
   "display_name": "Focus Elixir",
   "description": "A shimmering brew that sharpens the mind and restores magical focus.",
+  "icon_hint": "elegant glass flask of shimmering blue liquid with arcane motes floating inside",
   "item_type": "consumable",
   "item_subtype": "potion",
   "slot": "",

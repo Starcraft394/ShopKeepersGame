@@ -2,6 +2,7 @@
   "id": "storm_surge",
   "display_name": "Storm Surge",
   "description": "Unleash a tempest that strikes all enemies with wind and lightning.",
+  "icon_hint": "swirling blue-white tempest vortex with branching lightning arcs",
   "ability_type": "class_b",
   "source_class_id": "stormcaller",
   "target_type": "all_enemies",

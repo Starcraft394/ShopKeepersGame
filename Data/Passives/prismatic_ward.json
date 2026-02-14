@@ -2,6 +2,7 @@
   "id": "prismatic_ward",
   "display_name": "Prismatic Ward",
   "description": "At round start, gain a shield for (2 + level/2). Light reforms the barrier.",
+  "icon_hint": "faceted prismatic crystal barrier refracting white light into rainbow edges",
   "passive_type": "round_start_shield",
   "trigger": "round_start",
   "effect": {

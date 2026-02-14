@@ -2,6 +2,7 @@
   "id": "thorn_ent",
   "display_name": "Thorn-Ent",
   "description": "A walking bramble-heart that answers steel with splinters.",
+  "icon_hint": "massive gnarled tree creature with glowing amber eyes and thorny limbs",
   "family": "beast",
   "region_id": "region_1",
   "tier": 3,

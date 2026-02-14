@@ -2,6 +2,7 @@
   "id": "antidote",
   "display_name": "Antidote",
   "description": "Cures poison. Use in camp to remove poison stacks from a hero.",
+  "icon_hint": "round glass bottle of bright green liquid with a white cloth stopper",
   "item_type": "consumable",
   "category": "consumable",
   "rarity": "common",

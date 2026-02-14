@@ -2,6 +2,7 @@
   "id": "tf_logsplitter_brute",
   "display_name": "Logsplitter Brute",
   "description": "A massive woodcutter gone feral, swinging a heavy splitting maul.",
+  "icon_hint": "towering feral woodcutter with a massive splitting maul and wild eyes",
   "family": "humanoid",
   "region_id": "region_1",
   "tier": 2,

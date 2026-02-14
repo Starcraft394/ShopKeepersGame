@@ -2,6 +2,7 @@
   "id": "sturdy_backpack",
   "display_name": "Sturdy Backpack",
   "description": "A well-crafted pack with reinforced stitching. Holds considerably more gear.",
+  "icon_hint": "large brown leather backpack with iron buckles and reinforced stitching",
   "item_type": "backpack",
   "item_subtype": "sturdy",
   "slot": "backpack",

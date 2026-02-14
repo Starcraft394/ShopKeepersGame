@@ -2,6 +2,7 @@
   "id": "berry_tart",
   "display_name": "Berry Tart",
   "description": "A sweet pastry filled with wild berries. Light but refreshing.",
+  "icon_hint": "golden-brown pastry tart filled with purple berry jam on parchment",
   "item_type": "consumable",
   "item_subtype": "food",
   "category": "consumable",

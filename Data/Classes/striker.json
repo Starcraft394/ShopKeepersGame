@@ -2,6 +2,7 @@
   "id": "striker",
   "display_name": "Striker",
   "description": "A swift damage dealer who excels at eliminating enemies quickly. Dual-path DPS with flexible weapon choices.",
+  "icon_hint": "crossed daggers over a red slashing arc with speed lines",
   "archetype": "striker",
   "unlock_region": 1,
   "base_stats": {

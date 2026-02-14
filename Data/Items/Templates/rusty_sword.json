@@ -2,6 +2,7 @@
   "id": "rusty_sword",
   "display_name": "Rusty Sword",
   "description": "A crude sword made from salvaged iron. Better than nothing.",
+  "icon_hint": "rust-spotted iron shortsword with a worn leather grip and chipped edge",
   "item_type": "weapon",
   "item_subtype": "sword",
   "category": "equipment",

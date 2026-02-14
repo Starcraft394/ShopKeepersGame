@@ -2,6 +2,7 @@
   "id": "flame_guard",
   "display_name": "Flame Guard",
   "description": "Wreath yourself in flames, taunting enemies and gaining defense.",
+  "icon_hint": "armored figure wreathed in roaring orange flames with defiant stance",
   "ability_type": "class_a",
   "source_class_id": "pyrewarden",
   "target_type": "self",

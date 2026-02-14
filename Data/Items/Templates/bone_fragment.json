@@ -2,6 +2,7 @@
   "id": "bone_fragment",
   "display_name": "Bone Fragment",
   "description": "A shard of bone still humming with residual dark energy.",
+  "icon_hint": "jagged pale bone shard with faint green necrotic veins running through it",
   "item_type": "material",
   "item_subtype": "monster_part",
   "category": "material",

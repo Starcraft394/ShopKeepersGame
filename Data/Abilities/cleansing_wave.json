@@ -2,6 +2,7 @@
   "id": "cleansing_wave",
   "display_name": "Cleansing Wave",
   "description": "Wash all allies with purifying waters, healing slightly and removing one debuff.",
+  "icon_hint": "sweeping teal wave washing over allies with sparkling purification motes",
   "ability_type": "class_b",
   "source_class_id": "tidechaser",
   "target_type": "all_allies",

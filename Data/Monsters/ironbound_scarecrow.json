@@ -2,6 +2,7 @@
   "id": "ironbound_scarecrow",
   "display_name": "Ironbound Scarecrow",
   "description": "Reinforced straw and rusted plate—built to endure.",
+  "icon_hint": "straw scarecrow reinforced with rusted iron plates and glowing amber eye slits",
   "family": "construct",
   "region_id": "region_1",
   "tier": 3,

@@ -2,6 +2,7 @@
   "id": "minor_venom_flask",
   "display_name": "Minor Venom Flask",
   "description": "A small flask of diluted spider venom. Throw at an enemy to poison them.",
+  "icon_hint": "small glass vial of sickly green liquid with a thin wax seal",
   "item_type": "consumable",
   "item_subtype": "thrown",
   "category": "consumable",

@@ -2,6 +2,7 @@
   "id": "webspinner",
   "display_name": "Webspinner",
   "description": "A patient hunter that waits for the right moment.",
+  "icon_hint": "dark forest spider crouched on a glistening web with amber-marked abdomen",
   "family": "beast",
   "region_id": "region_1",
   "tier": 2,

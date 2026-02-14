@@ -2,6 +2,7 @@
   "id": "skeleton_elite",
   "display_name": "Skeleton Elite",
   "description": "A veteran's bones that still remember the rhythm of war.",
+  "icon_hint": "battle-worn skeleton in tarnished plate armor with a heavy two-handed blade",
   "family": "undead",
   "region_id": "region_1",
   "tier": 1,

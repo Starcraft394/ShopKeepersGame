@@ -2,6 +2,7 @@
   "id": "forest_hag",
   "display_name": "Forest Hag",
   "description": "A crooked spirit that turns fear into strength.",
+  "icon_hint": "hunched crone with gnarled wooden staff and glowing green eyes amid swirling mist",
   "family": "humanoid",
   "region_id": "region_1",
   "tier": 3,

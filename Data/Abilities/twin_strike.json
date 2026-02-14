@@ -2,6 +2,7 @@
   "id": "twin_strike",
   "display_name": "Twin Strike",
   "description": "Strike twice in rapid succession, dealing moderate damage with each hit and applying poison for 2 turns.",
+  "icon_hint": "twin daggers slashing in an X pattern with green poison trails",
   "ability_type": "class_a",
   "source_class_id": "striker",
   "target_type": "single_enemy",

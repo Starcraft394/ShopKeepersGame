@@ -2,6 +2,7 @@
   "id": "scarecrow",
   "display_name": "Scarecrow",
   "description": "Stitched straw given motion by a bitter spark.",
+  "icon_hint": "ragged straw scarecrow with a crooked hat and faintly glowing amber spark",
   "family": "construct",
   "region_id": "region_1",
   "tier": 1,

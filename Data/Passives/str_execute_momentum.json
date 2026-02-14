@@ -2,6 +2,7 @@
   "id": "str_execute_momentum",
   "display_name": "Execute Momentum",
   "description": "On kill: reduce weapon ability cooldown by 1.",
+  "icon_hint": "spinning blade with amber speed lines and a fading skull silhouette",
   "passive_type": "on_kill",
   "trigger": "on_kill",
   "effect": {

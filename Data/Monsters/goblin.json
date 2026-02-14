@@ -2,6 +2,7 @@
   "id": "goblin",
   "display_name": "Goblin",
   "description": "A small, cunning creature that attacks in groups.",
+  "icon_hint": "hunched goblin scout with tattered brown cloak and crude dagger",
   "family": "beast",
   "region_id": "region_1",
   "tier": 1,
