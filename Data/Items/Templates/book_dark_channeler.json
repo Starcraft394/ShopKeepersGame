@@ -3,6 +3,7 @@
   "display_name": "Dark Channeler's Grimoire",
   "description": "A shadowy tome that whispers of life and death. Teaches the Dark Channeler class.",
   "icon_hint": "shadow-wreathed black leather tome with swirling dark energy on the cover",
+  "icon_path": "res://Assets/_ArtPacks/MagicBooks/PNG/Transperent/Icon28.png",
   "item_type": "consumable",
   "rarity": "epic",
   "use_effect_id": "learn_class_dark_channeler",

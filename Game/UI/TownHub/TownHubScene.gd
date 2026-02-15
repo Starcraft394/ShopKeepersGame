@@ -64,6 +64,14 @@ func _embed_town_scene() -> void:
 	_town_scene_instance.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_town_scene_instance.size_flags_vertical = Control.SIZE_SHRINK_END
 	_content_vbox.add_child(_town_scene_instance)
+
+	# Create a container for the hero party bar at the bottom of the content area
+	var party_bar_vbox = VBoxContainer.new()
+	party_bar_vbox.name = "PartyBarVBox"
+	party_bar_vbox.add_theme_constant_override("separation", 6)
+	_content_vbox.add_child(party_bar_vbox)
+	_town_scene_instance.party_bar_target = party_bar_vbox
+
 	print("[TownHub] Embedded TownScene into content area (CraftPix skin enabled)")
 
 

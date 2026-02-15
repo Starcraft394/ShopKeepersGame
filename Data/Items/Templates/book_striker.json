@@ -3,6 +3,7 @@
   "display_name": "Striker's Codex",
   "description": "A battle-worn journal filled with aggressive combat techniques. Teaches the Striker class.",
   "icon_hint": "battered red leather journal with crossed swords branded on the cover",
+  "icon_path": "res://Assets/_ArtPacks/MagicBooks/PNG/Transperent/Icon11.png",
   "item_type": "consumable",
   "rarity": "uncommon",
   "use_effect_id": "learn_class_striker",

@@ -4,8 +4,16 @@
   "description": "A humble shop selling basic supplies for adventurers. Browse potions, weapons, shields, and storage upgrades.",
   "icon_path": "res://Assets/Icons/Facilities/icon_facility_shop.png",
   "facility_type": "shop",
-  "max_tier": 2,
+  "max_tier": 4,
   "unlock_region": 1,
+
+  "keeper_name": "Marjorie",
+  "keeper_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon35.png",
+  "keeper_greetings": [
+    "Timberfall's finest goods, right here! What'll it be?",
+    "Ah, a discerning buyer. Let me show you what I've got in stock.",
+    "Every coin spent here is an investment in your survival, friend."
+  ],
 
   "slots_per_tier": {},
   "upgrade_costs": {
@@ -14,11 +22,28 @@
       "items": [
         { "item_id": "iron_scrap", "qty": 4 }
       ]
+    },
+    "3": {
+      "gold": 200,
+      "items": [
+        { "item_id": "iron_scrap", "qty": 8 },
+        { "item_id": "wood_bundle", "qty": 4 }
+      ]
+    },
+    "4": {
+      "gold": 500,
+      "items": [
+        { "item_id": "iron_scrap", "qty": 12 },
+        { "item_id": "wood_bundle", "qty": 8 },
+        { "item_id": "wolf_pelt", "qty": 5 }
+      ]
     }
   },
   "services_per_tier": {
     "1": ["buy_items", "stash_upgrade"],
-    "2": ["buy_items", "stash_upgrade", "buy_equipment"]
+    "2": ["buy_items", "stash_upgrade", "buy_equipment"],
+    "3": ["buy_items", "stash_upgrade", "buy_equipment", "bulk_discount"],
+    "4": ["buy_items", "stash_upgrade", "buy_equipment", "bulk_discount", "rare_imports"]
   },
 
   "produces_item_types": [],

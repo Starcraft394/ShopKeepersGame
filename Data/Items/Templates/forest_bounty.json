@@ -23,6 +23,6 @@
   "base_value": 28,
   "buy_value": 40,
   "stack_max": 5,
-  "icon_path": "res://Assets/Icons/Items/icon_item_forest_bounty.png",
+  "icon_path": "res://Assets/_ArtPacks/Food/PNG/Transperent/Icon32.png",
   "tags": ["region_1", "consumable", "food", "tier_2"]
 }

@@ -3,6 +3,7 @@
   "display_name": "Void Herald's Manuscript",
   "description": "A reality-warping tome with pages that show glimpses of the void. Teaches the Void Herald class.",
   "icon_hint": "dark purple tome with a dimensional rift tearing across the cover",
+  "icon_path": "res://Assets/_ArtPacks/MagicBooks/PNG/Transperent/Icon19.png",
   "item_type": "consumable",
   "rarity": "legendary",
   "use_effect_id": "learn_class_void_herald",

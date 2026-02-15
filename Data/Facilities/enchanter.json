@@ -4,12 +4,22 @@
   "description": "A mystical workshop where magical items are imbued with power. Specializes in staves, focuses, and accessories.",
   "icon_path": "res://Assets/Icons/Facilities/icon_facility_enchanter.png",
   "facility_type": "equipment",
-  "max_tier": 2,
+  "max_tier": 4,
   "unlock_region": 1,
+
+  "keeper_name": "Elara",
+  "keeper_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon18.png",
+  "keeper_greetings": [
+    "The arcane winds whisper of your arrival, ShopKeeper.",
+    "Ah, come in! The crystals are humming with energy today.",
+    "What mysteries shall we unravel together?"
+  ],
 
   "slots_per_tier": {
     "1": 2,
-    "2": 3
+    "2": 3,
+    "3": 4,
+    "4": 5
   },
 
   "upgrade_costs": {
@@ -19,12 +29,30 @@
         { "item_id": "herb_sprig", "qty": 6 },
         { "item_id": "wood_bundle", "qty": 4 }
       ]
+    },
+    "3": {
+      "gold": 200,
+      "items": [
+        { "item_id": "herb_sprig", "qty": 12 },
+        { "item_id": "wood_bundle", "qty": 8 },
+        { "item_id": "cursed_dust", "qty": 3 }
+      ]
+    },
+    "4": {
+      "gold": 500,
+      "items": [
+        { "item_id": "herb_sprig", "qty": 25 },
+        { "item_id": "wood_bundle", "qty": 15 },
+        { "item_id": "cursed_dust", "qty": 8 }
+      ]
     }
   },
 
   "services_per_tier": {
     "1": ["enchant_basic"],
-    "2": ["enchant_basic", "reroll_stats"]
+    "2": ["enchant_basic", "reroll_stats"],
+    "3": ["enchant_advanced", "reroll_stats", "disenchant"],
+    "4": ["enchant_master", "reroll_stats", "disenchant", "imbue_legendary"]
   },
 
   "produces_item_types": ["weapon", "offhand", "accessory"],

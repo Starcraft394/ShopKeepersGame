@@ -3,6 +3,7 @@
   "display_name": "Warden's Codex",
   "description": "An ancient tome illuminated with protective wards and restorative arts. Teaches the Warden class.",
   "icon_hint": "teal-dyed leather tome with flowing water-ward sigils on the cover",
+  "icon_path": "res://Assets/_ArtPacks/MagicBooks/PNG/Transperent/Icon23.png",
   "item_type": "consumable",
   "rarity": "uncommon",
   "use_effect_id": "learn_class_warden",

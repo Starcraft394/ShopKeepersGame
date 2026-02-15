@@ -10,7 +10,7 @@
       "label": "Search the crates",
       "description": "Lumber supplies are useful.",
       "effects": [
-        { "type": "add_item", "item_id": "wood", "min_qty": 2, "max_qty": 4 },
+        { "type": "add_item", "item_id": "wood_bundle", "min_qty": 2, "max_qty": 4 },
         { "type": "add_gold_range", "min": 3, "max": 8 }
       ]
     },

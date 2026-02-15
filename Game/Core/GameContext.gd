@@ -2018,13 +2018,25 @@ func recruit_hero(class_id: String, cost_gold: int, race_id: String = "human", l
 		"race_id": race_id,
 		"name": "Hero #%d" % _hero_id_counter,
 		"level": level,
-		"xp": 0
+		"xp": 0,
+		"portrait_path": _pick_race_portrait(race_id)
 	}
 	owned_heroes.append(hero)
 
 	print("[Inn] recruit class=%s race=%s level=%d xp=0 cost=%d success=true hero_id=%s" % [class_id, race_id, level, cost_gold, hero_id])
 	save_game()
 	return hero_id
+
+
+## Pick a random portrait from a race's portrait pool.
+func _pick_race_portrait(race_id: String) -> String:
+	if not DataRegistry.has_method("get_race"):
+		return ""
+	var race = DataRegistry.get_race(race_id)
+	if race == null or race.portraits.size() == 0:
+		return ""
+	var idx: int = randi() % race.portraits.size()
+	return race.portraits[idx]
 
 
 ## Get the selected party for dungeon runs.
@@ -2140,7 +2152,8 @@ func recruit_new_hero(archetype_id: String, race_id: String = "human", level: in
 		"race_id": race_id,
 		"name": "Hero #%d" % _hero_id_counter,
 		"level": level,
-		"xp": 0
+		"xp": 0,
+		"portrait_path": _pick_race_portrait(race_id)
 	}
 
 
@@ -2662,11 +2675,39 @@ func increment_facility_slots(town_id: String, facility_id: String) -> bool:
 
 
 ## Decrement slot allocation for a facility by 1. Returns true if successful.
+## Blocked if purchased items would be lost (slots are locked after purchase).
 func decrement_facility_slots(town_id: String, facility_id: String) -> bool:
 	var current = get_facility_slot_allocation(town_id, facility_id)
 	if current <= 0:
 		return false
+	# Prevent deallocating below the number of purchased slots
+	var purchased = _count_purchased_slots_for_facility(town_id, facility_id)
+	if current <= purchased:
+		print("[ShopSlots] decrement blocked: town=%s facility=%s slots=%d purchased=%d" % [
+			town_id, facility_id, current, purchased])
+		return false
 	return set_facility_slot_allocation(town_id, facility_id, current - 1)
+
+
+## Count how many shop slots for a contributing facility have been purchased.
+func _count_purchased_slots_for_facility(town_id: String, facility_id: String) -> int:
+	var town = DataRegistry.get_town(town_id)
+	if town == null:
+		return 0
+	var shop_id: String = ""
+	for fid in town.facility_ids:
+		var fac = DataRegistry.get_facility(fid)
+		if fac != null and fac.facility_type == "shop":
+			shop_id = fid
+			break
+	if shop_id == "" or not shop_purchased_slots.has(shop_id):
+		return 0
+	var count: int = 0
+	var prefix: String = facility_id + ":"
+	for slot_key in shop_purchased_slots[shop_id]:
+		if slot_key.begins_with(prefix):
+			count += 1
+	return count
 
 
 ## Get all slot allocations for a town.
@@ -3912,6 +3953,10 @@ func load_game() -> void:
 				if not hero.has("race_id") or hero.get("race_id", "") == "":
 					hero["race_id"] = "human"
 					print("[Migration] hero %s: added race_id=human" % hero.get("hero_id", "?"))
+				# Migration: add portrait_path to heroes that don't have it
+				if not hero.has("portrait_path") or hero.get("portrait_path", "") == "":
+					hero["portrait_path"] = _pick_race_portrait(hero.get("race_id", "human"))
+					print("[Migration] hero %s: assigned portrait" % hero.get("hero_id", "?"))
 			# Migration: mender -> warden in hero class_ids
 			for hero in owned_heroes:
 				if hero.get("class_id", "") == "mender":

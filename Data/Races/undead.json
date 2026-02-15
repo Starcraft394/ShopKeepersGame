@@ -12,5 +12,14 @@
   },
   "racial_passive_id": "undead_persistence",
   "xp_modifier": 0.8,
-  "trait_tags": ["undead", "dark"]
+  "trait_tags": [
+    "undead",
+    "dark"
+  ],
+  "portraits": [
+    "res://Assets/_ArtPacks/Avatars_Undead/PNG/Transperent/Icon2.png",
+    "res://Assets/_ArtPacks/Avatars_Undead/PNG/Transperent/Icon3.png",
+    "res://Assets/_ArtPacks/Avatars_Undead/PNG/Transperent/Icon34.png",
+    "res://Assets/_ArtPacks/Avatars_Undead/PNG/Transperent/Icon31.png"
+  ]
 }

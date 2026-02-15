@@ -4,12 +4,22 @@
   "description": "A humble forge capable of basic repairs and simple craftsmanship. Specializes in melee weapons, shields, and heavy armor.",
   "icon_path": "res://Assets/Icons/Facilities/icon_facility_blacksmith.png",
   "facility_type": "equipment",
-  "max_tier": 2,
+  "max_tier": 4,
   "unlock_region": 1,
+
+  "keeper_name": "Tormund",
+  "keeper_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon39.png",
+  "keeper_greetings": [
+    "Step inside, ShopKeeper. Let's see what you need.",
+    "The anvil's waiting. What'll it be?",
+    "Another day, another blade to forge. What brings you here?"
+  ],
 
   "slots_per_tier": {
     "1": 2,
-    "2": 3
+    "2": 3,
+    "3": 4,
+    "4": 5
   },
 
   "upgrade_costs": {
@@ -19,12 +29,28 @@
         { "item_id": "iron_scrap", "qty": 5 },
         { "item_id": "wood_bundle", "qty": 3 }
       ]
+    },
+    "3": {
+      "gold": 150,
+      "items": [
+        { "item_id": "iron_scrap", "qty": 10 },
+        { "item_id": "wood_bundle", "qty": 6 }
+      ]
+    },
+    "4": {
+      "gold": 400,
+      "items": [
+        { "item_id": "iron_scrap", "qty": 20 },
+        { "item_id": "wood_bundle", "qty": 10 }
+      ]
     }
   },
 
   "services_per_tier": {
     "1": ["repair_basic", "craft_basic_weapon"],
-    "2": ["repair_advanced", "craft_advanced_weapon"]
+    "2": ["repair_advanced", "craft_advanced_weapon"],
+    "3": ["repair_expert", "craft_expert_weapon", "temper_weapon"],
+    "4": ["repair_master", "craft_master_weapon", "temper_weapon", "enchant_slot"]
   },
 
   "produces_item_types": ["weapon", "armor", "offhand"],

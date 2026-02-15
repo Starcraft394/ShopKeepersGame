@@ -23,6 +23,6 @@
   "base_value": 6,
   "buy_value": 10,
   "stack_max": 99,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Loot_Undead/PNG/Transperent/Icon9.png",
   "tags": ["region_1", "material", "monster_part", "alchemy"]
 }

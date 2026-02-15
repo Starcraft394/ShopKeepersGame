@@ -26,6 +26,6 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 10,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Helmets/PNG/Transperent/Icon8.png",
   "tags": ["region_1", "armor", "leather", "tier_1"]
 }

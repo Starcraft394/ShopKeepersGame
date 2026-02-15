@@ -3,6 +3,7 @@
   "display_name": "Prism Sentinel's Codex",
   "description": "A crystalline tome that refracts light into rainbows. Teaches the Prism Sentinel class.",
   "icon_hint": "crystalline white tome with prismatic light refracting from a shield emblem",
+  "icon_path": "res://Assets/_ArtPacks/MagicBooks/PNG/Transperent/Icon13.png",
   "item_type": "consumable",
   "rarity": "epic",
   "use_effect_id": "learn_class_prism_sentinel",

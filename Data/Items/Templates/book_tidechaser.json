@@ -3,6 +3,7 @@
   "display_name": "Tidechaser's Codex",
   "description": "A waterlogged tome that never dries, filled with healing currents. Teaches the Tidechaser class.",
   "icon_hint": "waterlogged teal tome with coral accents and wave patterns on the cover",
+  "icon_path": "res://Assets/_ArtPacks/MagicBooks/PNG/Transperent/Icon4.png",
   "item_type": "consumable",
   "rarity": "rare",
   "use_effect_id": "learn_class_tidechaser",

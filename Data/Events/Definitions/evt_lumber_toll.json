@@ -12,7 +12,7 @@
       "requires": { "gold": 10 },
       "effects": [
         { "type": "lose_gold", "min": 10, "max": 10 },
-        { "type": "add_item", "item_id": "wood", "min_qty": 1, "max_qty": 1 }
+        { "type": "add_item", "item_id": "wood_bundle", "min_qty": 1, "max_qty": 1 }
       ]
     },
     {

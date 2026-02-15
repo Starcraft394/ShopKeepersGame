@@ -20,6 +20,6 @@
   "max_refinement": 0,
   "base_value": 3,
   "stack_max": 20,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Ingredients/PNG/Transperent/mushroom1.png",
   "tags": ["region_1", "material", "food_material", "plant"]
 }

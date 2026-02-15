@@ -10,5 +10,6 @@
   "allowed_affixes": [],
   "allowed_socket_types": [],
   "gold_value": 4,
+  "icon_path": "res://Assets/_ArtPacks/Mushrooms/PNG/Transperent/Icon4.png",
   "tags": ["material", "mushroom", "alchemy"]
 }

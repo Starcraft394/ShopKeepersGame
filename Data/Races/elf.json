@@ -12,5 +12,16 @@
   },
   "racial_passive_id": "elf_keen_sight",
   "xp_modifier": 1.0,
-  "trait_tags": ["agile", "perceptive", "resist_bleed"]
+  "trait_tags": [
+    "agile",
+    "perceptive",
+    "resist_bleed"
+  ],
+  "portraits": [
+    "res://Assets/_ArtPacks/Avatars_Elf/PNG/Transperent/Icon46.png",
+    "res://Assets/_ArtPacks/Avatars_Elf/PNG/Transperent/Icon35.png",
+    "res://Assets/_ArtPacks/Avatars_Elf/PNG/Transperent/Icon23.png",
+    "res://Assets/_ArtPacks/Avatars_Elf/PNG/Transperent/Icon28.png",
+    "res://Assets/_ArtPacks/Avatars_Elf/PNG/Transperent/Icon38.png"
+  ]
 }

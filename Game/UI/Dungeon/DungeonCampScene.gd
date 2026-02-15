@@ -487,14 +487,18 @@ func _create_hero_row(hero_id: String) -> HBoxContainer:
 			var display_name = template.display_name if template else item_id
 
 			# Item icon (Button.icon property)
+			var has_icon = false
 			if template != null:
 				var icon_tex = template.get_icon_texture()
 				if icon_tex != null:
 					slot_btn.icon = icon_tex
 					slot_btn.expand_icon = true
+					has_icon = true
 
-			# Show abbreviated name (first 3 chars) or qty
-			if qty > 1:
+			# Show qty badge when icon present, otherwise abbreviated name
+			if has_icon:
+				slot_btn.text = str(qty) if qty > 1 else ""
+			elif qty > 1:
 				slot_btn.text = str(qty)
 			else:
 				slot_btn.text = display_name.substr(0, 3) if display_name.length() > 3 else display_name
@@ -700,7 +704,12 @@ func _on_hero_info_pressed(hero_id: String) -> void:
 				tooltip_text = _build_camp_item_tooltip(tpl, quality)
 			else:
 				slot_text = item_id
-		_add_camp_equipment_line(vbox, slot_display, slot_text, Color.SANDY_BROWN if item_id != "" else Color.DIM_GRAY, tooltip_text)
+		var equip_color: Color = Color.DIM_GRAY
+		if item_id != "" and quality > 0:
+			equip_color = ItemInstance.QUALITY_COLORS[clampi(quality, 0, 3)]
+		elif item_id != "":
+			equip_color = Color.SANDY_BROWN
+		_add_camp_equipment_line(vbox, slot_display, slot_text, equip_color, tooltip_text)
 
 	vbox.add_child(HSeparator.new())
 
@@ -905,9 +914,8 @@ func _build_camp_item_tooltip(template, quality_tier: int) -> String:
 	lines.append("")
 
 	# Quality multiplier
-	var quality_names = ["Common", "Uncommon", "Rare", "Epic"]
 	var quality_mults = [1.0, 1.1, 1.2, 1.35]
-	var quality_name = quality_names[quality_tier] if quality_tier < quality_names.size() else "Common"
+	var quality_name = ItemInstance.QUALITY_NAMES[clampi(quality_tier, 0, 3)]
 	var quality_mult = quality_mults[quality_tier] if quality_tier < quality_mults.size() else 1.0
 	if quality_tier > 0:
 		lines.append("Quality: %s (x%.2f stats)" % [quality_name, quality_mult])
@@ -960,6 +968,7 @@ func _populate_shopkeeper_bag() -> void:
 	for entry in bag_items:
 		var item_id = entry.get("item_id", "")
 		var qty = entry.get("qty", 1)
+		var quality_tier = int(entry.get("quality_tier", 0))
 		var template = DataRegistry.get_item_template(item_id)
 		var display_name = template.display_name if template else item_id
 
@@ -973,14 +982,21 @@ func _populate_shopkeeper_bag() -> void:
 		slot_btn.custom_minimum_size = Vector2(60, 32)
 
 		# Item icon (Button.icon property)
+		var has_icon = false
 		if template != null:
 			var icon_tex = template.get_icon_texture()
 			if icon_tex != null:
 				slot_btn.icon = icon_tex
 				slot_btn.expand_icon = true
+				has_icon = true
 
-		# Show name + qty
-		if qty > 1:
+		# Apply quality border for equipment
+		ItemInstance.apply_quality_border_to_button(slot_btn, quality_tier)
+
+		# Show qty badge when icon present, otherwise abbreviated name
+		if has_icon:
+			slot_btn.text = str(qty) if qty > 1 else ""
+		elif qty > 1:
 			slot_btn.text = "%s(%d)" % [display_name.substr(0, 4), qty]
 		else:
 			slot_btn.text = display_name.substr(0, 6) if display_name.length() > 6 else display_name
@@ -990,6 +1006,11 @@ func _populate_shopkeeper_bag() -> void:
 		if template != null:
 			if template.description != "":
 				tooltip_lines.append(template.description)
+
+			# Quality info for equipment
+			if quality_tier > 0:
+				var q_name = ItemInstance.QUALITY_NAMES[clampi(quality_tier, 0, 3)]
+				tooltip_lines.append("Quality: %s" % q_name)
 
 			# Equipment stats
 			if template.equip_slot != "":

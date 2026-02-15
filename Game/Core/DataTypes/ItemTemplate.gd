@@ -94,6 +94,52 @@ func create_icon_rect(icon_size: int = 16) -> TextureRect:
 	rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	return rect
 
+## Create an icon display with quality-tier colored border for equipment.
+## Returns a plain TextureRect for common (Q0) or non-equipment items.
+## Returns a PanelContainer wrapping the icon for Q1+ equipment.
+## Returns null if no icon available.
+func create_bordered_icon(icon_size: int = 16, quality_tier: int = 0) -> Control:
+	var tex = get_icon_texture()
+	if tex == null:
+		return null
+
+	var rect = TextureRect.new()
+	rect.texture = tex
+	rect.custom_minimum_size = Vector2(icon_size, icon_size)
+	rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+
+	# No border for common items or non-equipment
+	if quality_tier <= 0:
+		return rect
+	var is_equipment: bool = category == "equipment" or item_type in ["weapon", "armor", "accessory", "tool", "backpack"]
+	if not is_equipment:
+		return rect
+
+	# Wrap in PanelContainer with colored border
+	var panel = PanelContainer.new()
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.1, 0.1, 0.1, 0.5)
+	style.border_width_left = 2
+	style.border_width_top = 2
+	style.border_width_right = 2
+	style.border_width_bottom = 2
+	style.border_color = ItemInstance.QUALITY_COLORS[clampi(quality_tier, 0, 3)]
+	style.corner_radius_top_left = 2
+	style.corner_radius_top_right = 2
+	style.corner_radius_bottom_left = 2
+	style.corner_radius_bottom_right = 2
+	style.content_margin_left = 1.0
+	style.content_margin_top = 1.0
+	style.content_margin_right = 1.0
+	style.content_margin_bottom = 1.0
+
+	panel.add_theme_stylebox_override("panel", style)
+	panel.custom_minimum_size = Vector2(icon_size + 6, icon_size + 6)
+	panel.add_child(rect)
+	return panel
+
+
 ## Get stat bonuses for this equipment with quality multiplier applied.
 ## Returns empty dict for non-equipment items.
 ## quality_tier: 0=common, 1=uncommon, 2=rare, 3=epic

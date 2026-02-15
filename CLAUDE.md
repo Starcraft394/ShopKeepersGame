@@ -64,6 +64,7 @@ See `.claude/agents/` for specialized agent prompts:
 | **UI Refiner** | Visual cleanup, theme consistency |
 | **Data Curator** | JSON validation, content extension |
 | **Art Director** | Art asset tracking, integration, consistency |
+| **Story Architect** | Narrative content, lore, campaign arcs, event text |
 
 ## Skills
 

@@ -26,6 +26,6 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 25,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Helmets/PNG/Transperent/Icon26.png",
   "tags": ["region_1", "armor", "iron"]
 }

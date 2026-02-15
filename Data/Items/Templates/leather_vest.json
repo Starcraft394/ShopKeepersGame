@@ -26,6 +26,6 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 18,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Cuirass/PNG/Transperent/Icon16.png",
   "tags": ["region_1", "armor", "leather", "tier_1"]
 }

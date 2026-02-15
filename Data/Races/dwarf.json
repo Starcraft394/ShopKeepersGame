@@ -12,5 +12,16 @@
   },
   "racial_passive_id": "dwarf_deep_miner",
   "xp_modifier": 1.0,
-  "trait_tags": ["durable", "stubborn", "resist_poison"]
+  "trait_tags": [
+    "durable",
+    "stubborn",
+    "resist_poison"
+  ],
+  "portraits": [
+    "res://Assets/_ArtPacks/Avatars_Dwarf/PNG/Transperent/Icon5.png",
+    "res://Assets/_ArtPacks/Avatars_Dwarf/PNG/Transperent/Icon7.png",
+    "res://Assets/_ArtPacks/Avatars_Dwarf/PNG/Transperent/Icon19.png",
+    "res://Assets/_ArtPacks/Avatars_Dwarf/PNG/Transperent/Icon26.png",
+    "res://Assets/_ArtPacks/Avatars_Dwarf/PNG/Transperent/Icon35.png"
+  ]
 }

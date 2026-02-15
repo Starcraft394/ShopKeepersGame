@@ -12,5 +12,15 @@
   },
   "racial_passive_id": "mossfolk_regeneration",
   "xp_modifier": 1.0,
-  "trait_tags": ["nature", "regenerative"]
+  "trait_tags": [
+    "nature",
+    "regenerative"
+  ],
+  "portraits": [
+    "res://Assets/_ArtPacks/Avatars_Mossfolk_PNG/Icon1.png",
+    "res://Assets/_ArtPacks/Avatars_Mossfolk_PNG/Icon2.png",
+    "res://Assets/_ArtPacks/Avatars_Mossfolk_PNG/Icon9.png",
+    "res://Assets/_ArtPacks/Avatars_Mossfolk_PNG/Icon11.png",
+    "res://Assets/_ArtPacks/Avatars_Mossfolk_PNG/Icon20.png"
+  ]
 }

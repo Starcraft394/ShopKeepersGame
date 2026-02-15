@@ -2013,15 +2013,19 @@ func _show_loot_panel() -> void:
 			var item_hbox = HBoxContainer.new()
 			item_hbox.add_theme_constant_override("separation", 8)
 
-			# Item icon (if available)
+			# Item icon with quality border (if available)
 			if tpl != null:
-				var icon_rect = tpl.create_icon_rect(20)
-				if icon_rect != null:
-					item_hbox.add_child(icon_rect)
+				var icon_ctrl = tpl.create_bordered_icon(20, quality)
+				if icon_ctrl != null:
+					item_hbox.add_child(icon_ctrl)
 
-			# Item label
+			# Item label with quality color
 			var item_label = Label.new()
-			item_label.text = "%s x%d (Q%d)" % [display_name, qty, quality]
+			if quality > 0:
+				item_label.text = "%s %s x%d" % [ItemInstance.QUALITY_NAMES[clampi(quality, 0, 3)], display_name, qty]
+				item_label.modulate = ItemInstance.QUALITY_COLORS[clampi(quality, 0, 3)]
+			else:
+				item_label.text = "%s x%d" % [display_name, qty]
 			item_label.add_theme_font_size_override("font_size", 14)
 			item_label.custom_minimum_size = Vector2(200, 0)
 			item_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL

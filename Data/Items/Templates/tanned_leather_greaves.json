@@ -26,6 +26,6 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 12,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Trousers/PNG/Transperent/Icon2.png",
   "tags": ["region_1", "armor", "leather", "tier_1"]
 }

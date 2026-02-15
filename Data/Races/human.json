@@ -12,5 +12,15 @@
   },
   "racial_passive_id": "human_adaptability",
   "xp_modifier": 1.1,
-  "trait_tags": ["adaptable", "balanced"]
+  "trait_tags": [
+    "adaptable",
+    "balanced"
+  ],
+  "portraits": [
+    "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon28.png",
+    "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon14.png",
+    "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon15.png",
+    "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon46.png",
+    "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon48.png"
+  ]
 }

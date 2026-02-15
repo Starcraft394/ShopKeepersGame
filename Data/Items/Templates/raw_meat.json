@@ -20,6 +20,6 @@
   "max_refinement": 0,
   "base_value": 4,
   "stack_max": 20,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/MeatSkins/PNG/Transperent/Icon23.png",
   "tags": ["region_1", "material", "food_material", "meat"]
 }

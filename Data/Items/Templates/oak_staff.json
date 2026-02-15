@@ -26,6 +26,6 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 18,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/MagicArtifacts/PNG/Transperent/Icon31.png",
   "tags": ["region_1", "weapon", "magic", "staff", "tier_1"]
 }

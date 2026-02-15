@@ -51,6 +51,11 @@ var recruit_level_by_tier: Dictionary = {}  # { "1": 1, "2": 2 } - hero level wh
 var recruit_candidates: Array = []  # Array of { class_id, cost_gold } for Inn recruitment
 var max_party_size: int = 2  # Max party size for this inn
 
+# Keeper NPC (for dialogue-driven facility UI)
+var keeper_name: String = ""
+var keeper_portrait: String = ""
+var keeper_greetings: Array[String] = []
+
 # Visual
 var icon_path: String = ""
 var building_scene_path: String = ""
@@ -76,6 +81,15 @@ static func from_dict(data: Dictionary) -> FacilityData:
 	instance.max_assigned_heroes = data.get("max_assigned_heroes", 1)
 	instance.icon_path = data.get("icon_path", "")
 	instance.building_scene_path = data.get("building_scene_path", "")
+
+	# Keeper NPC fields
+	instance.keeper_name = data.get("keeper_name", "")
+	instance.keeper_portrait = data.get("keeper_portrait", "")
+	instance.keeper_greetings.clear()
+	var greetings_val = data.get("keeper_greetings", [])
+	var greetings = greetings_val if greetings_val is Array else []
+	for g in greetings:
+		instance.keeper_greetings.append(str(g))
 
 	# Convert typed arrays (clear + append pattern for safety)
 	instance.produces_item_types.clear()

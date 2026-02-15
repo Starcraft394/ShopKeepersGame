@@ -4,12 +4,22 @@
   "description": "A skilled craftsman who fashions bows, light armor, and travel gear from forest materials and animal pelts.",
   "icon_path": "res://Assets/Icons/Facilities/icon_facility_huntsman.png",
   "facility_type": "equipment",
-  "max_tier": 2,
+  "max_tier": 4,
   "unlock_region": 1,
+
+  "keeper_name": "Brynn",
+  "keeper_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon42.png",
+  "keeper_greetings": [
+    "Well met, ShopKeeper. The wilds have been generous today.",
+    "Every arrow needs a story. Let's write one together.",
+    "Come, see what the hunt has brought in."
+  ],
 
   "slots_per_tier": {
     "1": 2,
-    "2": 3
+    "2": 3,
+    "3": 4,
+    "4": 5
   },
 
   "upgrade_costs": {
@@ -19,12 +29,30 @@
         { "item_id": "wolf_pelt", "qty": 4 },
         { "item_id": "wood_bundle", "qty": 3 }
       ]
+    },
+    "3": {
+      "gold": 175,
+      "items": [
+        { "item_id": "wolf_pelt", "qty": 8 },
+        { "item_id": "wood_bundle", "qty": 6 },
+        { "item_id": "spider_silk", "qty": 4 }
+      ]
+    },
+    "4": {
+      "gold": 450,
+      "items": [
+        { "item_id": "wolf_pelt", "qty": 16 },
+        { "item_id": "wood_bundle", "qty": 10 },
+        { "item_id": "spider_silk", "qty": 8 }
+      ]
     }
   },
 
   "services_per_tier": {
     "1": ["craft_light_armor", "repair_leather"],
-    "2": ["craft_light_armor", "repair_leather", "craft_backpacks"]
+    "2": ["craft_light_armor", "repair_leather", "craft_backpacks"],
+    "3": ["craft_advanced_armor", "repair_leather", "craft_backpacks", "craft_traps"],
+    "4": ["craft_master_armor", "repair_leather", "craft_backpacks", "craft_traps", "craft_exotic_bow"]
   },
 
   "produces_item_types": ["weapon", "armor", "backpack"],

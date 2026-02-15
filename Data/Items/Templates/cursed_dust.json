@@ -23,6 +23,6 @@
   "base_value": 12,
   "buy_value": 20,
   "stack_max": 99,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Loot_Chaos/PNG/Transperent/Icon22.png",
   "tags": ["region_1", "material", "monster_part", "alchemy"]
 }

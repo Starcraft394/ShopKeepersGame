@@ -23,6 +23,6 @@
   "base_value": 8,
   "buy_value": 14,
   "stack_max": 99,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/CraftingMaterials/PNG/Transperent/Icon27.png",
   "tags": ["region_1", "material", "monster_part", "alchemy"]
 }

@@ -12,5 +12,15 @@
   },
   "racial_passive_id": "tideling_flow",
   "xp_modifier": 1.0,
-  "trait_tags": ["aquatic", "elemental"]
+  "trait_tags": [
+    "aquatic",
+    "elemental"
+  ],
+  "portraits": [
+    "res://Assets/_ArtPacks/Avatars_Tidelings_PNG/Icon1.png",
+    "res://Assets/_ArtPacks/Avatars_Tidelings_PNG/Icon2.png",
+    "res://Assets/_ArtPacks/Avatars_Tidelings_PNG/Icon9.png",
+    "res://Assets/_ArtPacks/Avatars_Tidelings_PNG/Icon10.png",
+    "res://Assets/_ArtPacks/Avatars_Tidelings_PNG/Icon11.png"
+  ]
 }

@@ -3,6 +3,7 @@
   "display_name": "Prism Lancer's Guide",
   "description": "A luminous tome with focused light techniques etched into its crystal pages. Teaches the Prism Lancer class.",
   "icon_hint": "luminous crystal-paged tome with a prismatic lance beam on the cover",
+  "icon_path": "res://Assets/_ArtPacks/MagicBooks/PNG/Transperent/Icon43.png",
   "item_type": "consumable",
   "rarity": "epic",
   "use_effect_id": "learn_class_prism_lancer",

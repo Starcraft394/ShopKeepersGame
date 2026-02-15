@@ -19,5 +19,6 @@
   "base_value": 25,
   "buy_value": 0,
   "can_refine": true,
+  "icon_path": "res://Assets/_ArtPacks/ShieldsAmulets/PNG/Transperent/Icon9.png",
   "tags": ["offhand", "shield", "region_1", "crafted"]
 }

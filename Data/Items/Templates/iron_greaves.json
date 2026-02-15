@@ -26,6 +26,6 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 28,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Trousers/PNG/Transperent/Icon18.png",
   "tags": ["region_1", "armor", "iron"]
 }

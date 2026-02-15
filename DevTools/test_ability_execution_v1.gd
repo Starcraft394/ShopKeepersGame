@@ -720,6 +720,22 @@ static func run_tests() -> Dictionary:
 	else:
 		results["failed"] += 1
 
+	# Test 89: Materials always get quality_tier=0 (quality gating)
+	var t89 = _test_materials_never_roll_quality()
+	results["tests"].append(t89)
+	if t89["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 90: Equipment can roll non-zero quality
+	var t90 = _test_equipment_can_roll_quality()
+	results["tests"].append(t90)
+	if t90["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
 	print("")
 	print("=" .repeat(60))
 	print("  TEST RESULTS: %d passed, %d failed" % [results["passed"], results["failed"]])
@@ -3914,7 +3930,7 @@ static func _test_no_per_hero_gold() -> Dictionary:
 		print("[FAIL] Stored hero should not have 'gold' key, keys=%s" % str(stored.keys()))
 
 	# Test 3: Verify only allowed keys present
-	var allowed_keys = ["hero_id", "class_id", "race_id", "name", "level", "xp"]
+	var allowed_keys = ["hero_id", "class_id", "race_id", "name", "level", "xp", "portrait_path"]
 	var pass_3 = true
 	for key in stored.keys():
 		if key not in allowed_keys:
@@ -5616,3 +5632,50 @@ static func _test_icon_paths_resolve() -> Dictionary:
 		print("[PASS] All populated icon paths resolve")
 
 	return {"name": "Icon Path Validation", "passed": missing.size() == 0}
+
+
+static func _test_materials_never_roll_quality() -> Dictionary:
+	print("--- TEST 89: Materials Never Roll Quality ---")
+	var rng = RandomNumberGenerator.new()
+	rng.seed = 12345
+
+	var herb_tpl = DataRegistry.get_item_template("herb")
+	if herb_tpl == null:
+		print("[FAIL] herb template not found")
+		return {"name": "Materials Never Roll Quality", "passed": false}
+
+	var all_q0 = true
+	for i in range(50):
+		var inst = ItemInstance.from_template(herb_tpl, 1, rng)
+		if inst.quality_tier != 0:
+			print("[FAIL] herb rolled quality_tier=%d on iteration %d" % [inst.quality_tier, i])
+			all_q0 = false
+			break
+
+	if all_q0:
+		print("[PASS] 50 herbs all rolled quality_tier=0")
+	return {"name": "Materials Never Roll Quality", "passed": all_q0}
+
+
+static func _test_equipment_can_roll_quality() -> Dictionary:
+	print("--- TEST 90: Equipment Can Roll Quality ---")
+	var rng = RandomNumberGenerator.new()
+	rng.seed = 99999
+
+	var sword_tpl = DataRegistry.get_item_template("iron_sword")
+	if sword_tpl == null:
+		print("[FAIL] iron_sword template not found")
+		return {"name": "Equipment Can Roll Quality", "passed": false}
+
+	var found_nonzero = false
+	for i in range(100):
+		var inst = ItemInstance.from_template(sword_tpl, 1, rng)
+		if inst.quality_tier > 0:
+			found_nonzero = true
+			break
+
+	if found_nonzero:
+		print("[PASS] iron_sword rolled non-zero quality within 100 tries")
+	else:
+		print("[FAIL] iron_sword never rolled quality > 0 in 100 tries")
+	return {"name": "Equipment Can Roll Quality", "passed": found_nonzero}

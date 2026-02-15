@@ -3,6 +3,7 @@
   "display_name": "Spore-Marked Journal",
   "description": "A rage-stained journal with fungal growth between the pages. Teaches the Fungal Berserker class.",
   "icon_hint": "sickly purple journal with mushroom spores blooming from the binding",
+  "icon_path": "res://Assets/_ArtPacks/MagicBooks/PNG/Transperent/Icon33.png",
   "item_type": "consumable",
   "rarity": "uncommon",
   "use_effect_id": "learn_class_fungal_berserker",

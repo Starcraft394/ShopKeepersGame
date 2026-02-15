@@ -26,6 +26,6 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 20,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Maces/PNG/Transperent/Icon23.png",
   "tags": ["region_1", "weapon", "melee", "2h", "tier_1"]
 }

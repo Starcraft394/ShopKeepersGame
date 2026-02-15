@@ -26,6 +26,7 @@ var trait_tags: Array[String] = []
 
 # Visual/Thematic
 var portrait_path: String = ""
+var portraits: Array[String] = []  # Available portrait icon paths for this race
 
 # Factory method
 static func from_dict(data: Dictionary) -> RaceData:
@@ -42,6 +43,13 @@ static func from_dict(data: Dictionary) -> RaceData:
 	instance.racial_passive_id = data.get("racial_passive_id", data.get("passive_id", ""))
 	instance.xp_modifier = float(data.get("xp_modifier", 1.0))
 	instance.portrait_path = data.get("portrait_path", "")
+
+	# Parse portraits array
+	instance.portraits.clear()
+	var portraits_val = data.get("portraits", [])
+	var portraits_arr = portraits_val if portraits_val is Array else []
+	for p in portraits_arr:
+		instance.portraits.append(str(p))
 
 	# Parse trait_tags
 	instance.trait_tags.clear()

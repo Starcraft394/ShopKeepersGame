@@ -18,7 +18,7 @@
       "label": "Take the cut lumber",
       "description": "Pre-cut wood is valuable.",
       "effects": [
-        { "type": "add_item", "item_id": "wood", "min_qty": 2, "max_qty": 4 }
+        { "type": "add_item", "item_id": "wood_bundle", "min_qty": 2, "max_qty": 4 }
       ]
     },
     {

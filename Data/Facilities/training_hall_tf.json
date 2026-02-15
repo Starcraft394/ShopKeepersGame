@@ -4,12 +4,22 @@
   "description": "A sparring ground where heroes hone their skills and learn new classes.",
   "icon_path": "res://Assets/Icons/Facilities/icon_facility_training_hall.png",
   "facility_type": "training_hall",
-  "max_tier": 2,
+  "max_tier": 4,
   "unlock_region": 1,
+
+  "keeper_name": "Ingrid",
+  "keeper_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon44.png",
+  "keeper_greetings": [
+    "You want your heroes to survive? Then they train with me.",
+    "Timberfall breeds tough fighters. Let's make yours tougher.",
+    "No shortcuts here. Only sweat, steel, and discipline."
+  ],
 
   "slots_per_tier": {
     "1": 1,
-    "2": 2
+    "2": 2,
+    "3": 3,
+    "4": 4
   },
 
   "upgrade_costs": {
@@ -19,12 +29,29 @@
         { "item_id": "wood_bundle", "qty": 5 },
         { "item_id": "iron_scrap", "qty": 3 }
       ]
+    },
+    "3": {
+      "gold": 200,
+      "items": [
+        { "item_id": "wood_bundle", "qty": 12 },
+        { "item_id": "iron_scrap", "qty": 6 }
+      ]
+    },
+    "4": {
+      "gold": 500,
+      "items": [
+        { "item_id": "wood_bundle", "qty": 20 },
+        { "item_id": "iron_scrap", "qty": 10 },
+        { "item_id": "wolf_pelt", "qty": 5 }
+      ]
     }
   },
 
   "services_per_tier": {
     "1": ["train_hero", "assign_class"],
-    "2": ["advanced_training"]
+    "2": ["advanced_training"],
+    "3": ["elite_training", "dual_class"],
+    "4": ["legendary_training", "class_mastery"]
   },
 
   "produces_item_types": [],

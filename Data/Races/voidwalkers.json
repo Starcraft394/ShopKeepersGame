@@ -12,5 +12,15 @@
   },
   "racial_passive_id": "voidwalker_phase",
   "xp_modifier": 0.75,
-  "trait_tags": ["void", "dimensional"]
+  "trait_tags": [
+    "void",
+    "dimensional"
+  ],
+  "portraits": [
+    "res://Assets/_ArtPacks/Avatars_Voidwalkers_PNG/Icon1.png",
+    "res://Assets/_ArtPacks/Avatars_Voidwalkers_PNG/Icon2.png",
+    "res://Assets/_ArtPacks/Avatars_Voidwalkers_PNG/Icon3.png",
+    "res://Assets/_ArtPacks/Avatars_Voidwalkers_PNG/Icon4.png",
+    "res://Assets/_ArtPacks/Avatars_Voidwalkers_PNG/Icon5.png"
+  ]
 }
