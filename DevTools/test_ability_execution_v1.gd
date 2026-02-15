@@ -2764,19 +2764,19 @@ static func _test_hero_equipment_stat_bonus() -> Dictionary:
 	GameContext.owned_heroes.append(mock_hero)
 
 	# Set up per-hero equipment directly (simulating equip_hero_item)
-	# Use basic_sword which has base_stats: { "attack": 5 }
+	# Use rusty_sword which has stat_bonuses: { "attack": 3 }
 	GameContext.hero_equipment[test_hero_id] = {
-		"weapon": {"id": "basic_sword", "quality": 0},
+		"weapon": {"id": "rusty_sword", "quality": 0},
 		"offhand": {"id": "", "quality": 0}
 	}
 
 	# Test 1: _get_hero_equipment_stat_bonuses returns correct values
 	var bonus = GameContext._get_hero_equipment_stat_bonuses(test_hero_id)
-	var pass_1 = bonus.get("attack", 0) == 5
+	var pass_1 = bonus.get("attack", 0) == 3
 	if pass_1:
-		print("[PASS] Equipment bonus attack=5 from basic_sword")
+		print("[PASS] Equipment bonus attack=3 from rusty_sword")
 	else:
-		print("[FAIL] Equipment bonus attack=%d, expected 5" % bonus.get("attack", 0))
+		print("[FAIL] Equipment bonus attack=%d, expected 3" % bonus.get("attack", 0))
 
 	# Test 2: Empty hero equipment returns zero bonuses
 	var empty_bonus = GameContext._get_hero_equipment_stat_bonuses("nonexistent_hero")
@@ -2789,12 +2789,12 @@ static func _test_hero_equipment_stat_bonus() -> Dictionary:
 	# Test 3: Quality multiplier applies correctly (quality 1 = 1.1x)
 	GameContext.hero_equipment[test_hero_id]["weapon"]["quality"] = 1
 	var quality_bonus = GameContext._get_hero_equipment_stat_bonuses(test_hero_id)
-	# 5 * 1.1 = 5.5 -> int = 5
-	var pass_3 = quality_bonus.get("attack", 0) == 5
+	# 3 * 1.1 = 3.3 -> int = 3
+	var pass_3 = quality_bonus.get("attack", 0) == 3
 	if pass_3:
-		print("[PASS] Quality 1 multiplier applied (5 * 1.1 -> 5)")
+		print("[PASS] Quality 1 multiplier applied (3 * 1.1 -> 3)")
 	else:
-		print("[FAIL] Quality bonus attack=%d, expected 5" % quality_bonus.get("attack", 0))
+		print("[FAIL] Quality bonus attack=%d, expected 3" % quality_bonus.get("attack", 0))
 
 	# Cleanup
 	GameContext.hero_equipment.erase(test_hero_id)
@@ -2926,49 +2926,49 @@ static func _test_equip_slot_mismatch_rejection() -> Dictionary:
 static func _test_equip_stat_preview() -> Dictionary:
 	print("--- TEST 45: Equip Stat Preview (Items v4) ---")
 
-	# Test 1: Get stat bonuses from basic_sword with quality 0
-	var template = DataRegistry.get_item_template("basic_sword")
+	# Test 1: Get stat bonuses from rusty_sword with quality 0
+	var template = DataRegistry.get_item_template("rusty_sword")
 	var pass_1 = template != null
 	if pass_1:
-		print("[PASS] basic_sword template loaded")
+		print("[PASS] rusty_sword template loaded")
 	else:
-		print("[FAIL] basic_sword template not found")
+		print("[FAIL] rusty_sword template not found")
 		return {"name": "Equip Stat Preview", "passed": false}
 
 	# Test 2: get_stat_bonuses_with_quality returns correct values
 	var stats_q0 = template.get_stat_bonuses_with_quality(0)
 	var atk_q0 = stats_q0.get("attack", 0)
-	var pass_2 = atk_q0 == 5  # basic_sword has attack: 5 in stat_bonuses
+	var pass_2 = atk_q0 == 3  # rusty_sword has attack: 3 in stat_bonuses
 	if pass_2:
-		print("[PASS] Q0 attack bonus = 5")
+		print("[PASS] Q0 attack bonus = 3")
 	else:
-		print("[FAIL] Q0 attack bonus = %d, expected 5" % atk_q0)
+		print("[FAIL] Q0 attack bonus = %d, expected 3" % atk_q0)
 
 	# Test 3: Quality 1 applies 1.1x multiplier
 	var stats_q1 = template.get_stat_bonuses_with_quality(1)
 	var atk_q1 = stats_q1.get("attack", 0)
-	var pass_3 = atk_q1 == 5  # 5 * 1.1 = 5.5 -> int = 5
+	var pass_3 = atk_q1 == 3  # 3 * 1.1 = 3.3 -> int = 3
 	if pass_3:
-		print("[PASS] Q1 attack bonus = 5 (5 * 1.1 rounded)")
+		print("[PASS] Q1 attack bonus = 3 (3 * 1.1 rounded)")
 	else:
-		print("[FAIL] Q1 attack bonus = %d, expected 5" % atk_q1)
+		print("[FAIL] Q1 attack bonus = %d, expected 3" % atk_q1)
 
 	# Test 4: Quality 3 applies 1.35x multiplier
 	var stats_q3 = template.get_stat_bonuses_with_quality(3)
 	var atk_q3 = stats_q3.get("attack", 0)
-	var pass_4 = atk_q3 == 6  # 5 * 1.35 = 6.75 -> int = 6
+	var pass_4 = atk_q3 == 4  # 3 * 1.35 = 4.05 -> int = 4
 	if pass_4:
-		print("[PASS] Q3 attack bonus = 6 (5 * 1.35 rounded)")
+		print("[PASS] Q3 attack bonus = 4 (3 * 1.35 rounded)")
 	else:
-		print("[FAIL] Q3 attack bonus = %d, expected 6" % atk_q3)
+		print("[FAIL] Q3 attack bonus = %d, expected 4" % atk_q3)
 
 	# Test 5: Delta calculation (compare vs nothing)
 	var delta_atk = stats_q0.get("attack", 0) - 0  # vs empty slot
-	var pass_5 = delta_atk == 5
+	var pass_5 = delta_atk == 3
 	if pass_5:
-		print("[PASS] Delta ATK vs empty = +5")
+		print("[PASS] Delta ATK vs empty = +3")
 	else:
-		print("[FAIL] Delta ATK vs empty = %d, expected +5" % delta_atk)
+		print("[FAIL] Delta ATK vs empty = %d, expected +3" % delta_atk)
 
 	return {"name": "Equip Stat Preview", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5}
 
@@ -3081,7 +3081,7 @@ static func _test_combat_gear_label_formatting() -> Dictionary:
 		print("[FAIL] No weapon should be 'WPN: none', got '%s'" % none_result)
 
 	# Test 2: Weapon with quality
-	var wpn_result = CombatScene.format_gear_slot_label("weapon", "basic_sword", 1)
+	var wpn_result = CombatScene.format_gear_slot_label("weapon", "rusty_sword", 1)
 	# Should use display_name from template if available
 	var pass_2 = wpn_result.begins_with("WPN: Q1 ") and wpn_result.find("Sword") != -1
 	if pass_2:
@@ -4314,7 +4314,7 @@ static func _test_backpack_save_load_roundtrip() -> Dictionary:
 
 	var test_hero_id = "test_hero_70"
 	GameContext.hero_equipment[test_hero_id] = {
-		"weapon": {"id": "basic_sword", "quality": 1},
+		"weapon": {"id": "rusty_sword", "quality": 1},
 		"offhand": {"id": "wooden_shield", "quality": 0},
 		"bag": {"id": "small_backpack", "quality": 0}
 	}
@@ -4800,20 +4800,22 @@ static func _test_huntsman_unlock_gates_backpacks() -> Dictionary:
 	else:
 		print("[FAIL] backpacks_t2 should not be unlocked yet")
 
-	# Assertion 7: Leatherworker JSON has the unlocks array
+	# Assertion 7: Huntsman JSON has crafting_recipes with unlock_cost entries
 	var lw_data = DataRegistry.get_facility("huntsman")
-	var has_unlocks = false
-	var has_bp_t1 = false
+	var has_recipes = false
+	var has_unlock_costs = false
 	if lw_data != null:
-		has_unlocks = lw_data.unlocks.size() >= 2
-		for u in lw_data.unlocks:
-			if u is Dictionary and u.get("unlock_group", "") == "backpacks_t1":
-				has_bp_t1 = true
-	var pass_7 = has_unlocks and has_bp_t1
+		var recipes = lw_data.crafting_recipes
+		has_recipes = recipes.size() >= 2
+		for r in recipes:
+			if r is Dictionary and r.get("unlock_cost", []).size() > 0:
+				has_unlock_costs = true
+				break
+	var pass_7 = has_recipes and has_unlock_costs
 	if pass_7:
-		print("[PASS] Leatherworker JSON has unlocks array with backpacks_t1")
+		print("[PASS] Huntsman JSON has crafting_recipes with unlock_cost entries")
 	else:
-		print("[FAIL] Leatherworker unlocks missing or incomplete (has_unlocks=%s, has_bp_t1=%s)" % [str(has_unlocks), str(has_bp_t1)])
+		print("[FAIL] Huntsman crafting_recipes missing or no unlock_cost (has_recipes=%s, has_unlock_costs=%s)" % [str(has_recipes), str(has_unlock_costs)])
 
 	# Cleanup
 	GameContext.unlocked_groups = orig_unlocked_groups
@@ -5487,124 +5489,122 @@ static func _test_hero_bag_no_stacking() -> Dictionary:
 
 
 # ===========================================================================
-# Test 86: Facility unlock purchase deducts materials (Facility Unlock v1)
+# Test 86: Recipe unlock purchase deducts materials (per-recipe unlock system)
 # ===========================================================================
 static func _test_facility_unlock_purchase_deducts_materials() -> Dictionary:
-	print("--- TEST 86: Facility Unlock Purchase Deducts Materials ---")
+	print("--- TEST 86: Recipe Unlock Purchase Deducts Materials ---")
 
 	# Save originals
 	var orig_run_items = GameContext.run_items.duplicate(true)
-	var orig_unlocked_groups = GameContext.unlocked_groups.duplicate(true)
+	var orig_unlocked_recipes = GameContext.unlocked_recipes.duplicate(true)
 
-	# Setup: Clear run_items, add materials for unlock_backpacks_t1
-	# Cost is: herb_sprig x2, wood_bundle x2
+	# Setup: Clear run_items, add materials for hunting_bow unlock
+	# Huntsman recipe: hunting_bow unlock_cost = [{ item_id: wood_bundle, qty: 2 }]
 	GameContext.run_items.clear()
-	GameContext.add_run_item("herb_sprig", 5)
 	GameContext.add_run_item("wood_bundle", 5)
 
-	# Clear the backpacks_t1 unlock if present
-	GameContext.unlocked_groups.erase("backpacks_t1")
+	# Clear hunting_bow unlock if present
+	GameContext.unlocked_recipes.erase("hunting_bow")
 
-	# Assertion 1: backpacks_t1 not unlocked initially
-	var pass_1 = not GameContext.has_unlocked_group("backpacks_t1")
+	# Assertion 1: hunting_bow not unlocked initially
+	var pass_1 = not GameContext.is_recipe_unlocked("hunting_bow")
 	if pass_1:
-		print("[PASS] backpacks_t1 not unlocked initially")
+		print("[PASS] hunting_bow not unlocked initially")
 	else:
-		print("[FAIL] backpacks_t1 should not be unlocked initially")
+		print("[FAIL] hunting_bow should not be unlocked initially")
 
-	# Assertion 2: Purchase unlock_backpacks_t1 from huntsman
-	var purchase_ok = GameContext.purchase_facility_unlock("huntsman", "unlock_backpacks_t1", "town_greenroot")
+	# Assertion 2: Purchase hunting_bow recipe unlock from huntsman
+	var unlock_cost = [{"item_id": "wood_bundle", "qty": 2}]
+	var purchase_ok = GameContext.purchase_recipe_unlock("hunting_bow", unlock_cost, "huntsman", 1)
 	var pass_2 = purchase_ok
 	if pass_2:
-		print("[PASS] purchase_facility_unlock returned true")
+		print("[PASS] purchase_recipe_unlock returned true")
 	else:
-		print("[FAIL] purchase_facility_unlock should return true")
+		print("[FAIL] purchase_recipe_unlock should return true")
 
-	# Assertion 3: backpacks_t1 now unlocked
-	var pass_3 = GameContext.has_unlocked_group("backpacks_t1")
+	# Assertion 3: hunting_bow now unlocked
+	var pass_3 = GameContext.is_recipe_unlocked("hunting_bow")
 	if pass_3:
-		print("[PASS] backpacks_t1 now unlocked")
+		print("[PASS] hunting_bow now unlocked")
 	else:
-		print("[FAIL] backpacks_t1 should be unlocked after purchase")
+		print("[FAIL] hunting_bow should be unlocked after purchase")
 
-	# Assertion 4: Materials deducted (should have 3 herb_sprig, 3 wood_bundle)
-	var herb_count = GameContext.get_run_item_count("herb_sprig")
+	# Assertion 4: Materials deducted (should have 3 wood_bundle remaining)
 	var wood_count = GameContext.get_run_item_count("wood_bundle")
-	var pass_4 = herb_count == 3 and wood_count == 3
+	var pass_4 = wood_count == 3
 	if pass_4:
-		print("[PASS] Materials deducted: herb_sprig=%d, wood_bundle=%d" % [herb_count, wood_count])
+		print("[PASS] Materials deducted: wood_bundle=%d" % wood_count)
 	else:
-		print("[FAIL] Expected herb=3, wood=3, got herb=%d, wood=%d" % [herb_count, wood_count])
+		print("[FAIL] Expected wood=3, got wood=%d" % wood_count)
 
 	# Assertion 5: Cannot purchase again (already unlocked)
-	var purchase_again = GameContext.purchase_facility_unlock("huntsman", "unlock_backpacks_t1", "town_greenroot")
+	var purchase_again = GameContext.purchase_recipe_unlock("hunting_bow", unlock_cost, "huntsman", 1)
 	var pass_5 = not purchase_again
 	if pass_5:
-		print("[PASS] Cannot purchase same unlock twice")
+		print("[PASS] Cannot purchase same recipe unlock twice")
 	else:
-		print("[FAIL] Should not be able to purchase already-unlocked group")
+		print("[FAIL] Should not be able to purchase already-unlocked recipe")
 
 	# Cleanup
 	GameContext.run_items = orig_run_items
-	GameContext.unlocked_groups = orig_unlocked_groups
+	GameContext.unlocked_recipes = orig_unlocked_recipes
 
-	return {"name": "Facility Unlock Purchase Deducts Materials", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5}
+	return {"name": "Recipe Unlock Purchase Deducts Materials", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5}
 
 
 # ===========================================================================
-# Test 87: Facility unlock persists across save/load (Facility Unlock v1)
+# Test 87: Recipe unlock persists across save/load (per-recipe unlock system)
 # ===========================================================================
 static func _test_facility_unlock_persists_save_load() -> Dictionary:
-	print("--- TEST 87: Facility Unlock Persists Across Save/Load ---")
+	print("--- TEST 87: Recipe Unlock Persists Across Save/Load ---")
 
 	# Save originals
-	var orig_unlocked_groups = GameContext.unlocked_groups.duplicate(true)
+	var orig_unlocked_recipes = GameContext.unlocked_recipes.duplicate(true)
 	var orig_run_items = GameContext.run_items.duplicate(true)
 
-	# Setup: Ensure backpacks_t1 not unlocked, add materials
-	GameContext.unlocked_groups.erase("backpacks_t1")
+	# Setup: Ensure leather_vest not unlocked, add materials
+	GameContext.unlocked_recipes.erase("leather_vest")
 	GameContext.run_items.clear()
-	GameContext.add_run_item("herb_sprig", 5)
-	GameContext.add_run_item("wood_bundle", 5)
+	GameContext.add_run_item("wolf_pelt", 5)
 
-	# Purchase the unlock
-	var purchase_ok = GameContext.purchase_facility_unlock("huntsman", "unlock_backpacks_t1", "town_greenroot")
-	var pass_1 = purchase_ok and GameContext.has_unlocked_group("backpacks_t1")
+	# Purchase the recipe unlock (leather_vest costs wolf_pelt x2)
+	var unlock_cost = [{"item_id": "wolf_pelt", "qty": 2}]
+	var purchase_ok = GameContext.purchase_recipe_unlock("leather_vest", unlock_cost, "huntsman", 1)
+	var pass_1 = purchase_ok and GameContext.is_recipe_unlocked("leather_vest")
 	if pass_1:
-		print("[PASS] Purchased unlock_backpacks_t1")
+		print("[PASS] Purchased leather_vest recipe unlock")
 	else:
-		print("[FAIL] Failed to purchase unlock_backpacks_t1")
+		print("[FAIL] Failed to purchase leather_vest recipe unlock")
 
-	# Save game (unlock_group already calls save_game, but explicit for test clarity)
+	# Save game
 	GameContext.save_game()
 
-	# Simulate load by clearing unlocked_groups and reloading
-	var before_load = GameContext.unlocked_groups.duplicate(true)
-	GameContext.unlocked_groups.clear()
+	# Simulate load by clearing unlocked_recipes and reloading
+	GameContext.unlocked_recipes.clear()
 
-	# Assertion 2: After clearing, backpacks_t1 gone
-	var pass_2 = not GameContext.has_unlocked_group("backpacks_t1")
+	# Assertion 2: After clearing, leather_vest gone
+	var pass_2 = not GameContext.is_recipe_unlocked("leather_vest")
 	if pass_2:
-		print("[PASS] backpacks_t1 cleared before load")
+		print("[PASS] leather_vest cleared before load")
 	else:
-		print("[FAIL] backpacks_t1 should be gone after clear")
+		print("[FAIL] leather_vest should be gone after clear")
 
 	# Load game
 	GameContext.load_game()
 
-	# Assertion 3: After load, backpacks_t1 restored
-	var pass_3 = GameContext.has_unlocked_group("backpacks_t1")
+	# Assertion 3: After load, leather_vest restored
+	var pass_3 = GameContext.is_recipe_unlocked("leather_vest")
 	if pass_3:
-		print("[PASS] backpacks_t1 persisted across save/load")
+		print("[PASS] leather_vest persisted across save/load")
 	else:
-		print("[FAIL] backpacks_t1 should persist after load, unlocked_groups=%s" % str(GameContext.unlocked_groups))
+		print("[FAIL] leather_vest should persist after load, unlocked_recipes=%s" % str(GameContext.unlocked_recipes))
 
 	# Cleanup: Restore originals
-	GameContext.unlocked_groups = orig_unlocked_groups
+	GameContext.unlocked_recipes = orig_unlocked_recipes
 	GameContext.run_items = orig_run_items
 	GameContext.save_game()
 
-	return {"name": "Facility Unlock Persists Save/Load", "passed": pass_1 and pass_2 and pass_3}
+	return {"name": "Recipe Unlock Persists Save/Load", "passed": pass_1 and pass_2 and pass_3}
 
 
 static func _test_icon_paths_resolve() -> Dictionary:
