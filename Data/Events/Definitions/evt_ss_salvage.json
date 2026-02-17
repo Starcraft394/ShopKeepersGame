@@ -1,0 +1,41 @@
+{
+  "id": "evt_ss_salvage",
+  "title": "Merchant Vessel Wreckage",
+  "description": "Splintered planks and torn sailcloth litter the shallows where a merchant vessel broke apart. Crates bob in the knee-deep water, their contents spilling out with each wave. The wreck is fresh enough that gulls still circle overhead.",
+  "kind": "choice",
+  "tags": ["coastal", "tidal"],
+  "choices": [
+    {
+      "id": "gather_timber",
+      "label": "Gather the timber",
+      "description": "Plenty of serviceable wood floats within easy reach.",
+      "effects": [
+        { "type": "add_item", "item_id": "driftwood", "min_qty": 3, "max_qty": 5 }
+      ]
+    },
+    {
+      "id": "search_valuables",
+      "label": "Search for valuables",
+      "description": "A merchant ship means merchant coin, scattered among the debris.",
+      "effects": [
+        { "type": "add_gold_range", "min": 12, "max": 18 }
+      ]
+    },
+    {
+      "id": "collect_rope",
+      "label": "Collect the rope and sinew",
+      "description": "Kelp-woven rigging makes excellent binding material.",
+      "effects": [
+        { "type": "add_item", "item_id": "ss_kelp_sinew", "min_qty": 1, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Leave the wreckage",
+      "description": "The tide is rising and the footing is treacherous.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

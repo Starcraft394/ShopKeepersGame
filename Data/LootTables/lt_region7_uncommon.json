@@ -1,0 +1,15 @@
+{
+  "id": "lt_region7_uncommon",
+  "display_name": "Region 7 Uncommon Loot",
+  "description": "Materials and consumables from tier 2 Final Realm monsters.",
+  "min_drops": 1,
+  "max_drops": 3,
+  "entries": [
+    { "item_id": "fr_entropy_residue", "weight": 18, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "fr_rift_membrane", "weight": 18, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "fr_null_fragment", "weight": 15, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "fr_corruption_ichor", "weight": 12, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "fr_void_mend", "weight": 12, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 10, "min_qty": 0, "max_qty": 0 }
+  ]
+}

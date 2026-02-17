@@ -1,0 +1,27 @@
+{
+  "id": "fm_rotcap_myconid",
+  "display_name": "Rotcap Myconid",
+  "description": "A towering mushroom warrior that fights with spore-laced fists.",
+  "icon_hint": "tall humanoid mushroom with a dark rotting cap and thick fungal arms, spore clouds trailing from its joints",
+  "family": "spore",
+  "region_id": "region_2",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 58,
+    "attack": 9,
+    "defense": 8,
+    "speed": 8
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region2_uncommon",
+  "gold_drop_min": 10,
+  "gold_drop_max": 22,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fm_rotcap_myconid.png"
+}

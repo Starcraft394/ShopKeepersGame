@@ -1,0 +1,67 @@
+{
+  "id": "dungeon_crystalhearth",
+  "display_name": "The Prismatic Rift",
+  "description": "A labyrinth of crystal formations where reality fractures and starlight refracts into impossible patterns. Time moves strangely in these depths.",
+  "region_id": "region_5",
+  "town_id": "town_crystalhearth",
+  "floor_count": 5,
+  "rooms_per_floor": 3,
+  "boss_id": "se_shattered_oracle",
+  "alt_boss_id": "se_starfall_titan",
+  "min_rooms_per_floor": 3,
+  "max_rooms_per_floor": 5,
+  "choice_b_event_weight": 0.5,
+  "choice_b_elite_weight": 0.5,
+  "event_table_id": "et_region5_combined",
+  "encounter_tags": ["crystal", "prismatic", "starfall", "temporal", "void", "arcane"],
+  "gear_whitelist": [
+    "se_prism_blade", "se_starfall_bow", "se_crystal_ward",
+    "se_echo_shield", "se_temporal_band"
+  ],
+  "floor_theme": [
+    "Starfall Grotto",
+    "Prismatic Tunnels",
+    "Temporal Fracture",
+    "The Crystal Core",
+    "Oracle's Sanctum"
+  ],
+  "tier1_monster_ids": [
+    "se_shard_sprite", "se_reality_flicker", "se_starfall_hare",
+    "se_prism_scarab", "se_echo_wisp", "se_glass_viper"
+  ],
+  "tier2_monster_ids": [
+    "se_crystal_wraith", "se_timelost_knight", "se_starfall_stalker",
+    "se_refraction_golem", "se_void_moth", "se_paradox_shade"
+  ],
+  "elite_monster_ids": [
+    "se_astral_colossus", "se_chrono_warden", "se_starfall_titan"
+  ],
+  "tier1_by_floor": [
+    ["se_shard_sprite", "se_echo_wisp", "se_prism_scarab", "se_glass_viper"],
+    ["se_reality_flicker", "se_starfall_hare", "se_shard_sprite", "se_echo_wisp"],
+    ["se_prism_scarab", "se_glass_viper", "se_reality_flicker", "se_starfall_hare"],
+    ["se_shard_sprite", "se_reality_flicker", "se_echo_wisp", "se_glass_viper"],
+    ["se_starfall_hare", "se_prism_scarab", "se_shard_sprite", "se_reality_flicker"]
+  ],
+  "tier2_by_floor": [
+    ["se_crystal_wraith"],
+    ["se_crystal_wraith", "se_timelost_knight", "se_starfall_stalker"],
+    ["se_timelost_knight", "se_refraction_golem", "se_void_moth", "se_paradox_shade"],
+    ["se_crystal_wraith", "se_starfall_stalker", "se_void_moth", "se_paradox_shade", "se_refraction_golem"],
+    ["se_timelost_knight", "se_refraction_golem", "se_void_moth", "se_paradox_shade", "se_crystal_wraith", "se_starfall_stalker"]
+  ],
+  "elite_by_floor": [
+    [],
+    [],
+    ["se_astral_colossus"],
+    ["se_astral_colossus", "se_chrono_warden"],
+    ["se_astral_colossus", "se_chrono_warden", "se_starfall_titan"]
+  ],
+  "room_types_by_floor": [
+    ["combat", "event", "combat"],
+    ["combat", "treasure", "combat"],
+    ["combat", "event", "elite"],
+    ["combat", "shrine", "combat"],
+    ["combat", "event", "combat"]
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "fm_rot_beetle",
+  "display_name": "Rot Beetle",
+  "description": "A shelled insect that feeds on decaying fungal matter and bites hard.",
+  "icon_hint": "large beetle with a mottled brown-green carapace and clicking mandibles coated in fungal residue",
+  "family": "spore",
+  "region_id": "region_2",
+  "tier": 1,
+  "ai_tier": 1,
+  "base_stats": {
+    "health": 44,
+    "attack": 6,
+    "defense": 5,
+    "speed": 8
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region2_common",
+  "gold_drop_min": 6,
+  "gold_drop_max": 14,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fm_rot_beetle.png"
+}

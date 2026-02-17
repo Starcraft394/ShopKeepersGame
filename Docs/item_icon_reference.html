@@ -194,6 +194,7 @@
   <button class="tab-btn" onclick="showTab('races')">Race Portraits</button>
   <button class="tab-btn" onclick="showTab('needs')">Needs Icons</button>
   <button class="tab-btn" onclick="showTab('gallery')">Art Pack Browser</button>
+  <button class="tab-btn" onclick="showTab('monsters')">Monster Portraits</button>
 </div>
 
 <!-- ========================================================================= -->
@@ -311,6 +312,21 @@
 <div id="gallery-container"></div>
 
 </div><!-- end tab-gallery -->
+
+<!-- ========================================================================= -->
+<!-- TAB 6: MONSTER PORTRAITS                                                  -->
+<!-- ========================================================================= -->
+<div id="tab-monsters" class="tab-content">
+
+<p style="color:#888; margin-bottom:16px; font-size:14px;">
+  Monster portraits by region. Each monster is assigned an icon from the art packs, with optional recoloring for thematic consistency.
+</p>
+
+<div class="filter-bar" id="monster-filter-bar"></div>
+
+<div id="monsters-container"></div>
+
+</div><!-- end tab-monsters -->
 
 <hr style="border-color:#333; margin:32px 0;">
 <p style="color:#555; font-size:12px; text-align:center;">
@@ -983,6 +999,314 @@ function renderNeeds() {
 }
 
 // ============================================================================
+// MONSTER PORTRAITS DATA
+// ============================================================================
+
+const MONSTERS = [
+  // beast family
+  {id:"bat_swarm", name:"Bat Swarm", family:"beast", tier:1, elite:false, boss:false, desc:"A cloud of wings that harasses and distracts.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon32.png"},
+  {id:"boar", name:"Boar", family:"beast", tier:1, elite:false, boss:false, desc:"A bruising charge wrapped in muscle and tusk.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon46.png"},
+  {id:"bandit", name:"Bandit", family:"beast", tier:1, elite:false, boss:false, desc:"A desperate outlaw who preys on travelers.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon44.png"},
+  {id:"forest_hare", name:"Forest Hare", family:"beast", tier:1, elite:false, boss:false, desc:"A quick woodland creature. Prized for its tender meat.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon33.png"},
+  {id:"giant_spider", name:"Giant Spider", family:"beast", tier:1, elite:false, boss:false, desc:"A venomous arachnid that lurks in dark places.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon16.png"},
+  {id:"goblin", name:"Goblin", family:"beast", tier:1, elite:false, boss:false, desc:"A small, cunning creature that attacks in groups.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon7.png"},
+  {id:"rat_swarm", name:"Rat Swarm", family:"beast", tier:1, elite:false, boss:false, desc:"A chittering pack that overwhelms distracted fighters.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon31.png"},
+  {id:"wild_turkey", name:"Wild Turkey", family:"beast", tier:1, elite:false, boss:false, desc:"A plump forest bird that makes excellent eating.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon37.png"},
+  {id:"wolf", name:"Wolf", family:"beast", tier:1, elite:false, boss:false, desc:"A fierce predator that hunts in packs.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon43.png"},
+  {id:"wolf_elite", name:"Dire Wolf", family:"beast", tier:1, elite:true, boss:false, desc:"Bigger jaws. Faster feet. No hesitation.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon43.png"},
+  {id:"dire_boar", name:"Dire Boar", family:"beast", tier:2, elite:false, boss:false, desc:"A brutal tusker that shrugs off weak hits.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon3.png"},
+  {id:"dire_boar_elite", name:"Dire Boar (Elite)", family:"beast", tier:2, elite:true, boss:false, desc:"A plated tusker that shrugs off punishment and keeps charging.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon3.png"},
+  {id:"gr_bramble_stalker", name:"Bramble Stalker", family:"beast", tier:2, elite:false, boss:false, desc:"A thorny predator that moves silently through dense underbrush.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon39.png"},
+  {id:"gr_moss_troll", name:"Moss Troll", family:"beast", tier:2, elite:false, boss:false, desc:"A hulking brute wrapped in wet moss and stubborn rage.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon8.png"},
+  {id:"gr_rootbound_shaman", name:"Rootbound Shaman", family:"beast", tier:2, elite:false, boss:false, desc:"A forest mystic fused with living roots, channeling primal fury.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon17.png"},
+  {id:"gr_rootkin_sprite", name:"Rootkin Sprite", family:"beast", tier:2, elite:false, boss:false, desc:"A mischievous forest wisp that strikes and slips away.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon11.png"},
+  {id:"webspinner", name:"Webspinner", family:"beast", tier:2, elite:false, boss:false, desc:"A patient hunter that waits for the right moment.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon36.png"},
+  {id:"webspinner_elite", name:"Webspinner (Elite)", family:"beast", tier:2, elite:true, boss:false, desc:"A silent hunter that never wastes a turn.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon36.png"},
+  {id:"phase_spider", name:"Phase Spider", family:"beast", tier:3, elite:false, boss:true, desc:"It vanishes between heartbeats and reappears in your blind spot.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon1.png"},
+  {id:"thorn_ent", name:"Thorn-Ent", family:"beast", tier:3, elite:false, boss:true, desc:"A walking bramble-heart that answers steel with splinters.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon13.png"},
+  // construct family
+  {id:"scarecrow", name:"Scarecrow", family:"construct", tier:1, elite:false, boss:false, desc:"Stitched straw given motion by a bitter spark.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon15.png"},
+  {id:"tf_rustwood_construct", name:"Rustwood Construct", family:"construct", tier:2, elite:false, boss:false, desc:"A lumber-hauling automaton corrupted by dark influence.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon25.png"},
+  {id:"gr_briar_guardian", name:"Briar Guardian", family:"construct", tier:3, elite:true, boss:false, desc:"A thorn-plated sentinel grown to defend sacred groves.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon10.png"},
+  {id:"ironbound_scarecrow", name:"Ironbound Scarecrow", family:"construct", tier:3, elite:true, boss:false, desc:"Reinforced straw and rusted plate\u2014built to endure.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon45.png"},
+  // fungi family
+  {id:"slime", name:"Slime", family:"fungi", tier:1, elite:false, boss:false, desc:"A gelatinous blob that absorbs everything it touches.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon21.png"},
+  // humanoid family
+  {id:"bandit_elite", name:"Bandit Captain", family:"humanoid", tier:1, elite:true, boss:false, desc:"A ruthless leader who fights like every hit is a wager.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon44.png"},
+  {id:"cultist", name:"Cultist", family:"humanoid", tier:1, elite:false, boss:false, desc:"A frantic devotee who strikes hard and falls fast.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon14.png"},
+  {id:"goblin_elite", name:"Goblin Elite", family:"humanoid", tier:1, elite:true, boss:false, desc:"Sharper blades, meaner grin, fewer mistakes.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon7.png"},
+  {id:"cultist_enforcer", name:"Cultist Enforcer", family:"humanoid", tier:2, elite:false, boss:false, desc:"A hardened zealot that hits hard and doesn't flinch.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon34.png"},
+  {id:"cultist_enforcer_elite", name:"Cultist Enforcer (Elite)", family:"humanoid", tier:2, elite:true, boss:false, desc:"A fanatic champion who hits first and hits last.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon34.png"},
+  {id:"tf_bandit_raider", name:"Bandit Raider", family:"humanoid", tier:2, elite:false, boss:false, desc:"A timber-thief turned knife-fighter, quick and mean.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon9.png"},
+  {id:"tf_logsplitter_brute", name:"Logsplitter Brute", family:"humanoid", tier:2, elite:false, boss:false, desc:"A massive woodcutter gone feral, swinging a heavy splitting maul.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon4.png"},
+  {id:"tf_sawbone_enforcer", name:"Sawbone Enforcer", family:"humanoid", tier:3, elite:true, boss:false, desc:"A brutal foreman who fights with splintered tools and cruelty.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon35.png"},
+  {id:"forest_hag", name:"Forest Hag", family:"humanoid", tier:3, elite:false, boss:true, desc:"A crooked spirit that turns fear into strength.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon6.png"},
+  {id:"tf_iron_foreman", name:"Iron Foreman", family:"humanoid", tier:3, elite:false, boss:true, desc:"The tyrannical overseer of Timberfall's cursed mills.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon40.png"},
+  // ooze family
+  {id:"slime_elite", name:"Elder Slime", family:"ooze", tier:1, elite:true, boss:false, desc:"Denser gel, tougher skin, slower to split apart.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon21.png"},
+  {id:"acid_slime", name:"Acid Slime", family:"ooze", tier:2, elite:false, boss:false, desc:"A corrosive ooze that turns armor to mush.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon26.png"},
+  {id:"acid_slime_elite", name:"Acid Slime (Elite)", family:"ooze", tier:2, elite:true, boss:false, desc:"A dense corrosive mass that dissolves defenses over time.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon26.png"},
+  {id:"black_ooze", name:"Black Ooze", family:"ooze", tier:3, elite:true, boss:false, desc:"A tar-dark mass that clings and refuses to die.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon28.png"},
+  // plant family
+  {id:"berry_thicket", name:"Berry Thicket", family:"plant", tier:1, elite:false, boss:false, desc:"A dense patch of wild berries protected by thorny vines.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon20.png"},
+  {id:"mushroom_cluster", name:"Mushroom Cluster", family:"plant", tier:1, elite:false, boss:false, desc:"A cluster of edible forest mushrooms that release spores when disturbed.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon5.png"},
+  // undead family
+  {id:"skeleton", name:"Skeleton", family:"undead", tier:1, elite:false, boss:false, desc:"Reanimated bones held together by dark magic.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon12.png"},
+  {id:"skeleton_elite", name:"Skeleton Elite", family:"undead", tier:1, elite:true, boss:false, desc:"A veteran's bones that still remember the rhythm of war.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon12.png"},
+  {id:"zombie", name:"Zombie", family:"undead", tier:1, elite:false, boss:false, desc:"Slow, stubborn, and hard to put down.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon48.png"},
+  {id:"skeleton_veteran", name:"Skeleton Veteran", family:"undead", tier:2, elite:false, boss:false, desc:"A disciplined revenant that strikes with practiced timing.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon19.png"},
+  {id:"skeleton_veteran_elite", name:"Skeleton Veteran (Elite)", family:"undead", tier:2, elite:true, boss:false, desc:"A revenant officer that punishes sloppy lines.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon19.png"},
+  {id:"crypt_lord", name:"Crypt Lord", family:"undead", tier:3, elite:false, boss:true, desc:"An ancient commander bound to bone and oath.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon42.png"},
+  // spore family (Region 2 — The Fungalmire)
+  {id:"fm_bog_wisp", name:"Bog Wisp", family:"spore", tier:1, elite:false, boss:false, desc:"A flickering bioluminescent mote that leads travelers astray.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fm_bog_wisp.png"},
+  {id:"fm_mire_toad", name:"Mire Toad", family:"spore", tier:1, elite:false, boss:false, desc:"A bloated amphibian that spits toxic spore clouds.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fm_mire_toad.png"},
+  {id:"fm_sporekin_shambler", name:"Sporekin Shambler", family:"spore", tier:1, elite:false, boss:false, desc:"A humanoid fungal growth that shuffles through the mire.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fm_sporekin_shambler.png"},
+  {id:"fm_rot_beetle", name:"Rot Beetle", family:"spore", tier:1, elite:false, boss:false, desc:"An iridescent beetle that feeds on decaying mushroom matter.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fm_rot_beetle.png"},
+  {id:"fm_cave_shroom", name:"Cave Shroom", family:"spore", tier:1, elite:false, boss:false, desc:"A mobile mushroom that releases paralyzing spores when threatened.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fm_cave_shroom.png"},
+  {id:"fm_slime_mold", name:"Slime Mold", family:"spore", tier:1, elite:false, boss:false, desc:"A creeping mass of bioluminescent slime that dissolves organic matter.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fm_slime_mold.png"},
+  {id:"fm_rotcap_myconid", name:"Rotcap Myconid", family:"spore", tier:2, elite:false, boss:false, desc:"A sentient mushroom warrior with toxic cap spores.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fm_rotcap_myconid.png"},
+  {id:"fm_hallucinogenic_cap", name:"Hallucinogenic Cap", family:"spore", tier:2, elite:false, boss:false, desc:"A psychedelic fungus that clouds the minds of its prey.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fm_hallucinogenic_cap.png"},
+  {id:"fm_bloom_giant", name:"Bloom Giant", family:"spore", tier:2, elite:false, boss:false, desc:"A towering fungal construct animated by the mycelium network.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fm_bloom_giant.png"},
+  {id:"fm_spore_knight", name:"Spore Knight", family:"spore", tier:2, elite:false, boss:false, desc:"A Mossfolk warrior bonded with fungal armor.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fm_spore_knight.png"},
+  {id:"fm_fungal_lurker", name:"Fungal Lurker", family:"spore", tier:2, elite:false, boss:false, desc:"A camouflaged predator that strikes from mushroom cover.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fm_fungal_lurker.png"},
+  {id:"fm_cordyceps_host", name:"Cordyceps Host", family:"spore", tier:2, elite:false, boss:false, desc:"A creature overtaken by parasitic fungal growth.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fm_cordyceps_host.png"},
+  {id:"fm_mycelium_brute", name:"Mycelium Brute", family:"spore", tier:2, elite:true, boss:false, desc:"A massive fungal warrior reinforced by the root network.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fm_mycelium_brute.png"},
+  {id:"fm_sporewarden", name:"Sporewarden", family:"spore", tier:2, elite:true, boss:false, desc:"An elite Mossfolk guardian wielding concentrated spore magic.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fm_sporewarden.png"},
+  {id:"fm_blight_mother", name:"The Blight Mother", family:"spore", tier:3, elite:false, boss:true, desc:"An ancient fungal queen that births corruption across the mire.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fm_blight_mother.png"},
+  {id:"fm_spiral_mycelium", name:"The Spiral Mycelium", family:"spore", tier:3, elite:false, boss:true, desc:"The hivemind of the Fungalmire \u2014 a vast network given terrible will.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fm_spiral_mycelium.png"},
+  // coastal family (Region 3 — The Sunken Strand)
+  {id:"ss_shore_crawler", name:"Shore Crawler", family:"coastal", tier:1, elite:false, boss:false, desc:"A barnacle-encrusted crab that scuttles from tidal pools to ambush the unwary.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ss_shore_crawler.png"},
+  {id:"ss_tidewalker", name:"Tidewalker", family:"coastal", tier:1, elite:false, boss:false, desc:"A waterlogged humanoid that shambles through the shallows, dragging kelp and broken nets.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ss_tidewalker.png"},
+  {id:"ss_salt_lurker", name:"Salt Lurker", family:"coastal", tier:1, elite:false, boss:false, desc:"A translucent eel-like creature that hides in brine pools and strikes with numbing venom.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ss_salt_lurker.png"},
+  {id:"ss_drift_jelly", name:"Drift Jelly", family:"coastal", tier:1, elite:false, boss:false, desc:"A bloated jellyfish that floats just above the sand, trailing stinging tendrils.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ss_drift_jelly.png"},
+  {id:"ss_reef_snapper", name:"Reef Snapper", family:"coastal", tier:1, elite:false, boss:false, desc:"A sharp-toothed fish that launches itself from the surf to bite at exposed ankles.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ss_reef_snapper.png"},
+  {id:"ss_sandpiper_imp", name:"Sandpiper Imp", family:"coastal", tier:1, elite:false, boss:false, desc:"A small winged gremlin that steals trinkets and hurls wet sand into its victims' eyes.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ss_sandpiper_imp.png"},
+  {id:"ss_crustacean_brute", name:"Crustacean Brute", family:"coastal", tier:2, elite:false, boss:false, desc:"A hulking crab warrior whose calcified claws can shear through iron plate.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ss_crustacean_brute.png"},
+  {id:"ss_drowned_mariner", name:"Drowned Mariner", family:"coastal", tier:2, elite:false, boss:false, desc:"The restless spirit of a dead sailor, still swinging a corroded cutlass.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ss_drowned_mariner.png"},
+  {id:"ss_mistborn_serpent", name:"Mistborn Serpent", family:"coastal", tier:2, elite:false, boss:false, desc:"A sea serpent that coils through coastal fog, exhaling clouds of choking brine.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ss_mistborn_serpent.png"},
+  {id:"ss_coral_golem", name:"Coral Golem", family:"coastal", tier:2, elite:false, boss:false, desc:"A lumbering construct of living coral whose jagged fists leave festering wounds.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ss_coral_golem.png"},
+  {id:"ss_riptide_wraith", name:"Riptide Wraith", family:"coastal", tier:2, elite:false, boss:false, desc:"A drowned spirit that manifests as a churning vortex, pulling victims into the undertow.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ss_riptide_wraith.png"},
+  {id:"ss_abyssal_angler", name:"Abyssal Angler", family:"coastal", tier:2, elite:false, boss:false, desc:"A deep-sea predator with a luminous lure that hypnotizes prey before devouring them.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ss_abyssal_angler.png"},
+  {id:"ss_leviathan_spawn", name:"Leviathan Spawn", family:"coastal", tier:2, elite:true, boss:false, desc:"A juvenile sea beast covered in armored scales, its thrashing tail can shatter dock pilings.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ss_leviathan_spawn.png"},
+  {id:"ss_deepcaller_shaman", name:"Deepcaller Shaman", family:"coastal", tier:2, elite:true, boss:false, desc:"A tidewalker priest who channels the ocean's fury into crushing walls of water.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ss_deepcaller_shaman.png"},
+  {id:"ss_tide_sovereign", name:"The Tide Sovereign", family:"coastal", tier:3, elite:false, boss:true, desc:"An ancient leviathan lord who commands the tides, drowning entire coastlines at will.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ss_tide_sovereign.png"},
+  {id:"ss_mistborn_leviathan", name:"Mistborn Leviathan", family:"coastal", tier:3, elite:false, boss:true, desc:"A colossal sea dragon shrouded in fog, whose roar summons tidal waves from the deep.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ss_mistborn_leviathan.png"},
+  // volcanic family (Region 4 — Ashen Horizons)
+  {id:"ah_cinder_beetle", name:"Cinder Beetle", family:"volcanic", tier:1, elite:false, boss:false, desc:"A heat-resistant insect that burrows through cooling lava and spits embers at intruders.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ah_cinder_beetle.png"},
+  {id:"ah_ember_drake", name:"Ember Drake", family:"volcanic", tier:1, elite:false, boss:false, desc:"A small winged lizard that breathes gouts of flame and nests in volcanic vents.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ah_ember_drake.png"},
+  {id:"ah_ash_crawler", name:"Ash Crawler", family:"volcanic", tier:1, elite:false, boss:false, desc:"A low-slung reptile coated in hardite ash that blends with the scorched terrain.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ah_ash_crawler.png"},
+  {id:"ah_magma_mite", name:"Magma Mite", family:"volcanic", tier:1, elite:false, boss:false, desc:"A tiny elemental that skitters across lava pools, leaving burning footprints on solid ground.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ah_magma_mite.png"},
+  {id:"ah_scorched_viper", name:"Scorched Viper", family:"volcanic", tier:1, elite:false, boss:false, desc:"A fire-blackened serpent whose superheated fangs cauterize the wounds they inflict.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ah_scorched_viper.png"},
+  {id:"ah_soot_imp", name:"Soot Imp", family:"volcanic", tier:1, elite:false, boss:false, desc:"A cackling fiend born from volcanic smoke that chokes the air with blinding ash.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ah_soot_imp.png"},
+  {id:"ah_lava_golem", name:"Lava Golem", family:"volcanic", tier:2, elite:false, boss:false, desc:"A towering construct of molten rock whose every step leaves pools of liquid fire.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ah_lava_golem.png"},
+  {id:"ah_ash_wraith", name:"Ash Wraith", family:"volcanic", tier:2, elite:false, boss:false, desc:"The charred ghost of a volcano's victim, drifting through haze to drain warmth from the living.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ah_ash_wraith.png"},
+  {id:"ah_scorpion_ravager", name:"Scorpion Ravager", family:"volcanic", tier:2, elite:false, boss:false, desc:"A massive obsidian-shelled scorpion whose stinger injects magma-hot venom.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ah_scorpion_ravager.png"},
+  {id:"ah_flame_stalker", name:"Flame Stalker", family:"volcanic", tier:2, elite:false, boss:false, desc:"A predatory salamander wreathed in fire that hunts by sensing body heat through stone.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ah_flame_stalker.png"},
+  {id:"ah_pyroclast_hurler", name:"Pyroclast Hurler", family:"volcanic", tier:2, elite:false, boss:false, desc:"A brutish elemental that tears volcanic rock from the earth and launches it at foes.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ah_pyroclast_hurler.png"},
+  {id:"ah_inferno_djinn", name:"Inferno Djinn", family:"volcanic", tier:2, elite:false, boss:false, desc:"A lesser fire spirit that weaves illusions of safe passage over rivers of molten stone.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ah_inferno_djinn.png"},
+  {id:"ah_scorpion_titan", name:"Scorpion Titan", family:"volcanic", tier:2, elite:true, boss:false, desc:"An enormous arachnid whose armored carapace deflects steel and whose claws rend volcanic rock.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ah_scorpion_titan.png"},
+  {id:"ah_fire_djinn_lord", name:"Fire Djinn Lord", family:"volcanic", tier:2, elite:true, boss:false, desc:"A powerful djinn that commands pillars of flame and bends lava to encircle its prey.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ah_fire_djinn_lord.png"},
+  {id:"ah_cinder_monarch", name:"The Cinder Monarch", family:"volcanic", tier:3, elite:false, boss:true, desc:"A titanic drake enthroned in the caldera's heart, whose wingbeats rain fire across the wastes.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ah_cinder_monarch.png"},
+  {id:"ah_magma_wyrm", name:"Magma Wyrm", family:"volcanic", tier:3, elite:false, boss:true, desc:"An ancient serpent of living lava that coils through deep vents, melting everything in its path.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/ah_magma_wyrm.png"},
+  // crystal family (Region 5 — Starfall Expanse)
+  {id:"se_shard_sprite", name:"Shard Sprite", family:"crystal", tier:1, elite:false, boss:false, desc:"A tiny elemental of fractured crystal that zips through the air trailing prismatic sparks.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/se_shard_sprite.png"},
+  {id:"se_reality_flicker", name:"Reality Flicker", family:"crystal", tier:1, elite:false, boss:false, desc:"A translucent phantom that blinks in and out of existence, striking from impossible angles.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/se_reality_flicker.png"},
+  {id:"se_starfall_hare", name:"Starfall Hare", family:"crystal", tier:1, elite:false, boss:false, desc:"A swift beast infused with meteoric energy whose kicks leave craters in solid stone.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/se_starfall_hare.png"},
+  {id:"se_prism_scarab", name:"Prism Scarab", family:"crystal", tier:1, elite:false, boss:false, desc:"An iridescent beetle that refracts light into blinding beams to disorient predators.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/se_prism_scarab.png"},
+  {id:"se_echo_wisp", name:"Echo Wisp", family:"crystal", tier:1, elite:false, boss:false, desc:"A floating mote of residual starlight that mimics sounds and shapes of nearby creatures.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/se_echo_wisp.png"},
+  {id:"se_glass_viper", name:"Glass Viper", family:"crystal", tier:1, elite:false, boss:false, desc:"A nearly invisible serpent with a crystalline body that shatters on impact, embedding razor shards.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/se_glass_viper.png"},
+  {id:"se_crystal_wraith", name:"Crystal Wraith", family:"crystal", tier:2, elite:false, boss:false, desc:"A spectral figure encased in floating crystal shards that orbit like a deadly constellation.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/se_crystal_wraith.png"},
+  {id:"se_timelost_knight", name:"Time-Lost Knight", family:"crystal", tier:2, elite:false, boss:false, desc:"A warrior displaced from another era, flickering between moments as it fights.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/se_timelost_knight.png"},
+  {id:"se_starfall_stalker", name:"Starfall Stalker", family:"crystal", tier:2, elite:false, boss:false, desc:"A predator born from a meteor impact, its hide crackling with residual cosmic energy.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/se_starfall_stalker.png"},
+  {id:"se_refraction_golem", name:"Refraction Golem", family:"crystal", tier:2, elite:false, boss:false, desc:"A construct of fused crystal that splits incoming attacks into harmless light.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/se_refraction_golem.png"},
+  {id:"se_void_moth", name:"Void Moth", family:"crystal", tier:2, elite:false, boss:false, desc:"A massive insect with wings of compressed starlight that drains magic from the air.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/se_void_moth.png"},
+  {id:"se_paradox_shade", name:"Paradox Shade", family:"crystal", tier:2, elite:false, boss:false, desc:"A reality phantom that exists in two places at once, attacking from both simultaneously.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/se_paradox_shade.png"},
+  {id:"se_astral_colossus", name:"Astral Colossus", family:"crystal", tier:2, elite:true, boss:false, desc:"A towering giant of fused meteorite whose footfalls warp the fabric of local space.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/se_astral_colossus.png"},
+  {id:"se_chrono_warden", name:"Chrono Warden", family:"crystal", tier:2, elite:true, boss:false, desc:"A time-lost champion who rewinds wounds and accelerates strikes in temporal combat.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/se_chrono_warden.png"},
+  {id:"se_shattered_oracle", name:"The Shattered Oracle", family:"crystal", tier:3, elite:false, boss:true, desc:"A fractured deity of foresight trapped in crystal, lashing out with visions that become reality.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/se_shattered_oracle.png"},
+  {id:"se_starfall_titan", name:"Starfall Titan", family:"crystal", tier:3, elite:false, boss:true, desc:"A living meteor that assembled a body from the crystallized impact site over eons.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/se_starfall_titan.png"},
+  // necro family (Region 6 — The Necropolis)
+  {id:"nc_bone_legionnaire", name:"Bone Legionnaire", family:"necro", tier:1, elite:false, boss:false, desc:"A skeletal soldier still clutching its rusted shield, marching in endless formation.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/nc_bone_legionnaire.png"},
+  {id:"nc_ghoul_stalker", name:"Ghoul Stalker", family:"necro", tier:1, elite:false, boss:false, desc:"A hunched corpse-eater that lurks behind sarcophagi, waiting for the scent of the living.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/nc_ghoul_stalker.png"},
+  {id:"nc_crypt_rat", name:"Crypt Rat", family:"necro", tier:1, elite:false, boss:false, desc:"An oversized rodent bloated with necrotic energy whose bite spreads grave-rot.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/nc_crypt_rat.png"},
+  {id:"nc_tombdust_wraith", name:"Tombdust Wraith", family:"necro", tier:1, elite:false, boss:false, desc:"A wispy spirit that rises from disturbed graves, wailing loud enough to shatter concentration.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/nc_tombdust_wraith.png"},
+  {id:"nc_carrion_beetle", name:"Carrion Beetle", family:"necro", tier:1, elite:false, boss:false, desc:"A death-feeding insect the size of a dog that strips flesh from bone with terrifying speed.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/nc_carrion_beetle.png"},
+  {id:"nc_shambling_husk", name:"Shambling Husk", family:"necro", tier:1, elite:false, boss:false, desc:"A reanimated corpse held together by dark magic, slow but relentless.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/nc_shambling_husk.png"},
+  {id:"nc_wraith_chorister", name:"Wraith Chorister", family:"necro", tier:2, elite:false, boss:false, desc:"A ghostly singer whose harmonics drain life force and bolster nearby undead.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/nc_wraith_chorister.png"},
+  {id:"nc_gravefiend", name:"Gravefiend", family:"necro", tier:2, elite:false, boss:false, desc:"A massive abomination stitched from dozens of corpses, fueled by insatiable hunger.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/nc_gravefiend.png"},
+  {id:"nc_death_knight", name:"Death Knight", family:"necro", tier:2, elite:false, boss:false, desc:"A fallen paladin reforged in dark iron, wielding cursed steel and commanding lesser undead.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/nc_death_knight.png"},
+  {id:"nc_spectral_binder", name:"Spectral Binder", family:"necro", tier:2, elite:false, boss:false, desc:"A necromancer's ghost that chains fallen souls, forcing them to fight as thralls.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/nc_spectral_binder.png"},
+  {id:"nc_bone_colossus", name:"Bone Colossus", family:"necro", tier:2, elite:false, boss:false, desc:"A towering skeleton assembled from hundreds of remains, crackling with necromantic sinew.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/nc_bone_colossus.png"},
+  {id:"nc_plague_revenant", name:"Plague Revenant", family:"necro", tier:2, elite:false, boss:false, desc:"A disease-riddled undead whose aura of pestilence weakens armor and saps strength.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/nc_plague_revenant.png"},
+  {id:"nc_dread_wight", name:"Dread Wight", family:"necro", tier:2, elite:true, boss:false, desc:"An ancient undead lord encased in burial armor, radiating an aura of paralytic terror.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/nc_dread_wight.png"},
+  {id:"nc_wraith_choir_conductor", name:"Wraith Choir Conductor", family:"necro", tier:2, elite:true, boss:false, desc:"The maestro of a spectral chorus whose symphony of death extinguishes life.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/nc_wraith_choir_conductor.png"},
+  {id:"nc_ossuary_king", name:"The Ossuary King", family:"necro", tier:3, elite:false, boss:true, desc:"An undead sovereign commanding legions of the dead from a throne of skulls.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/nc_ossuary_king.png"},
+  {id:"nc_lich_eternal", name:"The Lich Eternal", family:"necro", tier:3, elite:false, boss:true, desc:"A deathless sorcerer anchored to the world by a hidden phylactery.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/nc_lich_eternal.png"},
+  // void family (Region 7 — Final Realm)
+  {id:"fr_corruption_tendril", name:"Corruption Tendril", family:"void", tier:1, elite:false, boss:false, desc:"A writhing appendage of raw corruption that lashes out from tears in reality.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fr_corruption_tendril.png"},
+  {id:"fr_void_mite", name:"Void Mite", family:"void", tier:1, elite:false, boss:false, desc:"A swarming parasite from beyond the veil that feeds on magical energy.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fr_void_mite.png"},
+  {id:"fr_blighted_echo", name:"Blighted Echo", family:"void", tier:1, elite:false, boss:false, desc:"A corrupted reflection of a fallen adventurer, mimicking their fighting style.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fr_blighted_echo.png"},
+  {id:"fr_null_wisp", name:"Null Wisp", family:"void", tier:1, elite:false, boss:false, desc:"A floating orb of anti-magic that nullifies enchantments and drains mana on contact.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fr_null_wisp.png"},
+  {id:"fr_entropy_slug", name:"Entropy Slug", family:"void", tier:1, elite:false, boss:false, desc:"A slow-moving creature that dissolves matter at a molecular level wherever it slithers.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fr_entropy_slug.png"},
+  {id:"fr_rift_imp", name:"Rift Imp", family:"void", tier:1, elite:false, boss:false, desc:"A mischievous aberration that tears small holes in space to redirect attacks.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fr_rift_imp.png"},
+  {id:"fr_corruption_avatar", name:"Corruption Avatar", family:"void", tier:2, elite:false, boss:false, desc:"A humanoid mass of crystallized corruption that reshapes into weapons mid-combat.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fr_corruption_avatar.png"},
+  {id:"fr_reality_shredder", name:"Reality Shredder", family:"void", tier:2, elite:false, boss:false, desc:"A mantis-like predator whose claws cut through dimensional barriers as easily as flesh.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fr_reality_shredder.png"},
+  {id:"fr_abyssal_sentinel", name:"Abyssal Sentinel", family:"void", tier:2, elite:false, boss:false, desc:"A towering guardian at the threshold between realms, immune to conventional damage.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fr_abyssal_sentinel.png"},
+  {id:"fr_thoughtrender", name:"Thoughtrender", family:"void", tier:2, elite:false, boss:false, desc:"A tentacled horror that feeds on consciousness, leaving victims as hollow shells.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fr_thoughtrender.png"},
+  {id:"fr_void_weaver", name:"Void Weaver", family:"void", tier:2, elite:false, boss:false, desc:"A spider-like entity that spins webs of compressed nothingness, erasing whatever they touch.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fr_void_weaver.png"},
+  {id:"fr_entropy_colossus", name:"Entropy Colossus", family:"void", tier:2, elite:false, boss:false, desc:"A shambling giant of decaying matter that accelerates the aging of everything nearby.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fr_entropy_colossus.png"},
+  {id:"fr_corruption_champion", name:"Corruption Champion", family:"void", tier:2, elite:true, boss:false, desc:"A once-heroic warrior fully consumed by void energy, wielding devastating power.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fr_corruption_champion.png"},
+  {id:"fr_dimensional_horror", name:"Dimensional Horror", family:"void", tier:2, elite:true, boss:false, desc:"A nightmarish entity existing across multiple planes, striking from impossible directions.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fr_dimensional_horror.png"},
+  {id:"fr_prime_corruptor", name:"The Prime Corruptor", family:"void", tier:3, elite:false, boss:true, desc:"The source of all corruption \u2014 an entity of pure entropy that seeks to unmake reality.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fr_prime_corruptor.png"},
+  {id:"fr_void_sovereign", name:"The Void Sovereign", family:"void", tier:3, elite:false, boss:true, desc:"The final guardian of the abyss, whose mere presence erodes existence.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fr_void_sovereign.png"},
+];
+
+// Region-based monster grouping (families mapped to regions)
+const MONSTER_REGIONS = [
+  {key:"region_1", label:"Region 1 \u2014 Forest Haven", families:["beast","construct","fungi","humanoid","ooze","plant","undead"], color:"#4a7a5a"},
+  {key:"region_2", label:"Region 2 \u2014 The Fungalmire", families:["spore"], color:"#4a6b3a"},
+  {key:"region_3", label:"Region 3 \u2014 The Sunken Strand", families:["coastal"], color:"#2c6e7a"},
+  {key:"region_4", label:"Region 4 \u2014 Ashen Horizons", families:["volcanic"], color:"#d4622a"},
+  {key:"region_5", label:"Region 5 \u2014 Starfall Expanse", families:["crystal"], color:"#9c6abf"},
+  {key:"region_6", label:"Region 6 \u2014 The Necropolis", families:["necro"], color:"#6d4c6e"},
+  {key:"region_7", label:"Region 7 \u2014 Final Realm", families:["void"], color:"#4a2a6b"},
+];
+
+// Family colors for per-monster badges
+const FAMILY_COLORS = {
+  beast:"#8bc34a", construct:"#78909c", fungi:"#ab47bc", humanoid:"#42a5f5",
+  coastal:"#4a90a4", crystal:"#9c6abf", necro:"#6d4c6e", spore:"#4a6b3a",
+  ooze:"#66bb6a", plant:"#4caf50", undead:"#ef5350", void:"#2d1b4e", volcanic:"#c44d2b"
+};
+
+function renderMonsters() {
+  const container = document.getElementById('monsters-container');
+  const filterBar = document.getElementById('monster-filter-bar');
+
+  // Build region counts
+  const regionCounts = {};
+  for (const reg of MONSTER_REGIONS) {
+    const count = MONSTERS.filter(m => reg.families.includes(m.family)).length;
+    if (count > 0) regionCounts[reg.key] = count;
+  }
+
+  // Render filter buttons
+  let filterHtml = `<button class="filter-btn active" onclick="filterMonsters('all',this)">All (${MONSTERS.length})</button>`;
+  for (const reg of MONSTER_REGIONS) {
+    if (regionCounts[reg.key]) {
+      filterHtml += `<button class="filter-btn" onclick="filterMonsters('${reg.key}',this)">${reg.label.replace(/Region \d+ \u2014 /,'')} (${regionCounts[reg.key]})</button>`;
+    }
+  }
+  filterHtml += `<button class="filter-btn" onclick="filterMonsters('boss',this)">Bosses</button>`;
+  filterHtml += `<button class="filter-btn" onclick="filterMonsters('elite',this)">Elites</button>`;
+  filterBar.innerHTML = filterHtml;
+
+  // Render region sections
+  for (const reg of MONSTER_REGIONS) {
+    const members = MONSTERS.filter(m => reg.families.includes(m.family));
+    if (members.length === 0) continue;
+
+    // Sort: by tier, then boss/elite status, then name
+    members.sort((a, b) => {
+      if (a.tier !== b.tier) return a.tier - b.tier;
+      if (a.boss !== b.boss) return a.boss ? 1 : -1;
+      if (a.elite !== b.elite) return a.elite ? 1 : -1;
+      return a.name.localeCompare(b.name);
+    });
+
+    const section = document.createElement('div');
+    section.className = 'pack-section open';
+    section.setAttribute('data-region', reg.key);
+
+    let cardsHtml = '';
+    for (const m of members) {
+      const tierBadge = `T${m.tier}`;
+      let rankBadge = '';
+      if (m.boss) rankBadge = '<span style="color:#f44336; font-weight:bold; margin-left:8px;">BOSS</span>';
+      else if (m.elite) rankBadge = '<span style="color:#ff9800; font-weight:bold; margin-left:8px;">ELITE</span>';
+
+      const famColor = FAMILY_COLORS[m.family] || reg.color;
+      const famLabel = m.family.charAt(0).toUpperCase() + m.family.slice(1);
+
+      const hasPortrait = !!m.portrait;
+      const portraitHtml = hasPortrait
+        ? `<img src="${m.portrait}" alt="${m.name}">`
+        : `<div class="placeholder">?</div>`;
+      cardsHtml += `
+        <div class="item-card ${hasPortrait ? 'has-icon' : 'no-icon'}" data-monster-region="${reg.key}" data-monster-family="${m.family}" data-monster-boss="${m.boss}" data-monster-elite="${m.elite}">
+          <div class="icon-area">${portraitHtml}</div>
+          <div class="item-info">
+            <div class="item-name">${m.name}</div>
+            <div class="item-id">${m.id}</div>
+            <div class="item-meta"><span style="color:${famColor}">${famLabel}</span> &middot; ${tierBadge}${rankBadge}</div>
+            <div class="item-hint">${m.desc}</div>
+          </div>
+          <div class="icon-status ${hasPortrait ? 'status-ok' : 'status-missing'}">${hasPortrait ? 'ASSIGNED' : 'NEEDS PORTRAIT'}</div>
+        </div>`;
+    }
+
+    section.innerHTML = `
+      <div class="pack-header" onclick="togglePack(this)">
+        <div>
+          <div class="pack-title" style="color:${reg.color}">${reg.label}</div>
+          <div class="pack-subtitle">${members.length} monsters</div>
+        </div>
+        <div class="pack-toggle">\u25BC</div>
+      </div>
+      <div class="pack-body">
+        <div class="item-grid">${cardsHtml}</div>
+      </div>`;
+
+    container.appendChild(section);
+  }
+}
+
+function filterMonsters(filter, btn) {
+  const filterBar = document.getElementById('monster-filter-bar');
+  filterBar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const sections = document.querySelectorAll('[data-region]');
+  const cards = document.querySelectorAll('[data-monster-region]');
+
+  if (filter === 'all') {
+    sections.forEach(s => s.style.display = '');
+    cards.forEach(c => c.style.display = 'flex');
+    return;
+  }
+
+  if (filter === 'boss') {
+    sections.forEach(s => s.style.display = '');
+    cards.forEach(c => {
+      c.style.display = c.getAttribute('data-monster-boss') === 'true' ? 'flex' : 'none';
+    });
+    sections.forEach(s => {
+      const visible = s.querySelectorAll('[data-monster-region][style*="flex"]');
+      s.style.display = visible.length > 0 ? '' : 'none';
+    });
+    return;
+  }
+
+  if (filter === 'elite') {
+    sections.forEach(s => s.style.display = '');
+    cards.forEach(c => {
+      c.style.display = c.getAttribute('data-monster-elite') === 'true' ? 'flex' : 'none';
+    });
+    sections.forEach(s => {
+      const visible = s.querySelectorAll('[data-monster-region][style*="flex"]');
+      s.style.display = visible.length > 0 ? '' : 'none';
+    });
+    return;
+  }
+
+  // Region filter
+  sections.forEach(s => {
+    s.style.display = s.getAttribute('data-region') === filter ? '' : 'none';
+  });
+  cards.forEach(c => c.style.display = 'flex');
+}
+
+// ============================================================================
 // INIT
 // ============================================================================
 renderItems();
@@ -990,6 +1314,7 @@ renderNpcs();
 renderRaces();
 renderNeeds();
 renderGalleries();
+renderMonsters();
 </script>
 
 </body>

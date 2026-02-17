@@ -1,0 +1,16 @@
+{
+  "id": "lt_region6_uncommon",
+  "display_name": "Region 6 Uncommon Loot",
+  "description": "Materials and consumables from tier 2 Necropolis monsters.",
+  "min_drops": 1,
+  "max_drops": 3,
+  "entries": [
+    { "item_id": "nc_grave_dust", "weight": 20, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "nc_wraith_thread", "weight": 18, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "nc_bone_marrow", "weight": 15, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "soul_ore", "weight": 12, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "spectral_log", "weight": 10, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "nc_grave_elixir", "weight": 10, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 10, "min_qty": 0, "max_qty": 0 }
+  ]
+}

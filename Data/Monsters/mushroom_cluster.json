@@ -7,8 +7,15 @@
   "region_id": "region_1",
   "tier": 1,
   "ai_tier": 0,
-  "base_stats": { "health": 15, "attack": 3, "defense": 1, "speed": 1 },
-  "ability_ids": ["basic_attack"],
+  "base_stats": {
+    "health": 15,
+    "attack": 3,
+    "defense": 1,
+    "speed": 1
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
   "passive_ids": [],
   "loot_table_id": "lt_food_plant",
   "gold_drop_min": 0,
@@ -17,5 +24,10 @@
   "is_elite": false,
   "is_boss": false,
   "requires_facility": "chef",
-  "tags": ["food_source", "plant", "region_1"]
+  "tags": [
+    "food_source",
+    "plant",
+    "region_1"
+  ],
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon5.png"
 }

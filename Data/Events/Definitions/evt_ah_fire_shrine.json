@@ -1,0 +1,42 @@
+{
+  "id": "evt_ah_fire_shrine",
+  "title": "Shrine of the Eternal Flame",
+  "description": "A shrine carved from black volcanic stone stands untouched by the devastation around it, an eternal flame dancing atop its altar without fuel or wick. The air here is still and reverent, free of the choking ash that blankets everything else. At the base of the flame, a magma core pulses with deep, slow light.",
+  "kind": "choice",
+  "tags": ["volcanic", "fire"],
+  "choices": [
+    {
+      "id": "pray",
+      "label": "Pray at the shrine",
+      "description": "Kneel before the flame and feel its warmth mend body and spirit.",
+      "effects": [
+        { "type": "heal_party", "value": 12 }
+      ]
+    },
+    {
+      "id": "offer_gold",
+      "label": "Offer gold to the flame",
+      "description": "Cast coins into the fire as tribute. The flame flares and its healing warmth intensifies.",
+      "effects": [
+        { "type": "add_gold_range", "min": -10, "max": -10 },
+        { "type": "heal_party", "value": 20 }
+      ]
+    },
+    {
+      "id": "take_core",
+      "label": "Take the magma core",
+      "description": "Seize the pulsing magma core from beneath the altar flame.",
+      "effects": [
+        { "type": "add_item", "item_id": "magma_core", "min_qty": 1, "max_qty": 1 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Leave the shrine undisturbed",
+      "description": "Some things are better left alone.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

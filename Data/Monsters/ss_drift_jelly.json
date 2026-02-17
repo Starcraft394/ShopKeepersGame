@@ -1,0 +1,27 @@
+{
+  "id": "ss_drift_jelly",
+  "display_name": "Drift Jelly",
+  "description": "A bloated jellyfish that floats just above the sand, trailing stinging tendrils.",
+  "icon_hint": "large translucent purple jellyfish with glowing bell and long trailing electric tendrils",
+  "family": "coastal",
+  "region_id": "region_3",
+  "tier": 1,
+  "ai_tier": 1,
+  "base_stats": {
+    "health": 44,
+    "attack": 11,
+    "defense": 4,
+    "speed": 10
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region3_common",
+  "gold_drop_min": 8,
+  "gold_drop_max": 15,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/ss_drift_jelly.png"
+}

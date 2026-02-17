@@ -1,0 +1,24 @@
+{
+  "id": "se_echo_shield",
+  "display_name": "Echo Shield",
+  "description": "A shield that exists in two moments at once. Attacks that land seem to arrive too late.",
+  "icon_hint": "translucent kite shield with a ghostly after-image slightly offset creating a double-vision effect",
+  "item_type": "armor",
+  "item_subtype": "shield",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 4,
+  "base_stats": {
+    "defense": 10
+  },
+  "stat_bonuses": {
+    "defense": 11,
+    "health": 20
+  },
+  "base_value": 100,
+  "buy_value": 0,
+  "can_refine": true,
+  "icon_path": "",
+  "tags": ["region_5", "offhand", "shield", "starfall_expanse", "tier_4"]
+}

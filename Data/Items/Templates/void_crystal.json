@@ -1,0 +1,14 @@
+{
+  "id": "void_crystal",
+  "display_name": "Void Crystal",
+  "description": "Pure crystallized void-stuff. Warps light and space around it.",
+  "icon_hint": "black crystal with stars visible deep inside, warping space around its edges",
+  "item_type": "material",
+  "item_subtype": "legendary",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 120,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_7", "material", "legendary", "final_realm"]
+}

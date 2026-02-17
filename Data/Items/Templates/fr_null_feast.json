@@ -1,0 +1,18 @@
+{
+  "id": "fr_null_feast",
+  "display_name": "Null Feast",
+  "description": "Food that shouldn't exist — it looks like nothing and tastes like everything. Fully restores the body.",
+  "icon_hint": "plate of food that phases between visible and invisible with void particles rising from it like steam",
+  "item_type": "consumable",
+  "item_subtype": "food",
+  "category": "consumable",
+  "tier": 5,
+  "use_effect": "heal_and_buff",
+  "heal_amount": 100,
+  "buff_stat": "health",
+  "buff_amount": 25,
+  "buff_duration": 5,
+  "base_value": 95,
+  "icon_path": "",
+  "tags": ["region_7", "consumable", "food", "healing", "buff", "final_realm", "tier_5"]
+}

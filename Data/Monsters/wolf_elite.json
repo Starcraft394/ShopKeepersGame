@@ -6,9 +6,17 @@
   "family": "beast",
   "region_id": "region_1",
   "tier": 1,
-  "base_stats": { "health": 38, "attack": 8, "defense": 2, "speed": 17 },
-  "ability_ids": ["basic_attack"],
+  "base_stats": {
+    "health": 38,
+    "attack": 8,
+    "defense": 2,
+    "speed": 17
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
   "loot_table_id": "lt_beast_wolf",
   "gold_drop_min": 9,
-  "gold_drop_max": 20
+  "gold_drop_max": 20,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon43.png"
 }

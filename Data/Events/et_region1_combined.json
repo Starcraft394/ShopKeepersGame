@@ -1,0 +1,16 @@
+{
+  "id": "et_region1_combined",
+  "display_name": "Thornhaven Depths Events",
+  "description": "Random events in the tangled forest-industrial depths. Herb gathering, lumber caches, and unexpected encounters.",
+  "entries": [
+    { "event_id": "evt_forest_herbs", "weight": 15 },
+    { "event_id": "evt_forest_satchel", "weight": 18 },
+    { "event_id": "evt_forest_den", "weight": 15 },
+    { "event_id": "evt_forest_shrine", "weight": 7 },
+    { "event_id": "evt_forest_fae", "weight": 5 },
+    { "event_id": "evt_lumber_cart", "weight": 15 },
+    { "event_id": "evt_lumber_camp", "weight": 10 },
+    { "event_id": "evt_lumber_toll", "weight": 8 },
+    { "event_id": "evt_lumber_cache", "weight": 7 }
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "id": "pool_region3_general",
+  "display_name": "Region 3 General Shop Pool",
+  "description": "Item pool for general stores in Region 3 coastal towns",
+
+  "weight_by_tier": {
+    "1": 10,
+    "2": 6,
+    "3": 3,
+    "4": 1
+  },
+
+  "consumables": [
+    {
+      "item_id": "healing_tonic",
+      "weight": 20,
+      "price_gold": 25,
+      "tier": 1,
+      "requires_unlock_group": "consumables_t1",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 1
+    },
+    {
+      "item_id": "antidote",
+      "weight": 15,
+      "price_gold": 20,
+      "tier": 1,
+      "requires_unlock_group": "consumables_t1",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 1
+    },
+    {
+      "item_id": "ss_tidal_tonic",
+      "weight": 12,
+      "price_gold": 35,
+      "tier": 2,
+      "requires_unlock_group": "consumables_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "ss_brine_salve",
+      "weight": 10,
+      "price_gold": 40,
+      "tier": 2,
+      "requires_unlock_group": "consumables_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "ss_kelp_wrap",
+      "weight": 10,
+      "price_gold": 30,
+      "tier": 2,
+      "requires_unlock_group": "consumables_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    }
+  ],
+
+  "weapons": [
+    {
+      "item_id": "ss_coral_blade",
+      "weight": 15,
+      "price_gold": 90,
+      "tier": 2,
+      "requires_unlock_group": "weapons_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "ss_tidestriker_bow",
+      "weight": 12,
+      "price_gold": 85,
+      "tier": 2,
+      "requires_unlock_group": "weapons_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    }
+  ],
+
+  "offhands": [
+    {
+      "item_id": "ss_abalone_shield",
+      "weight": 12,
+      "price_gold": 100,
+      "tier": 2,
+      "requires_unlock_group": "offhands_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    }
+  ],
+
+  "books": [
+    {
+      "item_id": "book_tidechaser",
+      "weight": 10,
+      "price_gold": 120,
+      "tier": 1,
+      "requires_unlock_group": "books_t1",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 1
+    },
+    {
+      "item_id": "book_stormcaller",
+      "weight": 10,
+      "price_gold": 120,
+      "tier": 1,
+      "requires_unlock_group": "books_t1",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 1
+    }
+  ]
+}

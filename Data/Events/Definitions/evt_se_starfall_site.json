@@ -1,0 +1,41 @@
+{
+  "id": "evt_se_starfall_site",
+  "title": "Starfall Site",
+  "description": "A field of fresh stellar debris stretches before you, each fragment still pulsing with fading cosmic light. The ground is scorched in concentric rings where the largest pieces struck, and the air tastes of ozone and stardust.",
+  "kind": "choice",
+  "tags": ["crystal", "starfall"],
+  "choices": [
+    {
+      "id": "gather_stardust",
+      "label": "Gather the stardust",
+      "description": "Scoop up the luminous powder that coats every surface of the impact zone.",
+      "effects": [
+        { "type": "add_item", "item_id": "starfall_dust", "min_qty": 3, "max_qty": 5 }
+      ]
+    },
+    {
+      "id": "pry_crystals",
+      "label": "Pry out embedded crystals",
+      "description": "Small prismatic crystals formed where the cosmic heat fused with the earth.",
+      "effects": [
+        { "type": "add_item", "item_id": "prism_shard", "min_qty": 1, "max_qty": 2 }
+      ]
+    },
+    {
+      "id": "search_debris",
+      "label": "Search for valuables in the debris",
+      "description": "The stellar bombardment churned up buried artifacts and old coins from beneath the surface.",
+      "effects": [
+        { "type": "add_gold_range", "min": 12, "max": 22 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Leave the site",
+      "description": "The residual energy makes your teeth ache. You decide not to linger.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

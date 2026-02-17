@@ -1,0 +1,27 @@
+{
+  "id": "nc_spectral_binder",
+  "display_name": "Spectral Binder",
+  "description": "A necromancer's ghost that chains fallen souls, forcing them to fight as thralls.",
+  "icon_hint": "ghostly robed necromancer with spectral chains extending from hands binding smaller spirits",
+  "family": "necro",
+  "region_id": "region_6",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 105,
+    "attack": 24,
+    "defense": 16,
+    "speed": 13
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region6_uncommon",
+  "gold_drop_min": 27,
+  "gold_drop_max": 44,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/nc_spectral_binder.png"
+}

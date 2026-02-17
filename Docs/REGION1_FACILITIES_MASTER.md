@@ -4,18 +4,18 @@ This is the single source of truth for all Region 1 town facilities.
 
 ## Facility Summary
 
-| Facility ID (GR) | Facility ID (TF) | Type | Purpose |
-|------------------|------------------|------|---------|
-| dungeon_greenroot | dungeon_timberfall | dungeon | Dungeon entrance, floor selection, run management |
-| inn | inn_tf | inn | Hero recruitment, party management (merged Inn+Housing) |
-| shop_greenroot | shop_timberfall | shop | General store - consumables, weapons, stash capacity upgrades |
-| blacksmith | blacksmith_tf | blacksmith | Unlock weapons and armor tiers |
-| leatherworker | leatherworker_tf | production | Crafting placeholder (future) |
-| woodsman | woodsman_tf | woodsman | Flavor/placeholder - NO materials shop |
-| chef | chef_tf | production | Crafting placeholder (future) |
-| alchemist | alchemist_tf | alchemist | Unlock consumable tiers |
-| training_hall | training_hall_tf | training_hall | Class learning from books |
-| storage | storage_tf | storage | Bank stash management, item transfers |
+| Facility ID | Type | Purpose |
+|-------------|------|---------|
+| dungeon_thornhaven | dungeon | Dungeon entrance, floor selection, run management |
+| inn | inn | Hero recruitment, party management (merged Inn+Housing) |
+| shop_thornhaven | shop | General store - consumables, weapons, stash capacity upgrades |
+| blacksmith | blacksmith | Unlock weapons and armor tiers |
+| leatherworker | production | Crafting placeholder (future) |
+| woodsman | woodsman | Flavor/placeholder - NO materials shop |
+| chef | production | Crafting placeholder (future) |
+| alchemist | alchemist | Unlock consumable tiers |
+| training_hall | training_hall | Class learning from books |
+| storage | storage | Bank stash management, item transfers |
 
 ## Removed Facilities
 - **healer** - Removed. Returning to town automatically heals heroes and clears status effects.

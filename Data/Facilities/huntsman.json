@@ -9,6 +9,7 @@
 
   "keeper_name": "Rowan",
   "keeper_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon25.png",
+  "keeper_description": "Lean outdoorsman in a wide-brimmed hat and green cloak, quiver on his back, forest canopy behind him",
   "keeper_greetings": [
     "The forest provides, ShopKeeper. Let me show you what I've got.",
     "Fresh pelts came in this morning. Good timing!",

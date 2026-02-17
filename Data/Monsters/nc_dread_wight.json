@@ -1,0 +1,27 @@
+{
+  "id": "nc_dread_wight",
+  "display_name": "Dread Wight",
+  "description": "An ancient undead lord encased in burial armor, radiating an aura of paralytic terror.",
+  "icon_hint": "imposing undead lord in ancient ornate burial armor with cold blue glowing eyes and frost aura",
+  "family": "necro",
+  "region_id": "region_6",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 140,
+    "attack": 26,
+    "defense": 21,
+    "speed": 10
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region6_elite",
+  "gold_drop_min": 44,
+  "gold_drop_max": 70,
+  "sprite_path": "",
+  "is_elite": true,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/nc_dread_wight.png"
+}

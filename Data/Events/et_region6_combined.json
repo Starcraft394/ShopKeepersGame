@@ -1,0 +1,15 @@
+{
+  "id": "et_region6_combined",
+  "display_name": "Necropolis Events",
+  "description": "Random events among crypts, bone fields, and spectral ruins.",
+  "entries": [
+    { "event_id": "evt_nc_crypt_entrance", "weight": 15 },
+    { "event_id": "evt_nc_bone_pile", "weight": 15 },
+    { "event_id": "evt_nc_spectral_echo", "weight": 12 },
+    { "event_id": "evt_nc_cursed_altar", "weight": 10 },
+    { "event_id": "evt_nc_grave_offering", "weight": 14 },
+    { "event_id": "evt_nc_death_shrine", "weight": 10 },
+    { "event_id": "evt_nc_restless_tomb", "weight": 12 },
+    { "event_id": "evt_nc_wraith_cache", "weight": 14 }
+  ]
+}

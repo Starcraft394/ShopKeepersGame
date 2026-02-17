@@ -1,0 +1,27 @@
+{
+  "id": "ss_sandpiper_imp",
+  "display_name": "Sandpiper Imp",
+  "description": "A small winged gremlin that steals trinkets and hurls wet sand into its victims' eyes.",
+  "icon_hint": "small teal-skinned winged imp with webbed feet clutching a stolen coin on a beach",
+  "family": "coastal",
+  "region_id": "region_3",
+  "tier": 1,
+  "ai_tier": 1,
+  "base_stats": {
+    "health": 40,
+    "attack": 9,
+    "defense": 4,
+    "speed": 13
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region3_common",
+  "gold_drop_min": 10,
+  "gold_drop_max": 18,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/ss_sandpiper_imp.png"
+}

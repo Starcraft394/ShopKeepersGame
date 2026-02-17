@@ -1,0 +1,41 @@
+{
+  "id": "evt_fr_reality_fracture",
+  "title": "Reality Fracture",
+  "description": "Space itself is cracked like shattered glass, each fragment reflecting a different version of the world that never was. Light bends at impossible angles along the fracture lines, and stepping too close sends vertigo crashing through your skull. Between the cracks, null particles drift like silent snow.",
+  "kind": "choice",
+  "tags": ["void", "corruption"],
+  "choices": [
+    {
+      "id": "harvest_edges",
+      "label": "Harvest the fracture edges",
+      "description": "Carefully peel thin membranes of compressed space from along the fracture lines.",
+      "effects": [
+        { "type": "add_item", "item_id": "fr_rift_membrane", "min_qty": 2, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "collect_null",
+      "label": "Collect the null particles",
+      "description": "Gather the drifting motes of un-matter that fall from the cracks in reality.",
+      "effects": [
+        { "type": "add_item", "item_id": "fr_null_fragment", "min_qty": 2, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "peer_through",
+      "label": "Peer through for treasure",
+      "description": "Look through the fractured reflections for objects caught between dimensions.",
+      "effects": [
+        { "type": "add_gold_range", "min": 15, "max": 30 }
+      ]
+    },
+    {
+      "id": "back_away",
+      "label": "Back away",
+      "description": "The geometry here is wrong in ways that hurt to comprehend.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

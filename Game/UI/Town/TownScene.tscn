@@ -57,12 +57,12 @@ theme_override_constants/separation = 4
 [node name="LocationLabel" type="Label" parent="MarginContainer/ScrollContainer/MainVBox/LocationSection"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Location: region_1 / town_greenroot"
+text = "Location: region_1 / town_thornhaven"
 
 [node name="TownNameLabel" type="Label" parent="MarginContainer/ScrollContainer/MainVBox/LocationSection"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Town: Greenroot Village"
+text = "Town: Thornhaven"
 
 [node name="ProgressLabel" type="Label" parent="MarginContainer/ScrollContainer/MainVBox/LocationSection"]
 unique_name_in_owner = true
@@ -188,35 +188,6 @@ layout_mode = 2
 text = "Exit Dungeon"
 
 [node name="Separator4" type="HSeparator" parent="MarginContainer/ScrollContainer/MainVBox"]
-layout_mode = 2
-
-[node name="TownSwitchSection" type="VBoxContainer" parent="MarginContainer/ScrollContainer/MainVBox"]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="SwitchLabel" type="Label" parent="MarginContainer/ScrollContainer/MainVBox/TownSwitchSection"]
-layout_mode = 2
-text = "=== Switch Town ==="
-horizontal_alignment = 1
-
-[node name="TownButtonRow" type="HBoxContainer" parent="MarginContainer/ScrollContainer/MainVBox/TownSwitchSection"]
-layout_mode = 2
-alignment = 1
-theme_override_constants/separation = 10
-
-[node name="GreenrootButton" type="Button" parent="MarginContainer/ScrollContainer/MainVBox/TownSwitchSection/TownButtonRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(120, 30)
-layout_mode = 2
-text = "Greenroot"
-
-[node name="TimberfallButton" type="Button" parent="MarginContainer/ScrollContainer/MainVBox/TownSwitchSection/TownButtonRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(120, 30)
-layout_mode = 2
-text = "Timberfall"
-
-[node name="Separator5" type="HSeparator" parent="MarginContainer/ScrollContainer/MainVBox"]
 layout_mode = 2
 
 [node name="DebugSection" type="VBoxContainer" parent="MarginContainer/ScrollContainer/MainVBox"]

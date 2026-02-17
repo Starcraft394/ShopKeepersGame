@@ -1,0 +1,13 @@
+{
+  "id": "region_3",
+  "display_name": "The Sunken Strand",
+  "description": "Fog-soaked coastal ruins where shifting tides reveal drowned architecture and bioluminescent coral. The sea hides ancient dangers beneath its deceptive calm.",
+  "region_index": 3,
+  "requires_region_id": "region_2",
+  "dungeon_floor_count": 4,
+  "monster_families": ["coastal"],
+  "town_ids": ["town_shelldrift"],
+  "boss_id": "ss_tide_sovereign",
+  "theme_color": "#2c6e7a",
+  "accent_color": "#4a90a4"
+}

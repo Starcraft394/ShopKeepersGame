@@ -1,0 +1,27 @@
+{
+  "id": "ah_fire_djinn_lord",
+  "display_name": "Fire Djinn Lord",
+  "description": "A powerful djinn that commands pillars of flame and bends lava to encircle its prey.",
+  "icon_hint": "regal fire djinn with crown of flames commanding swirling pillars of fire around it",
+  "family": "volcanic",
+  "region_id": "region_4",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 92,
+    "attack": 21,
+    "defense": 13,
+    "speed": 13
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region4_elite",
+  "gold_drop_min": 32,
+  "gold_drop_max": 50,
+  "sprite_path": "",
+  "is_elite": true,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/ah_fire_djinn_lord.png"
+}

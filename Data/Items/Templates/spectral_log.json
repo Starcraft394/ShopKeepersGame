@@ -1,0 +1,14 @@
+{
+  "id": "spectral_log",
+  "display_name": "Spectral Log",
+  "description": "Ghost-wood that phases between solid and translucent. Cold to the touch.",
+  "icon_hint": "translucent pale wood log that phases between solid and ghostly, icy cold",
+  "item_type": "material",
+  "item_subtype": "crafting",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 24,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_6", "material", "crafting", "necropolis"]
+}

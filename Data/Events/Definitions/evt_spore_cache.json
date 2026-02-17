@@ -1,0 +1,44 @@
+{
+  "id": "evt_spore_cache",
+  "title": "Forager's Stash",
+  "description": "Tucked beneath a fallen mushroom cap, you find a forager's abandoned stash — woven baskets stuffed with dried fungal fibers, sealed jars of preserved spores, and a leather coin pouch. The owner seems to have left in a hurry.",
+  "kind": "choice",
+  "tags": ["spore", "fungal"],
+  "choices": [
+    {
+      "id": "take_supplies",
+      "label": "Take the fibers and threads",
+      "description": "Grab the fungal fiber and mycelium thread — practical materials.",
+      "effects": [
+        { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 1, "max_qty": 2 },
+        { "type": "add_item", "item_id": "mycelium_thread", "min_qty": 1, "max_qty": 2 }
+      ]
+    },
+    {
+      "id": "search_valuables",
+      "label": "Search for valuables",
+      "description": "Check the coin pouch. Foragers always keep emergency gold.",
+      "effects": [
+        { "type": "add_gold_range", "min": 12, "max": 25 }
+      ]
+    },
+    {
+      "id": "take_everything",
+      "label": "Take everything you can carry",
+      "description": "Stuff your packs with fibers, scraps, and coin.",
+      "effects": [
+        { "type": "add_item", "item_id": "iron_scrap", "min_qty": 1, "max_qty": 1 },
+        { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 1, "max_qty": 1 },
+        { "type": "add_gold_range", "min": 5, "max": 10 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Move on",
+      "description": "Leave the stash. Whoever left it may return.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

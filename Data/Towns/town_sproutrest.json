@@ -1,0 +1,20 @@
+{
+  "id": "town_sproutrest",
+  "display_name": "SproutRest",
+  "description": "A settlement nestled among giant mushroom stalks, lit by soft bioluminescent glow. The air smells of damp earth and growing things.",
+  "region_id": "region_2",
+  "dungeon_id": "dungeon_sproutrest",
+  "facility_ids": [
+    "dungeon_sproutrest",
+    "inn",
+    "shop_sproutrest",
+    "blacksmith",
+    "huntsman",
+    "enchanter",
+    "chef",
+    "alchemist",
+    "training_hall",
+    "storage"
+  ],
+  "unlock_region": 2
+}

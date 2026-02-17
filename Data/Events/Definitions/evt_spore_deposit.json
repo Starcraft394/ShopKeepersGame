@@ -1,0 +1,34 @@
+{
+  "id": "evt_spore_deposit",
+  "title": "Spore Cluster Colony",
+  "description": "The tunnel opens into a chamber carpeted with bioluminescent spore clusters. Pulsing green and violet light radiates from the largest formations, casting eerie shadows. The spores drift lazily in the still air — beautiful but potentially reactive. Disturbing them could release a concentrated burst.",
+  "kind": "choice",
+  "tags": ["spore", "fungal"],
+  "choices": [
+    {
+      "id": "careful_extraction",
+      "label": "Careful extraction",
+      "description": "Gently harvest individual spore clusters with patience.",
+      "effects": [
+        { "type": "add_item", "item_id": "spore_cluster", "min_qty": 1, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "break_formation",
+      "label": "Disturb the colony",
+      "description": "Shake the clusters loose for a bigger haul. The spore burst will sting.",
+      "effects": [
+        { "type": "add_item", "item_id": "spore_cluster", "min_qty": 2, "max_qty": 4 },
+        { "type": "damage_party", "value": 8 }
+      ]
+    },
+    {
+      "id": "admire",
+      "label": "Admire and move on",
+      "description": "The bioluminescence is mesmerizing. You leave it undisturbed.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

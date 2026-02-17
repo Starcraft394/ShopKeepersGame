@@ -1,0 +1,20 @@
+{
+  "id": "lt_region7_boss",
+  "display_name": "Region 7 Boss Loot",
+  "description": "Rich drops from Final Realm bosses.",
+  "min_drops": 3,
+  "max_drops": 6,
+  "entries": [
+    { "item_id": "fr_rift_membrane", "weight": 12, "min_qty": 3, "max_qty": 5 },
+    { "item_id": "void_crystal", "weight": 10, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "fractured_soulglass", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "primordial_essence", "weight": 5, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "strong_healing_tonic", "weight": 12, "min_qty": 2, "max_qty": 3 },
+    { "item_id": "fr_void_edge", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "fr_entropy_bow", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "fr_null_barrier", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "fr_rift_band", "weight": 6, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "fr_dimensional_plate", "weight": 6, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 5, "min_qty": 0, "max_qty": 0 }
+  ]
+}

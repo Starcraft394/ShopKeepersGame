@@ -1,0 +1,29 @@
+{
+  "facility_id": "alchemist",
+  "recipes": [
+    {
+      "input_a": "spore_cluster",
+      "input_b": "herb_sprig",
+      "input_c": "",
+      "output_id": "focus_elixir",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "fungal_fiber",
+      "input_b": "mycelium_thread",
+      "input_c": "",
+      "output_id": "resistance_salve",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "spore_cluster",
+      "input_b": "spore_cluster",
+      "input_c": "fungal_fiber",
+      "output_id": "fortification_brew",
+      "output_qty": 1,
+      "required_tier": 3
+    }
+  ]
+}

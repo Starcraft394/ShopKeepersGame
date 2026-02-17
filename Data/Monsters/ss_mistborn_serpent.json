@@ -1,0 +1,27 @@
+{
+  "id": "ss_mistborn_serpent",
+  "display_name": "Mistborn Serpent",
+  "description": "A sea serpent that coils through coastal fog, exhaling clouds of choking brine.",
+  "icon_hint": "coiling sea serpent with iridescent blue-green scales emerging from coastal fog",
+  "family": "coastal",
+  "region_id": "region_3",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 72,
+    "attack": 16,
+    "defense": 9,
+    "speed": 12
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region3_uncommon",
+  "gold_drop_min": 14,
+  "gold_drop_max": 25,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/ss_mistborn_serpent.png"
+}

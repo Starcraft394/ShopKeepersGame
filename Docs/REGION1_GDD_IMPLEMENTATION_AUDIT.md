@@ -1,7 +1,7 @@
 # Region 1: GDD vs Implementation Audit
 
 **Generated:** 2026-01-10 (Updated)
-**Scope:** Region 1 (Forest Haven) - Greenroot & Timberfall towns
+**Scope:** Region 1 (Forest Haven) - Thornhaven
 **Sources:** Shops_And_Shadows_MASTER_GDD.md, REGION1_FACILITIES_MASTER.md, GameContext.gd, TownScene.gd, FacilityData.gd, Data/Facilities/*.json, Data/Towns/*.json, Data/Shops/Pools/*.json
 
 ---
@@ -10,8 +10,8 @@
 
 | Issue | Fix Applied | Date |
 |-------|-------------|------|
-| Orphaned healer.json, healer_tf.json | DELETED | 2026-01-09 |
-| Orphaned housing.json, housing_tf.json | DELETED | 2026-01-09 |
+| Orphaned healer.json | DELETED | 2026-01-09 |
+| Orphaned housing.json | DELETED | 2026-01-09 |
 | bonus_starting_gold exists | REMOVED from GameContext | 2026-01-09 |
 | "mender" class should be "warden" | RENAMED + migration support | 2026-01-09 |
 | Alchemist had shop_items | SET to [] | 2026-01-09 |
@@ -23,31 +23,23 @@
 
 ## 1. Facilities List Per Town
 
-### Town Greenroot (`town_greenroot`)
+### Thornhaven (`town_thornhaven`)
 
 | GDD Says | Implemented Now | Status |
 |----------|-----------------|--------|
-| Blacksmith, Leatherworker, Woodsman, Chef, Alchemist (GDD 5.1) | dungeon_greenroot, inn, shop_greenroot, blacksmith, leatherworker, woodsman, chef, alchemist, training_hall, storage | **(B) UNDOCUMENTED BUT GOOD** - More facilities than GDD specifies |
+| Blacksmith, Leatherworker, Woodsman, Chef, Alchemist (GDD 5.1) | dungeon_thornhaven, inn, shop_thornhaven, blacksmith, leatherworker, woodsman, chef, alchemist, training_hall, storage | **(B) UNDOCUMENTED BUT GOOD** - More facilities than GDD specifies |
 | Training Hall (GDD 5.6: Starter Town Kit) | training_hall present | **MATCH** |
 | Storage (GDD 5.6) | storage present | **MATCH** |
 | Housing (GDD 5.6) | **NOT in facility_ids** (merged into Inn) | **(C) GDD OUTDATED** - Implementation newer |
-| Shop (GDD 5.6: "fed by facilities") | shop_greenroot present | **MATCH** |
+| Shop (GDD 5.6: "fed by facilities") | shop_thornhaven present | **MATCH** |
 | No Healer mentioned in GDD 5.x | **NOT in facility_ids** (removed) | **(C) GDD OUTDATED** - Healer was never GDD-canonical |
-
-### Town Timberfall (`town_timberfall`)
-
-| GDD Says | Implemented Now | Status |
-|----------|-----------------|--------|
-| Same core facilities as Greenroot | dungeon_timberfall, inn_tf, shop_timberfall, blacksmith_tf, leatherworker_tf, woodsman_tf, chef_tf, alchemist_tf, training_hall_tf, storage_tf | **MATCH** |
-| Housing | **NOT in facility_ids** | **(C) GDD OUTDATED** |
-| Healer | **NOT in facility_ids** | **(C) GDD OUTDATED** |
 
 ### Orphaned Facility JSON Files
 
 | File | Status |
 |------|--------|
-| healer.json, healer_tf.json | **FIXED** - Files DELETED |
-| housing.json, housing_tf.json | **FIXED** - Files DELETED |
+| healer.json | **FIXED** - File DELETED |
+| housing.json | **FIXED** - File DELETED |
 
 ---
 
@@ -369,11 +361,11 @@
 
 ### (A) BUGS / WRONG - Require Fix
 
-- [x] **Delete orphaned healer.json and healer_tf.json files?** - DONE
-  - These files exist but are not referenced by any town.
+- [x] **Delete orphaned healer.json file?** - DONE
+  - This file exists but is not referenced by any town.
 
-- [x] **Delete orphaned housing.json and housing_tf.json files?** - DONE
-  - These files exist but are not referenced by any town.
+- [x] **Delete orphaned housing.json file?** - DONE
+  - This file exists but is not referenced by any town.
 
 - [x] **Remove bonus_starting_gold from GameContext?** - DONE
   - Per REGION1_FACILITIES_MASTER: "NO dungeon starting gold"

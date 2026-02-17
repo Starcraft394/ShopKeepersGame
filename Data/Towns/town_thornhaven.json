@@ -1,0 +1,25 @@
+{
+  "id": "town_thornhaven",
+  "display_name": "Thornhaven",
+  "description": "A fortified settlement where ancient forest meets reclaimed industry. Thorned walls guard workshops built from salvaged lumber mills.",
+  "region_id": "region_1",
+  "dungeon_id": "dungeon_thornhaven",
+  "facility_ids": [
+    "dungeon_thornhaven",
+    "inn",
+    "shop_thornhaven",
+    "blacksmith",
+    "huntsman",
+    "enchanter",
+    "chef",
+    "alchemist",
+    "training_hall",
+    "storage"
+  ],
+  "unlock_region": 1,
+  "unlock": {
+    "type": "starter",
+    "region_required": 1,
+    "requires_town_id": ""
+  }
+}

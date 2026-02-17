@@ -45,6 +45,9 @@ var _party_hero_ids: Array[String] = []
 # Current region (numeric, 1-7, persisted)
 var current_region: int = 1
 
+# Region completion tracking (region_id -> true)
+var completed_regions: Dictionary = {}
+
 # Run tracking (integrated with SeededRNG - Tier 0.4)
 var _run_id: String = ""
 var _run_seed: int = 0
@@ -184,6 +187,24 @@ const DEFAULT_UNLOCKED_RECIPES: Dictionary = {
 	"rusty_sword": { "source_facility": "blacksmith", "facility_tier": 1 },
 	"wooden_shield": { "source_facility": "blacksmith", "facility_tier": 1 }
 }
+
+# ============================================================================
+# MIXING SYSTEM (discovery-based crafting for Chef & Alchemist)
+# ============================================================================
+
+# Tracks discovered mixing combinations permanently.
+# Key: "facility_id:sorted_item_pair" (e.g., "alchemist:bat_wing:herb_sprig"), Value: true
+var discovered_mixes: Dictionary = {}
+
+# Alchemist mishap escalation: increments on each failed mix at alchemist
+var alchemist_mishap_streak: int = 0
+
+# Facility lockouts from alchemist mishaps (cleared on town return)
+# { facility_id: true } — locked facilities cannot be opened
+var locked_facilities: Dictionary = {}
+
+# Inn lockout from alchemist mishaps (cleared on town return)
+var inn_lockout: bool = false
 
 # ============================================================================
 # DUNGEON FLOOR UNLOCK & START FLOOR SELECTION
@@ -397,7 +418,7 @@ func _initialize_default_state() -> void:
 	# Set initial state per MVP scope
 	_current_phase = GamePhase.TOWN
 	_current_region_id = "region_1"
-	_current_town_id = "town_greenroot"
+	_current_town_id = "town_thornhaven"
 	_selected_floor_index = 1
 	_party_hero_ids = []
 	_run_id = ""
@@ -429,6 +450,11 @@ func set_phase(new_phase: GamePhase) -> bool:
 	_current_phase = new_phase
 
 	print("[GameContext] Phase: %s -> %s" % [_phase_to_string(old_phase), _phase_to_string(new_phase)])
+
+	# Clear facility lockouts when returning to town
+	if new_phase == GamePhase.TOWN or new_phase == GamePhase.TOWN_HUB:
+		clear_facility_lockouts()
+
 	phase_changed.emit(old_phase, new_phase)
 	return true
 
@@ -464,6 +490,24 @@ func set_current_region(region: int) -> void:
 	if old_region != current_region:
 		print("[Region] set region=%d" % current_region)
 		save_game()
+
+
+## Mark a region as completed (boss defeated). Idempotent.
+func mark_region_completed(region_id: String) -> void:
+	if not completed_regions.has(region_id):
+		completed_regions[region_id] = true
+		print("[Region] Completed: %s (total=%d)" % [region_id, completed_regions.size()])
+		save_game()
+
+
+## Get the number of completed regions (for scaling formulas).
+func get_completed_region_count() -> int:
+	return completed_regions.size()
+
+
+## Check if a specific region has been completed.
+func is_region_completed(region_id: String) -> bool:
+	return completed_regions.get(region_id, false)
 
 
 func get_current_town_id() -> String:
@@ -1095,6 +1139,36 @@ func get_equip_rejection_reason(slot: String, item_id: String) -> String:
 	return "ok"
 
 
+## Count how many equipped items grant an ability_id for this hero.
+## Used to enforce the max 2 equipment abilities limit.
+func count_equipped_ability_items(hero_id: String) -> int:
+	var count: int = 0
+	var equip = get_hero_equipment(hero_id)
+	for slot in EQUIPMENT_SLOTS:
+		var slot_data = equip.get(slot, {})
+		var eid = slot_data.get("id", "")
+		if eid != "":
+			var template = DataRegistry.get_item_template(eid)
+			if template != null and template.ability_id != "":
+				count += 1
+	return count
+
+
+## Get the ability IDs granted by a hero's equipped items.
+## Returns an array of ability_id strings (max 2).
+func get_hero_equipment_ability_ids(hero_id: String) -> Array:
+	var ids: Array = []
+	var equip = get_hero_equipment(hero_id)
+	for slot in EQUIPMENT_SLOTS:
+		var slot_data = equip.get(slot, {})
+		var eid = slot_data.get("id", "")
+		if eid != "":
+			var template = DataRegistry.get_item_template(eid)
+			if template != null and template.ability_id != "":
+				ids.append(template.ability_id)
+	return ids
+
+
 ## Equip an item from run stash into the given slot for a specific hero.
 ## Returns true if successful, false if item cannot be equipped.
 ## Removes item from run stash on success.
@@ -1110,14 +1184,51 @@ func equip_hero_item(hero_id: String, slot: String, item_id: String) -> bool:
 		print("[Equip] rejected hero=%s slot=%s item=%s item_slot=%s reason=%s" % [hero_id, slot, item_id, item_slot, rejection_reason])
 		return false
 
+	# T4 ability item limit: max 2 equipped items with ability_id per hero
+	var new_template = DataRegistry.get_item_template(item_id)
+	if new_template != null and new_template.ability_id != "":
+		# Check if the item being replaced in this slot also has an ability (it won't count against limit)
+		var current_slot_data = get_hero_equipment(hero_id).get(slot, {})
+		var current_item_id = current_slot_data.get("id", "")
+		var current_has_ability: bool = false
+		if current_item_id != "":
+			var current_tpl = DataRegistry.get_item_template(current_item_id)
+			if current_tpl != null and current_tpl.ability_id != "":
+				current_has_ability = true
+		var ability_count: int = count_equipped_ability_items(hero_id)
+		# If current slot item has ability, it will be unequipped first, so it doesn't count
+		if current_has_ability:
+			ability_count -= 1
+		if ability_count >= 2:
+			print("[Equip] rejected hero=%s slot=%s item=%s reason=max_ability_items (count=%d)" % [hero_id, slot, item_id, ability_count])
+			return false
+
 	# Unequip current item in slot first (returns it to stash)
 	unequip_hero_item(hero_id, slot)
 
-	# Find quality tier of item being equipped (lowest quality first, same as remove_run_item)
+	# Find quality tier and affix data of item being equipped (first match)
 	var quality_tier = 0
+	var equip_affix_data: Dictionary = {}
 	for item in run_items:
 		if item is ItemInstance and item.template_id == item_id:
 			quality_tier = item.quality_tier
+			if item.affix_id != "":
+				equip_affix_data = {
+					"source_region": item.source_region,
+					"affix_id": item.affix_id,
+					"affix_stats": item.affix_stats,
+					"affix_prefix": item.affix_prefix
+				}
+			break
+		elif item is Dictionary and item.get("item_id", "") == item_id:
+			quality_tier = int(item.get("quality_tier", 0))
+			if item.get("affix_id", "") != "":
+				equip_affix_data = {
+					"source_region": item.get("source_region", ""),
+					"affix_id": item.get("affix_id", ""),
+					"affix_stats": item.get("affix_stats", {}),
+					"affix_prefix": item.get("affix_prefix", "")
+				}
 			break
 
 	# Remove from run stash
@@ -1131,7 +1242,13 @@ func equip_hero_item(hero_id: String, slot: String, item_id: String) -> bool:
 
 	# Equip with quality tracking (generic for all slots)
 	if slot in ALL_EQUIP_SLOTS:
-		hero_equipment[hero_id][slot] = {"id": item_id, "quality": quality_tier}
+		var slot_entry: Dictionary = {"id": item_id, "quality": quality_tier}
+		if equip_affix_data.get("affix_id", "") != "":
+			slot_entry["source_region"] = equip_affix_data.get("source_region", "")
+			slot_entry["affix_id"] = equip_affix_data.get("affix_id", "")
+			slot_entry["affix_stats"] = equip_affix_data.get("affix_stats", {})
+			slot_entry["affix_prefix"] = equip_affix_data.get("affix_prefix", "")
+		hero_equipment[hero_id][slot] = slot_entry
 
 	print("[Equip] hero=%s slot=%s item=%s q=%d from_stash=true" % [hero_id, slot, item_id, quality_tier])
 	save_game()
@@ -1150,24 +1267,45 @@ func unequip_hero_item(hero_id: String, slot: String) -> void:
 	var slot_data = hero_equipment[hero_id].get(slot, {})
 	var item_id = slot_data.get("id", "")
 	var quality_tier = int(slot_data.get("quality", 0))
+	# Extract affix data before clearing slot
+	var unequip_affix: Dictionary = {}
+	if slot_data.get("affix_id", "") != "":
+		unequip_affix = {
+			"source_region": slot_data.get("source_region", ""),
+			"affix_id": slot_data.get("affix_id", ""),
+			"affix_stats": slot_data.get("affix_stats", {}),
+			"affix_prefix": slot_data.get("affix_prefix", "")
+		}
 	hero_equipment[hero_id][slot] = {"id": "", "quality": 0}
 
 	if item_id != "":
-		# Return item to stash with same quality
-		_add_item_with_quality(item_id, quality_tier)
+		# Return item to stash with same quality + affix data
+		_add_item_with_quality(item_id, quality_tier, unequip_affix)
 		print("[Equip] hero=%s slot=%s item=%s q=%d to_stash=true" % [hero_id, slot, item_id, quality_tier])
 		save_game()
 
 
 ## Helper to add an item to stash with specific quality tier.
-func _add_item_with_quality(item_id: String, quality_tier: int) -> void:
+func _add_item_with_quality(item_id: String, quality_tier: int, affix_data: Dictionary = {}) -> void:
 	var tpl = DataRegistry.get_item_template(item_id)
 	if tpl != null:
 		var instance = ItemInstance.new()
 		instance.template_id = item_id
 		instance.quality_tier = quality_tier
 		instance.quantity = 1
-		instance.display_name = tpl.display_name
+		# Restore affix data if present
+		if affix_data.get("affix_id", "") != "":
+			instance.source_region = affix_data.get("source_region", "")
+			instance.affix_id = affix_data.get("affix_id", "")
+			instance.affix_stats = affix_data.get("affix_stats", {})
+			instance.affix_prefix = affix_data.get("affix_prefix", "")
+		# Build display name: [affix_prefix] [quality_prefix] template_name
+		var prefix = ItemInstance.QUALITY_PREFIXES[quality_tier] if quality_tier < ItemInstance.QUALITY_PREFIXES.size() else ""
+		var base_name: String = prefix + tpl.display_name
+		if instance.affix_prefix != "":
+			instance.display_name = instance.affix_prefix + " " + base_name
+		else:
+			instance.display_name = base_name
 		run_items.append(instance)
 	else:
 		# Fallback to dictionary format
@@ -1215,9 +1353,10 @@ func get_equipment_summary() -> Dictionary:
 
 
 ## Get combined stat bonuses from equipped weapon and offhand for a specific hero.
-## Applies quality tier multipliers to equipment stats.
+## Applies quality tier multipliers and region scaling to equipment stats.
 func _get_hero_equipment_stat_bonuses(hero_id: String) -> Dictionary:
 	var result = { "health": 0, "attack": 0, "defense": 0, "speed": 0 }
+	var region_bonus: float = get_completed_region_count() * 0.1
 
 	var equip = get_hero_equipment(hero_id)
 
@@ -1229,10 +1368,16 @@ func _get_hero_equipment_stat_bonuses(hero_id: String) -> Dictionary:
 		if item_id != "":
 			var template = DataRegistry.get_item_template(item_id)
 			if template != null:
-				var bonuses = template.get_stat_bonuses_with_quality(quality)
+				var bonuses = template.get_stat_bonuses_with_quality(quality, region_bonus)
 				for stat_key in bonuses:
 					if result.has(stat_key):
 						result[stat_key] += bonuses[stat_key]
+			# Add affix stat bonuses (G7)
+			var affix_stats_val = slot_data.get("affix_stats", {})
+			if affix_stats_val is Dictionary:
+				for affix_key in affix_stats_val:
+					if result.has(affix_key):
+						result[affix_key] += int(affix_stats_val[affix_key])
 
 	return result
 
@@ -1240,12 +1385,13 @@ func _get_hero_equipment_stat_bonuses(hero_id: String) -> Dictionary:
 ## DEPRECATED: Legacy _get_equipment_stat_bonuses (for backwards compatibility)
 func _get_equipment_stat_bonuses() -> Dictionary:
 	var result = { "health": 0, "attack": 0, "defense": 0, "speed": 0 }
+	var region_bonus: float = get_completed_region_count() * 0.1
 
 	# Weapon bonuses
 	if equipped_weapon_id != "":
 		var weapon_template = DataRegistry.get_item_template(equipped_weapon_id)
 		if weapon_template != null:
-			var bonuses = weapon_template.get_stat_bonuses_with_quality(equipped_weapon_quality)
+			var bonuses = weapon_template.get_stat_bonuses_with_quality(equipped_weapon_quality, region_bonus)
 			for stat_key in bonuses:
 				if result.has(stat_key):
 					result[stat_key] += bonuses[stat_key]
@@ -1254,7 +1400,7 @@ func _get_equipment_stat_bonuses() -> Dictionary:
 	if equipped_offhand_id != "":
 		var offhand_template = DataRegistry.get_item_template(equipped_offhand_id)
 		if offhand_template != null:
-			var bonuses = offhand_template.get_stat_bonuses_with_quality(equipped_offhand_quality)
+			var bonuses = offhand_template.get_stat_bonuses_with_quality(equipped_offhand_quality, region_bonus)
 			for stat_key in bonuses:
 				if result.has(stat_key):
 					result[stat_key] += bonuses[stat_key]
@@ -1334,7 +1480,8 @@ func can_add_to_hero_bag(hero_id: String, item_id: String, _qty: int = 1) -> boo
 
 ## Add a single item to a hero's bag. Returns true if successful.
 ## v1.3: ALL item types allowed. NO STACKING — always creates new entry with qty=1.
-func add_item_to_hero_bag(hero_id: String, item_id: String, qty: int = 1, quality: int = 0) -> bool:
+## v2: Optional affix_data dict with keys: source_region, affix_id, affix_stats, affix_prefix
+func add_item_to_hero_bag(hero_id: String, item_id: String, qty: int = 1, quality: int = 0, affix_data: Dictionary = {}) -> bool:
 	# v1.3: Add each unit as separate entry (no stacking in dungeon bags)
 	for _i in range(qty):
 		if not can_add_to_hero_bag(hero_id, item_id, 1):
@@ -1343,7 +1490,13 @@ func add_item_to_hero_bag(hero_id: String, item_id: String, qty: int = 1, qualit
 		if not hero_bags.has(hero_id):
 			hero_bags[hero_id] = []
 		# v1.3: Always append new entry (no merging)
-		hero_bags[hero_id].append({ "item_id": item_id, "qty": 1, "quality_tier": quality })
+		var entry: Dictionary = { "item_id": item_id, "qty": 1, "quality_tier": quality }
+		if affix_data.get("affix_id", "") != "":
+			entry["source_region"] = affix_data.get("source_region", "")
+			entry["affix_id"] = affix_data.get("affix_id", "")
+			entry["affix_stats"] = affix_data.get("affix_stats", {})
+			entry["affix_prefix"] = affix_data.get("affix_prefix", "")
+		hero_bags[hero_id].append(entry)
 		var used = _get_hero_bag_used(hero_id)
 		var cap = get_hero_bag_capacity(hero_id)
 		print("[HeroBag] +1 %s hero=%s bag=%d/%d" % [item_id, hero_id, used, cap])
@@ -1422,15 +1575,19 @@ func move_item_hero_bag_to_stash(hero_id: String, item_id: String, qty: int = 1,
 var _pending_acquisitions: Array = []
 
 ## Queue an item for recipient routing. Does NOT add to any stash yet.
-func acquire_item_with_recipient(item_id: String, qty: int, quality: int = 0, source: String = "loot") -> void:
+## v2: Optional affix_data dict with keys: source_region, affix_id, affix_stats, affix_prefix
+func acquire_item_with_recipient(item_id: String, qty: int, quality: int = 0, source: String = "loot", affix_data: Dictionary = {}) -> void:
 	if item_id == "" or qty <= 0:
 		return
-	_pending_acquisitions.append({
+	var entry: Dictionary = {
 		"item_id": item_id,
 		"qty": qty,
 		"quality": quality,
 		"source": source
-	})
+	}
+	if affix_data.get("affix_id", "") != "":
+		entry["affix_data"] = affix_data
+	_pending_acquisitions.append(entry)
 	print("[Acquire] pending item=%s qty=%d q=%d source=%s" % [item_id, qty, quality, source])
 
 ## Check if there are any pending acquisitions.
@@ -1459,6 +1616,7 @@ func resolve_acquisition_at(index: int, recipient_type: String, hero_id: String 
 	var item_id = acq.get("item_id", "")
 	var qty = int(acq.get("qty", 1))
 	var quality = int(acq.get("quality", 0))
+	var affix_data: Dictionary = acq.get("affix_data", {})
 
 	if recipient_type == "stash":
 		# v1.2: Stash is banked (locked) unless in TOWN phase
@@ -1466,7 +1624,13 @@ func resolve_acquisition_at(index: int, recipient_type: String, hero_id: String 
 			print("[Acquire] reject to=stash item=%s reason=banked_stash_locked (phase=%s)" % [item_id, get_phase_name()])
 			return false
 		# In town: route to run_items (banked stash) — stash CAN stack
-		run_items.append({"item_id": item_id, "qty": qty, "quality_tier": quality})
+		var stash_entry: Dictionary = {"item_id": item_id, "qty": qty, "quality_tier": quality}
+		if affix_data.get("affix_id", "") != "":
+			stash_entry["source_region"] = affix_data.get("source_region", "")
+			stash_entry["affix_id"] = affix_data.get("affix_id", "")
+			stash_entry["affix_stats"] = affix_data.get("affix_stats", {})
+			stash_entry["affix_prefix"] = affix_data.get("affix_prefix", "")
+		run_items.append(stash_entry)
 		_pending_acquisitions.remove_at(index)
 		print("[Acquire] resolved to=stash item=%s qty=%d q=%d" % [item_id, qty, quality])
 		return true
@@ -1484,7 +1648,7 @@ func resolve_acquisition_at(index: int, recipient_type: String, hero_id: String 
 			print("[Acquire] reject to=hero_bag hero=%s item=%s reason=bag_full" % [hero_id, item_id])
 			return false
 		# Add single item to hero bag
-		add_item_to_hero_bag(hero_id, item_id, 1, quality)
+		add_item_to_hero_bag(hero_id, item_id, 1, quality, affix_data)
 		# Decrease pending qty or remove if exhausted
 		if qty <= 1:
 			_pending_acquisitions.remove_at(index)
@@ -1499,7 +1663,7 @@ func resolve_acquisition_at(index: int, recipient_type: String, hero_id: String 
 		if not can_add_to_shopkeeper_bag(item_id, 1, quality):
 			print("[Acquire] reject to=shop_bag item=%s reason=full" % item_id)
 			return false
-		add_item_to_shopkeeper_bag(item_id, 1, quality, "combat")
+		add_item_to_shopkeeper_bag(item_id, 1, quality, "combat", affix_data)
 		# Decrease pending qty or remove if exhausted
 		if qty <= 1:
 			_pending_acquisitions.remove_at(index)
@@ -1574,14 +1738,21 @@ func can_add_to_shopkeeper_bag(item_id: String, _qty: int = 1, _quality: int = 0
 
 ## Add a single item to the shopkeeper bag.
 ## v1.3: ALL item types allowed. NO STACKING — always creates new entry with qty=1.
-func add_item_to_shopkeeper_bag(item_id: String, qty: int = 1, quality: int = 0, source: String = "loot") -> bool:
+## v2: Optional affix_data dict with keys: source_region, affix_id, affix_stats, affix_prefix
+func add_item_to_shopkeeper_bag(item_id: String, qty: int = 1, quality: int = 0, source: String = "loot", affix_data: Dictionary = {}) -> bool:
 	# v1.3: Add each unit as separate entry (no stacking in dungeon bags)
 	for _i in range(qty):
 		if not can_add_to_shopkeeper_bag(item_id, 1, quality):
 			print("[ShopBag] reject item=%s reason=full" % item_id)
 			return false
 		# v1.3: Always append new entry (no merging)
-		shopkeeper_bag.append({"item_id": item_id, "qty": 1, "quality_tier": quality})
+		var entry: Dictionary = {"item_id": item_id, "qty": 1, "quality_tier": quality}
+		if affix_data.get("affix_id", "") != "":
+			entry["source_region"] = affix_data.get("source_region", "")
+			entry["affix_id"] = affix_data.get("affix_id", "")
+			entry["affix_stats"] = affix_data.get("affix_stats", {})
+			entry["affix_prefix"] = affix_data.get("affix_prefix", "")
+		shopkeeper_bag.append(entry)
 		print("[ShopBag] add item=%s qty=1 q=%d slots=%d/%d source=%s" % [item_id, quality, _get_shopkeeper_bag_stacks(), get_shopkeeper_bag_capacity(), source])
 	return true
 
@@ -1754,6 +1925,122 @@ func roll_quality_for_facility_tier(facility_tier: int) -> int:
 			else: return 3
 		_:
 			return 0  # Unknown tier = common
+
+
+# ============================================================================
+# PUBLIC API - MIXING SYSTEM (Discovery & Mishaps)
+# ============================================================================
+
+## Build a canonical key for a mixing item pair/triple (order-independent).
+static func mix_key(item_a: String, item_b: String, item_c: String = "") -> String:
+	var parts: Array = [item_a, item_b]
+	if item_c != "":
+		parts.append(item_c)
+	parts.sort()
+	return ":".join(parts)
+
+
+## Record a discovered mix for a facility. Saves immediately.
+func discover_mix(facility_id: String, item_a: String, item_b: String, item_c: String = "") -> void:
+	var key: String = facility_id + ":" + mix_key(item_a, item_b, item_c)
+	if not discovered_mixes.has(key):
+		discovered_mixes[key] = true
+		print("[Mix] Discovered: %s at %s" % [mix_key(item_a, item_b, item_c), facility_id])
+		save_game()
+
+
+## Check if a mix has been discovered at a facility.
+func is_mix_discovered(facility_id: String, item_a: String, item_b: String, item_c: String = "") -> bool:
+	var key: String = facility_id + ":" + mix_key(item_a, item_b, item_c)
+	return discovered_mixes.has(key)
+
+
+## Count how many mixes have been discovered at a facility.
+func get_discovered_mix_count(facility_id: String) -> int:
+	var count: int = 0
+	var prefix: String = facility_id + ":"
+	for key in discovered_mixes:
+		if key.begins_with(prefix):
+			count += 1
+	return count
+
+
+## Process a failed mix at a facility. Returns a result dictionary.
+## Only the alchemist has mishap consequences; chef just loses materials.
+func process_failed_mix(facility_id: String) -> Dictionary:
+	if facility_id != "alchemist":
+		return {"type": "none", "message": "The ingredients didn't combine into anything useful."}
+
+	alchemist_mishap_streak += 1
+	var mishap_chance: int = mini(alchemist_mishap_streak * 10, 50)
+	var roll: int = randi() % 100
+
+	if roll >= mishap_chance:
+		save_game()
+		return {"type": "none", "message": "The mix fizzled. The lab feels unstable... (Risk: %d%%)" % mishap_chance}
+
+	# Bad event triggered — reset streak
+	alchemist_mishap_streak = 0
+
+	var event_roll: int = randi() % 100
+	var result: Dictionary = {}
+
+	if event_roll < 30:
+		var destroyed: String = _destroy_random_equipment()
+		result = {"type": "equipment_destroyed", "message": "Corrosive splash! %s was destroyed!" % destroyed}
+	elif event_roll < 60:
+		locked_facilities["alchemist"] = true
+		result = {"type": "facility_locked", "message": "Toxic fumes! The Alchemist lab is sealed until you return to town."}
+	elif event_roll < 80:
+		inn_lockout = true
+		result = {"type": "inn_locked", "message": "Noxious gas spread to town! No recruits available until you return."}
+	else:
+		locked_facilities["chef"] = true
+		result = {"type": "chef_locked", "message": "Kitchen contaminated! The Chef is closed until you return to town."}
+
+	print("[Mix] Mishap at alchemist: %s" % result.type)
+	save_game()
+	return result
+
+
+## Destroy a random equipped item on a random hero. Returns description of what was destroyed.
+func _destroy_random_equipment() -> String:
+	var hero_ids: Array = selected_party.duplicate()
+	if hero_ids.is_empty():
+		for hero in owned_heroes:
+			hero_ids.append(hero.get("hero_id", ""))
+	hero_ids.shuffle()
+
+	for hero_id in hero_ids:
+		if not hero_equipment.has(hero_id):
+			continue
+		var equip: Dictionary = hero_equipment[hero_id]
+		var filled_slots: Array = []
+		for slot in EQUIPMENT_SLOTS:
+			if equip.has(slot) and equip[slot] is Dictionary:
+				var item_id: String = equip[slot].get("id", "")
+				if item_id != "":
+					filled_slots.append(slot)
+		if filled_slots.is_empty():
+			continue
+		filled_slots.shuffle()
+		var target_slot: String = filled_slots[0]
+		var destroyed_id: String = equip[target_slot].get("id", "unknown")
+		var tpl = DataRegistry.get_item_template(destroyed_id)
+		var destroyed_name: String = tpl.display_name if tpl != null and tpl.display_name != "" else destroyed_id
+		equip[target_slot] = {"id": "", "quality": 0}
+		print("[Mix] Equipment destroyed: hero=%s slot=%s item=%s" % [hero_id, target_slot, destroyed_id])
+		return "%s's %s" % [hero_id, destroyed_name]
+
+	return "nothing (no equipment found)"
+
+
+## Clear all facility lockouts and mishap state. Called on town return.
+func clear_facility_lockouts() -> void:
+	locked_facilities.clear()
+	inn_lockout = false
+	alchemist_mishap_streak = 0
+	print("[Mix] Facility lockouts cleared on town return")
 
 
 # ============================================================================
@@ -2055,6 +2342,7 @@ func set_selected_party(hero_ids: Array) -> bool:
 
 	selected_party = valid_ids
 	print("[Inn] party=%s" % str(selected_party))
+	party_changed.emit(selected_party)
 	save_game()
 	return true
 
@@ -2073,6 +2361,7 @@ func add_to_party(hero_id: String) -> bool:
 
 	selected_party.append(hero_id)
 	print("[Inn] add_to_party hero=%s party=%s" % [hero_id, str(selected_party)])
+	party_changed.emit(selected_party)
 	save_game()
 	return true
 
@@ -2084,6 +2373,7 @@ func remove_from_party(hero_id: String) -> bool:
 		return false
 	selected_party.remove_at(idx)
 	print("[Inn] remove_from_party hero=%s party=%s" % [hero_id, str(selected_party)])
+	party_changed.emit(selected_party)
 	save_game()
 	return true
 
@@ -2376,6 +2666,9 @@ func get_hero_effective_stats(hero_id: String) -> Dictionary:
 		])
 		_gear_logged_heroes[hero_id] = true
 
+	# v6: Collect equipment ability IDs from T4 gear
+	var equip_abilities: Array = get_hero_equipment_ability_ids(hero_id)
+
 	return {
 		"health": health,
 		"attack": attack,
@@ -2385,7 +2678,8 @@ func get_hero_effective_stats(hero_id: String) -> Dictionary:
 		"class_id": class_id,
 		"race_id": race_id,
 		"name": hero_name,
-		"gear_bonus": gear_bonus
+		"gear_bonus": gear_bonus,
+		"equip_ability_ids": equip_abilities
 	}
 
 
@@ -2622,7 +2916,7 @@ func clear_shop_purchased_slots(shop_id: String) -> void:
 
 ## Get max shop slots for current town based on General Store tier.
 func get_shop_max_slots(town_id: String) -> int:
-	var shop_tier = get_facility_tier(town_id, "shop_greenroot")  # General Store facility ID
+	var shop_tier = get_facility_tier(town_id, "shop_thornhaven")  # General Store facility ID
 	return SHOP_TIER_MAX_SLOTS.get(shop_tier, SHOP_TIER_MAX_SLOTS[1])
 
 
@@ -2796,8 +3090,12 @@ func apply_town_entry_reset() -> void:
 	# Clear consumable usage tracking
 	_combat_consumables_used.clear()
 
+	# Clear shop purchased slots so Inn/shops refresh with new stock
+	var shop_count = shop_purchased_slots.size()
+	shop_purchased_slots.clear()
+
 	print("[HP] town_heal healed=%d heroes party=%d total=%d dead=%d" % [healed_count, party_size, hero_count, dead_count])
-	print("[TownReset] cleared_status=true cleared_consumables=true cleared_hero_statuses=%d" % status_count)
+	print("[TownReset] cleared_status=true cleared_consumables=true cleared_hero_statuses=%d cleared_shops=%d" % [status_count, shop_count])
 
 
 # ============================================================================
@@ -3604,19 +3902,33 @@ func _serialize_run_items(items: Array) -> Array:
 	var result: Array = []
 	for item in items:
 		if item is ItemInstance:
-			result.append({
+			var entry: Dictionary = {
 				"type": "instance",
 				"template_id": item.template_id,
 				"qty": item.quantity,
 				"quality_tier": item.quality_tier
-			})
+			}
+			# Save affix fields if present
+			if item.affix_id != "":
+				entry["source_region"] = item.source_region
+				entry["affix_id"] = item.affix_id
+				entry["affix_stats"] = item.affix_stats
+				entry["affix_prefix"] = item.affix_prefix
+			result.append(entry)
 		elif item is Dictionary:
-			result.append({
+			var entry: Dictionary = {
 				"type": "dict",
 				"item_id": item.get("item_id", ""),
 				"qty": item.get("qty", 1),
 				"quality_tier": item.get("quality_tier", 0)
-			})
+			}
+			# Preserve affix fields from dicts too
+			if item.get("affix_id", "") != "":
+				entry["source_region"] = item.get("source_region", "")
+				entry["affix_id"] = item.get("affix_id", "")
+				entry["affix_stats"] = item.get("affix_stats", {})
+				entry["affix_prefix"] = item.get("affix_prefix", "")
+			result.append(entry)
 	return result
 
 
@@ -3639,23 +3951,40 @@ func _deserialize_run_items(items_data: Array) -> Array:
 			instance.template_id = data.get("template_id", "")
 			instance.quantity = data.get("qty", 1)
 			instance.quality_tier = data.get("quality_tier", 0)
+			# Restore affix fields
+			instance.source_region = data.get("source_region", "")
+			instance.affix_id = data.get("affix_id", "")
+			var affix_stats_val = data.get("affix_stats", {})
+			instance.affix_stats = affix_stats_val if affix_stats_val is Dictionary else {}
+			instance.affix_prefix = data.get("affix_prefix", "")
 			# Always rebuild display_name from template (avoids stale names)
 			if instance.template_id != "":
 				var tpl = DataRegistry.get_item_template(instance.template_id)
 				if tpl != null:
 					var prefix = ItemInstance.QUALITY_PREFIXES[instance.quality_tier] if instance.quality_tier < ItemInstance.QUALITY_PREFIXES.size() else ""
-					instance.display_name = prefix + tpl.display_name
+					var base_name: String = prefix + tpl.display_name
+					if instance.affix_prefix != "":
+						instance.display_name = instance.affix_prefix + " " + base_name
+					else:
+						instance.display_name = base_name
 				else:
 					instance.display_name = instance.template_id  # Fallback if template missing
 			result.append(instance)
 			instance_count += 1
 		elif item_type == "dict":
 			# Keep as dictionary item
-			result.append({
+			var dict_entry: Dictionary = {
 				"item_id": data.get("item_id", ""),
 				"qty": data.get("qty", 1),
 				"quality_tier": data.get("quality_tier", 0)
-			})
+			}
+			# Restore affix fields for dicts
+			if data.get("affix_id", "") != "":
+				dict_entry["source_region"] = data.get("source_region", "")
+				dict_entry["affix_id"] = data.get("affix_id", "")
+				dict_entry["affix_stats"] = data.get("affix_stats", {})
+				dict_entry["affix_prefix"] = data.get("affix_prefix", "")
+			result.append(dict_entry)
 			dict_count += 1
 		else:
 			# Legacy format without type field - assume dict
@@ -3711,8 +4040,14 @@ func save_game() -> void:
 		"loot_pref": loot_pref,
 		# Region progression
 		"current_region": current_region,
+		"completed_regions": completed_regions,
 		# Dead heroes (Permadeath / Book of the Dead)
-		"dead_heroes": dead_heroes
+		"dead_heroes": dead_heroes,
+		# Mixing system (discovery + mishaps)
+		"discovered_mixes": discovered_mixes,
+		"alchemist_mishap_streak": alchemist_mishap_streak,
+		"locked_facilities": locked_facilities,
+		"inn_lockout": inn_lockout
 	}
 
 	print("[Save] run_items serialized count=%d" % run_items.size())
@@ -3787,6 +4122,12 @@ func reset_save_game() -> void:
 	unlocked_item_ids = {}
 	unlocked_recipes = {}
 
+	# Mixing system
+	discovered_mixes = {}
+	alchemist_mishap_streak = 0
+	locked_facilities = {}
+	inn_lockout = false
+
 	# Dungeon floor unlocks
 	unlocked_dungeon_floors = {}
 	selected_start_floors = {}
@@ -3847,10 +4188,11 @@ func reset_save_game() -> void:
 	# Phase/location (reset to town)
 	_current_phase = GamePhase.TOWN
 	_current_region_id = "region_1"
-	_current_town_id = "town_greenroot"
+	_current_town_id = "town_thornhaven"
 	_selected_floor_index = 1
 	_party_hero_ids = []
 	current_region = 1
+	completed_regions = {}
 
 	# Reward tracking
 	_rewarded_dungeon_id = ""
@@ -3934,8 +4276,30 @@ func load_game() -> void:
 		# Load recipe unlocks (shop item generation)
 		if save_data.has("unlocked_recipes") and save_data.unlocked_recipes is Dictionary:
 			unlocked_recipes = save_data.unlocked_recipes
+		# Mixing system
+		var discovered_val = save_data.get("discovered_mixes", {})
+		discovered_mixes = discovered_val if discovered_val is Dictionary else {}
+		alchemist_mishap_streak = int(save_data.get("alchemist_mishap_streak", 0))
+		var locked_val = save_data.get("locked_facilities", {})
+		locked_facilities = locked_val if locked_val is Dictionary else {}
+		inn_lockout = bool(save_data.get("inn_lockout", false))
 		if save_data.has("facility_tiers") and save_data.facility_tiers is Dictionary:
 			facility_tiers = save_data.facility_tiers
+			# Migration: Greenroot/Timberfall → Thornhaven consolidation
+			var ft_migrated: Dictionary = {}
+			for key in facility_tiers:
+				var new_key: String = key
+				if key.begins_with("town_greenroot:"):
+					new_key = "town_thornhaven:" + key.substr("town_greenroot:".length())
+				elif key.begins_with("town_timberfall:"):
+					new_key = "town_thornhaven:" + key.substr("town_timberfall:".length())
+				if ft_migrated.has(new_key):
+					ft_migrated[new_key] = max(ft_migrated[new_key], facility_tiers[key])
+				else:
+					ft_migrated[new_key] = facility_tiers[key]
+			if ft_migrated.size() != facility_tiers.size():
+				print("[Migration] facility_tiers: consolidated %d keys → %d keys" % [facility_tiers.size(), ft_migrated.size()])
+				facility_tiers = ft_migrated
 		if save_data.has("learned_classes") and save_data.learned_classes is Dictionary:
 			learned_classes = save_data.learned_classes
 			# Migration: mender -> warden
@@ -3945,6 +4309,19 @@ func load_game() -> void:
 				print("[Migration] learned_classes: mender -> warden")
 		if save_data.has("town_tiers") and save_data.town_tiers is Dictionary:
 			town_tiers = save_data.town_tiers
+			# Migration: Greenroot/Timberfall → Thornhaven consolidation
+			var tt_migrated: Dictionary = {}
+			for key in town_tiers:
+				var new_key: String = key
+				if key == "town_greenroot" or key == "town_timberfall":
+					new_key = "town_thornhaven"
+				if tt_migrated.has(new_key):
+					tt_migrated[new_key] = max(tt_migrated[new_key], town_tiers[key])
+				else:
+					tt_migrated[new_key] = town_tiers[key]
+			if tt_migrated.size() != town_tiers.size():
+				print("[Migration] town_tiers: consolidated %d keys → %d keys" % [town_tiers.size(), tt_migrated.size()])
+				town_tiers = tt_migrated
 		# Load hero/party data
 		if save_data.has("owned_heroes") and save_data.owned_heroes is Array:
 			owned_heroes = save_data.owned_heroes
@@ -3985,7 +4362,7 @@ func load_game() -> void:
 					hero["xp"] = 0
 					print("[Migration] hero %s: added xp=0" % hero.get("hero_id", "?"))
 			# Migration: strip unknown keys from hero dicts (e.g., stale "gold" field)
-			var _HERO_ALLOWED_KEYS = ["hero_id", "class_id", "race_id", "name", "level", "xp"]
+			var _HERO_ALLOWED_KEYS = ["hero_id", "class_id", "race_id", "name", "level", "xp", "portrait_path"]
 			for hero in owned_heroes:
 				var keys_to_remove: Array = []
 				for key in hero.keys():
@@ -4035,6 +4412,8 @@ func load_game() -> void:
 		# Load region progression
 		if save_data.has("current_region"):
 			current_region = clampi(int(save_data.current_region), 1, 7)
+		if save_data.has("completed_regions") and save_data.completed_regions is Dictionary:
+			completed_regions = save_data.completed_regions
 		# Load dead heroes (Permadeath / Book of the Dead)
 		if save_data.has("dead_heroes") and save_data.dead_heroes is Array:
 			dead_heroes = save_data.dead_heroes
@@ -4867,9 +5246,9 @@ func run_smoke_test() -> bool:
 
 	# Check 3: Set location to region_1 + placeholder town
 	total_checks += 1
-	set_location("region_1", "town_greenroot")
-	if _current_region_id == "region_1" and _current_town_id == "town_greenroot":
-		print("[PASS] Location set: region_1 / town_greenroot")
+	set_location("region_1", "town_thornhaven")
+	if _current_region_id == "region_1" and _current_town_id == "town_thornhaven":
+		print("[PASS] Location set: region_1 / town_thornhaven")
 		passed_checks += 1
 	else:
 		print("[FAIL] Location not set correctly")

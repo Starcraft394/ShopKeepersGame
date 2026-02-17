@@ -1,0 +1,141 @@
+{
+  "facility_id": "alchemist",
+  "recipes": [
+    {
+      "input_a": "herb_sprig",
+      "input_b": "herb_sprig",
+      "input_c": "",
+      "output_id": "healing_tonic",
+      "output_qty": 1,
+      "required_tier": 1
+    },
+    {
+      "input_a": "slime_gel",
+      "input_b": "herb_sprig",
+      "input_c": "",
+      "output_id": "antidote",
+      "output_qty": 1,
+      "required_tier": 1
+    },
+    {
+      "input_a": "spider_silk",
+      "input_b": "herb_sprig",
+      "input_c": "",
+      "output_id": "bandage",
+      "output_qty": 1,
+      "required_tier": 1
+    },
+    {
+      "input_a": "spider_fang",
+      "input_b": "spider_fang",
+      "input_c": "",
+      "output_id": "minor_venom_flask",
+      "output_qty": 1,
+      "required_tier": 1
+    },
+    {
+      "input_a": "bat_wing",
+      "input_b": "herb_sprig",
+      "input_c": "",
+      "output_id": "smelling_salts",
+      "output_qty": 1,
+      "required_tier": 1
+    },
+    {
+      "input_a": "healing_tonic",
+      "input_b": "bone_fragment",
+      "input_c": "",
+      "output_id": "strong_healing_tonic",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "bat_wing",
+      "input_b": "spider_silk",
+      "input_c": "",
+      "output_id": "stamina_draught",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "slime_gel",
+      "input_b": "boar_tusk",
+      "input_c": "",
+      "output_id": "resistance_salve",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "wolf_pelt",
+      "input_b": "bone_fragment",
+      "input_c": "",
+      "output_id": "power_elixir",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "cursed_dust",
+      "input_b": "spider_silk",
+      "input_c": "",
+      "output_id": "shadow_oil",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "glowing_spore",
+      "input_b": "herb_sprig",
+      "input_c": "",
+      "output_id": "focus_elixir",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "wyvern_scale",
+      "input_b": "slime_gel",
+      "input_c": "",
+      "output_id": "fortification_brew",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "strong_healing_tonic",
+      "input_b": "ancient_bone",
+      "input_c": "glowing_spore",
+      "output_id": "elixir_of_vitality",
+      "output_qty": 1,
+      "required_tier": 3
+    },
+    {
+      "input_a": "minor_venom_flask",
+      "input_b": "cursed_dust",
+      "input_c": "bat_wing",
+      "output_id": "greater_venom",
+      "output_qty": 1,
+      "required_tier": 3
+    },
+    {
+      "input_a": "power_elixir",
+      "input_b": "stamina_draught",
+      "input_c": "wyvern_scale",
+      "output_id": "berserker_draught",
+      "output_qty": 1,
+      "required_tier": 3
+    },
+    {
+      "input_a": "shadow_oil",
+      "input_b": "phoenix_ash",
+      "input_c": "void_essence",
+      "output_id": "elixir_of_shadows",
+      "output_qty": 1,
+      "required_tier": 4
+    },
+    {
+      "input_a": "resistance_salve",
+      "input_b": "ancient_bone",
+      "input_c": "phoenix_ash",
+      "output_id": "invulnerability_tonic",
+      "output_qty": 1,
+      "required_tier": 4
+    }
+  ]
+}

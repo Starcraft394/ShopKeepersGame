@@ -43,6 +43,10 @@ var charges_per_floor: int = 1
 var map_icon_path: String = ""
 var background_path: String = ""
 
+# Theme Colors (hex strings, e.g., "#4a7a5a")
+var theme_color: String = "#4a7a5a"   # Primary region tint
+var accent_color: String = "#6aaa7a"  # Accent/highlight color
+
 # Factory method
 static func from_dict(data: Dictionary) -> RegionData:
 	var instance = RegionData.new()
@@ -60,6 +64,8 @@ static func from_dict(data: Dictionary) -> RegionData:
 	instance.charges_per_floor = data.get("charges_per_floor", 1)
 	instance.map_icon_path = data.get("map_icon_path", "")
 	instance.background_path = data.get("background_path", "")
+	instance.theme_color = data.get("theme_color", "#4a7a5a")
+	instance.accent_color = data.get("accent_color", "#6aaa7a")
 
 	# Convert typed arrays (clear + append pattern for safety)
 	instance.town_ids.clear()

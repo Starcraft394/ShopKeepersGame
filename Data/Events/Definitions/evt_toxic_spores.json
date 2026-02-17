@@ -1,0 +1,33 @@
+{
+  "id": "evt_toxic_spores",
+  "title": "Toxic Spore Cloud",
+  "description": "A thick cloud of yellow-green spores drifts through the passage, released by a cluster of puffball fungi growing from the walls. The air tastes metallic and your eyes water at its edge. Beyond the cloud you can see scattered belongings from someone who didn't make it through.",
+  "kind": "choice",
+  "tags": ["spore", "fungal"],
+  "choices": [
+    {
+      "id": "hold_breath",
+      "label": "Hold breath and pass through",
+      "description": "Rush past the spore cloud to grab whatever was left behind.",
+      "effects": [
+        { "type": "add_gold_range", "min": 8, "max": 18 }
+      ]
+    },
+    {
+      "id": "seal_crack",
+      "label": "Harvest the puffballs",
+      "description": "Carefully cut the puffball fungi from the walls. Their threads are useful.",
+      "effects": [
+        { "type": "add_item", "item_id": "mycelium_thread", "min_qty": 1, "max_qty": 2 }
+      ]
+    },
+    {
+      "id": "retreat",
+      "label": "Retreat",
+      "description": "Back away before the spores reach you.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "fr_void_sovereign",
+  "display_name": "The Void Sovereign",
+  "description": "The final guardian of the abyss, whose mere presence erodes existence.",
+  "icon_hint": "massive regal void being with crown of collapsed stars and robes of flowing darkness",
+  "family": "void",
+  "region_id": "region_7",
+  "tier": 3,
+  "ai_tier": 3,
+  "base_stats": {
+    "health": 400,
+    "attack": 30,
+    "defense": 25,
+    "speed": 8
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region7_boss",
+  "gold_drop_min": 100,
+  "gold_drop_max": 155,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": true,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fr_void_sovereign.png"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "ah_scorched_fang",
+  "display_name": "Scorched Fang",
+  "description": "A blackened fang from a flame predator, radiating residual heat.",
+  "icon_hint": "blackened curved fang with cracks glowing orange like cooling lava",
+  "item_type": "material",
+  "item_subtype": "monster_part",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 18,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_4", "material", "monster_part", "ashen_horizons"]
+}

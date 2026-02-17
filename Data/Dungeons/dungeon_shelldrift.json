@@ -1,0 +1,62 @@
+{
+  "id": "dungeon_shelldrift",
+  "display_name": "The Drowned Depths",
+  "description": "Submerged ruins descend through flooded corridors and brine-soaked caverns. The deeper you go, the stronger the tidal pull becomes.",
+  "region_id": "region_3",
+  "town_id": "town_shelldrift",
+  "floor_count": 4,
+  "rooms_per_floor": 3,
+  "boss_id": "ss_tide_sovereign",
+  "alt_boss_id": "ss_mistborn_leviathan",
+  "min_rooms_per_floor": 3,
+  "max_rooms_per_floor": 5,
+  "choice_b_event_weight": 0.6,
+  "choice_b_elite_weight": 0.4,
+  "event_table_id": "et_region3_combined",
+  "encounter_tags": ["coastal", "tidal", "drowned", "reef", "fog", "underwater"],
+  "gear_whitelist": [
+    "ss_coral_blade", "ss_tidestriker_bow", "ss_barnacle_plate",
+    "ss_abalone_shield", "ss_tidecaller_ring"
+  ],
+  "floor_theme": [
+    "Tidal Shallows",
+    "Flooded Ruins",
+    "The Coral Maze",
+    "Sovereign's Throne"
+  ],
+  "tier1_monster_ids": [
+    "ss_shore_crawler", "ss_tidewalker", "ss_salt_lurker",
+    "ss_drift_jelly", "ss_reef_snapper", "ss_sandpiper_imp"
+  ],
+  "tier2_monster_ids": [
+    "ss_crustacean_brute", "ss_drowned_mariner", "ss_mistborn_serpent",
+    "ss_coral_golem", "ss_riptide_wraith", "ss_abyssal_angler"
+  ],
+  "elite_monster_ids": [
+    "ss_leviathan_spawn", "ss_deepcaller_shaman", "ss_mistborn_leviathan"
+  ],
+  "tier1_by_floor": [
+    ["ss_shore_crawler", "ss_drift_jelly", "ss_reef_snapper", "ss_sandpiper_imp"],
+    ["ss_tidewalker", "ss_salt_lurker", "ss_shore_crawler", "ss_drift_jelly"],
+    ["ss_salt_lurker", "ss_reef_snapper", "ss_sandpiper_imp", "ss_tidewalker"],
+    ["ss_shore_crawler", "ss_tidewalker", "ss_salt_lurker", "ss_drift_jelly"]
+  ],
+  "tier2_by_floor": [
+    ["ss_crustacean_brute", "ss_drowned_mariner"],
+    ["ss_crustacean_brute", "ss_mistborn_serpent", "ss_coral_golem", "ss_drowned_mariner"],
+    ["ss_coral_golem", "ss_riptide_wraith", "ss_abyssal_angler", "ss_mistborn_serpent"],
+    ["ss_crustacean_brute", "ss_drowned_mariner", "ss_riptide_wraith", "ss_abyssal_angler", "ss_coral_golem"]
+  ],
+  "elite_by_floor": [
+    [],
+    ["ss_leviathan_spawn"],
+    ["ss_leviathan_spawn", "ss_deepcaller_shaman"],
+    ["ss_leviathan_spawn", "ss_deepcaller_shaman", "ss_mistborn_leviathan"]
+  ],
+  "room_types_by_floor": [
+    ["combat", "event", "combat"],
+    ["combat", "treasure", "combat"],
+    ["combat", "shrine", "elite"],
+    ["combat", "event", "combat"]
+  ]
+}

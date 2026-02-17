@@ -1,0 +1,33 @@
+{
+  "id": "evt_spore_tremor",
+  "title": "Fungal Tremor",
+  "description": "The ground shudders beneath your feet and the mushroom stalks sway drunkenly. Somewhere deep below, the mycelium network is shifting — massive root systems rearranging in response to something. Spore clouds burst from the walls and ceiling, filling the passage with glowing dust. The tremor could bring the tunnel down, or it might pass.",
+  "kind": "choice",
+  "tags": ["spore", "fungal"],
+  "choices": [
+    {
+      "id": "sprint_through",
+      "label": "Sprint through",
+      "description": "Dash past the unstable section. You spot a coin pouch dropped by a previous explorer.",
+      "effects": [
+        { "type": "add_gold_range", "min": 10, "max": 20 }
+      ]
+    },
+    {
+      "id": "brace_and_wait",
+      "label": "Shelter under a cap",
+      "description": "Duck beneath a giant mushroom cap and wait for the tremor to pass. The rest does you good.",
+      "effects": [
+        { "type": "heal_party", "value": 5 }
+      ]
+    },
+    {
+      "id": "retreat",
+      "label": "Retreat carefully",
+      "description": "Back away slowly. Better safe than buried.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

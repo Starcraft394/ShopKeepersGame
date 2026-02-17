@@ -1,0 +1,13 @@
+{
+  "id": "region_4",
+  "display_name": "Ashen Horizons",
+  "description": "Scorched sands and volcanic ridges where firestorms rage and obsidian formations jut from rivers of lava. Only the fire-forged survive here.",
+  "region_index": 4,
+  "requires_region_id": "region_3",
+  "dungeon_floor_count": 4,
+  "monster_families": ["volcanic"],
+  "town_ids": ["town_embercradle"],
+  "boss_id": "ah_cinder_monarch",
+  "theme_color": "#8b3a2a",
+  "accent_color": "#d4622a"
+}

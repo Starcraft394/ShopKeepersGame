@@ -1,0 +1,27 @@
+{
+  "id": "fm_bloom_giant",
+  "display_name": "Bloom Giant",
+  "description": "A massive fungal colossus that shakes the ground with every step.",
+  "icon_hint": "enormous mossy humanoid with flowering fungi covering its body and glowing orange eyes deep in a bark-like face",
+  "family": "spore",
+  "region_id": "region_2",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 55,
+    "attack": 10,
+    "defense": 6,
+    "speed": 9
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region2_uncommon",
+  "gold_drop_min": 10,
+  "gold_drop_max": 22,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fm_bloom_giant.png"
+}

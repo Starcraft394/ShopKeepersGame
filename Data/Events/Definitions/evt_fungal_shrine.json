@@ -1,0 +1,42 @@
+{
+  "id": "evt_fungal_shrine",
+  "title": "Mycelium Shrine",
+  "description": "In a natural alcove, bioluminescent mushrooms have grown into the shape of a towering figure — arms spread wide, cap-like crown glowing soft green. Offerings of dried spores and woven fiber sit at its base. The air here feels warm and alive, as if the mycelium network itself pulses with ancient awareness.",
+  "kind": "choice",
+  "tags": ["spore", "fungal"],
+  "choices": [
+    {
+      "id": "pray",
+      "label": "Kneel before the shrine",
+      "description": "Bow your head and let the warmth of the mycelium wash over you.",
+      "effects": [
+        { "type": "heal_party", "value": 10 }
+      ]
+    },
+    {
+      "id": "offer_gold",
+      "label": "Offer gold",
+      "description": "Place coins among the offerings. The glow brightens and warmth floods through you.",
+      "effects": [
+        { "type": "add_gold_range", "min": -5, "max": -5 },
+        { "type": "heal_party", "value": 15 }
+      ]
+    },
+    {
+      "id": "study_runes",
+      "label": "Study the growth patterns",
+      "description": "The mushrooms grew in deliberate patterns. Rare spore clusters nestle within.",
+      "effects": [
+        { "type": "add_item", "item_id": "spore_cluster", "min_qty": 1, "max_qty": 1 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Move on",
+      "description": "Leave the shrine in peace.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

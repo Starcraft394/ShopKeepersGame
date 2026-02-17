@@ -1,0 +1,14 @@
+{
+  "id": "obsidian_shard",
+  "display_name": "Obsidian Shard",
+  "description": "A razor-sharp fragment of volcanic obsidian, prized for weapon edges.",
+  "icon_hint": "razor-sharp angular black obsidian fragment with a glassy sheen",
+  "item_type": "material",
+  "item_subtype": "mineral",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 18,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_4", "material", "mineral", "ashen_horizons"]
+}

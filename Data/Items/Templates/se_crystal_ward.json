@@ -1,0 +1,33 @@
+{
+  "id": "se_crystal_ward",
+  "display_name": "Crystal Ward",
+  "description": "Armor of interlocking crystal plates that hum with stored starlight energy.",
+  "icon_hint": "chest armor of overlapping translucent crystal plates with prismatic light shimmering between the seams",
+  "item_type": "armor",
+  "item_subtype": "medium_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 12,
+    "speed": -1
+  },
+  "stat_bonuses": {
+    "defense": 12,
+    "health": 24,
+    "speed": -1
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 110,
+  "icon_path": "",
+  "tags": ["region_5", "armor", "starfall_expanse", "tier_4"]
+}

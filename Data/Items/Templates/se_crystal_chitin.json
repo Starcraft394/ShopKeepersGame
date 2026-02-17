@@ -1,0 +1,14 @@
+{
+  "id": "se_crystal_chitin",
+  "display_name": "Crystal Chitin",
+  "description": "Hardened crystalline exoskeleton from a prism scarab. Lightweight and prismatic.",
+  "icon_hint": "iridescent crystalline exoskeleton plate that refracts light into prismatic colors",
+  "item_type": "material",
+  "item_subtype": "monster_part",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 24,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_5", "material", "monster_part", "starfall_expanse"]
+}

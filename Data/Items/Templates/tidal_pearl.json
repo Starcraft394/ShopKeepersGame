@@ -1,0 +1,14 @@
+{
+  "id": "tidal_pearl",
+  "display_name": "Tidal Pearl",
+  "description": "A luminous pearl formed in the shells of giant strand clams. Coveted by enchanters.",
+  "icon_hint": "luminous pale blue pearl with swirling iridescence inside a half-open shell",
+  "item_type": "material",
+  "item_subtype": "rare",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 28,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_3", "material", "rare", "enchanting", "sunken_strand"]
+}

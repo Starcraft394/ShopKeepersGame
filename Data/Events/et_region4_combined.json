@@ -1,0 +1,15 @@
+{
+  "id": "et_region4_combined",
+  "display_name": "Ashen Horizons Events",
+  "description": "Random events among lava flows, volcanic vents, and scorched wastelands.",
+  "entries": [
+    { "event_id": "evt_ah_ember_deposit", "weight": 15 },
+    { "event_id": "evt_ah_lava_tube", "weight": 12 },
+    { "event_id": "evt_ah_dragon_nest", "weight": 10 },
+    { "event_id": "evt_ah_obsidian_formation", "weight": 15 },
+    { "event_id": "evt_ah_volcanic_vent", "weight": 12 },
+    { "event_id": "evt_ah_ash_caravan", "weight": 14 },
+    { "event_id": "evt_ah_fire_shrine", "weight": 10 },
+    { "event_id": "evt_ah_magma_pool", "weight": 12 }
+  ]
+}

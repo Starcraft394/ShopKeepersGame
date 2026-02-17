@@ -1,0 +1,31 @@
+{
+  "id": "fm_bioluminescent_ring",
+  "display_name": "Bioluminescent Ring",
+  "description": "A ring of polished bog-amber with a living spore trapped inside, pulsing with faint green light.",
+  "icon_hint": "dark amber ring with a tiny glowing green spore trapped inside the translucent stone",
+  "item_type": "accessory",
+  "item_subtype": "ring",
+  "category": "equipment",
+  "slot": "accessory_1",
+  "equip_slot": "ring",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "health": 10
+  },
+  "stat_bonuses": {
+    "health": 10,
+    "speed": 1
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 50,
+  "icon_path": "",
+  "tags": ["region_2", "accessory", "ring", "fungalmire", "tier_2"]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "se_glass_viper",
+  "display_name": "Glass Viper",
+  "description": "A nearly invisible serpent with a crystalline body that shatters on impact, embedding razor shards.",
+  "icon_hint": "nearly transparent crystalline snake with prismatic light refracting through its glass-like body",
+  "family": "crystal",
+  "region_id": "region_5",
+  "tier": 1,
+  "ai_tier": 1,
+  "base_stats": {
+    "health": 62,
+    "attack": 17,
+    "defense": 8,
+    "speed": 13
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region5_common",
+  "gold_drop_min": 14,
+  "gold_drop_max": 26,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/se_glass_viper.png"
+}

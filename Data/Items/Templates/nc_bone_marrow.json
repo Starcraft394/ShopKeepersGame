@@ -1,0 +1,14 @@
+{
+  "id": "nc_bone_marrow",
+  "display_name": "Bone Marrow",
+  "description": "Preserved marrow from ancient undead. Pulses with necrotic energy.",
+  "icon_hint": "sealed jar of pale luminescent paste with dark necrotic veins swirling inside",
+  "item_type": "material",
+  "item_subtype": "monster_part",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 32,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_6", "material", "monster_part", "necropolis"]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "fm_hallucinogenic_cap",
+  "display_name": "Hallucinogenic Cap",
+  "description": "A psychedelic fungus that warps perception and saps the will to fight.",
+  "icon_hint": "swirling multicolored mushroom with spiral patterns on its cap radiating waves of prismatic light",
+  "family": "spore",
+  "region_id": "region_2",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 53,
+    "attack": 11,
+    "defense": 5,
+    "speed": 10
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region2_uncommon",
+  "gold_drop_min": 10,
+  "gold_drop_max": 22,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fm_hallucinogenic_cap.png"
+}

@@ -1,0 +1,31 @@
+{
+  "id": "nc_soul_reaver",
+  "display_name": "Soul Reaver",
+  "description": "A blade forged from grave-iron and quenched in spectral essence. It moans faintly when drawn.",
+  "icon_hint": "jagged dark iron sword with a ghostly green glow along the blade and a bone-wrapped hilt",
+  "item_type": "weapon",
+  "item_subtype": "sword",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 19
+  },
+  "stat_bonuses": {
+    "attack": 19,
+    "speed": 2
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 120,
+  "icon_path": "",
+  "tags": ["region_6", "weapon", "sword", "necropolis", "tier_4"]
+}

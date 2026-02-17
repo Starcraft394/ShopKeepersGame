@@ -1,0 +1,14 @@
+{
+  "id": "ss_brine_venom",
+  "display_name": "Brine Venom",
+  "description": "Caustic venom extracted from salt lurkers, used in potent alchemical brews.",
+  "icon_hint": "small glass vial of cloudy yellow-green caustic liquid with salt crystals on the rim",
+  "item_type": "material",
+  "item_subtype": "monster_part",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 16,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_3", "material", "monster_part", "alchemy", "sunken_strand"]
+}

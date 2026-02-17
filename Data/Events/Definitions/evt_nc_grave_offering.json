@@ -1,0 +1,41 @@
+{
+  "id": "evt_nc_grave_offering",
+  "title": "Grave Offerings",
+  "description": "A row of weathered headstones stands along a cobbled path, each grave adorned with fresh offerings that someone — or something — placed here recently. Bundles of dark flowers, small leather pouches of coin, and woven grass charms sit atop the mossy stone. The air smells of turned earth and wilted petals.",
+  "kind": "choice",
+  "tags": ["necro", "crypt"],
+  "choices": [
+    {
+      "id": "take_coins",
+      "label": "Take the coins",
+      "description": "The dead have no use for gold, but the living do.",
+      "effects": [
+        { "type": "add_gold_range", "min": 12, "max": 22 }
+      ]
+    },
+    {
+      "id": "gather_grass",
+      "label": "Gather the deadman's grass",
+      "description": "The dark grass woven into the charms grows only on graves — herbalists covet it.",
+      "effects": [
+        { "type": "add_item", "item_id": "deadmans_grass", "min_qty": 2, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "collect_dust",
+      "label": "Collect the grave dust",
+      "description": "Fine dust from freshly tended graves holds potent alchemical properties.",
+      "effects": [
+        { "type": "add_item", "item_id": "nc_grave_dust", "min_qty": 2, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "move_on",
+      "label": "Respect the dead",
+      "description": "Grave robbing carries its own kind of curse.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

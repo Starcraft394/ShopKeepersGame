@@ -1,0 +1,41 @@
+{
+  "id": "evt_ss_brine_spring",
+  "title": "Bubbling Brine Spring",
+  "description": "Warm saltwater wells up from a crack in the cavern floor, filling the air with mineral steam. Thick deposits of crystallized salt ring the pool in uneven ridges. The water carries a faint sulphurous tang, but the warmth is undeniably inviting.",
+  "kind": "choice",
+  "tags": ["coastal", "tidal"],
+  "choices": [
+    {
+      "id": "harvest_salt",
+      "label": "Harvest the salt deposits",
+      "description": "The crusted mineral formations break off in clean chunks.",
+      "effects": [
+        { "type": "add_item", "item_id": "sea_salt_crystal", "min_qty": 3, "max_qty": 5 }
+      ]
+    },
+    {
+      "id": "bottle_brine",
+      "label": "Bottle the brine",
+      "description": "Concentrated brine from a thermal vent holds potent venom properties.",
+      "effects": [
+        { "type": "add_item", "item_id": "ss_brine_venom", "min_qty": 1, "max_qty": 2 }
+      ]
+    },
+    {
+      "id": "bathe",
+      "label": "Bathe in the spring",
+      "description": "The warm mineral water eases wounds and restores vitality.",
+      "effects": [
+        { "type": "heal_party", "value": 10 }
+      ]
+    },
+    {
+      "id": "move_on",
+      "label": "Move on",
+      "description": "No time for soaking when the strand awaits.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

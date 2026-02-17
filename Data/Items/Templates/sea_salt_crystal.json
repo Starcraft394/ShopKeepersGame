@@ -1,0 +1,14 @@
+{
+  "id": "sea_salt_crystal",
+  "display_name": "Sea Salt Crystal",
+  "description": "Crystallized sea salt from tidal pools, used in preservation and alchemy.",
+  "icon_hint": "jagged translucent white crystal cluster with blue tint from evaporated seawater",
+  "item_type": "material",
+  "item_subtype": "mineral",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 12,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_3", "material", "mineral", "alchemy", "sunken_strand"]
+}

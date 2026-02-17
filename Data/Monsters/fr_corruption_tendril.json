@@ -1,0 +1,27 @@
+{
+  "id": "fr_corruption_tendril",
+  "display_name": "Corruption Tendril",
+  "description": "A writhing appendage of raw corruption that lashes out from tears in reality.",
+  "icon_hint": "dark purple-black writhing tentacle emerging from a glowing tear in reality",
+  "family": "void",
+  "region_id": "region_7",
+  "tier": 1,
+  "ai_tier": 1,
+  "base_stats": {
+    "health": 82,
+    "attack": 21,
+    "defense": 12,
+    "speed": 13
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region7_common",
+  "gold_drop_min": 18,
+  "gold_drop_max": 32,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fr_corruption_tendril.png"
+}

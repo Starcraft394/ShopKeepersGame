@@ -1,0 +1,14 @@
+{
+  "id": "fr_corruption_ichor",
+  "display_name": "Corruption Ichor",
+  "description": "Thick dark fluid from corruption avatars. Stains reality where it drips.",
+  "icon_hint": "sealed vial of thick black-purple fluid that stains the glass where it touches",
+  "item_type": "material",
+  "item_subtype": "monster_part",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 40,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_7", "material", "monster_part", "alchemy", "final_realm"]
+}

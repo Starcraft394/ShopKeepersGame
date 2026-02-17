@@ -1,0 +1,41 @@
+{
+  "id": "evt_ss_coral_formation",
+  "title": "Massive Coral Formation",
+  "description": "A towering coral structure rises from the flooded cavern floor, its branches fanning outward in violet and amber. Something glints deep within the lattice, caught between calcified ridges. The sand around the base is littered with shell fragments.",
+  "kind": "choice",
+  "tags": ["coastal", "tidal"],
+  "choices": [
+    {
+      "id": "break_coral",
+      "label": "Break open the coral",
+      "description": "A pearl is lodged inside, worth the effort to extract.",
+      "effects": [
+        { "type": "add_item", "item_id": "tidal_pearl", "min_qty": 1, "max_qty": 1 }
+      ]
+    },
+    {
+      "id": "harvest_branches",
+      "label": "Harvest the coral branches",
+      "description": "Dried coral is sturdy enough to use as structural wood.",
+      "effects": [
+        { "type": "add_item", "item_id": "driftwood", "min_qty": 1, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "search_sand",
+      "label": "Search the sand nearby",
+      "description": "Coins and trinkets wash up and settle around formations like this.",
+      "effects": [
+        { "type": "add_gold_range", "min": 8, "max": 16 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Leave it be",
+      "description": "Destroying coral this old feels unwise.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

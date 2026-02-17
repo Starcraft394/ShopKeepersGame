@@ -14,6 +14,7 @@ enum ActionType {
 	BASIC_ATTACK,
 	WEAPON_ABILITY,
 	CLASS_ABILITY,
+	EQUIPMENT_ABILITY,  # T4 equipment-granted ability
 	ITEM_USE,
 	SKIP,           # Stunned or otherwise unable to act
 	DOOM_TRIGGER,   # Doom damage occurs
@@ -136,6 +137,20 @@ static func create_heal(actor: CombatUnit, target: CombatUnit, ability_id: Strin
 	action.healing_done = heal_amount
 	action.message = "%s uses %s on %s, healing %d HP!" % [
 		actor.display_name, ability_name, target.display_name, heal_amount]
+	return action
+
+
+static func create_equipment_ability(actor: CombatUnit, target: CombatUnit, ability_id_param: String, ability_name: String, damage: int) -> CombatAction:
+	var action = CombatAction.new()
+	action.action_type = ActionType.EQUIPMENT_ABILITY
+	action.actor_id = actor.unit_id
+	action.actor_name = actor.display_name
+	action.target_id = target.unit_id
+	action.target_name = target.display_name
+	action.ability_id = ability_id_param
+	action.damage_dealt = damage
+	action.message = "%s uses [Equip] %s on %s for %d damage!" % [
+		actor.display_name, ability_name, target.display_name, damage]
 	return action
 
 

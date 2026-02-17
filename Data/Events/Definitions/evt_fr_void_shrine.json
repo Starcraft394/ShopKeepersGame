@@ -1,0 +1,42 @@
+{
+  "id": "evt_fr_void_shrine",
+  "title": "Void Shrine",
+  "description": "A shrine that exists and doesn't exist simultaneously, flickering between states of being with each heartbeat. Candles that burn with black flame illuminate carvings in a language that predates creation. The altar at its center holds a crystallized fragment of pure void, and the air thrums with a quiet, patient hunger.",
+  "kind": "choice",
+  "tags": ["void", "corruption"],
+  "choices": [
+    {
+      "id": "commune",
+      "label": "Commune with the void",
+      "description": "Open your mind to the vast emptiness and let its strange peace flow through the party.",
+      "effects": [
+        { "type": "heal_party", "value": 15 }
+      ]
+    },
+    {
+      "id": "offer_gold",
+      "label": "Offer gold to the shrine",
+      "description": "Place coins upon the flickering altar and receive the void's deeper blessing.",
+      "effects": [
+        { "type": "add_gold_range", "min": -12, "max": -12 },
+        { "type": "heal_party", "value": 25 }
+      ]
+    },
+    {
+      "id": "take_crystal",
+      "label": "Take the void crystal",
+      "description": "Seize the crystallized void from the altar before the shrine flickers out of existence.",
+      "effects": [
+        { "type": "add_item", "item_id": "void_crystal", "min_qty": 1, "max_qty": 1 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Leave the shrine",
+      "description": "The shrine's hunger is patient, but you are not willing to feed it.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

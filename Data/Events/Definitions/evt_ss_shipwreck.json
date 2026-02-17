@@ -1,0 +1,41 @@
+{
+  "id": "evt_ss_shipwreck",
+  "title": "Half-Sunken Ship",
+  "description": "A merchant vessel lists between jagged rocks, its hull split open by the tide. Barnacles coat every surface and seawater sloshes through the lower decks. The mast still flies a tattered pennant, snapping in the salt wind.",
+  "kind": "choice",
+  "tags": ["coastal", "tidal"],
+  "choices": [
+    {
+      "id": "salvage_cargo",
+      "label": "Salvage the cargo hold",
+      "description": "Waterlogged timber still has value if you can haul it out.",
+      "effects": [
+        { "type": "add_item", "item_id": "driftwood", "min_qty": 2, "max_qty": 4 }
+      ]
+    },
+    {
+      "id": "search_quarters",
+      "label": "Search the captain's quarters",
+      "description": "The captain's lockbox might still hold coin.",
+      "effects": [
+        { "type": "add_gold_range", "min": 12, "max": 22 }
+      ]
+    },
+    {
+      "id": "pry_barnacles",
+      "label": "Pry barnacles from the hull",
+      "description": "The thick crustacean shells have use in crafting.",
+      "effects": [
+        { "type": "add_item", "item_id": "ss_crustacean_shell", "min_qty": 1, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Leave the wreck",
+      "description": "The groaning hull sounds ready to collapse.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

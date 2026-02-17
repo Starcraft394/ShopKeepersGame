@@ -1,0 +1,19 @@
+{
+  "id": "lt_region3_boss",
+  "display_name": "Region 3 Boss Loot",
+  "description": "Rich drops from Sunken Strand bosses.",
+  "min_drops": 3,
+  "max_drops": 5,
+  "entries": [
+    { "item_id": "ss_crustacean_shell", "weight": 15, "min_qty": 3, "max_qty": 5 },
+    { "item_id": "tidal_pearl", "weight": 15, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "stormglass_fragment", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "healing_tonic", "weight": 12, "min_qty": 2, "max_qty": 3 },
+    { "item_id": "ss_coral_blade", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "ss_tidestriker_bow", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "ss_abalone_shield", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "ss_barnacle_plate", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "ss_tidecaller_ring", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 5, "min_qty": 0, "max_qty": 0 }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "se_temporal_band",
+  "display_name": "Temporal Band",
+  "description": "A ring of compressed time-crystal. The wearer's reflexes seem to outpace reality.",
+  "icon_hint": "ring of swirling amber crystal with ghostly after-images trailing from its surface",
+  "item_type": "accessory",
+  "item_subtype": "ring",
+  "category": "equipment",
+  "slot": "accessory_1",
+  "equip_slot": "ring",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "health": 16
+  },
+  "stat_bonuses": {
+    "health": 16,
+    "speed": 3
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 95,
+  "icon_path": "",
+  "tags": ["region_5", "accessory", "ring", "starfall_expanse", "tier_4"]
+}

@@ -1,0 +1,13 @@
+{
+  "id": "region_5",
+  "display_name": "Starfall Expanse",
+  "description": "Crystal groves and floating stones where reality fractures into prismatic geometry. Time feels wrong here, and impossible vistas stretch in every direction.",
+  "region_index": 5,
+  "requires_region_id": "region_4",
+  "dungeon_floor_count": 5,
+  "monster_families": ["crystal"],
+  "town_ids": ["town_crystalhearth"],
+  "boss_id": "se_shattered_oracle",
+  "theme_color": "#4a3a8b",
+  "accent_color": "#9c6abf"
+}

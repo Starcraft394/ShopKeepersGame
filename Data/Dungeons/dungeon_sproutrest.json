@@ -1,0 +1,63 @@
+{
+  "id": "dungeon_sproutrest",
+  "display_name": "Fungalmire Depths",
+  "description": "Bioluminescent tunnels descend through layers of ancient fungal growth. The air thickens with spores as the Spiral Mycelium's influence grows stronger.",
+  "region_id": "region_2",
+  "town_id": "town_sproutrest",
+  "floor_count": 4,
+  "rooms_per_floor": 3,
+  "boss_id": "fm_spiral_mycelium",
+  "alt_boss_id": "",
+  "min_rooms_per_floor": 3,
+  "max_rooms_per_floor": 5,
+  "choice_b_event_weight": 0.6,
+  "choice_b_elite_weight": 0.4,
+  "event_table_id": "et_region2_combined",
+  "encounter_tags": ["spore", "fungal", "mycelium", "bioluminescent", "bog", "underground"],
+  "gear_whitelist": [
+    "iron_sword", "iron_helmet", "iron_greaves", "iron_greataxe",
+    "chainmail_vest", "reinforced_shield", "composite_bow",
+    "arcane_staff", "silver_ring", "warriors_pendant"
+  ],
+  "floor_theme": [
+    "Biolum Shallows",
+    "Rotting Canopy",
+    "Mycelium Core",
+    "The Spiral Chamber"
+  ],
+  "tier1_monster_ids": [
+    "fm_bog_wisp", "fm_mire_toad", "fm_sporekin_shambler",
+    "fm_rot_beetle", "fm_cave_shroom", "fm_slime_mold"
+  ],
+  "tier2_monster_ids": [
+    "fm_rotcap_myconid", "fm_hallucinogenic_cap", "fm_bloom_giant",
+    "fm_spore_knight", "fm_fungal_lurker", "fm_cordyceps_host"
+  ],
+  "elite_monster_ids": [
+    "fm_mycelium_brute", "fm_blight_mother", "fm_sporewarden"
+  ],
+  "tier1_by_floor": [
+    ["fm_bog_wisp", "fm_mire_toad", "fm_sporekin_shambler", "fm_slime_mold"],
+    ["fm_mire_toad", "fm_sporekin_shambler", "fm_rot_beetle", "fm_cave_shroom"],
+    ["fm_bog_wisp", "fm_rot_beetle", "fm_cave_shroom", "fm_slime_mold"],
+    ["fm_sporekin_shambler", "fm_mire_toad", "fm_cave_shroom", "fm_rot_beetle"]
+  ],
+  "tier2_by_floor": [
+    ["fm_rotcap_myconid", "fm_hallucinogenic_cap"],
+    ["fm_rotcap_myconid", "fm_bloom_giant", "fm_spore_knight", "fm_fungal_lurker"],
+    ["fm_hallucinogenic_cap", "fm_bloom_giant", "fm_cordyceps_host", "fm_spore_knight"],
+    ["fm_rotcap_myconid", "fm_hallucinogenic_cap", "fm_fungal_lurker", "fm_cordyceps_host", "fm_bloom_giant"]
+  ],
+  "elite_by_floor": [
+    [],
+    ["fm_mycelium_brute"],
+    ["fm_mycelium_brute", "fm_blight_mother"],
+    ["fm_mycelium_brute", "fm_blight_mother", "fm_sporewarden"]
+  ],
+  "room_types_by_floor": [
+    ["combat", "event", "combat"],
+    ["combat", "treasure", "combat"],
+    ["combat", "shrine", "elite"],
+    ["combat", "event", "combat"]
+  ]
+}

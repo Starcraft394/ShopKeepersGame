@@ -11,6 +11,7 @@ extends Control
 # ============================================================================
 
 const CombatControllerScript = preload("res://Game/Combat/CombatController.gd")
+const SLOT_STYLE = preload("res://Themes/CraftPix/slot_inventory.tres")
 
 # ============================================================================
 # NODE REFERENCES
@@ -36,15 +37,20 @@ var _is_auto_running: bool = false
 var _auto_timer: float = 0.0
 var _auto_delay: float = 0.5  # Seconds between auto steps
 var _scene_transition_pending: bool = false
-var _loot_panel: Control = null  # Loot routing panel (shown after victory with drops)
+var _loot_panel: Control = null  # Loot routing panel (CanvasLayer overlay)
+var _loot_overlay: CanvasLayer = null  # CanvasLayer for loot popup
 var _loot_result = null  # CombatResult reference for loot panel
 var _defeat_panel: Control = null  # Defeat screen (shown when all heroes die)
 
-# Swap popup for full bags - allows replacing existing items
-var _swap_popup: Window = null
-var _swap_pending_acq_index: int = -1
-var _swap_pending_hero_id: String = ""
-var _swap_pending_item_id: String = ""
+# Region color palette (populated in _ready)
+var _region_palette: Dictionary = {}
+
+# Loot panel selection state
+var _loot_selected_index: int = -1  # Currently selected pending item index
+var _loot_routing_bar: HBoxContainer = null  # Routing buttons row
+var _loot_swap_mode: bool = false  # True when in swap mode for a hero bag
+var _loot_swap_hero_id: String = ""  # Hero ID for active swap
+var _loot_swap_acq_index: int = -1  # Pending acq index for swap
 
 # Status UI v1.6: Unit display references for targeted refresh
 var _unit_displays: Dictionary = {}  # unit_id -> Control (unit display container)
@@ -147,13 +153,16 @@ const ATTACK_LINE_HEAL_COLOR: Color = Color(0.2, 1.0, 0.4, 0.9)  # Green for hea
 # PLAYER ACTIONS v1: Action Selection + Target Mode
 # ============================================================================
 
-var _action_panel: HBoxContainer = null
+var _action_panel: PanelContainer = null
 var _btn_basic: Button = null
 var _btn_ability_a: Button = null
 var _btn_ability_b: Button = null
 var _btn_pass: Button = null
 var _btn_cancel: Button = null
 var _action_label: Label = null  # Shows "Action 1/3:"
+var _equip_row: HBoxContainer = null  # Row 2: equipment ability buttons
+var _btn_equip_0: Button = null  # Equipment ability 0
+var _btn_equip_1: Button = null  # Equipment ability 1
 
 var _target_selection_active: bool = false
 var _valid_target_ids: Array = []
@@ -224,11 +233,30 @@ func _clear_team_slots(team: String) -> void:
 				child.queue_free()
 
 
+## Override PanelContainer theme on all grid cells so empty cells are transparent.
+func _clear_cell_backgrounds() -> void:
+	var transparent_style = StyleBoxFlat.new()
+	transparent_style.bg_color = Color(0, 0, 0, 0)
+	transparent_style.set_border_width_all(0)
+
+	for team in ["party", "enemy"]:
+		var grid_name = "PartyGrid" if team == "party" else "EnemyGrid"
+		var row_prefix = "PartyRow" if team == "party" else "EnemyRow"
+		for ui_row in range(GRID_ROWS):
+			var row_node = battlefield.get_node_or_null("%s/%s_%d" % [grid_name, row_prefix, ui_row])
+			if row_node == null:
+				continue
+			for ui_col in range(GRID_COLS):
+				var cell = row_node.get_node_or_null("Cell_c%d" % ui_col) as PanelContainer
+				if cell != null:
+					cell.add_theme_stylebox_override("panel", transparent_style)
+
+
 ## Create an empty cell placeholder (subtle visual for empty cells).
 func _create_empty_slot_placeholder() -> Control:
 	var placeholder = ColorRect.new()
 	placeholder.name = "EmptyPlaceholder"
-	placeholder.color = Color(0.2, 0.2, 0.25, 0.3)  # Subtle dark tint
+	placeholder.color = Color(0.15, 0.13, 0.11, 0.2)  # Subtle warm tint
 	placeholder.custom_minimum_size = Vector2(0, 60)  # Minimal height to show cell exists
 	placeholder.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	placeholder.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -306,6 +334,18 @@ func _show_attack_line(actor_id: String, target_id: String, is_heal: bool = fals
 func _ready() -> void:
 	print("[CombatScene] Initializing...")
 
+	# Populate region palette before UI building
+	_region_palette = RegionTheme.get_palette_for_current_region()
+
+	# Theme root background and top bar per region
+	var bg_node = get_node_or_null("Background")
+	if bg_node and bg_node is ColorRect:
+		var dark: Color = _region_palette.get("bg_dark", Color(0.10, 0.09, 0.08, 1))
+		bg_node.color = Color(dark.r * 0.7, dark.g * 0.7, dark.b * 0.7, 1.0)
+	var topbar_bg = get_node_or_null("TopBar/TopBarBG")
+	if topbar_bg and topbar_bg is ColorRect:
+		topbar_bg.color = _region_palette.get("title_bar", Color(0.15, 0.13, 0.11, 0.95))
+
 	# Connect button signals
 	step_button.pressed.connect(_on_step_pressed)
 	auto_button.pressed.connect(_on_auto_pressed)
@@ -313,6 +353,9 @@ func _ready() -> void:
 
 	# Attack Line v1: Create overlay layer for action lines
 	_create_attack_line_layer()
+
+	# Make grid cells transparent so empty PanelContainers don't show themed rectangles
+	_clear_cell_backgrounds()
 
 	# DEV TOOL: Add monster buff button
 	_monster_buff_btn = Button.new()
@@ -536,18 +579,22 @@ func _select_floor_enemies(rng: RandomNumberGenerator) -> Dictionary:
 	# Boss: final floor AND last room on that floor
 	var is_boss = (floor_num >= max_floor) and GameContext.is_last_room_on_floor()
 
-	# Boss floor: spawn boss only
+	# Boss floor: spawn boss only (supports alt_boss_id for randomized boss)
 	if is_boss and dungeon.boss_id != "":
+		var actual_boss: String = dungeon.boss_id
+		var alt_boss: String = dungeon.get("alt_boss_id", "")
+		if alt_boss != "" and rng.randf() < 0.5:
+			actual_boss = alt_boss
 		print("[Encounter] dungeon=%s floor=%d/%d room=%d/%d enemies=[%s] boss=true elite=false" % [
-			dungeon_id, floor_num, max_floor, room_idx + 1, rooms_per_floor, dungeon.boss_id
+			dungeon_id, floor_num, max_floor, room_idx + 1, rooms_per_floor, actual_boss
 		])
 		return {
-			"enemies": [dungeon.boss_id],
+			"enemies": [actual_boss],
 			"dungeon_id": dungeon_id,
 			"floor": floor_num,
 			"floor_count": max_floor,
 			"is_boss": true,
-			"boss_id": dungeon.boss_id
+			"boss_id": actual_boss
 		}
 
 	# ELITE ENCOUNTER: Use elite pool exclusively
@@ -800,326 +847,213 @@ func _refresh_enemy_panel(units: Array) -> void:
 
 
 func _create_unit_display(unit_data: Dictionary) -> Control:
-	# v1.9B.1: Wrap in a MarginContainer for robust highlight support
+	# Compact portrait card: portrait (left) + name/HP/badges (right)
 	var wrapper = MarginContainer.new()
 	wrapper.name = "UnitWrapper_%s" % unit_data["id"]
-	wrapper.add_theme_constant_override("margin_left", 4)
-	wrapper.add_theme_constant_override("margin_right", 4)
-	wrapper.add_theme_constant_override("margin_top", 4)
-	wrapper.add_theme_constant_override("margin_bottom", 4)
+	wrapper.add_theme_constant_override("margin_left", 3)
+	wrapper.add_theme_constant_override("margin_right", 3)
+	wrapper.add_theme_constant_override("margin_top", 3)
+	wrapper.add_theme_constant_override("margin_bottom", 3)
+	wrapper.mouse_filter = Control.MOUSE_FILTER_STOP
 
-	# v1.9B.1: Highlight frame (ColorRect behind content)
+	# Highlight frame (ColorRect behind content)
 	var highlight_frame = ColorRect.new()
 	highlight_frame.name = "HighlightFrame"
-	highlight_frame.color = Color(1.0, 0.85, 0.0, 0.25)  # Gold tint
+	highlight_frame.color = Color(1.0, 0.85, 0.0, 0.25)
 	highlight_frame.visible = false
 	highlight_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	# Position it to fill the wrapper
 	highlight_frame.set_anchors_preset(Control.PRESET_FULL_RECT)
-	highlight_frame.offset_left = -4
-	highlight_frame.offset_right = 4
-	highlight_frame.offset_top = -4
-	highlight_frame.offset_bottom = 4
+	highlight_frame.offset_left = -3
+	highlight_frame.offset_right = 3
+	highlight_frame.offset_top = -3
+	highlight_frame.offset_bottom = 3
 	wrapper.add_child(highlight_frame)
 
-	var container = VBoxContainer.new()
-	container.add_theme_constant_override("separation", 2)
-	container.name = "UnitContent_%s" % unit_data["id"]
+	# Main layout: portrait left, info right
+	var card_hbox = HBoxContainer.new()
+	card_hbox.add_theme_constant_override("separation", 6)
+	card_hbox.name = "UnitContent_%s" % unit_data["id"]
 
-	# Name + Class line with row indicator (3-Row Formation v1)
-	var name_label = Label.new()
-	var alive_color = Color.WHITE if unit_data["is_alive"] else Color.GRAY
-	var dead_text = " [DEAD]" if not unit_data["is_alive"] else ""
-	var class_suffix = ""
+	# Portrait (48x48)
+	var portrait_rect = TextureRect.new()
+	portrait_rect.custom_minimum_size = Vector2(48, 48)
+	portrait_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	portrait_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	var portrait_path = unit_data.get("portrait_path", "")
+	if portrait_path != "":
+		var tex = load(portrait_path)
+		if tex != null:
+			portrait_rect.texture = tex
+	if not unit_data["is_alive"]:
+		portrait_rect.modulate = Color(0.4, 0.4, 0.4, 1)
+	card_hbox.add_child(portrait_rect)
+
+	# Right side: name, class, HP bar, badges
+	var info_vbox = VBoxContainer.new()
+	info_vbox.add_theme_constant_override("separation", 1)
+	info_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	# Name label
 	var display_name = unit_data["name"]
+	if unit_data["team"] == "enemy":
+		var uid = unit_data.get("id", "")
+		if uid.begins_with("enemy_"):
+			var enemy_num = int(uid.replace("enemy_", "")) + 1
+			display_name = "%s #%d" % [unit_data["name"], enemy_num]
 
-	# Row indicator: [F]=Front, [M]=Middle, [B]=Back
-	var row_indicator = ""
-	var pos = unit_data.get("pos", {})
-	var row_y = pos.get("y", 1)  # Default to middle
-	match row_y:
-		0: row_indicator = " [F]"
-		1: row_indicator = " [M]"
-		2: row_indicator = " [B]"
+	var name_label = Label.new()
+	name_label.text = display_name
+	name_label.add_theme_font_size_override("font_size", 12)
+	if unit_data["is_alive"]:
+		name_label.add_theme_color_override("font_color", Color(0.96, 0.91, 0.82, 1))
+	else:
+		name_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5, 1))
+	info_vbox.add_child(name_label)
 
+	# Class label (heroes only)
 	if unit_data["team"] == "player" and unit_data.get("class_id", "") != "":
 		var cls_name = unit_data["class_id"].capitalize()
 		var cls_data = DataRegistry.get_class_data(unit_data["class_id"])
 		if cls_data != null and cls_data.display_name != "":
 			cls_name = cls_data.display_name
-		class_suffix = " (%s)" % cls_name
-	elif unit_data["team"] == "enemy":
-		# Add number to enemy name for differentiation (e.g., "Goblin #1")
-		var unit_id = unit_data.get("id", "")
-		if unit_id.begins_with("enemy_"):
-			var enemy_num = int(unit_id.replace("enemy_", "")) + 1  # Convert to 1-based
-			display_name = "%s #%d" % [unit_data["name"], enemy_num]
+		var class_label = Label.new()
+		class_label.text = cls_name
+		class_label.add_theme_font_size_override("font_size", 10)
+		class_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7, 0.8))
+		info_vbox.add_child(class_label)
 
-	name_label.text = "%s%s%s%s" % [display_name, class_suffix, row_indicator, dead_text]
-	name_label.add_theme_color_override("font_color", alive_color)
-	container.add_child(name_label)
-
-	# HP bar with tooltip for player units
-	var hp_container = HBoxContainer.new()
-	var hp_label = Label.new()
-	hp_label.text = "HP: %d/%d" % [unit_data["hp"], unit_data["max_hp"]]
-	hp_label.add_theme_font_size_override("font_size", 12)
-	# Add HP tooltip for player units showing health breakdown
-	if unit_data.get("team", "") == "player":
-		hp_label.tooltip_text = _build_stat_breakdown_tooltip("Health", unit_data.get("max_hp", 0), unit_data.get("max_hp", 0), unit_data.get("active_buffs_v1", []), unit_data)
-		hp_label.mouse_filter = Control.MOUSE_FILTER_STOP
-	hp_container.add_child(hp_label)
-
+	# HP bar (colored by health %)
 	var hp_bar = ProgressBar.new()
-	hp_bar.custom_minimum_size = Vector2(80, 12)
+	hp_bar.custom_minimum_size = Vector2(0, 10)
+	hp_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hp_bar.max_value = unit_data["max_hp"]
 	hp_bar.value = unit_data["hp"]
 	hp_bar.show_percentage = false
-	hp_container.add_child(hp_bar)
-	container.add_child(hp_container)
+	info_vbox.add_child(hp_bar)
 
-	# Status UI v1.8: Per-unit status badge row (CombatScene-owned, direct lookup, pooled)
+	# Status badge row (pooled)
 	var unit_id = unit_data["id"]
 	var status_badge_row = HBoxContainer.new()
 	status_badge_row.name = "StatusBadgeRow"
-	status_badge_row.add_theme_constant_override("separation", 4)
+	status_badge_row.add_theme_constant_override("separation", 3)
 	_populate_status_badges(status_badge_row, unit_data.get("active_statuses_v1", []), unit_id)
-	container.add_child(status_badge_row)
+	info_vbox.add_child(status_badge_row)
 
-	# Status UI v1.8: Per-unit buff badge row (pooled)
+	# Buff badge row (pooled)
 	var buff_badge_row = HBoxContainer.new()
 	buff_badge_row.name = "BuffBadgeRow"
-	buff_badge_row.add_theme_constant_override("separation", 4)
+	buff_badge_row.add_theme_constant_override("separation", 3)
 	_populate_buff_badges(buff_badge_row, unit_data.get("active_buffs_v1", []), unit_id)
-	container.add_child(buff_badge_row)
+	info_vbox.add_child(buff_badge_row)
 
-	# Status UI v1.7: Register both rows in dictionary
+	# Register badge rows for live updates
 	_unit_badge_rows[unit_data["id"]] = {
 		"status_row": status_badge_row,
 		"buff_row": buff_badge_row
 	}
 
-	# Stat line showing ATK, DEF, SPD for player units (with buff breakdown tooltips)
-	if unit_data["team"] == "player":
-		var stat_line = HBoxContainer.new()
-		stat_line.add_theme_constant_override("separation", 8)
-		var buffs = unit_data.get("active_buffs_v1", [])
+	card_hbox.add_child(info_vbox)
 
-		var atk_label = Label.new()
-		atk_label.text = "ATK: %d" % unit_data.get("attack", 0)
-		atk_label.add_theme_font_size_override("font_size", 11)
-		atk_label.add_theme_color_override("font_color", Color.SALMON)
-		atk_label.mouse_filter = Control.MOUSE_FILTER_STOP
-		atk_label.tooltip_text = _build_stat_breakdown_tooltip("Attack", unit_data.get("base_attack", 0), unit_data.get("attack", 0), buffs, unit_data)
-		stat_line.add_child(atk_label)
+	# Build rich tooltip with all stats (replaces inline stat display)
+	wrapper.tooltip_text = _build_unit_card_tooltip(unit_data)
 
-		var sep1 = Label.new()
-		sep1.text = "|"
-		sep1.add_theme_font_size_override("font_size", 11)
-		sep1.add_theme_color_override("font_color", Color.DIM_GRAY)
-		stat_line.add_child(sep1)
-
-		var def_label = Label.new()
-		def_label.text = "DEF: %d" % unit_data.get("defense", 0)
-		def_label.add_theme_font_size_override("font_size", 11)
-		def_label.add_theme_color_override("font_color", Color.LIGHT_BLUE)
-		def_label.mouse_filter = Control.MOUSE_FILTER_STOP
-		def_label.tooltip_text = _build_stat_breakdown_tooltip("Defense", unit_data.get("base_defense", 0), unit_data.get("defense", 0), buffs, unit_data)
-		stat_line.add_child(def_label)
-
-		var sep2 = Label.new()
-		sep2.text = "|"
-		sep2.add_theme_font_size_override("font_size", 11)
-		sep2.add_theme_color_override("font_color", Color.DIM_GRAY)
-		stat_line.add_child(sep2)
-
-		var spd_label = Label.new()
-		spd_label.text = "SPD: %d" % unit_data.get("speed", 0)
-		spd_label.add_theme_font_size_override("font_size", 11)
-		spd_label.add_theme_color_override("font_color", Color.YELLOW)
-		spd_label.mouse_filter = Control.MOUSE_FILTER_STOP
-		spd_label.tooltip_text = _build_stat_breakdown_tooltip("Speed", unit_data.get("base_speed", 0), unit_data.get("speed", 0), buffs, unit_data)
-		stat_line.add_child(spd_label)
-
-		container.add_child(stat_line)
-
-	# Stat line showing ATK, DEF, SPD for enemy units (with buff breakdown tooltips)
-	elif unit_data["team"] == "enemy":
-		var stat_line = HBoxContainer.new()
-		stat_line.add_theme_constant_override("separation", 8)
-		var buffs = unit_data.get("active_buffs_v1", [])
-
-		var atk_label = Label.new()
-		atk_label.text = "ATK: %d" % unit_data.get("attack", 0)
-		atk_label.add_theme_font_size_override("font_size", 11)
-		atk_label.add_theme_color_override("font_color", Color.SALMON)
-		atk_label.mouse_filter = Control.MOUSE_FILTER_STOP
-		atk_label.tooltip_text = _build_stat_breakdown_tooltip("Attack", unit_data.get("base_attack", 0), unit_data.get("attack", 0), buffs, unit_data)
-		stat_line.add_child(atk_label)
-
-		var sep1 = Label.new()
-		sep1.text = "|"
-		sep1.add_theme_font_size_override("font_size", 11)
-		sep1.add_theme_color_override("font_color", Color.DIM_GRAY)
-		stat_line.add_child(sep1)
-
-		var def_label = Label.new()
-		def_label.text = "DEF: %d" % unit_data.get("defense", 0)
-		def_label.add_theme_font_size_override("font_size", 11)
-		def_label.add_theme_color_override("font_color", Color.LIGHT_BLUE)
-		def_label.mouse_filter = Control.MOUSE_FILTER_STOP
-		def_label.tooltip_text = _build_stat_breakdown_tooltip("Defense", unit_data.get("base_defense", 0), unit_data.get("defense", 0), buffs, unit_data)
-		stat_line.add_child(def_label)
-
-		var sep2 = Label.new()
-		sep2.text = "|"
-		sep2.add_theme_font_size_override("font_size", 11)
-		sep2.add_theme_color_override("font_color", Color.DIM_GRAY)
-		stat_line.add_child(sep2)
-
-		var spd_label = Label.new()
-		spd_label.text = "SPD: %d" % unit_data.get("speed", 0)
-		spd_label.add_theme_font_size_override("font_size", 11)
-		spd_label.add_theme_color_override("font_color", Color.YELLOW)
-		spd_label.mouse_filter = Control.MOUSE_FILTER_STOP
-		spd_label.tooltip_text = _build_stat_breakdown_tooltip("Speed", unit_data.get("base_speed", 0), unit_data.get("speed", 0), buffs, unit_data)
-		stat_line.add_child(spd_label)
-
-		container.add_child(stat_line)
-
-	# Player Actions v1.3: Abilities and Passives display (replaces equipment)
+	# Right-click for consumable use (heroes only)
 	if unit_data["team"] == "player":
 		var hero_id = unit_data.get("source_id", unit_data["id"])
+		wrapper.gui_input.connect(_on_bag_right_clicked.bind(hero_id))
 
-		# Abilities row
-		var abilities_row = HBoxContainer.new()
-		abilities_row.add_theme_constant_override("separation", 8)
+	wrapper.add_child(card_hbox)
+	return wrapper
 
-		# Ability A
-		var ability_a_id = unit_data.get("ability_a_id", "")
-		if ability_a_id != "":
-			var ability_a = DataRegistry.get_ability(ability_a_id) if DataRegistry.has_method("get_ability") else null
-			var a_label = Label.new()
-			var a_name = ability_a.display_name if ability_a else ability_a_id.replace("_", " ").capitalize()
-			a_label.text = "[A] %s" % a_name
-			a_label.add_theme_font_size_override("font_size", 11)
-			a_label.add_theme_color_override("font_color", Color.CYAN)
-			a_label.mouse_filter = Control.MOUSE_FILTER_STOP
-			# Build tooltip with description, status effects, and cooldown
-			var a_tooltip = _build_static_ability_tooltip(ability_a, a_name)
-			a_label.tooltip_text = a_tooltip
-			abilities_row.add_child(a_label)
 
-		# Ability B
-		var ability_b_id = unit_data.get("ability_b_id", "")
-		if ability_b_id != "":
-			var ability_b = DataRegistry.get_ability(ability_b_id) if DataRegistry.has_method("get_ability") else null
-			var b_label = Label.new()
-			var b_name = ability_b.display_name if ability_b else ability_b_id.replace("_", " ").capitalize()
-			b_label.text = "[B] %s" % b_name
-			b_label.add_theme_font_size_override("font_size", 11)
-			b_label.add_theme_color_override("font_color", Color.CYAN)
-			b_label.mouse_filter = Control.MOUSE_FILTER_STOP
-			# Build tooltip with description, status effects, and cooldown
-			var b_tooltip = _build_static_ability_tooltip(ability_b, b_name)
-			b_label.tooltip_text = b_tooltip
-			abilities_row.add_child(b_label)
+## Build a rich tooltip for a compact unit card showing all stats, abilities, etc.
+func _build_unit_card_tooltip(unit_data: Dictionary) -> String:
+	var lines: Array = []
+	var display_name = unit_data["name"]
 
-		container.add_child(abilities_row)
+	# Name + class + level
+	if unit_data["team"] == "player":
+		var cls_name = ""
+		if unit_data.get("class_id", "") != "":
+			var cls_data = DataRegistry.get_class_data(unit_data["class_id"])
+			cls_name = cls_data.display_name if cls_data != null and cls_data.display_name != "" else unit_data["class_id"].capitalize()
 
-		# Passives row
-		var passives_row = HBoxContainer.new()
-		passives_row.add_theme_constant_override("separation", 8)
-
-		var passive_a_id = unit_data.get("passive_a_id", "")
-		var passive_b_id = unit_data.get("passive_b_id", "")
-
-		# Get hero level for tooltip formula calculation
+		var hero_id = unit_data.get("source_id", unit_data["id"])
 		var hero_level = 1
 		if GameContext.has_method("get_hero_effective_stats"):
 			var stats = GameContext.get_hero_effective_stats(hero_id)
 			hero_level = stats.get("level", 1)
 
+		lines.append("%s (%s) Lv%d" % [display_name, cls_name, hero_level])
+	else:
+		var uid = unit_data.get("id", "")
+		if uid.begins_with("enemy_"):
+			var enemy_num = int(uid.replace("enemy_", "")) + 1
+			display_name = "%s #%d" % [unit_data["name"], enemy_num]
+		lines.append(display_name)
+
+	# HP
+	lines.append("HP: %d/%d" % [unit_data["hp"], unit_data["max_hp"]])
+
+	# Stats
+	var atk = unit_data.get("attack", 0)
+	var base_atk = unit_data.get("base_attack", 0)
+	var def_val = unit_data.get("defense", 0)
+	var base_def = unit_data.get("base_defense", 0)
+	var spd = unit_data.get("speed", 0)
+	var base_spd = unit_data.get("base_speed", 0)
+
+	var atk_str = "ATK: %d" % atk
+	if atk != base_atk:
+		atk_str += " (%+d)" % (atk - base_atk)
+	var def_str = "DEF: %d" % def_val
+	if def_val != base_def:
+		def_str += " (%+d)" % (def_val - base_def)
+	var spd_str = "SPD: %d" % spd
+	if spd != base_spd:
+		spd_str += " (%+d)" % (spd - base_spd)
+	lines.append("%s | %s | %s" % [atk_str, def_str, spd_str])
+
+	# Abilities (heroes only)
+	if unit_data["team"] == "player":
+		var ability_a_id = unit_data.get("ability_a_id", "")
+		if ability_a_id != "":
+			var ability_a = DataRegistry.get_ability(ability_a_id) if DataRegistry.has_method("get_ability") else null
+			var a_name = ability_a.display_name if ability_a else ability_a_id.replace("_", " ").capitalize()
+			var cd_a = unit_data.get("ability_a_cooldown", 0)
+			var cd_str = " (CD: %d)" % cd_a if cd_a > 0 else " (Ready)"
+			lines.append("[A] %s%s" % [a_name, cd_str])
+
+		var ability_b_id = unit_data.get("ability_b_id", "")
+		if ability_b_id != "":
+			var ability_b = DataRegistry.get_ability(ability_b_id) if DataRegistry.has_method("get_ability") else null
+			var b_name = ability_b.display_name if ability_b else ability_b_id.replace("_", " ").capitalize()
+			var cd_b = unit_data.get("ability_b_cooldown", 0)
+			var cd_str = " (CD: %d)" % cd_b if cd_b > 0 else " (Ready)"
+			lines.append("[B] %s%s" % [b_name, cd_str])
+
+		# Passives
+		var passive_a_id = unit_data.get("passive_a_id", "")
 		if passive_a_id != "":
 			var passive_a = DataRegistry.get_passive(passive_a_id) if DataRegistry.has_method("get_passive") else null
-			var pa_label = Label.new()
 			var pa_name = passive_a.display_name if passive_a else passive_a_id.replace("_", " ").capitalize()
-			pa_label.text = "[P] %s" % pa_name
-			pa_label.add_theme_font_size_override("font_size", 10)
-			pa_label.add_theme_color_override("font_color", Color.MEDIUM_PURPLE)
-			pa_label.mouse_filter = Control.MOUSE_FILTER_STOP
-			var pa_tooltip = pa_name
-			if passive_a and passive_a.description != "":
-				var desc = _resolve_formula_in_description(passive_a.description, hero_level)
-				pa_tooltip += "\n%s" % desc
-			pa_label.tooltip_text = pa_tooltip
-			passives_row.add_child(pa_label)
+			lines.append("[P] %s" % pa_name)
 
+		var passive_b_id = unit_data.get("passive_b_id", "")
 		if passive_b_id != "":
 			var passive_b = DataRegistry.get_passive(passive_b_id) if DataRegistry.has_method("get_passive") else null
-			var pb_label = Label.new()
 			var pb_name = passive_b.display_name if passive_b else passive_b_id.replace("_", " ").capitalize()
-			pb_label.text = "[P] %s" % pb_name
-			pb_label.add_theme_font_size_override("font_size", 10)
-			pb_label.add_theme_color_override("font_color", Color.MEDIUM_PURPLE)
-			pb_label.mouse_filter = Control.MOUSE_FILTER_STOP
-			var pb_tooltip = pb_name
-			if passive_b and passive_b.description != "":
-				var desc = _resolve_formula_in_description(passive_b.description, hero_level)
-				pb_tooltip += "\n%s" % desc
-			pb_label.tooltip_text = pb_tooltip
-			passives_row.add_child(pb_label)
+			lines.append("[P] %s" % pb_name)
 
-		if passive_a_id != "" or passive_b_id != "":
-			container.add_child(passives_row)
-
-		# Hero bag line (with right-click for consumable use)
+		# Bag
+		var hero_id = unit_data.get("source_id", unit_data["id"])
 		var bag_summary = GameContext.get_hero_bag_summary(hero_id)
-		var bag_label = Label.new()
-		bag_label.name = "BagLabel"
-		bag_label.text = "BAG: %s" % bag_summary
-		bag_label.add_theme_font_size_override("font_size", 10)
-		bag_label.add_theme_color_override("font_color", Color.SANDY_BROWN if "empty" not in bag_summary else Color.DIM_GRAY)
-		bag_label.mouse_filter = Control.MOUSE_FILTER_STOP
-		bag_label.gui_input.connect(_on_bag_right_clicked.bind(hero_id))
-		bag_label.tooltip_text = "Right-click to use consumable"
-		container.add_child(bag_label)
+		lines.append("BAG: %s" % bag_summary)
 
-		# Stats button (opens floating stats window with full details)
-		var stats_btn = Button.new()
-		stats_btn.text = "Hero Info"
-		stats_btn.custom_minimum_size = Vector2(60, 24)
-		stats_btn.pressed.connect(_on_stats_button_pressed.bind(hero_id, unit_data))
-		stats_btn.tooltip_text = "View full stats, equipment, and abilities"
-		container.add_child(stats_btn)
+	if not unit_data["is_alive"]:
+		lines.append("[DEAD]")
 
-	# [DEBUG PANEL] Legacy statuses from StatusRuntime (stun, doom)
-	var status_label = Label.new()
-	status_label.name = "LegacyStatusDebug"
-	status_label.add_theme_font_size_override("font_size", 10)
-	var status_parts = []
-
-	for status in unit_data["statuses"]:
-		if status["id"] == "stun":
-			status_parts.append("[STUN:%d]" % status["duration"])
-		elif status["id"] == "doom":
-			status_parts.append("[DOOM:%d|t=%d]" % [status["stacks"], status["countdown"]])
-
-	if status_parts.size() > 0:
-		status_label.text = "(dbg) " + " ".join(status_parts)
-		status_label.add_theme_color_override("font_color", Color.DIM_GRAY)
-	else:
-		status_label.text = ""
-
-	container.add_child(status_label)
-
-	# Separator
-	var sep = HSeparator.new()
-	container.add_child(sep)
-
-	# v1.9B.1: Add content to wrapper and return wrapper
-	wrapper.add_child(container)
-	return wrapper
+	return "\n".join(lines)
 
 
 # ============================================================================
@@ -1889,6 +1823,20 @@ func _on_combat_ended(_result) -> void:
 	# v1.8: Emit sanity report at encounter end
 	_emit_sanity_report_if_needed()
 
+	# Diagnostic: trace loot popup conditions
+	print("[CombatEnd] _result=%s is_null=%s" % [str(_result), str(_result == null)])
+	if _result != null:
+		print("[CombatEnd] outcome=%s is_victory=%s gold=%d items_dropped=%d" % [
+			_result.get_outcome_string(),
+			str(_result.is_victory),
+			_result.gold_earned,
+			_result.items_dropped.size()
+		])
+	print("[CombatEnd] pending_acquisitions=%d has_pending=%s" % [
+		GameContext.get_all_pending_acquisitions().size(),
+		str(GameContext.has_pending_acquisition())
+	])
+
 	# Award XP on victory (boss=120, elite=75, normal=50)
 	if _result != null and _result.is_victory:
 		var xp_amount: int = 50  # Normal encounter
@@ -1903,15 +1851,23 @@ func _on_combat_ended(_result) -> void:
 
 		GameContext.grant_party_xp(xp_amount, source)
 
-	# Show loot panel if there are pending acquisitions to route
-	if _result != null and _result.is_victory and GameContext.has_pending_acquisition():
+	# Show loot panel on ANY victory (even with zero item drops, to display gold earned)
+	var show_loot: bool = _result != null and _result.is_victory
+	var show_defeat: bool = _result != null and not _result.is_victory
+	print("[CombatEnd] show_loot=%s show_defeat=%s pending=%d gold=%d" % [
+		str(show_loot), str(show_defeat),
+		GameContext.get_all_pending_acquisitions().size(),
+		_result.gold_earned if _result != null else 0])
+
+	if show_loot:
 		_loot_result = _result
 		_show_loot_panel()
-	elif _result != null and not _result.is_victory:
+	elif show_defeat:
 		# DEFEAT — show defeat screen before returning to town
 		_show_defeat_panel()
 	else:
-		# No pending loot — auto-resolve anything leftover and transition
+		# Draw or null result — auto-resolve and transition
+		print("[CombatEnd] No result or draw — auto-resolving to stash and transitioning")
 		GameContext.resolve_all_to_stash()
 		_do_combat_transition()
 
@@ -1942,204 +1898,490 @@ func _do_combat_transition() -> void:
 # LOOT PANEL — Route items to stash or hero bags
 # ============================================================================
 
-## Show the loot routing panel after combat victory.
-## v1.2: Manual-only routing (no auto-assign, no stash during dungeon, no remember prefs).
+## Show the loot routing panel as a CanvasLayer popup overlay.
+## v2: Visual slot-based overlay with icon grids instead of text lists.
 func _show_loot_panel() -> void:
-	# Remove old panel if exists
-	if _loot_panel != null:
-		_loot_panel.queue_free()
+	print("[LootPanel] _show_loot_panel() ENTERED — pending=%d" % GameContext.get_all_pending_acquisitions().size())
+
+	# Remove old overlay if exists
+	if _loot_overlay != null and is_instance_valid(_loot_overlay):
+		_loot_overlay.queue_free()
+		_loot_overlay = null
 		_loot_panel = null
+		_loot_routing_bar = null
+
+	_loot_swap_mode = false
+	_loot_swap_hero_id = ""
+	_loot_swap_acq_index = -1
 
 	var pending = GameContext.get_all_pending_acquisitions()
 
-	# Create full-screen overlay
+	# CanvasLayer popup (layer 10) — stays above combat scene
+	_loot_overlay = CanvasLayer.new()
+	_loot_overlay.layer = 10
+	add_child(_loot_overlay)
+
+	# Dark backdrop — full-screen anchors with zero offsets for CanvasLayer children
+	var backdrop = ColorRect.new()
+	backdrop.color = Color(0, 0, 0, 0.6)
+	backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
+	backdrop.set_offsets_preset(Control.PRESET_FULL_RECT)
+	_loot_overlay.add_child(backdrop)
+
+	# CenterContainer for the popup — full-screen anchors
+	var center = CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.set_offsets_preset(Control.PRESET_FULL_RECT)
+	_loot_overlay.add_child(center)
+
+	# Popup panel — needs explicit minimum height so CenterContainer can center it
 	_loot_panel = PanelContainer.new()
-	_loot_panel.name = "LootPanel"
-	_loot_panel.anchor_right = 1.0
-	_loot_panel.anchor_bottom = 1.0
-	_loot_panel.offset_left = 0
-	_loot_panel.offset_right = 0
-	_loot_panel.offset_top = 0
-	_loot_panel.offset_bottom = 0
+	_loot_panel.name = "LootPopup"
+	_loot_panel.custom_minimum_size = Vector2(620, 400)
 	_loot_panel.focus_mode = Control.FOCUS_ALL
+	var popup_style = StyleBoxFlat.new()
+	popup_style.bg_color = _region_palette.get("bg_dark", Color(0.14, 0.11, 0.09, 0.95))
+	popup_style.border_width_left = 2
+	popup_style.border_width_top = 2
+	popup_style.border_width_right = 2
+	popup_style.border_width_bottom = 2
+	popup_style.border_color = _region_palette.get("border", Color(0.55, 0.4, 0.25, 0.8))
+	popup_style.corner_radius_top_left = 6
+	popup_style.corner_radius_top_right = 6
+	popup_style.corner_radius_bottom_left = 6
+	popup_style.corner_radius_bottom_right = 6
+	popup_style.content_margin_left = 16.0
+	popup_style.content_margin_top = 12.0
+	popup_style.content_margin_right = 16.0
+	popup_style.content_margin_bottom = 12.0
+	_loot_panel.add_theme_stylebox_override("panel", popup_style)
+	center.add_child(_loot_panel)
 
 	var scroll = ScrollContainer.new()
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.custom_minimum_size = Vector2(0, 350)
+	scroll.add_theme_constant_override("scroll_deadzone", 0)
 	_loot_panel.add_child(scroll)
 
 	var vbox = VBoxContainer.new()
 	vbox.name = "LootVBox"
 	vbox.add_theme_constant_override("separation", 8)
 	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.add_child(vbox)
 
-	# Title
-	var title = Label.new()
+	# ── Title ──
 	var gold_earned = _loot_result.gold_earned if _loot_result != null else 0
+	var title = Label.new()
 	title.text = "COMBAT LOOT  (+%d gold)" % gold_earned
-	title.add_theme_font_size_override("font_size", 20)
-	title.modulate = Color(1, 0.9, 0.5)
+	title.add_theme_font_size_override("font_size", 18)
+	title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.5))
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(title)
 
+	# ── Drops grid (48x48 icon slots) ──
+	if not pending.is_empty():
+		var drops_label = Label.new()
+		drops_label.text = "Drops:"
+		drops_label.add_theme_font_size_override("font_size", 12)
+		drops_label.add_theme_color_override("font_color", Color(0.8, 0.7, 0.55))
+		vbox.add_child(drops_label)
+
+		var drops_grid = GridContainer.new()
+		drops_grid.columns = 8
+		drops_grid.add_theme_constant_override("h_separation", 4)
+		drops_grid.add_theme_constant_override("v_separation", 4)
+		vbox.add_child(drops_grid)
+
+		for i in range(pending.size()):
+			var slot = _create_loot_item_slot(pending[i], i)
+			drops_grid.add_child(slot)
+	else:
+		var done_lbl = Label.new()
+		# Distinguish "no items ever dropped" from "all items assigned"
+		var had_items: bool = _loot_result != null and _loot_result.items_dropped.size() > 0
+		done_lbl.text = "All items assigned!" if had_items else "No items dropped."
+		done_lbl.add_theme_font_size_override("font_size", 13)
+		done_lbl.add_theme_color_override("font_color", Color(0.5, 0.9, 0.5) if had_items else Color(0.7, 0.65, 0.55))
+		done_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		vbox.add_child(done_lbl)
+
+	# ── Routing bar (appears when a slot is selected) ──
+	_loot_routing_bar = HBoxContainer.new()
+	_loot_routing_bar.name = "RoutingBar"
+	_loot_routing_bar.add_theme_constant_override("separation", 6)
+	_loot_routing_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	vbox.add_child(_loot_routing_bar)
+	_update_routing_bar()
+
+	# ── Separator ──
 	var sep1 = HSeparator.new()
+	sep1.modulate = Color(0.55, 0.4, 0.25, 0.5)
 	vbox.add_child(sep1)
 
-	# v1.2: Instruction text
-	var inst_lbl = Label.new()
-	inst_lbl.text = "Assign each item to a hero bag or shopkeeper bag. Keys: B=Shop Bag, 1-4=Hero"
-	inst_lbl.add_theme_font_size_override("font_size", 11)
-	inst_lbl.modulate = Color(0.7, 0.7, 0.7)
-	vbox.add_child(inst_lbl)
+	# ── Shop Bag visual grid ──
+	var shop_used = GameContext.shopkeeper_bag.size()
+	var shop_cap = GameContext.get_shopkeeper_bag_capacity()
+	var shop_header = Label.new()
+	shop_header.text = "Shop Bag (%d/%d):" % [shop_used, shop_cap]
+	shop_header.add_theme_font_size_override("font_size", 12)
+	shop_header.add_theme_color_override("font_color", Color(0.6, 0.85, 0.6))
+	vbox.add_child(shop_header)
 
-	# Pending acquisition items
-	if pending.is_empty():
-		var no_loot = Label.new()
-		no_loot.text = "All items assigned."
-		no_loot.modulate = Color(0.6, 0.9, 0.6)
-		vbox.add_child(no_loot)
-	else:
-		for i in range(pending.size()):
-			var acq = pending[i]
-			var item_id = acq.get("item_id", "")
-			var qty = int(acq.get("qty", 1))
-			var quality = int(acq.get("quality", 0))
-			var tpl = DataRegistry.get_item_template(item_id)
-			var display_name = item_id.replace("_", " ").capitalize()
-			if tpl != null and tpl.display_name != "":
-				display_name = tpl.display_name
+	var shop_grid = GridContainer.new()
+	shop_grid.columns = 10
+	shop_grid.add_theme_constant_override("h_separation", 3)
+	shop_grid.add_theme_constant_override("v_separation", 3)
+	vbox.add_child(shop_grid)
 
-			var item_hbox = HBoxContainer.new()
-			item_hbox.add_theme_constant_override("separation", 8)
+	for j in range(shop_cap):
+		if j < GameContext.shopkeeper_bag.size():
+			var entry = GameContext.shopkeeper_bag[j]
+			shop_grid.add_child(_create_bag_slot(entry, 32))
+		else:
+			shop_grid.add_child(_create_empty_bag_slot(32))
 
-			# Item icon with quality border (if available)
-			if tpl != null:
-				var icon_ctrl = tpl.create_bordered_icon(20, quality)
-				if icon_ctrl != null:
-					item_hbox.add_child(icon_ctrl)
-
-			# Item label with quality color
-			var item_label = Label.new()
-			if quality > 0:
-				item_label.text = "%s %s x%d" % [ItemInstance.QUALITY_NAMES[clampi(quality, 0, 3)], display_name, qty]
-				item_label.modulate = ItemInstance.QUALITY_COLORS[clampi(quality, 0, 3)]
-			else:
-				item_label.text = "%s x%d" % [display_name, qty]
-			item_label.add_theme_font_size_override("font_size", 14)
-			item_label.custom_minimum_size = Vector2(200, 0)
-			item_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			item_hbox.add_child(item_label)
-
-			# v1.2: NO "To Stash" button during dungeon (stash is banked)
-
-			# [To Shop Bag] button — v1.3: ALL item types allowed
-			var shop_btn = Button.new()
-			shop_btn.text = "To Shop Bag"
-			shop_btn.custom_minimum_size = Vector2(100, 28)
-			var shop_used = GameContext.shopkeeper_bag.size()
-			var shop_cap = GameContext.get_shopkeeper_bag_capacity()
-			# v1.3: Check if 1 item can be added (no stacking)
-			if not GameContext.can_add_to_shopkeeper_bag(item_id, 1, quality):
-				shop_btn.disabled = true
-				shop_btn.tooltip_text = "Shop bag full (%d/%d)" % [shop_used, shop_cap]
-			else:
-				shop_btn.pressed.connect(_on_loot_to_shop_bag.bind(i))
-			item_hbox.add_child(shop_btn)
-
-			# [To HeroName (used/cap)] buttons — one per party hero
-			# v1.3: ALL item types allowed in hero bags
-			for hero_id in GameContext.selected_party:
-				var hero = GameContext.get_hero(hero_id)
-				var hero_name = hero.get("name", hero_id) if not hero.is_empty() else hero_id
-				if hero_name.length() > 8:
-					hero_name = hero_name.substr(0, 7) + "."
-				# Show bag capacity in button text
-				var bag_used = GameContext.get_hero_bag(hero_id).size()
-				var bag_cap = GameContext.get_hero_bag_capacity(hero_id)
-				var hero_btn = Button.new()
-				hero_btn.custom_minimum_size = Vector2(110, 28)
-				# v1.4: If bag is full, enable swap mode instead of disabling
-				if not GameContext.can_add_to_hero_bag(hero_id, item_id, 1):
-					hero_btn.text = "Swap %s (%d/%d)" % [hero_name, bag_used, bag_cap]
-					hero_btn.modulate = Color(1.0, 0.8, 0.6)  # Orange tint for swap
-					hero_btn.tooltip_text = "Replace an item in %s's bag" % hero_name
-					hero_btn.pressed.connect(_on_loot_swap_request.bind(i, hero_id, item_id))
-				else:
-					hero_btn.text = "To %s (%d/%d)" % [hero_name, bag_used, bag_cap]
-					hero_btn.pressed.connect(_on_loot_to_hero.bind(i, hero_id))
-				item_hbox.add_child(hero_btn)
-
-			vbox.add_child(item_hbox)
-
-	# Separator
-	var sep2 = HSeparator.new()
-	vbox.add_child(sep2)
-
-	# Hero bag summaries
-	var bag_title = Label.new()
-	bag_title.text = "Hero Bags:"
-	bag_title.add_theme_font_size_override("font_size", 14)
-	bag_title.modulate = Color(0.9, 0.7, 0.5)
-	vbox.add_child(bag_title)
-
+	# ── Hero Bag visual grids ──
 	for hero_id in GameContext.selected_party:
 		var hero = GameContext.get_hero(hero_id)
-		var hero_name = hero.get("name", hero_id) if not hero.is_empty() else hero_id
-		var bag_summary = GameContext.get_hero_bag_summary(hero_id)
-		var bag_lbl = Label.new()
-		bag_lbl.text = "  %s: %s" % [hero_name, bag_summary]
-		bag_lbl.add_theme_font_size_override("font_size", 12)
-		bag_lbl.modulate = Color(0.8, 0.8, 0.6)
-		vbox.add_child(bag_lbl)
+		var hero_name: String = hero.get("name", hero_id) if not hero.is_empty() else hero_id
+		var bag = GameContext.get_hero_bag(hero_id)
+		var bag_cap = GameContext.get_hero_bag_capacity(hero_id)
 
-	# Shopkeeper bag summary
-	var shop_bag_lbl = Label.new()
-	shop_bag_lbl.text = "  Shopkeeper Bag: %s" % GameContext.get_shopkeeper_bag_summary()
-	shop_bag_lbl.add_theme_font_size_override("font_size", 12)
-	shop_bag_lbl.modulate = Color(0.7, 0.9, 0.7)
-	vbox.add_child(shop_bag_lbl)
+		var hero_row = HBoxContainer.new()
+		hero_row.add_theme_constant_override("separation", 8)
+		vbox.add_child(hero_row)
 
-	# Stash summary (banked, view only)
-	var stash_lbl = Label.new()
-	stash_lbl.text = "  Stash (banked): %d items, %d gold" % [GameContext.run_items.size(), GameContext.run_gold]
-	stash_lbl.add_theme_font_size_override("font_size", 12)
-	stash_lbl.modulate = Color(0.5, 0.5, 0.7)
-	vbox.add_child(stash_lbl)
+		var hero_lbl = Label.new()
+		hero_lbl.text = "%s (%d/%d):" % [hero_name, bag.size(), bag_cap]
+		hero_lbl.add_theme_font_size_override("font_size", 12)
+		hero_lbl.add_theme_color_override("font_color", Color(0.85, 0.75, 0.55))
+		hero_lbl.custom_minimum_size = Vector2(120, 0)
+		hero_row.add_child(hero_lbl)
 
-	# Separator
-	var sep3 = HSeparator.new()
-	vbox.add_child(sep3)
+		var hero_grid = GridContainer.new()
+		hero_grid.columns = 5
+		hero_grid.add_theme_constant_override("h_separation", 3)
+		hero_grid.add_theme_constant_override("v_separation", 3)
+		hero_row.add_child(hero_grid)
 
-	# v1.2: Block Continue if pending items remain
+		for j in range(bag_cap):
+			if j < bag.size():
+				var entry = bag[j]
+				var is_swap_target: bool = _loot_swap_mode and _loot_swap_hero_id == hero_id
+				var bag_slot = _create_bag_slot(entry, 32, is_swap_target, hero_id, j)
+				hero_grid.add_child(bag_slot)
+			else:
+				hero_grid.add_child(_create_empty_bag_slot(32))
+
+	# ── Swap mode warning ──
+	if _loot_swap_mode:
+		var swap_warn = Label.new()
+		var swap_hero = GameContext.get_hero(_loot_swap_hero_id)
+		var swap_hero_name: String = swap_hero.get("name", _loot_swap_hero_id) if not swap_hero.is_empty() else _loot_swap_hero_id
+		swap_warn.text = "Click a slot in %s's bag to replace it (item will be DISCARDED)" % swap_hero_name
+		swap_warn.add_theme_font_size_override("font_size", 11)
+		swap_warn.add_theme_color_override("font_color", Color(1.0, 0.5, 0.4))
+		swap_warn.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		vbox.add_child(swap_warn)
+
+		var cancel_swap_btn = Button.new()
+		cancel_swap_btn.text = "Cancel Swap"
+		cancel_swap_btn.custom_minimum_size = Vector2(120, 28)
+		cancel_swap_btn.pressed.connect(_on_swap_cancel)
+		vbox.add_child(cancel_swap_btn)
+
+	# ── Separator ──
+	var sep2 = HSeparator.new()
+	sep2.modulate = Color(0.55, 0.4, 0.25, 0.5)
+	vbox.add_child(sep2)
+
+	# ── Bottom buttons ──
+	var btn_row = HBoxContainer.new()
+	btn_row.add_theme_constant_override("separation", 16)
+	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_child(btn_row)
+
 	if not pending.is_empty():
-		var block_lbl = Label.new()
-		block_lbl.text = "Assign all items before continuing."
-		block_lbl.add_theme_font_size_override("font_size", 12)
-		block_lbl.modulate = Color(1.0, 0.6, 0.4)
-		vbox.add_child(block_lbl)
-
-		# Discard button (explicit user action)
 		var discard_btn = Button.new()
-		discard_btn.text = "Discard Remaining"
-		discard_btn.custom_minimum_size = Vector2(160, 32)
+		discard_btn.text = "Discard All"
+		discard_btn.custom_minimum_size = Vector2(120, 32)
 		discard_btn.modulate = Color(1.0, 0.7, 0.7)
 		discard_btn.pressed.connect(_on_loot_discard_all)
-		vbox.add_child(discard_btn)
+		btn_row.add_child(discard_btn)
 
-	# Continue button (disabled if pending items remain)
+		var all_shop_btn = Button.new()
+		all_shop_btn.text = "All to Shop Bag"
+		all_shop_btn.custom_minimum_size = Vector2(140, 32)
+		if shop_used >= shop_cap:
+			all_shop_btn.disabled = true
+			all_shop_btn.tooltip_text = "Shop bag full"
+		all_shop_btn.pressed.connect(_on_loot_all_to_shop)
+		btn_row.add_child(all_shop_btn)
+
 	var continue_btn = Button.new()
 	continue_btn.text = "Continue"
-	continue_btn.custom_minimum_size = Vector2(200, 36)
+	continue_btn.custom_minimum_size = Vector2(140, 32)
 	continue_btn.pressed.connect(_on_loot_continue)
 	if not pending.is_empty():
 		continue_btn.disabled = true
 		continue_btn.tooltip_text = "Assign all items first"
-	vbox.add_child(continue_btn)
+	btn_row.add_child(continue_btn)
 
-	add_child(_loot_panel)
 	_loot_panel.grab_focus()
-	print("[LootPanel] Showing %d pending acquisitions" % pending.size())
+	print("[LootPanel] Showing %d pending acquisitions (visual popup)" % pending.size())
+
+
+## Create a 48x48 clickable icon slot for a pending loot item.
+func _create_loot_item_slot(acq: Dictionary, index: int) -> Control:
+	var item_id: String = acq.get("item_id", "")
+	var quality: int = int(acq.get("quality", 0))
+	var tpl = DataRegistry.get_item_template(item_id)
+	var display_name: String = item_id.replace("_", " ").capitalize()
+	if tpl != null and tpl.display_name != "":
+		display_name = tpl.display_name
+
+	var slot = PanelContainer.new()
+	slot.custom_minimum_size = Vector2(52, 52)
+	var slot_style: StyleBoxFlat
+	if index == _loot_selected_index:
+		# Selected: gold highlight border
+		slot_style = StyleBoxFlat.new()
+		slot_style.bg_color = Color(0.2, 0.18, 0.12, 0.9)
+		slot_style.border_width_left = 2
+		slot_style.border_width_top = 2
+		slot_style.border_width_right = 2
+		slot_style.border_width_bottom = 2
+		slot_style.border_color = Color(1.0, 0.85, 0.3)
+		slot_style.corner_radius_top_left = 3
+		slot_style.corner_radius_top_right = 3
+		slot_style.corner_radius_bottom_left = 3
+		slot_style.corner_radius_bottom_right = 3
+		slot_style.content_margin_left = 2.0
+		slot_style.content_margin_top = 2.0
+		slot_style.content_margin_right = 2.0
+		slot_style.content_margin_bottom = 2.0
+	else:
+		slot_style = StyleBoxFlat.new()
+		slot_style.bg_color = Color(0.15, 0.13, 0.1, 0.8)
+		slot_style.border_width_left = 1
+		slot_style.border_width_top = 1
+		slot_style.border_width_right = 1
+		slot_style.border_width_bottom = 1
+		slot_style.border_color = Color(0.4, 0.35, 0.25, 0.6)
+		slot_style.corner_radius_top_left = 3
+		slot_style.corner_radius_top_right = 3
+		slot_style.corner_radius_bottom_left = 3
+		slot_style.corner_radius_bottom_right = 3
+		slot_style.content_margin_left = 2.0
+		slot_style.content_margin_top = 2.0
+		slot_style.content_margin_right = 2.0
+		slot_style.content_margin_bottom = 2.0
+	slot.add_theme_stylebox_override("panel", slot_style)
+
+	# Item icon
+	if tpl != null:
+		var icon_ctrl = tpl.create_bordered_icon(40, quality)
+		if icon_ctrl != null:
+			slot.add_child(icon_ctrl)
+
+	# Tooltip with item info
+	var loot_affix_data: Dictionary = acq.get("affix_data", {})
+	var loot_affix_prefix: String = loot_affix_data.get("affix_prefix", "")
+	var loot_display: String = display_name
+	if loot_affix_prefix != "":
+		loot_display = loot_affix_prefix + " " + display_name
+	var tip_parts: Array[String] = [loot_display]
+	if quality > 0:
+		tip_parts[0] = "%s %s" % [ItemInstance.QUALITY_NAMES[clampi(quality, 0, 3)], loot_display]
+	if tpl != null:
+		if tpl.item_type != "":
+			tip_parts.append("Type: %s" % tpl.item_type)
+		var region_bonus: float = GameContext.get_completed_region_count() * 0.1
+		var stats = tpl.get_stat_bonuses_with_quality(quality, region_bonus)
+		for stat_key in stats:
+			tip_parts.append("%s: +%s" % [stat_key, str(stats[stat_key])])
+		# Show affix bonus if present
+		if loot_affix_prefix != "":
+			var loot_affix_stats: Dictionary = loot_affix_data.get("affix_stats", {})
+			if loot_affix_stats is Dictionary and not loot_affix_stats.is_empty():
+				var affix_parts: Array[String] = []
+				for ak in loot_affix_stats:
+					affix_parts.append("+%d %s" % [int(loot_affix_stats[ak]), ak.to_upper().left(3)])
+				tip_parts.append("Affix: %s (%s)" % [loot_affix_prefix, ", ".join(affix_parts)])
+			var loot_affix_desc: String = DataRegistry.get_regional_affix(loot_affix_data.get("affix_id", "")).get("description", "")
+			if loot_affix_desc != "":
+				tip_parts.append(loot_affix_desc)
+	slot.tooltip_text = "\n".join(tip_parts)
+
+	# Click handler — select this slot
+	var click_btn = Button.new()
+	click_btn.flat = true
+	click_btn.anchor_right = 1.0
+	click_btn.anchor_bottom = 1.0
+	click_btn.modulate = Color(1, 1, 1, 0)  # Invisible overlay button
+	click_btn.pressed.connect(_on_loot_slot_clicked.bind(index))
+	slot.add_child(click_btn)
+
+	return slot
+
+
+## Create a 32x32 mini-slot showing a bag item with icon.
+func _create_bag_slot(entry: Dictionary, slot_size: int = 32, is_swap_target: bool = false, hero_id: String = "", bag_index: int = -1) -> Control:
+	var item_id: String = entry.get("item_id", "")
+	var quality: int = int(entry.get("quality_tier", 0))
+	var tpl = DataRegistry.get_item_template(item_id)
+	var display_name: String = item_id.replace("_", " ").capitalize()
+	if tpl != null and tpl.display_name != "":
+		display_name = tpl.display_name
+
+	var slot = PanelContainer.new()
+	slot.custom_minimum_size = Vector2(slot_size + 4, slot_size + 4)
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.12, 0.1, 0.08, 0.8)
+	style.corner_radius_top_left = 2
+	style.corner_radius_top_right = 2
+	style.corner_radius_bottom_left = 2
+	style.corner_radius_bottom_right = 2
+	style.content_margin_left = 2.0
+	style.content_margin_top = 2.0
+	style.content_margin_right = 2.0
+	style.content_margin_bottom = 2.0
+	if is_swap_target:
+		style.border_width_left = 2
+		style.border_width_top = 2
+		style.border_width_right = 2
+		style.border_width_bottom = 2
+		style.border_color = Color(1.0, 0.5, 0.3, 0.9)
+	else:
+		style.border_width_left = 1
+		style.border_width_top = 1
+		style.border_width_right = 1
+		style.border_width_bottom = 1
+		style.border_color = Color(0.35, 0.3, 0.2, 0.5)
+	slot.add_theme_stylebox_override("panel", style)
+
+	# Icon
+	if tpl != null:
+		var icon_ctrl = tpl.create_bordered_icon(slot_size - 8, quality)
+		if icon_ctrl != null:
+			slot.add_child(icon_ctrl)
+
+	# Tooltip
+	var tip: String = display_name
+	if quality > 0:
+		tip = "%s %s" % [ItemInstance.QUALITY_NAMES[clampi(quality, 0, 3)], display_name]
+	slot.tooltip_text = tip
+
+	# Swap click handler — only active in swap mode for the target hero
+	if is_swap_target and bag_index >= 0:
+		var click_btn = Button.new()
+		click_btn.flat = true
+		click_btn.anchor_right = 1.0
+		click_btn.anchor_bottom = 1.0
+		click_btn.modulate = Color(1, 1, 1, 0)
+		click_btn.pressed.connect(_on_swap_bag_slot_clicked.bind(hero_id, bag_index, item_id))
+		slot.add_child(click_btn)
+
+	return slot
+
+
+## Create an empty bag slot (dim placeholder).
+func _create_empty_bag_slot(slot_size: int = 32) -> Control:
+	var slot = PanelContainer.new()
+	slot.custom_minimum_size = Vector2(slot_size + 4, slot_size + 4)
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.1, 0.08, 0.06, 0.3)
+	style.border_width_left = 1
+	style.border_width_top = 1
+	style.border_width_right = 1
+	style.border_width_bottom = 1
+	style.border_color = Color(0.3, 0.25, 0.18, 0.3)
+	style.corner_radius_top_left = 2
+	style.corner_radius_top_right = 2
+	style.corner_radius_bottom_left = 2
+	style.corner_radius_bottom_right = 2
+	slot.add_theme_stylebox_override("panel", style)
+	return slot
+
+
+## Update routing bar to reflect currently selected loot slot.
+func _update_routing_bar() -> void:
+	if _loot_routing_bar == null:
+		return
+	# Clear existing children
+	for child in _loot_routing_bar.get_children():
+		child.queue_free()
+
+	var pending = GameContext.get_all_pending_acquisitions()
+	if pending.is_empty() or _loot_selected_index < 0 or _loot_selected_index >= pending.size():
+		var hint = Label.new()
+		if pending.is_empty():
+			hint.text = ""
+		else:
+			hint.text = "Click an item above to assign it  (or press B / 1-4)"
+			hint.add_theme_font_size_override("font_size", 11)
+			hint.add_theme_color_override("font_color", Color(0.6, 0.6, 0.5))
+		_loot_routing_bar.add_child(hint)
+		return
+
+	var acq = pending[_loot_selected_index]
+	var item_id: String = acq.get("item_id", "")
+	var quality: int = int(acq.get("quality", 0))
+	var tpl = DataRegistry.get_item_template(item_id)
+	var display_name: String = item_id.replace("_", " ").capitalize()
+	if tpl != null and tpl.display_name != "":
+		display_name = tpl.display_name
+
+	var send_label = Label.new()
+	send_label.text = "Send %s to:" % display_name
+	send_label.add_theme_font_size_override("font_size", 12)
+	send_label.add_theme_color_override("font_color", Color(0.9, 0.85, 0.7))
+	_loot_routing_bar.add_child(send_label)
+
+	# Shop Bag button
+	var shop_used = GameContext.shopkeeper_bag.size()
+	var shop_cap = GameContext.get_shopkeeper_bag_capacity()
+	var shop_btn = Button.new()
+	shop_btn.text = "Shop Bag (%d/%d)" % [shop_used, shop_cap]
+	shop_btn.custom_minimum_size = Vector2(100, 26)
+	if not GameContext.can_add_to_shopkeeper_bag(item_id, 1, quality):
+		shop_btn.disabled = true
+		shop_btn.tooltip_text = "Shop bag full"
+	else:
+		shop_btn.pressed.connect(_on_loot_to_shop_bag.bind(_loot_selected_index))
+	_loot_routing_bar.add_child(shop_btn)
+
+	# Hero buttons
+	for hero_id in GameContext.selected_party:
+		var hero = GameContext.get_hero(hero_id)
+		var hero_name: String = hero.get("name", hero_id) if not hero.is_empty() else hero_id
+		if hero_name.length() > 10:
+			hero_name = hero_name.substr(0, 9) + "."
+		var bag_used = GameContext.get_hero_bag(hero_id).size()
+		var bag_cap = GameContext.get_hero_bag_capacity(hero_id)
+		var hero_btn = Button.new()
+		hero_btn.custom_minimum_size = Vector2(100, 26)
+		if not GameContext.can_add_to_hero_bag(hero_id, item_id, 1):
+			hero_btn.text = "Swap %s (%d/%d)" % [hero_name, bag_used, bag_cap]
+			hero_btn.modulate = Color(1.0, 0.8, 0.6)
+			hero_btn.tooltip_text = "Replace an item in %s's bag" % hero_name
+			hero_btn.pressed.connect(_on_loot_swap_request.bind(_loot_selected_index, hero_id))
+		else:
+			hero_btn.text = "%s (%d/%d)" % [hero_name, bag_used, bag_cap]
+			hero_btn.pressed.connect(_on_loot_to_hero.bind(_loot_selected_index, hero_id))
+		_loot_routing_bar.add_child(hero_btn)
+
+
+## Handle clicking a loot drop slot — select it for routing.
+func _on_loot_slot_clicked(index: int) -> void:
+	if _loot_swap_mode:
+		_loot_swap_mode = false
+		_loot_swap_hero_id = ""
+		_loot_swap_acq_index = -1
+	_loot_selected_index = index
+	_refresh_loot_panel()
 
 
 ## Refresh the loot panel after an item is routed.
@@ -2150,6 +2392,7 @@ func _refresh_loot_panel() -> void:
 ## Route a pending acquisition to the shopkeeper bag.
 func _on_loot_to_shop_bag(acq_index: int) -> void:
 	GameContext.resolve_acquisition_at(acq_index, "shop_bag")
+	_loot_selected_index = -1
 	_refresh_loot_panel()
 
 
@@ -2158,115 +2401,27 @@ func _on_loot_to_hero(acq_index: int, hero_id: String) -> void:
 	var ok = GameContext.resolve_acquisition_at(acq_index, "hero_bag", hero_id)
 	if not ok:
 		print("[LootPanel] Failed to route to hero=%s (rejected)" % hero_id)
+	_loot_selected_index = -1
 	_refresh_loot_panel()
 
 
-## v1.4: Request swap when hero bag is full - shows popup to choose which item to replace
-func _on_loot_swap_request(acq_index: int, hero_id: String, new_item_id: String) -> void:
-	_swap_pending_acq_index = acq_index
-	_swap_pending_hero_id = hero_id
-	_swap_pending_item_id = new_item_id
-
-	# Close existing popup if any
-	if _swap_popup != null and is_instance_valid(_swap_popup):
-		_swap_popup.queue_free()
-
-	# Get hero info
-	var hero = GameContext.get_hero(hero_id)
-	var hero_name = hero.get("name", hero_id) if hero else hero_id
-	var bag = GameContext.get_hero_bag(hero_id)
-
-	# Get new item info
-	var new_template = DataRegistry.get_item_template(new_item_id)
-	var new_item_name = new_template.display_name if new_template else new_item_id
-
-	# Create popup window
-	_swap_popup = Window.new()
-	_swap_popup.title = "Replace Item in %s's Bag" % hero_name
-	_swap_popup.size = Vector2i(350, 300)
-	_swap_popup.transient = true
-	_swap_popup.exclusive = true
-	_swap_popup.close_requested.connect(_on_swap_popup_closed)
-
-	var vbox = VBoxContainer.new()
-	vbox.anchor_right = 1.0
-	vbox.anchor_bottom = 1.0
-	vbox.offset_left = 10
-	vbox.offset_top = 10
-	vbox.offset_right = -10
-	vbox.offset_bottom = -10
-	vbox.add_theme_constant_override("separation", 8)
-	_swap_popup.add_child(vbox)
-
-	# Header
-	var header = Label.new()
-	header.text = "Adding: %s" % new_item_name
-	header.modulate = Color(0.5, 1, 0.5)
-	vbox.add_child(header)
-
-	var instruction = Label.new()
-	instruction.text = "Choose an item to replace:"
-	vbox.add_child(instruction)
-
-	# Warning that replaced item will be discarded
-	var warning = Label.new()
-	warning.text = "WARNING: Replaced item will be DISCARDED!"
-	warning.modulate = Color(1.0, 0.4, 0.4)  # Red warning
-	warning.add_theme_font_size_override("font_size", 11)
-	vbox.add_child(warning)
-
-	var sep = HSeparator.new()
-	vbox.add_child(sep)
-
-	# List current bag items with replace buttons
-	for i in range(bag.size()):
-		var entry = bag[i]
-		var item_id = entry.get("item_id", "")
-		var template = DataRegistry.get_item_template(item_id)
-		var item_name = template.display_name if template else item_id
-
-		var row = HBoxContainer.new()
-		row.add_theme_constant_override("separation", 8)
-
-		var label = Label.new()
-		label.text = item_name
-		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		row.add_child(label)
-
-		var replace_btn = Button.new()
-		replace_btn.text = "Replace"
-		replace_btn.custom_minimum_size = Vector2(80, 26)
-		replace_btn.pressed.connect(_on_swap_item_selected.bind(i, item_id))
-		row.add_child(replace_btn)
-
-		vbox.add_child(row)
-
-	# Cancel button
-	var sep2 = HSeparator.new()
-	vbox.add_child(sep2)
-
-	var cancel_btn = Button.new()
-	cancel_btn.text = "Cancel"
-	cancel_btn.custom_minimum_size = Vector2(100, 30)
-	cancel_btn.pressed.connect(_on_swap_popup_closed)
-	vbox.add_child(cancel_btn)
-
-	add_child(_swap_popup)
-	_swap_popup.popup_centered()
-	print("[LootPanel] Swap popup opened for hero=%s new_item=%s" % [hero_id, new_item_id])
+## Enter swap mode for a hero bag (bag is full, need to pick a slot to replace).
+func _on_loot_swap_request(acq_index: int, hero_id: String) -> void:
+	_loot_swap_mode = true
+	_loot_swap_hero_id = hero_id
+	_loot_swap_acq_index = acq_index
+	print("[LootPanel] Entering swap mode for hero=%s acq=%d" % [hero_id, acq_index])
+	_refresh_loot_panel()
 
 
-## Handle item selection in swap popup - replace the selected item (old item is DISCARDED)
-func _on_swap_item_selected(bag_index: int, old_item_id: String) -> void:
-	var hero_id = _swap_pending_hero_id
-	var acq_index = _swap_pending_acq_index
+## Handle clicking a bag slot during swap mode — replace the item.
+func _on_swap_bag_slot_clicked(hero_id: String, bag_index: int, old_item_id: String) -> void:
+	var acq_index = _loot_swap_acq_index
 
-	# Remove and DISCARD the old item from hero bag (no stash loophole)
+	# Remove and DISCARD the old item from hero bag
 	var success = GameContext.remove_item_from_hero_bag(hero_id, old_item_id, 1, 0)
 	if success:
 		print("[LootPanel] DISCARDED old_item=%s from hero=%s" % [old_item_id, hero_id])
-
-		# Now add the new item
 		var ok = GameContext.resolve_acquisition_at(acq_index, "hero_bag", hero_id)
 		if ok:
 			print("[LootPanel] Swap complete: added new item to hero=%s" % hero_id)
@@ -2275,18 +2430,19 @@ func _on_swap_item_selected(bag_index: int, old_item_id: String) -> void:
 	else:
 		print("[LootPanel] Swap failed: couldn't remove old item")
 
-	_on_swap_popup_closed()
+	_loot_swap_mode = false
+	_loot_swap_hero_id = ""
+	_loot_swap_acq_index = -1
+	_loot_selected_index = -1
 	_refresh_loot_panel()
 
 
-## Close the swap popup
-func _on_swap_popup_closed() -> void:
-	if _swap_popup != null and is_instance_valid(_swap_popup):
-		_swap_popup.queue_free()
-		_swap_popup = null
-	_swap_pending_acq_index = -1
-	_swap_pending_hero_id = ""
-	_swap_pending_item_id = ""
+## Cancel swap mode.
+func _on_swap_cancel() -> void:
+	_loot_swap_mode = false
+	_loot_swap_hero_id = ""
+	_loot_swap_acq_index = -1
+	_refresh_loot_panel()
 
 
 ## v1.2: Discard all remaining pending items (explicit user action).
@@ -2298,22 +2454,39 @@ func _on_loot_discard_all() -> void:
 		var quality = int(acq.get("quality", 0))
 		print("[Loot] discard item=%s qty=%d q=%d" % [item_id, qty, quality])
 	GameContext.clear_pending_acquisitions()
+	_loot_selected_index = -1
+	_refresh_loot_panel()
+
+
+## Route all pending items to the shopkeeper bag (stops when bag is full).
+func _on_loot_all_to_shop() -> void:
+	var routed = 0
+	while not GameContext.get_all_pending_acquisitions().is_empty():
+		var acq = GameContext.get_all_pending_acquisitions()[0]
+		var item_id: String = acq.get("item_id", "")
+		var quality: int = int(acq.get("quality", 0))
+		if not GameContext.can_add_to_shopkeeper_bag(item_id, 1, quality):
+			break
+		GameContext.resolve_acquisition_at(0, "shop_bag")
+		routed += 1
+	print("[LootPanel] All to Shop Bag: routed %d items" % routed)
+	_loot_selected_index = -1
 	_refresh_loot_panel()
 
 
 ## Continue after loot routing — only allowed when no pending items remain.
 func _on_loot_continue() -> void:
-	# v1.2: Do NOT auto-resolve to stash; Continue is blocked if pending remain
 	if GameContext.has_pending_acquisition():
 		print("[LootPanel] Continue blocked: %d items still pending" % GameContext.get_all_pending_acquisitions().size())
 		return
-	if _loot_panel != null:
-		_loot_panel.queue_free()
+	if _loot_overlay != null and is_instance_valid(_loot_overlay):
+		_loot_overlay.queue_free()
+		_loot_overlay = null
 		_loot_panel = null
 	_do_combat_transition()
 
 
-## Keyboard shortcuts for loot panel (v1.2: only B and 1-4, no S for stash).
+## Keyboard shortcuts for loot panel (B=shop bag, 1-4=hero, click to select).
 func _loot_panel_input(event: InputEvent) -> void:
 	if _loot_panel == null or not is_instance_valid(_loot_panel):
 		return
@@ -2321,9 +2494,15 @@ func _loot_panel_input(event: InputEvent) -> void:
 		return
 	if event is InputEventKey and event.pressed and not event.echo:
 		var keycode = event.keycode
-		# B = To Shop Bag (first pending)
+		# Auto-select first item if none selected
+		var idx: int = _loot_selected_index if _loot_selected_index >= 0 else 0
+		var pending = GameContext.get_all_pending_acquisitions()
+		if idx >= pending.size():
+			return
+		# B = To Shop Bag
 		if keycode == KEY_B:
-			GameContext.resolve_acquisition_at(0, "shop_bag")
+			GameContext.resolve_acquisition_at(idx, "shop_bag")
+			_loot_selected_index = -1
 			_refresh_loot_panel()
 			get_viewport().set_input_as_handled()
 		# 1..4 = To Hero by party index
@@ -2331,9 +2510,22 @@ func _loot_panel_input(event: InputEvent) -> void:
 			var hero_idx = keycode - KEY_1
 			if hero_idx < GameContext.selected_party.size():
 				var hid = GameContext.selected_party[hero_idx]
-				GameContext.resolve_acquisition_at(0, "hero_bag", hid)
-				_refresh_loot_panel()
-				get_viewport().set_input_as_handled()
+				if GameContext.can_add_to_hero_bag(hid, pending[idx].get("item_id", ""), 1):
+					GameContext.resolve_acquisition_at(idx, "hero_bag", hid)
+					_loot_selected_index = -1
+					_refresh_loot_panel()
+					get_viewport().set_input_as_handled()
+				else:
+					# Enter swap mode via keyboard
+					_loot_swap_mode = true
+					_loot_swap_hero_id = hid
+					_loot_swap_acq_index = idx
+					_refresh_loot_panel()
+					get_viewport().set_input_as_handled()
+		# Escape = cancel swap mode
+		elif keycode == KEY_ESCAPE and _loot_swap_mode:
+			_on_swap_cancel()
+			get_viewport().set_input_as_handled()
 
 
 # ============================================================================
@@ -3047,7 +3239,7 @@ func _create_v19b_ui() -> void:
 	_highlight_log_emitted = false
 
 	# v1.9D: Dynamic timeline positioning (no magic TIMELINE_TOP constant)
-	const TIMELINE_HEIGHT: int = 32
+	const TIMELINE_HEIGHT: int = 44
 	const TIMELINE_MARGIN: int = 5
 
 	# Compute timeline top from actual UI element heights
@@ -3068,29 +3260,30 @@ func _create_v19b_ui() -> void:
 	_timeline_panel.anchor_right = 1.0
 	_timeline_panel.anchor_top = 0.0
 	_timeline_panel.anchor_bottom = 0.0
-	_timeline_panel.offset_left = 10
-	_timeline_panel.offset_right = -10
+	_timeline_panel.offset_left = 80
+	_timeline_panel.offset_right = -80
 	_timeline_panel.offset_top = timeline_top
 	_timeline_panel.offset_bottom = timeline_top + TIMELINE_HEIGHT
 	_timeline_panel.custom_minimum_size = Vector2(0, TIMELINE_HEIGHT)
 	_timeline_panel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 
-	# Style the panel background
+	# Style the panel background (region-tinted)
 	var panel_style = StyleBoxFlat.new()
-	panel_style.bg_color = Color(0.15, 0.15, 0.2, 0.95)
-	panel_style.border_color = Color(0.35, 0.35, 0.45, 1.0)
+	panel_style.bg_color = _region_palette.get("bg_dark", Color(0.14, 0.12, 0.10, 0.95))
+	panel_style.border_color = _region_palette.get("border", Color(0.35, 0.30, 0.22, 1.0))
 	panel_style.border_width_bottom = 1
-	panel_style.content_margin_left = 10
-	panel_style.content_margin_right = 10
-	panel_style.content_margin_top = 4
-	panel_style.content_margin_bottom = 4
+	panel_style.content_margin_left = 8
+	panel_style.content_margin_right = 8
+	panel_style.content_margin_top = 3
+	panel_style.content_margin_bottom = 3
+	panel_style.set_corner_radius_all(3)
 	_timeline_panel.add_theme_stylebox_override("panel", panel_style)
 	add_child(_timeline_panel)
 
 	# Create timeline HBox inside panel
 	_timeline_container = HBoxContainer.new()
 	_timeline_container.name = "TurnTimelineContent"
-	_timeline_container.add_theme_constant_override("separation", 8)
+	_timeline_container.add_theme_constant_override("separation", 4)
 	_timeline_container.alignment = BoxContainer.ALIGNMENT_CENTER
 	_timeline_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_timeline_panel.add_child(_timeline_container)
@@ -3099,7 +3292,7 @@ func _create_v19b_ui() -> void:
 	_current_intent_label = Label.new()
 	_current_intent_label.name = "IntentLabel"
 	_current_intent_label.add_theme_font_size_override("font_size", 12)
-	_current_intent_label.add_theme_color_override("font_color", Color.LIGHT_CORAL)
+	_current_intent_label.add_theme_color_override("font_color", Color(1.0, 0.75, 0.5, 0.9))
 	_current_intent_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_current_intent_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_current_intent_label.text = ""
@@ -3115,10 +3308,10 @@ func _create_v19b_ui() -> void:
 	_log_overlay_panel.offset_bottom = -205
 	_log_overlay_panel.custom_minimum_size = Vector2(250, 0)
 
-	# Style log overlay background
+	# Style log overlay background (CraftPix warm tones)
 	var log_style = StyleBoxFlat.new()
-	log_style.bg_color = Color(0.08, 0.08, 0.12, 0.85)
-	log_style.border_color = Color(0.25, 0.25, 0.35, 0.6)
+	log_style.bg_color = Color(0.10, 0.09, 0.07, 0.88)
+	log_style.border_color = Color(0.30, 0.25, 0.20, 0.6)
 	log_style.set_border_width_all(1)
 	log_style.set_corner_radius_all(4)
 	log_style.content_margin_left = 8
@@ -3172,7 +3365,7 @@ func _on_log_pin_toggled(button_pressed: bool) -> void:
 	# When pinned, keep at full opacity; when unpinned, older entries fade
 
 
-## v1.9D: Refresh the turn timeline UI with pill-style entries.
+## Refresh the turn timeline UI with portrait-based entries.
 func _refresh_timeline() -> void:
 	if _timeline_container == null or not is_instance_valid(_timeline_container):
 		return
@@ -3182,86 +3375,90 @@ func _refresh_timeline() -> void:
 	for i in range(children.size() - 1):  # Skip last child (intent label)
 		children[i].queue_free()
 
-	# Add "Next:" label (compact header)
-	var header_label = Label.new()
-	header_label.text = "Next:"
-	header_label.add_theme_font_size_override("font_size", 11)
-	header_label.add_theme_color_override("font_color", Color.LIGHT_GRAY)
-	_timeline_container.add_child(header_label)
-	_timeline_container.move_child(header_label, 0)
-
 	# Get timeline snapshot
 	var timeline = _combat_controller.get_turn_timeline_snapshot(TIMELINE_UNIT_COUNT)
 
-	var insert_idx = 1  # After header
+	var insert_idx = 0
 	for entry in timeline:
-		# v1.9D: Create pill container for each unit
 		var pill = _create_timeline_pill(entry)
 		_timeline_container.add_child(pill)
 		_timeline_container.move_child(pill, insert_idx)
 		insert_idx += 1
 
 
-## v1.9D: Create a styled pill container for a timeline entry.
-## Returns PanelContainer with styled background and unit label.
+## Create a portrait-based timeline entry for a unit.
+## Shows 32x32 portrait with team-colored border and short name below.
 func _create_timeline_pill(entry: Dictionary) -> PanelContainer:
+	var is_active = entry["is_current"]
+	var is_player = entry["team"] == "P"
+	var pill_size: int = 40 if is_active else 36
+
 	var pill = PanelContainer.new()
-	pill.custom_minimum_size = Vector2(0, 22)
+	pill.custom_minimum_size = Vector2(pill_size, 0)
 
-	# Determine colors based on team and active state
-	var bg_color: Color
-	var text_color: Color
+	# Determine border color based on team and active state
 	var border_color: Color
+	var bg_color: Color
+	var border_width: int = 1
 
-	if entry["is_current"]:
-		# Active unit: gold/amber highlight
-		bg_color = Color(0.35, 0.30, 0.10, 0.95)
-		text_color = Color.GOLD
-		border_color = Color(0.7, 0.6, 0.2, 1.0)
-	elif entry["team"] == "P":
-		# Player team: green-ish
-		bg_color = Color(0.12, 0.22, 0.15, 0.9)
-		text_color = Color.LIGHT_GREEN
-		border_color = Color(0.25, 0.45, 0.30, 0.8)
+	if is_active:
+		bg_color = Color(0.30, 0.25, 0.10, 0.95)
+		border_color = Color(1.0, 0.85, 0.4, 0.9)
+		border_width = 2
+	elif is_player:
+		bg_color = Color(0.12, 0.18, 0.14, 0.85)
+		border_color = Color(0.3, 0.55, 0.35, 0.7)
 	else:
-		# Enemy team: coral-ish
-		bg_color = Color(0.25, 0.12, 0.12, 0.9)
-		text_color = Color.LIGHT_CORAL
-		border_color = Color(0.45, 0.25, 0.25, 0.8)
+		bg_color = Color(0.20, 0.12, 0.11, 0.85)
+		border_color = Color(0.55, 0.3, 0.28, 0.7)
 
-	# Style the pill
 	var pill_style = StyleBoxFlat.new()
 	pill_style.bg_color = bg_color
 	pill_style.border_color = border_color
-	pill_style.set_border_width_all(1)
-	pill_style.set_corner_radius_all(10)  # Rounded pill shape
-	pill_style.content_margin_left = 8
-	pill_style.content_margin_right = 8
-	pill_style.content_margin_top = 2
-	pill_style.content_margin_bottom = 2
+	pill_style.set_border_width_all(border_width)
+	pill_style.set_corner_radius_all(3)
+	pill_style.content_margin_left = 2
+	pill_style.content_margin_right = 2
+	pill_style.content_margin_top = 1
+	pill_style.content_margin_bottom = 1
 	pill.add_theme_stylebox_override("panel", pill_style)
 
-	# Create label inside pill
-	var name_short = entry["name"]
-	if name_short.length() > 9:
-		name_short = name_short.substr(0, 7) + ".."
+	# VBox: portrait on top, name below
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 0)
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
 
-	var unit_label = Label.new()
-	# Show arrow for current, team letter otherwise
-	if entry["is_current"]:
-		unit_label.text = "▶ %s" % name_short
-	else:
-		unit_label.text = "%s" % name_short
-	unit_label.add_theme_font_size_override("font_size", 11)
-	unit_label.add_theme_color_override("font_color", text_color)
-	unit_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	pill.add_child(unit_label)
+	# Portrait (32x32 for active, 28x28 for others)
+	var portrait_size: int = 32 if is_active else 28
+	var portrait_rect = TextureRect.new()
+	portrait_rect.custom_minimum_size = Vector2(portrait_size, portrait_size)
+	portrait_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	portrait_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+
+	var portrait_path = entry.get("portrait_path", "")
+	if portrait_path != "":
+		var tex = load(portrait_path)
+		if tex != null:
+			portrait_rect.texture = tex
+
+	vbox.add_child(portrait_rect)
+
+	# Active indicator arrow
+	if is_active:
+		var arrow = Label.new()
+		arrow.text = "▼"
+		arrow.add_theme_font_size_override("font_size", 7)
+		arrow.add_theme_color_override("font_color", Color(1.0, 0.85, 0.4, 0.9))
+		arrow.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		vbox.add_child(arrow)
+
+	pill.add_child(vbox)
 
 	# Tooltip with full info
 	pill.tooltip_text = "%s | SPD: %d | %s" % [
 		entry["name"],
 		entry["speed"],
-		"PLAYER" if entry["team"] == "P" else "ENEMY"
+		"PLAYER" if is_player else "ENEMY"
 	]
 
 	return pill
@@ -3419,51 +3616,101 @@ func _on_action_performed_v19b(action: CombatAction) -> void:
 # ============================================================================
 
 ## Create the action panel with buttons for Basic Attack, Ability A, Ability B.
+## Uses a PanelContainer wrapper with a highlighted background so it stands out.
+## Two-row layout: Row 1 = class actions, Row 2 = equipment abilities (hidden if none).
 func _create_action_panel() -> void:
 	if _action_panel != null:
 		_action_panel.queue_free()
 
-	_action_panel = HBoxContainer.new()
+	# Outer PanelContainer with highlighted background
+	_action_panel = PanelContainer.new()
 	_action_panel.name = "ActionPanel"
-	_action_panel.add_theme_constant_override("separation", 10)
 	_action_panel.visible = false
+	var action_style = StyleBoxFlat.new()
+	action_style.bg_color = _region_palette.get("bg_medium", Color(0.18, 0.15, 0.10, 0.95))
+	var action_accent: Color = _region_palette.get("accent", Color(1.0, 0.85, 0.4, 0.7))
+	action_style.border_color = Color(action_accent.r, action_accent.g, action_accent.b, 0.7)
+	action_style.set_border_width_all(1)
+	action_style.set_corner_radius_all(3)
+	action_style.content_margin_left = 8
+	action_style.content_margin_right = 8
+	action_style.content_margin_top = 4
+	action_style.content_margin_bottom = 4
+	_action_panel.add_theme_stylebox_override("panel", action_style)
+
+	# VBox to hold two rows
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 4)
+	_action_panel.add_child(vbox)
+
+	# Row 1: Class actions (Basic Attack, Ability A, Ability B, Pass, Cancel)
+	var hbox = HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 8)
+	vbox.add_child(hbox)
 
 	_action_label = Label.new()
 	_action_label.text = "Choose Action:"
-	_action_label.add_theme_color_override("font_color", Color.CYAN)
-	_action_panel.add_child(_action_label)
+	_action_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.5, 0.9))
+	_action_label.add_theme_font_size_override("font_size", 12)
+	hbox.add_child(_action_label)
 
 	_btn_basic = Button.new()
 	_btn_basic.text = "Basic Attack"
-	_btn_basic.custom_minimum_size = Vector2(120, 32)
+	_btn_basic.custom_minimum_size = Vector2(120, 34)
 	_btn_basic.pressed.connect(_on_basic_attack_pressed)
-	_action_panel.add_child(_btn_basic)
+	hbox.add_child(_btn_basic)
 
 	_btn_ability_a = Button.new()
-	_btn_ability_a.custom_minimum_size = Vector2(150, 32)
+	_btn_ability_a.custom_minimum_size = Vector2(150, 34)
 	_btn_ability_a.pressed.connect(_on_ability_a_pressed)
-	_action_panel.add_child(_btn_ability_a)
+	hbox.add_child(_btn_ability_a)
 
 	_btn_ability_b = Button.new()
-	_btn_ability_b.custom_minimum_size = Vector2(150, 32)
+	_btn_ability_b.custom_minimum_size = Vector2(150, 34)
 	_btn_ability_b.pressed.connect(_on_ability_b_pressed)
-	_action_panel.add_child(_btn_ability_b)
+	hbox.add_child(_btn_ability_b)
 
 	_btn_pass = Button.new()
 	_btn_pass.text = "Pass"
-	_btn_pass.custom_minimum_size = Vector2(80, 32)
+	_btn_pass.custom_minimum_size = Vector2(80, 34)
 	_btn_pass.pressed.connect(_on_pass_pressed)
-	_action_panel.add_child(_btn_pass)
+	hbox.add_child(_btn_pass)
 
 	_btn_cancel = Button.new()
 	_btn_cancel.text = "Cancel"
-	_btn_cancel.custom_minimum_size = Vector2(80, 32)
+	_btn_cancel.custom_minimum_size = Vector2(80, 34)
 	_btn_cancel.pressed.connect(_on_cancel_pressed)
 	_btn_cancel.visible = false
-	_action_panel.add_child(_btn_cancel)
+	hbox.add_child(_btn_cancel)
 
-	# Add to bottom panel
+	# Row 2: Equipment abilities (hidden by default, shown only when hero has T4 gear)
+	_equip_row = HBoxContainer.new()
+	_equip_row.add_theme_constant_override("separation", 8)
+	_equip_row.visible = false
+	vbox.add_child(_equip_row)
+
+	var equip_label = Label.new()
+	equip_label.text = "Equipment:"
+	equip_label.add_theme_color_override("font_color", Color(0.7, 0.9, 1.0, 0.9))
+	equip_label.add_theme_font_size_override("font_size", 12)
+	_equip_row.add_child(equip_label)
+
+	_btn_equip_0 = Button.new()
+	_btn_equip_0.custom_minimum_size = Vector2(150, 34)
+	_btn_equip_0.pressed.connect(_on_equip_ability_0_pressed)
+	_btn_equip_0.visible = false
+	_equip_row.add_child(_btn_equip_0)
+
+	_btn_equip_1 = Button.new()
+	_btn_equip_1.custom_minimum_size = Vector2(150, 34)
+	_btn_equip_1.pressed.connect(_on_equip_ability_1_pressed)
+	_btn_equip_1.visible = false
+	_equip_row.add_child(_btn_equip_1)
+
+	# Add to bottom panel — insert BEFORE ButtonRow so it renders above standard buttons
+	var button_row = $BottomPanel/ButtonRow
 	$BottomPanel.add_child(_action_panel)
+	$BottomPanel.move_child(_action_panel, button_row.get_index())
 
 
 ## Handle player_input_required signal - show action buttons.
@@ -3493,32 +3740,45 @@ func _on_player_input_required(unit: CombatUnit, available_actions: Array) -> vo
 	_btn_ability_a.visible = false
 	_btn_ability_b.visible = false
 	_btn_pass.visible = false
+	_equip_row.visible = false
+	_btn_equip_0.visible = false
+	_btn_equip_1.visible = false
 
 	# Update button states from available actions
 	for action_info in available_actions:
-		match action_info.type:
-			"basic":
-				_btn_basic.disabled = false
-				_btn_basic.tooltip_text = _build_action_tooltip(unit, null, "basic")
-			"ability_a":
-				_btn_ability_a.text = action_info.name
-				if action_info.cooldown > 0:
-					_btn_ability_a.text += " (CD:%d)" % action_info.cooldown
-				_btn_ability_a.disabled = not action_info.enabled
-				_btn_ability_a.visible = true
-				_btn_ability_a.tooltip_text = _build_action_tooltip(unit, action_info.get("ability"), "ability_a")
-			"ability_b":
-				_btn_ability_b.text = action_info.name
-				if action_info.cooldown > 0:
-					_btn_ability_b.text += " (CD:%d)" % action_info.cooldown
-				_btn_ability_b.disabled = not action_info.enabled
-				_btn_ability_b.visible = true
-				_btn_ability_b.tooltip_text = _build_action_tooltip(unit, action_info.get("ability"), "ability_b")
-			"pass":
-				_btn_pass.visible = true
-				_btn_pass.tooltip_text = "Skip remaining actions and end turn."
+		var atype: String = action_info.type
+		if atype == "basic":
+			_btn_basic.disabled = false
+			_btn_basic.tooltip_text = _build_action_tooltip(unit, null, "basic")
+		elif atype == "ability_a":
+			_btn_ability_a.text = action_info.name
+			if action_info.cooldown > 0:
+				_btn_ability_a.text += " (CD:%d)" % action_info.cooldown
+			_btn_ability_a.disabled = not action_info.enabled
+			_btn_ability_a.visible = true
+			_btn_ability_a.tooltip_text = _build_action_tooltip(unit, action_info.get("ability"), "ability_a")
+		elif atype == "ability_b":
+			_btn_ability_b.text = action_info.name
+			if action_info.cooldown > 0:
+				_btn_ability_b.text += " (CD:%d)" % action_info.cooldown
+			_btn_ability_b.disabled = not action_info.enabled
+			_btn_ability_b.visible = true
+			_btn_ability_b.tooltip_text = _build_action_tooltip(unit, action_info.get("ability"), "ability_b")
+		elif atype == "pass":
+			_btn_pass.visible = true
+			_btn_pass.tooltip_text = "Skip remaining actions and end turn."
+		elif atype.begins_with("equip_ability_"):
+			_equip_row.visible = true
+			var eq_idx: int = int(action_info.get("equip_index", 0))
+			var btn: Button = _btn_equip_0 if eq_idx == 0 else _btn_equip_1
+			btn.text = action_info.name
+			if action_info.cooldown > 0:
+				btn.text += " (CD:%d)" % action_info.cooldown
+			btn.disabled = not action_info.enabled
+			btn.visible = true
+			btn.tooltip_text = _build_action_tooltip(unit, action_info.get("ability"), atype)
 
-	_log("[color=cyan]%s's turn - choose an action[/color]" % unit.display_name)
+	_log("[color=#ffcc66]%s's turn - choose an action[/color]" % unit.display_name)
 	print("[UI] Action panel shown, awaiting player input")
 
 	# v2.0: Apply enhanced hero input highlight
@@ -4083,6 +4343,18 @@ func _on_ability_a_pressed() -> void:
 func _on_ability_b_pressed() -> void:
 	print("[UI] Ability B button pressed")
 	_combat_controller.submit_player_action("ability_b")
+
+
+## Handle Equipment Ability 0 button press.
+func _on_equip_ability_0_pressed() -> void:
+	print("[UI] Equipment Ability 0 button pressed")
+	_combat_controller.submit_player_action("equip_ability_0")
+
+
+## Handle Equipment Ability 1 button press.
+func _on_equip_ability_1_pressed() -> void:
+	print("[UI] Equipment Ability 1 button pressed")
+	_combat_controller.submit_player_action("equip_ability_1")
 
 
 ## Handle Pass button press - skip remaining actions.

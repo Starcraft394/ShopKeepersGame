@@ -1,0 +1,41 @@
+{
+  "id": "evt_ss_tide_pool",
+  "title": "Glowing Tide Pool",
+  "description": "A shallow pool nestled among the rocks pulses with faint bioluminescence. Tiny creatures dart beneath the surface, trailing ribbons of light. Salt crystals rim the edges like frosted glass.",
+  "kind": "choice",
+  "tags": ["coastal", "tidal"],
+  "choices": [
+    {
+      "id": "harvest_kelp",
+      "label": "Harvest the kelp",
+      "description": "The fibrous strands make excellent sinew for binding.",
+      "effects": [
+        { "type": "add_item", "item_id": "ss_kelp_sinew", "min_qty": 2, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "collect_salt",
+      "label": "Collect salt crystals from the rim",
+      "description": "The crystallized deposits are pure and valuable.",
+      "effects": [
+        { "type": "add_item", "item_id": "sea_salt_crystal", "min_qty": 2, "max_qty": 4 }
+      ]
+    },
+    {
+      "id": "watch_pool",
+      "label": "Wait and watch",
+      "description": "The gentle light soothes aching muscles and frayed nerves.",
+      "effects": [
+        { "type": "heal_party", "value": 8 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Leave the pool",
+      "description": "Better not to linger near strange lights.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "id": "dungeon_duskhollow",
+  "display_name": "The Ossuary Depths",
+  "description": "Descending crypts lined with centuries of bone. The dead stir as you pass, and the Ossuary King's will strengthens with every floor.",
+  "region_id": "region_6",
+  "town_id": "town_duskhollow",
+  "floor_count": 5,
+  "rooms_per_floor": 3,
+  "boss_id": "nc_ossuary_king",
+  "alt_boss_id": "nc_lich_eternal",
+  "min_rooms_per_floor": 3,
+  "max_rooms_per_floor": 5,
+  "choice_b_event_weight": 0.5,
+  "choice_b_elite_weight": 0.5,
+  "event_table_id": "et_region6_combined",
+  "encounter_tags": ["necro", "undead", "bone", "ghost", "crypt", "grave"],
+  "gear_whitelist": [
+    "nc_soul_reaver", "nc_wraith_bow", "nc_ossuary_plate",
+    "nc_spectral_aegis", "nc_deathward_ring"
+  ],
+  "floor_theme": [
+    "Graveyard Gate",
+    "The Catacombs",
+    "Wraith Choir Hall",
+    "The Bone Galleries",
+    "Ossuary Throne"
+  ],
+  "tier1_monster_ids": [
+    "nc_bone_legionnaire", "nc_ghoul_stalker", "nc_crypt_rat",
+    "nc_tombdust_wraith", "nc_carrion_beetle", "nc_shambling_husk"
+  ],
+  "tier2_monster_ids": [
+    "nc_wraith_chorister", "nc_gravefiend", "nc_death_knight",
+    "nc_spectral_binder", "nc_bone_colossus", "nc_plague_revenant"
+  ],
+  "elite_monster_ids": [
+    "nc_dread_wight", "nc_wraith_choir_conductor", "nc_lich_eternal"
+  ],
+  "tier1_by_floor": [
+    ["nc_bone_legionnaire", "nc_crypt_rat", "nc_shambling_husk", "nc_carrion_beetle"],
+    ["nc_ghoul_stalker", "nc_tombdust_wraith", "nc_bone_legionnaire", "nc_crypt_rat"],
+    ["nc_carrion_beetle", "nc_shambling_husk", "nc_ghoul_stalker", "nc_tombdust_wraith"],
+    ["nc_bone_legionnaire", "nc_ghoul_stalker", "nc_crypt_rat", "nc_shambling_husk"],
+    ["nc_tombdust_wraith", "nc_carrion_beetle", "nc_bone_legionnaire", "nc_ghoul_stalker"]
+  ],
+  "tier2_by_floor": [
+    ["nc_wraith_chorister"],
+    ["nc_wraith_chorister", "nc_gravefiend", "nc_death_knight"],
+    ["nc_death_knight", "nc_spectral_binder", "nc_bone_colossus", "nc_plague_revenant"],
+    ["nc_gravefiend", "nc_spectral_binder", "nc_plague_revenant", "nc_bone_colossus", "nc_wraith_chorister"],
+    ["nc_death_knight", "nc_gravefiend", "nc_spectral_binder", "nc_bone_colossus", "nc_plague_revenant", "nc_wraith_chorister"]
+  ],
+  "elite_by_floor": [
+    [],
+    [],
+    ["nc_dread_wight"],
+    ["nc_dread_wight", "nc_wraith_choir_conductor"],
+    ["nc_dread_wight", "nc_wraith_choir_conductor", "nc_lich_eternal"]
+  ],
+  "room_types_by_floor": [
+    ["combat", "event", "combat"],
+    ["combat", "treasure", "combat"],
+    ["combat", "event", "elite"],
+    ["combat", "shrine", "combat"],
+    ["combat", "event", "combat"]
+  ]
+}

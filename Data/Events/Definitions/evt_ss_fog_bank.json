@@ -1,0 +1,41 @@
+{
+  "id": "evt_ss_fog_bank",
+  "title": "Whispering Fog Bank",
+  "description": "Thick sea fog spills through the passage, swallowing the walls in grey. Faint whispers ride the current, half-words in a language older than the stone. Condensation beads on every surface, cold and briny.",
+  "kind": "choice",
+  "tags": ["coastal", "tidal"],
+  "choices": [
+    {
+      "id": "follow_whispers",
+      "label": "Follow the whispers",
+      "description": "The voices lead to a forgotten alcove full of scattered coin.",
+      "effects": [
+        { "type": "add_gold_range", "min": 15, "max": 25 }
+      ]
+    },
+    {
+      "id": "collect_condensation",
+      "label": "Collect the condensation",
+      "description": "The fog leaves behind pure salt residue on stone.",
+      "effects": [
+        { "type": "add_item", "item_id": "sea_salt_crystal", "min_qty": 1, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "shelter_rest",
+      "label": "Shelter and rest",
+      "description": "The fog muffles all sound, granting a rare moment of peace.",
+      "effects": [
+        { "type": "heal_party", "value": 6 }
+      ]
+    },
+    {
+      "id": "retreat",
+      "label": "Retreat",
+      "description": "Nothing good follows voices in the fog.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "id": "nc_wraith_thread",
+  "display_name": "Wraith Thread",
+  "description": "Spectral fiber harvested from wraith remnants. Shimmers in moonlight.",
+  "icon_hint": "coil of shimmering translucent thread that glows faintly silver in moonlight",
+  "item_type": "material",
+  "item_subtype": "monster_part",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 30,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_6", "material", "monster_part", "necropolis"]
+}

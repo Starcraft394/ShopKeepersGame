@@ -1,0 +1,33 @@
+{
+  "id": "fr_dimensional_plate",
+  "display_name": "Dimensional Plate",
+  "description": "Armor forged between realities. Parts of it exist in other dimensions, absorbing damage across planes.",
+  "icon_hint": "dark plate armor with sections that phase in and out of visibility and purple void cracks between the plates",
+  "item_type": "armor",
+  "item_subtype": "heavy_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 5,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 18,
+    "speed": -2
+  },
+  "stat_bonuses": {
+    "defense": 18,
+    "health": 36,
+    "speed": -2
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 160,
+  "icon_path": "",
+  "tags": ["region_7", "armor", "final_realm", "tier_5"]
+}

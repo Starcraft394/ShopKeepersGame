@@ -1,0 +1,27 @@
+{
+  "id": "fm_fungal_lurker",
+  "display_name": "Fungal Lurker",
+  "description": "A camouflaged predator that ambushes from beneath the mire.",
+  "icon_hint": "low-slung reptilian creature covered in moss and shelf fungi, eyes barely visible above the swamp surface",
+  "family": "spore",
+  "region_id": "region_2",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 50,
+    "attack": 11,
+    "defense": 5,
+    "speed": 10
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region2_uncommon",
+  "gold_drop_min": 10,
+  "gold_drop_max": 22,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fm_fungal_lurker.png"
+}

@@ -1,0 +1,41 @@
+{
+  "id": "evt_ah_magma_pool",
+  "title": "Bubbling Magma Pool",
+  "description": "A wide pool of molten rock churns sluggishly in a natural depression, its surface cracking and reforming in patterns of orange and black. Cooled crusts along the edges crumble into glittering ember dust, and bits of debris from above float briefly before sinking into the glow. The radiant heat is almost unbearable, but strangely soothing at a distance.",
+  "kind": "choice",
+  "tags": ["volcanic", "fire"],
+  "choices": [
+    {
+      "id": "skim_edges",
+      "label": "Skim the cooled edges",
+      "description": "Scrape the ember-rich crust from the hardened margins of the pool.",
+      "effects": [
+        { "type": "add_item", "item_id": "ember_dust", "min_qty": 3, "max_qty": 5 }
+      ]
+    },
+    {
+      "id": "fish_debris",
+      "label": "Fish out debris",
+      "description": "Use a long pole to drag floating debris to the edge before it melts.",
+      "effects": [
+        { "type": "add_gold_range", "min": 10, "max": 18 }
+      ]
+    },
+    {
+      "id": "rest_near",
+      "label": "Rest near the warmth",
+      "description": "Sit at a safe distance and let the deep heat ease the party's wounds.",
+      "effects": [
+        { "type": "heal_party", "value": 10 }
+      ]
+    },
+    {
+      "id": "move_on",
+      "label": "Move on",
+      "description": "The ground here feels unstable.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

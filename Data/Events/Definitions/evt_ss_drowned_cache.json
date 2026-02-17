@@ -1,0 +1,41 @@
+{
+  "id": "evt_ss_drowned_cache",
+  "title": "Drowned Cache",
+  "description": "A waterlogged chest sits half-buried in the sand, its iron bands green with verdigris. The bodies of its former owners lie sprawled nearby, picked clean by crabs. Whatever killed them left the cargo untouched.",
+  "kind": "choice",
+  "tags": ["coastal", "tidal"],
+  "choices": [
+    {
+      "id": "pry_open",
+      "label": "Pry it open",
+      "description": "The lock is rusted through and gives way easily.",
+      "effects": [
+        { "type": "add_gold_range", "min": 10, "max": 20 }
+      ]
+    },
+    {
+      "id": "search_bodies",
+      "label": "Search the bodies nearby",
+      "description": "Their belt pouches hold vials of concentrated brine venom.",
+      "effects": [
+        { "type": "add_item", "item_id": "ss_brine_venom", "min_qty": 1, "max_qty": 2 }
+      ]
+    },
+    {
+      "id": "salvage_wood",
+      "label": "Salvage the wood",
+      "description": "The chest itself is built from solid timber, still usable.",
+      "effects": [
+        { "type": "add_item", "item_id": "driftwood", "min_qty": 2, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Leave the dead in peace",
+      "description": "Disturbing the drowned invites bad luck.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

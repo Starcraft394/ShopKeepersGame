@@ -1,0 +1,27 @@
+{
+  "id": "fr_prime_corruptor",
+  "display_name": "The Prime Corruptor",
+  "description": "The source of all corruption — an entity of pure entropy that seeks to unmake reality.",
+  "icon_hint": "colossal entity of pure void energy with reality unraveling around it in all directions",
+  "family": "void",
+  "region_id": "region_7",
+  "tier": 3,
+  "ai_tier": 3,
+  "base_stats": {
+    "health": 380,
+    "attack": 34,
+    "defense": 23,
+    "speed": 10
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region7_boss",
+  "gold_drop_min": 120,
+  "gold_drop_max": 165,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": true,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fr_prime_corruptor.png"
+}

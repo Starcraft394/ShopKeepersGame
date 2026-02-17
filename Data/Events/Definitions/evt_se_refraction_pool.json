@@ -1,0 +1,41 @@
+{
+  "id": "evt_se_refraction_pool",
+  "title": "Refraction Pool",
+  "description": "A shallow pool of liquid crystal catches the starlight and splits it into dazzling arcs that dance across the surrounding rocks. The fluid is warm to the touch and faintly magnetic, drawing loose crystals toward its surface where they slowly dissolve into shimmering sediment.",
+  "kind": "choice",
+  "tags": ["crystal", "starfall"],
+  "choices": [
+    {
+      "id": "harvest_edges",
+      "label": "Harvest the crystallized edges",
+      "description": "The rim of the pool is crusted with hardened prism shards where the liquid evaporated.",
+      "effects": [
+        { "type": "add_item", "item_id": "prism_shard", "min_qty": 2, "max_qty": 4 }
+      ]
+    },
+    {
+      "id": "skim_surface",
+      "label": "Skim the surface dust",
+      "description": "A fine layer of starfall dust floats on the pool's surface like golden pollen.",
+      "effects": [
+        { "type": "add_item", "item_id": "starfall_dust", "min_qty": 2, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "bathe_in_light",
+      "label": "Bathe in the refracted light",
+      "description": "The pool's prismatic radiance soothes aches and closes wounds with gentle warmth.",
+      "effects": [
+        { "type": "heal_party", "value": 10 }
+      ]
+    },
+    {
+      "id": "move_on",
+      "label": "Move on",
+      "description": "The pool is beautiful, but there are more pressing matters ahead.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

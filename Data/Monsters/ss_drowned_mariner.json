@@ -1,0 +1,27 @@
+{
+  "id": "ss_drowned_mariner",
+  "display_name": "Drowned Mariner",
+  "description": "The restless spirit of a dead sailor, still swinging a corroded cutlass.",
+  "icon_hint": "ghostly waterlogged sailor with hollow eyes wielding a corroded barnacle-encrusted cutlass",
+  "family": "coastal",
+  "region_id": "region_3",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 70,
+    "attack": 15,
+    "defense": 10,
+    "speed": 11
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region3_uncommon",
+  "gold_drop_min": 15,
+  "gold_drop_max": 27,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/ss_drowned_mariner.png"
+}

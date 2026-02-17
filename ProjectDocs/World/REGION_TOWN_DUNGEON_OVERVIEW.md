@@ -68,10 +68,9 @@ The following fields are supported by `Game/Core/DataTypes/RegionData.gd`:
 
 | Town ID (Proposed) | Display Name | Type | Function |
 |--------------------|--------------|------|----------|
-| `town_greenroot` | Greenroot Village | Starter Town (Town A) | Tutorial, Race unlock (Human/Elf/Dwarf) |
-| `town_timberfall` | Timberfall | Class Town (Town B) | Starter classes: Warrior, Ranger, Mage, Rogue, Acolyte |
+| `town_thornhaven` | Thornhaven | Starter Town | Tutorial, Race unlock (Human/Elf/Dwarf), Starter classes: Warrior, Ranger, Mage, Rogue, Acolyte |
 
-**MVP Scope Note:** MVP uses only **Greenroot Village** with Blacksmith T1.
+**MVP Scope Note:** MVP uses only **Thornhaven** with Blacksmith T1.
 
 ### Proposed Town Schema (From GDD Section 32)
 
@@ -91,7 +90,7 @@ Town {
 
 | Region | Town A (Race Unlock) | Town B (Class Unlock) |
 |--------|---------------------|----------------------|
-| 1 - Forest Haven | Greenroot Village (Human/Elf/Dwarf) | Timberfall (Warrior/Ranger/Mage/Rogue/Acolyte) |
+| 1 - Forest Haven | Thornhaven (Human/Elf/Dwarf + Warrior/Ranger/Mage/Rogue/Acolyte) | *(consolidated into single town)* |
 | 2 - Fungalmire | SproutRest (Mossfolk) | Magic Caps Rest (Sporeweaver/Grove Guardian) |
 | 3 - Sunken Strand | Shelldrift Harbor (Tidelings) | Mistwhisper Shoals (Tempest Caller/Harpooner) |
 | 4 - Ashen Horizons | TBD (Dragonkin) | TBD (Fire/Sand classes) |
@@ -191,13 +190,12 @@ Room {
 
 ### Phase 2: Data Files (Required)
 1. Create `Data/Towns/` folder
-2. Create `Data/Towns/greenroot_village.json`
-3. Create `Data/Towns/timberfall.json` (stretch)
-4. Create `Data/Dungeons/` folder
-5. Create `Data/Dungeons/forest_haven_dungeon.json`
+2. Create `Data/Towns/town_thornhaven.json`
+3. Create `Data/Dungeons/` folder
+4. Create `Data/Dungeons/dungeon_thornhaven.json`
 
 ### Phase 3: Wire Up (Required)
-1. Update `region_1.json` to include `town_ids: ["greenroot_village"]`
+1. Update `region_1.json` to include `town_ids: ["town_thornhaven"]`
 2. Link dungeons to towns in town JSON
 
 ---

@@ -1,0 +1,19 @@
+{
+  "id": "lt_region6_boss",
+  "display_name": "Region 6 Boss Loot",
+  "description": "Rich drops from Necropolis bosses.",
+  "min_drops": 3,
+  "max_drops": 5,
+  "entries": [
+    { "item_id": "nc_bone_marrow", "weight": 12, "min_qty": 3, "max_qty": 5 },
+    { "item_id": "soul_ore", "weight": 12, "min_qty": 2, "max_qty": 3 },
+    { "item_id": "wailing_shard", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "strong_healing_tonic", "weight": 12, "min_qty": 2, "max_qty": 3 },
+    { "item_id": "nc_soul_reaver", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "nc_wraith_bow", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "nc_spectral_aegis", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "nc_deathward_ring", "weight": 6, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "nc_ossuary_plate", "weight": 6, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 5, "min_qty": 0, "max_qty": 0 }
+  ]
+}

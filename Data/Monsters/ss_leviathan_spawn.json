@@ -1,0 +1,27 @@
+{
+  "id": "ss_leviathan_spawn",
+  "display_name": "Leviathan Spawn",
+  "description": "A juvenile sea beast covered in armored scales, its thrashing tail can shatter dock pilings.",
+  "icon_hint": "juvenile sea dragon with heavy blue-gray armored scales and a powerful thrashing tail",
+  "family": "coastal",
+  "region_id": "region_3",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 95,
+    "attack": 16,
+    "defense": 14,
+    "speed": 9
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region3_elite",
+  "gold_drop_min": 25,
+  "gold_drop_max": 38,
+  "sprite_path": "",
+  "is_elite": true,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/ss_leviathan_spawn.png"
+}

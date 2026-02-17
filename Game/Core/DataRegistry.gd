@@ -36,6 +36,8 @@ var _towns: Dictionary = {}            # id -> TownData
 var _dungeons: Dictionary = {}         # id -> DungeonData
 var _event_tables: Dictionary = {}     # id -> EventTableData
 var _events: Dictionary = {}           # id -> EventData
+var _mixing_recipes: Dictionary = {}   # facility_id -> Array of recipe dicts
+var _regional_affixes: Dictionary = {} # region_id -> { prefix, stat_bonus, description }
 
 var _is_loaded: bool = false
 var _load_errors: Array[String] = []
@@ -73,6 +75,8 @@ func _load_all_data() -> void:
 	_load_folder("Dungeons", _dungeons, DungeonDataScript)
 	_load_folder("Events", _event_tables, EventTableDataScript)
 	_load_folder("Events/Definitions", _events, EventDataScript)
+	_load_mixing_recipes()
+	_load_regional_affixes()
 
 	_is_loaded = true
 
@@ -246,6 +250,105 @@ func get_event_table(id: String):
 
 func get_event(id: String):
 	return _events.get(id, null)
+
+
+# ============================================================================
+# MIXING RECIPE SYSTEM
+# ============================================================================
+
+func _load_mixing_recipes() -> void:
+	var folder_path: String = DATA_BASE_PATH + "Recipes"
+	var dir = DirAccess.open(folder_path)
+	if dir == null:
+		print("[DataRegistry] Recipes folder not found (optional)")
+		return
+
+	var count: int = 0
+	dir.list_dir_begin()
+	var fname: String = dir.get_next()
+	while fname != "":
+		if not dir.current_is_dir() and fname.begins_with("mixing_") and fname.ends_with(".json"):
+			var file_path: String = folder_path + "/" + fname
+			var file = FileAccess.open(file_path, FileAccess.READ)
+			if file != null:
+				var json_text: String = file.get_as_text()
+				file.close()
+				var json = JSON.new()
+				var err = json.parse(json_text)
+				if err == OK and json.data is Dictionary:
+					var data: Dictionary = json.data
+					var fid: String = data.get("facility_id", "")
+					var recipes: Array = []
+					var raw_recipes = data.get("recipes", [])
+					if raw_recipes is Array:
+						recipes = raw_recipes
+					if fid != "":
+						if not _mixing_recipes.has(fid):
+							_mixing_recipes[fid] = []
+						_mixing_recipes[fid].append_array(recipes)
+						count += recipes.size()
+						print("[DataRegistry] Mixing recipes loaded: %s (+%d recipes, total=%d)" % [fid, recipes.size(), _mixing_recipes[fid].size()])
+		fname = dir.get_next()
+	dir.list_dir_end()
+	print("[DataRegistry] Mixing recipes total: %d across %d facilities" % [count, _mixing_recipes.size()])
+
+
+func _load_regional_affixes() -> void:
+	var file_path: String = DATA_BASE_PATH + "Affixes/regional_affixes.json"
+	var file = FileAccess.open(file_path, FileAccess.READ)
+	if file == null:
+		print("[DataRegistry] Regional affixes file not found (optional)")
+		return
+	var json_text: String = file.get_as_text()
+	file.close()
+	var json = JSON.new()
+	var err = json.parse(json_text)
+	if err == OK and json.data is Dictionary:
+		_regional_affixes = json.data
+		print("[DataRegistry] Regional affixes loaded: %d regions" % _regional_affixes.size())
+	else:
+		push_warning("[DataRegistry] Failed to parse regional_affixes.json")
+
+
+## Get regional affix data for a region. Returns empty dict if not found.
+func get_regional_affix(region_id: String) -> Dictionary:
+	return _regional_affixes.get(region_id, {})
+
+
+## Build a canonical key for an item pair/triple (order-independent).
+static func mix_key(item_a: String, item_b: String, item_c: String = "") -> String:
+	var parts: Array = [item_a, item_b]
+	if item_c != "":
+		parts.append(item_c)
+	parts.sort()
+	return ":".join(parts)
+
+
+## Look up what mixing item_a + item_b (+ optional item_c) produces at a facility.
+## Returns the recipe dict or empty dict if no match.
+func lookup_mix(facility_id: String, item_a: String, item_b: String, item_c: String = "") -> Dictionary:
+	var recipes: Array = _mixing_recipes.get(facility_id, [])
+	var key: String = mix_key(item_a, item_b, item_c)
+	for recipe in recipes:
+		var rc: String = recipe.get("input_c", "")
+		var rkey: String = mix_key(recipe.get("input_a", ""), recipe.get("input_b", ""), rc)
+		if rkey == key:
+			return recipe
+	return {}
+
+
+## Get all mixing recipes for a facility (for discovery log).
+func get_mixing_recipes(facility_id: String) -> Array:
+	return _mixing_recipes.get(facility_id, [])
+
+
+## Get count of mixing recipes at or below a given tier for a facility.
+func get_mixing_recipe_count(facility_id: String, max_tier: int) -> int:
+	var count: int = 0
+	for recipe in _mixing_recipes.get(facility_id, []):
+		if recipe.get("required_tier", 1) <= max_tier:
+			count += 1
+	return count
 
 
 # ============================================================================

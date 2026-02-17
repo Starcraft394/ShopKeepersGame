@@ -1,0 +1,14 @@
+{
+  "id": "ember_dust",
+  "display_name": "Ember Dust",
+  "description": "Fine ash from volcanic vents that retains lingering heat. Used as fuel in forging.",
+  "icon_hint": "pile of fine red-orange ash with tiny glowing embers scattered throughout",
+  "item_type": "material",
+  "item_subtype": "crafting",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 16,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_4", "material", "crafting", "fuel", "ashen_horizons"]
+}

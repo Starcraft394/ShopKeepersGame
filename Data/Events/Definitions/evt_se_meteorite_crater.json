@@ -1,0 +1,41 @@
+{
+  "id": "evt_se_meteorite_crater",
+  "title": "Meteorite Crater",
+  "description": "A jagged crater still radiates heat from a recent stellar impact. Wisps of iridescent smoke curl upward from the scorched basin, and the air hums with residual cosmic energy. Glittering dust and embedded fragments of otherworldly metal line the crater walls.",
+  "kind": "choice",
+  "tags": ["crystal", "starfall"],
+  "choices": [
+    {
+      "id": "collect_dust",
+      "label": "Collect the starfall dust",
+      "description": "The iridescent dust coating the crater is a valuable reagent.",
+      "effects": [
+        { "type": "add_item", "item_id": "starfall_dust", "min_qty": 2, "max_qty": 4 }
+      ]
+    },
+    {
+      "id": "harvest_fragments",
+      "label": "Harvest meteorite fragments",
+      "description": "Pry loose the crystallized fragments embedded in the crater wall.",
+      "effects": [
+        { "type": "add_item", "item_id": "astral_fragment", "min_qty": 1, "max_qty": 1 }
+      ]
+    },
+    {
+      "id": "search_rim",
+      "label": "Search the crater rim",
+      "description": "The impact scattered valuables from the earth across the surrounding ground.",
+      "effects": [
+        { "type": "add_gold_range", "min": 12, "max": 20 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Leave the crater",
+      "description": "The cosmic radiation feels unsafe. Better to move on.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

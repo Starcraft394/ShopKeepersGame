@@ -1,0 +1,14 @@
+{
+  "id": "ss_crustacean_shell",
+  "display_name": "Crustacean Shell",
+  "description": "A thick armored plate from a shore-dwelling crab, strong and lightweight.",
+  "icon_hint": "thick curved crab shell plate with barnacle ridges and a teal-blue interior",
+  "item_type": "material",
+  "item_subtype": "monster_part",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 14,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_3", "material", "monster_part", "sunken_strand"]
+}

@@ -1,0 +1,41 @@
+{
+  "id": "evt_fr_null_zone",
+  "title": "Null Zone",
+  "description": "An area where nothing exists — no sound, no light, no sensation. Your footsteps make no noise, your breath produces no warmth, and your shadow simply stops at the boundary. The absence is so complete it becomes a presence of its own, pressing against your mind like the weight of an empty universe.",
+  "kind": "choice",
+  "tags": ["void", "corruption"],
+  "choices": [
+    {
+      "id": "gather_null",
+      "label": "Gather null fragments",
+      "description": "Collect the solidified pieces of nothingness that crumble away from the zone's edges.",
+      "effects": [
+        { "type": "add_item", "item_id": "fr_null_fragment", "min_qty": 2, "max_qty": 4 }
+      ]
+    },
+    {
+      "id": "collect_entropy",
+      "label": "Collect the entropy residue",
+      "description": "Scrape the fine powder of dissolved reality from the boundary where existence ends.",
+      "effects": [
+        { "type": "add_item", "item_id": "fr_entropy_residue", "min_qty": 2, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "meditate",
+      "label": "Meditate in the void",
+      "description": "Sit within the absolute silence and let the absence wash away pain and exhaustion.",
+      "effects": [
+        { "type": "heal_party", "value": 10 }
+      ]
+    },
+    {
+      "id": "retreat",
+      "label": "Retreat",
+      "description": "The nothingness is crawling into your thoughts. Time to leave.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

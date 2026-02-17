@@ -9,6 +9,7 @@
 
   "keeper_name": "Thalric",
   "keeper_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
+  "keeper_description": "Patient scarred blade instructor with close-cropped gray hair, practice sword at his hip, training dummies behind him",
   "keeper_greetings": [
     "Welcome to the Training Hall. A sharp mind wins more fights than a sharp sword.",
     "Back for more lessons? Good. Discipline is forged through repetition.",

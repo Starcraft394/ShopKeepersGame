@@ -59,6 +59,9 @@ var stat_bonuses: Dictionary = {}  # { "attack": int, "defense": int, "speed": i
 # Backpack-specific: bonus bag capacity when equipped (NOT scaled by quality)
 var bag_capacity_bonus: int = 0
 
+# T4 Equipment ability: grants this ability when equipped
+var ability_id: String = ""
+
 # Quality tier multipliers: Q0=1.0, Q1=1.1, Q2=1.2, Q3=1.35
 const QUALITY_MULTIPLIERS := [1.0, 1.1, 1.2, 1.35]
 
@@ -140,10 +143,11 @@ func create_bordered_icon(icon_size: int = 16, quality_tier: int = 0) -> Control
 	return panel
 
 
-## Get stat bonuses for this equipment with quality multiplier applied.
+## Get stat bonuses for this equipment with quality multiplier and region scaling.
 ## Returns empty dict for non-equipment items.
 ## quality_tier: 0=common, 1=uncommon, 2=rare, 3=epic
-func get_stat_bonuses_with_quality(quality_tier: int = 0) -> Dictionary:
+## region_bonus: fractional bonus from completed regions (e.g., 0.2 = +20%)
+func get_stat_bonuses_with_quality(quality_tier: int = 0, region_bonus: float = 0.0) -> Dictionary:
 	# Use stat_bonuses if set, otherwise fall back to base_stats
 	var bonuses = stat_bonuses if not stat_bonuses.is_empty() else base_stats
 	if bonuses.is_empty():
@@ -156,7 +160,7 @@ func get_stat_bonuses_with_quality(quality_tier: int = 0) -> Dictionary:
 	var result: Dictionary = {}
 	for stat_key in bonuses:
 		var base_val = int(bonuses[stat_key])
-		result[stat_key] = int(base_val * multiplier)
+		result[stat_key] = int(base_val * multiplier * (1.0 + region_bonus))
 	return result
 
 ## Get effective buy value (for shop purchases).
@@ -209,6 +213,9 @@ static func from_dict(data: Dictionary) -> ItemTemplate:
 
 	# v5: Backpack bag capacity bonus (not quality-scaled)
 	instance.bag_capacity_bonus = int(data.get("bag_capacity_bonus", 0))
+
+	# v6: T4 Equipment ability grant
+	instance.ability_id = data.get("ability_id", "")
 
 	# Convert typed arrays (clear + append pattern for safety)
 	instance.allowed_affixes.clear()

@@ -38,6 +38,7 @@ var unlocks: Array = []  # Array of unlock Dictionaries { id, unlock_group, labe
 var recipes: Array = []  # DEPRECATED: Use unlocks instead
 var shop_items: Array = []  # Array of shop item Dictionaries { item_id, price_gold, requires_unlock_group }
 var crafting_recipes: Array = []  # Array of { output_id, output_qty, inputs: [{ item_id, qty }] }
+var mixing_recipe_file: String = ""  # ID of mixing recipe JSON (e.g., "mixing_chef")
 
 # Pool-driven shop system
 var shop_pool_id: String = ""  # ID of shop pool JSON (e.g., "pool_region1_general")
@@ -113,6 +114,7 @@ static func from_dict(data: Dictionary) -> FacilityData:
 	instance.shop_items = shop_items_val if shop_items_val is Array else []
 	var crafting_recipes_val = data.get("crafting_recipes", [])
 	instance.crafting_recipes = crafting_recipes_val if crafting_recipes_val is Array else []
+	instance.mixing_recipe_file = data.get("mixing_recipe_file", "")
 
 	# Pool-driven shop system fields
 	instance.shop_pool_id = data.get("shop_pool_id", "")

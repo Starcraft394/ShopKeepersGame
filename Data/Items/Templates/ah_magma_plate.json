@@ -1,0 +1,33 @@
+{
+  "id": "ah_magma_plate",
+  "display_name": "Magma Plate",
+  "description": "Armor forged in lava flows. The plates glow faintly and radiate intense heat.",
+  "icon_hint": "heavy dark iron chest plate with glowing orange magma veins between the plates",
+  "item_type": "armor",
+  "item_subtype": "heavy_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 10,
+    "speed": -2
+  },
+  "stat_bonuses": {
+    "defense": 10,
+    "health": 20,
+    "speed": -2
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 90,
+  "icon_path": "",
+  "tags": ["region_4", "armor", "ashen_horizons", "tier_3"]
+}

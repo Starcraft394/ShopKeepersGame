@@ -1,0 +1,15 @@
+{
+  "id": "et_region2_combined",
+  "display_name": "Fungalmire Depths Events",
+  "description": "Random events in the bioluminescent tunnels and fungal groves.",
+  "entries": [
+    { "event_id": "evt_mycelium_vein", "weight": 15 },
+    { "event_id": "evt_spore_tremor", "weight": 12 },
+    { "event_id": "evt_rotting_caravan", "weight": 15 },
+    { "event_id": "evt_mushroom_grove", "weight": 18 },
+    { "event_id": "evt_fungal_shrine", "weight": 10 },
+    { "event_id": "evt_toxic_spores", "weight": 10 },
+    { "event_id": "evt_spore_deposit", "weight": 12 },
+    { "event_id": "evt_spore_cache", "weight": 14 }
+  ]
+}

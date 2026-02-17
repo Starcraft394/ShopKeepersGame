@@ -1,0 +1,27 @@
+{
+  "id": "se_paradox_shade",
+  "display_name": "Paradox Shade",
+  "description": "A reality phantom that exists in two places at once, attacking from both simultaneously.",
+  "icon_hint": "dark shadowy figure split into two overlapping copies slightly offset from each other",
+  "family": "crystal",
+  "region_id": "region_5",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 90,
+    "attack": 20,
+    "defense": 14,
+    "speed": 12
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region5_uncommon",
+  "gold_drop_min": 24,
+  "gold_drop_max": 38,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/se_paradox_shade.png"
+}

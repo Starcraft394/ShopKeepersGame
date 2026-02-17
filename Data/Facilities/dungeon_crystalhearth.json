@@ -1,0 +1,23 @@
+{
+  "id": "dungeon_crystalhearth",
+  "display_name": "Dungeon Board",
+  "description": "Select a starting floor for The Shattered Expanse.",
+  "icon_path": "res://Assets/Icons/Facilities/icon_facility_dungeon.png",
+  "facility_type": "dungeon",
+  "max_tier": 1,
+  "unlock_region": 5,
+  "keeper_name": "",
+  "keeper_portrait": "",
+  "keeper_greetings": [
+    "Reality fractures deeper in the Expanse. Choose your starting floor wisely.",
+    "Echoes of past and future overlap here — trust nothing you see.",
+    "The stars watch from below, and they do not blink."
+  ],
+  "slots_per_tier": {},
+  "upgrade_costs": {},
+  "services_per_tier": {"1": ["select_floor"]},
+  "produces_item_types": [],
+  "input_resource_types": [],
+  "allows_hero_assignment": false,
+  "max_assigned_heroes": 0
+}

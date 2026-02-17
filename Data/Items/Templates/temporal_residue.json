@@ -1,0 +1,14 @@
+{
+  "id": "temporal_residue",
+  "display_name": "Temporal Residue",
+  "description": "Shimmering residue from time-distortion zones. Faintly warm to the touch.",
+  "icon_hint": "shimmering amber gel in a jar with ghostly after-images trailing behind it",
+  "item_type": "material",
+  "item_subtype": "rare",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 40,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_5", "material", "rare", "starfall_expanse"]
+}

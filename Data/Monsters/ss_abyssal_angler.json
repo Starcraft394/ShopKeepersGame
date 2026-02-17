@@ -1,0 +1,27 @@
+{
+  "id": "ss_abyssal_angler",
+  "display_name": "Abyssal Angler",
+  "description": "A deep-sea predator with a luminous lure that hypnotizes prey before devouring them.",
+  "icon_hint": "deep-sea anglerfish with bioluminescent dangling lure and massive gaping jaws",
+  "family": "coastal",
+  "region_id": "region_3",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 75,
+    "attack": 16,
+    "defense": 10,
+    "speed": 9
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region3_uncommon",
+  "gold_drop_min": 17,
+  "gold_drop_max": 28,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/ss_abyssal_angler.png"
+}

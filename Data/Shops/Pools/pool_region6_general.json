@@ -1,0 +1,114 @@
+{
+  "id": "pool_region6_general",
+  "display_name": "Region 6 General Shop Pool",
+  "description": "Item pool for general stores in Region 6 necropolis settlements",
+
+  "weight_by_tier": {
+    "1": 10,
+    "2": 6,
+    "3": 3,
+    "4": 1
+  },
+
+  "consumables": [
+    {
+      "item_id": "strong_healing_tonic",
+      "weight": 20,
+      "price_gold": 40,
+      "tier": 1,
+      "requires_unlock_group": "consumables_t1",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 1
+    },
+    {
+      "item_id": "antidote",
+      "weight": 15,
+      "price_gold": 20,
+      "tier": 1,
+      "requires_unlock_group": "consumables_t1",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 1
+    },
+    {
+      "item_id": "nc_grave_elixir",
+      "weight": 12,
+      "price_gold": 60,
+      "tier": 2,
+      "requires_unlock_group": "consumables_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "nc_spectral_draught",
+      "weight": 10,
+      "price_gold": 65,
+      "tier": 2,
+      "requires_unlock_group": "consumables_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "nc_corpsebloom_stew",
+      "weight": 10,
+      "price_gold": 55,
+      "tier": 2,
+      "requires_unlock_group": "consumables_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    }
+  ],
+
+  "weapons": [
+    {
+      "item_id": "nc_soul_reaver",
+      "weight": 15,
+      "price_gold": 170,
+      "tier": 2,
+      "requires_unlock_group": "weapons_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "nc_wraith_bow",
+      "weight": 12,
+      "price_gold": 165,
+      "tier": 2,
+      "requires_unlock_group": "weapons_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    }
+  ],
+
+  "offhands": [
+    {
+      "item_id": "nc_spectral_aegis",
+      "weight": 12,
+      "price_gold": 180,
+      "tier": 2,
+      "requires_unlock_group": "offhands_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    }
+  ],
+
+  "books": [
+    {
+      "item_id": "book_dark_channeler",
+      "weight": 10,
+      "price_gold": 170,
+      "tier": 1,
+      "requires_unlock_group": "books_t1",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 1
+    },
+    {
+      "item_id": "book_lich",
+      "weight": 10,
+      "price_gold": 170,
+      "tier": 1,
+      "requires_unlock_group": "books_t1",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 1
+    }
+  ]
+}

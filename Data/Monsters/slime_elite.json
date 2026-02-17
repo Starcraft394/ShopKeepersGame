@@ -6,9 +6,17 @@
   "family": "ooze",
   "region_id": "region_1",
   "tier": 1,
-  "base_stats": { "health": 45, "attack": 7, "defense": 5, "speed": 8 },
-  "ability_ids": ["basic_attack"],
+  "base_stats": {
+    "health": 45,
+    "attack": 7,
+    "defense": 5,
+    "speed": 8
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
   "loot_table_id": "lt_ooze_parts",
   "gold_drop_min": 9,
-  "gold_drop_max": 19
+  "gold_drop_max": 19,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon21.png"
 }

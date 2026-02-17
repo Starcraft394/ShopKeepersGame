@@ -1,0 +1,41 @@
+{
+  "id": "evt_se_crystal_garden",
+  "title": "Crystal Garden",
+  "description": "Towering prismatic crystals rise from the earth like ancient trees, their faceted surfaces splitting light into cascading rainbows. A low harmonic tone resonates through the formation, and fine crystalline dust drifts in the still air like luminous pollen.",
+  "kind": "choice",
+  "tags": ["crystal", "starfall"],
+  "choices": [
+    {
+      "id": "harvest_shards",
+      "label": "Harvest crystal shards",
+      "description": "Carefully break off smaller growths from the base of the formations.",
+      "effects": [
+        { "type": "add_item", "item_id": "prism_shard", "min_qty": 2, "max_qty": 4 }
+      ]
+    },
+    {
+      "id": "collect_dust",
+      "label": "Collect the resonant dust",
+      "description": "Sweep up the sparkling dust that gathers in the hollows between crystals.",
+      "effects": [
+        { "type": "add_item", "item_id": "starfall_dust", "min_qty": 2, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "search_formations",
+      "label": "Search between the formations",
+      "description": "Previous visitors may have dropped belongings while mesmerized by the light.",
+      "effects": [
+        { "type": "add_gold_range", "min": 10, "max": 18 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Leave the garden undisturbed",
+      "description": "The crystals seem almost alive. It feels wrong to take from them.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

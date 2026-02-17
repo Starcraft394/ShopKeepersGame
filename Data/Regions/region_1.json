@@ -5,6 +5,8 @@
   "region_index": 1,
   "dungeon_floor_count": 1,
   "monster_families": ["beast"],
-  "town_ids": ["town_greenroot", "town_timberfall"],
-  "boss_id": "thorn_ent"
+  "town_ids": ["town_thornhaven"],
+  "boss_id": "thorn_ent",
+  "theme_color": "#4a7a5a",
+  "accent_color": "#6aaa7a"
 }

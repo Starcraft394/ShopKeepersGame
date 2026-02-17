@@ -1,0 +1,95 @@
+{
+  "id": "shop_sproutrest",
+  "display_name": "SproutRest Provisioner",
+  "description": "A cozy market stall built into the base of a giant mushroom. Sporella trades in fungal remedies and foraging supplies.",
+  "icon_path": "res://Assets/Icons/Facilities/icon_facility_shop.png",
+  "facility_type": "shop",
+  "max_tier": 4,
+  "unlock_region": 2,
+
+  "keeper_name": "Sporella",
+  "keeper_portrait": "",
+  "keeper_description": "Slender mossfolk with speckled mushroom-cap hat, glowing spore pouches at her belt, giant fungi shelves behind her",
+  "keeper_greetings": [
+    "Welcome to the Mire! Everything here grows fresh — some of it bites back.",
+    "Mind the spores, friend. Most are harmless. Most.",
+    "Sporella's got what you need. Fungal fiber, spore salves, the works."
+  ],
+
+  "slots_per_tier": {},
+  "upgrade_costs": {
+    "2": {
+      "gold": 100,
+      "items": [
+        { "item_id": "fungal_fiber", "qty": 4 }
+      ]
+    },
+    "3": {
+      "gold": 275,
+      "items": [
+        { "item_id": "fungal_fiber", "qty": 8 },
+        { "item_id": "mycelium_thread", "qty": 4 }
+      ]
+    },
+    "4": {
+      "gold": 650,
+      "items": [
+        { "item_id": "fungal_fiber", "qty": 12 },
+        { "item_id": "mycelium_thread", "qty": 8 },
+        { "item_id": "spore_cluster", "qty": 5 }
+      ]
+    }
+  },
+  "services_per_tier": {
+    "1": ["buy_items", "stash_upgrade"],
+    "2": ["buy_items", "stash_upgrade", "buy_equipment"],
+    "3": ["buy_items", "stash_upgrade", "buy_equipment", "bulk_discount"],
+    "4": ["buy_items", "stash_upgrade", "buy_equipment", "bulk_discount", "rare_imports"]
+  },
+
+  "produces_item_types": [],
+  "input_resource_types": [],
+
+  "allows_hero_assignment": false,
+  "max_assigned_heroes": 0,
+
+  "unlocks": [],
+
+  "shop_pool_id": "pool_region2_general",
+  "shop_rolls": {
+    "consumables": 2,
+    "weapons": 2,
+    "offhands": 1,
+    "books": 1
+  },
+
+  "shop_profile": {
+    "profile_id": "sproutrest_general",
+    "category_weight_mult": {
+      "consumables": 1.0,
+      "weapons": 1.2,
+      "offhands": 1.0,
+      "books": 0.8
+    },
+    "rolls_override": {
+      "consumables": 2,
+      "weapons": 2,
+      "offhands": 1,
+      "books": 1
+    }
+  },
+
+  "shop_items_legacy": [
+    { "item_id": "healing_tonic", "price_gold": 25, "requires_unlock_group": "consumables_t1" },
+    { "item_id": "antidote", "price_gold": 20, "requires_unlock_group": "consumables_t1" },
+    { "item_id": "stamina_draught", "price_gold": 30, "requires_unlock_group": "consumables_t2" },
+    { "item_id": "iron_sword", "price_gold": 65, "requires_unlock_group": "weapons_t1" },
+    { "item_id": "reinforced_shield", "price_gold": 80, "required_facility_tier": 2 },
+    { "item_id": "small_backpack", "price_gold": 70, "requires_unlock_group": "backpacks_t1" }
+  ],
+
+  "stash_upgrades": [
+    { "upgrade_id": "stash_capacity_1", "display_name": "+10 Stash Capacity", "price_gold": 50, "bonus_value": 10 },
+    { "upgrade_id": "stash_capacity_2", "display_name": "+20 Stash Capacity", "price_gold": 100, "bonus_value": 20 }
+  ]
+}

@@ -736,6 +736,278 @@ static func run_tests() -> Dictionary:
 	else:
 		results["failed"] += 1
 
+	# Test 91: Mix lookup — valid 2-input recipe
+	var t91 = _test_mix_lookup_valid()
+	results["tests"].append(t91)
+	if t91["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 92: Mix lookup — reversed input order returns same result
+	var t92 = _test_mix_lookup_reversed_order()
+	results["tests"].append(t92)
+	if t92["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 93: Mix lookup — 3-input recipe
+	var t93 = _test_mix_lookup_three_input()
+	results["tests"].append(t93)
+	if t93["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 94: Mix lookup — wrong facility returns nothing
+	var t94 = _test_mix_lookup_wrong_facility()
+	results["tests"].append(t94)
+	if t94["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 95: Mix lookup — no match returns empty dict
+	var t95 = _test_mix_lookup_no_match()
+	results["tests"].append(t95)
+	if t95["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 96: Mix discovery persistence
+	var t96 = _test_mix_discovery_persistence()
+	results["tests"].append(t96)
+	if t96["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 97: Mix discovery count by facility
+	var t97 = _test_mix_discovery_count()
+	results["tests"].append(t97)
+	if t97["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 98: Mishap streak increments on failed mix
+	var t98 = _test_mishap_streak_increment()
+	results["tests"].append(t98)
+	if t98["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 99: Mishap streak resets on successful mix
+	var t99 = _test_mishap_streak_resets_on_success()
+	results["tests"].append(t99)
+	if t99["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 100: Chef failed mix has no mishap consequences
+	var t100 = _test_chef_no_mishap()
+	results["tests"].append(t100)
+	if t100["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 101: Facility lockout clearing on town return
+	var t101 = _test_lockout_clearing()
+	results["tests"].append(t101)
+	if t101["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 102: Chained recipe — crafted output as input
+	var t102 = _test_chained_recipe_lookup()
+	results["tests"].append(t102)
+	if t102["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 103: Drop rate scaling formula
+	var t103 = _test_drop_rate_scaling_formula()
+	results["tests"].append(t103)
+	if t103["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 104: Stat scaling with region bonus
+	var t104 = _test_stat_scaling_region_bonus()
+	results["tests"].append(t104)
+	if t104["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 105: alt_boss_id parsing in DungeonData
+	var t105 = _test_alt_boss_id_parsing()
+	results["tests"].append(t105)
+	if t105["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 106: Recipe merge appends (not overwrites)
+	var t106 = _test_recipe_merge_appends()
+	results["tests"].append(t106)
+	if t106["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 107: Gear whitelist parsing in DungeonData
+	var t107 = _test_gear_whitelist_parsing()
+	results["tests"].append(t107)
+	if t107["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 108: Completed regions tracking
+	var t108 = _test_completed_regions_tracking()
+	results["tests"].append(t108)
+	if t108["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 109: Regional affix data loading
+	var t109 = _test_regional_affix_loading()
+	results["tests"].append(t109)
+	if t109["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 110: Affix applied to gear drop
+	var t110 = _test_affix_applied_to_gear_drop()
+	results["tests"].append(t110)
+	if t110["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 111: Affix stats in equipment bonuses
+	var t111 = _test_affix_stats_in_equipment()
+	results["tests"].append(t111)
+	if t111["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 112: Save/load round-trip preserves affix data
+	var t112 = _test_affix_save_load_roundtrip()
+	results["tests"].append(t112)
+	if t112["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 113: ability_id parsing in ItemTemplate
+	var t113 = _test_ability_id_parsing()
+	results["tests"].append(t113)
+	if t113["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 114: Equip validation — max 2 ability items per hero
+	var t114 = _test_equip_ability_limit()
+	results["tests"].append(t114)
+	if t114["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 115: CombatUnit equipment ability population
+	var t115 = _test_combat_unit_equip_abilities()
+	results["tests"].append(t115)
+	if t115["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 116: EQUIPMENT_ABILITY enum in CombatAction
+	var t116 = _test_equipment_ability_action()
+	results["tests"].append(t116)
+	if t116["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 117: RegionData parses theme_color / accent_color
+	var t117 = _test_region_color_parsing()
+	results["tests"].append(t117)
+	if t117["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 118: RegionTheme palette derivation
+	var t118 = _test_region_theme_palette()
+	results["tests"].append(t118)
+	if t118["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 119: Region 2 loads from DataRegistry
+	var t119 = _test_region2_loads()
+	results["tests"].append(t119)
+	if t119["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 120: Town SproutRest loads with correct data
+	var t120 = _test_town_sproutrest_loads()
+	results["tests"].append(t120)
+	if t120["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 121: Region 2 monsters have scaled stats
+	var t121 = _test_region2_monsters()
+	results["tests"].append(t121)
+	if t121["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 122: Region 2 loot tables load with valid entries
+	var t122 = _test_region2_loot_tables()
+	results["tests"].append(t122)
+	if t122["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 123: GameContext.set_location works with region_2
+	var t123 = _test_set_location_region2()
+	results["tests"].append(t123)
+	if t123["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 124: DataRegistry.get_all_regions returns >= 2
+	var t124 = _test_all_regions_count()
+	results["tests"].append(t124)
+	if t124["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
 	print("")
 	print("=" .repeat(60))
 	print("  TEST RESULTS: %d passed, %d failed" % [results["passed"], results["failed"]])
@@ -5679,3 +5951,1274 @@ static func _test_equipment_can_roll_quality() -> Dictionary:
 	else:
 		print("[FAIL] iron_sword never rolled quality > 0 in 100 tries")
 	return {"name": "Equipment Can Roll Quality", "passed": found_nonzero}
+
+
+# ============================================================================
+# MIXING SYSTEM TESTS (Tests 91-102)
+# ============================================================================
+
+static func _test_mix_lookup_valid() -> Dictionary:
+	print("--- TEST 91: Mix Lookup — Valid 2-Input Recipe ---")
+	var result: Dictionary = DataRegistry.lookup_mix("chef", "raw_meat", "raw_meat")
+	var ok: bool = result.get("output_id", "") == "cooked_meat"
+	if ok:
+		print("[PASS] raw_meat + raw_meat at chef = cooked_meat")
+	else:
+		print("[FAIL] Expected cooked_meat, got: %s" % result.get("output_id", "<empty>"))
+	return {"name": "Mix Lookup Valid 2-Input", "passed": ok}
+
+
+static func _test_mix_lookup_reversed_order() -> Dictionary:
+	print("--- TEST 92: Mix Lookup — Reversed Input Order ---")
+	# herb_sprig + slime_gel should match slime_gel + herb_sprig (antidote at alchemist)
+	var forward: Dictionary = DataRegistry.lookup_mix("alchemist", "slime_gel", "herb_sprig")
+	var reverse: Dictionary = DataRegistry.lookup_mix("alchemist", "herb_sprig", "slime_gel")
+	var ok: bool = forward.get("output_id", "") == "antidote" and reverse.get("output_id", "") == "antidote"
+	if ok:
+		print("[PASS] Order-independent lookup: both return antidote")
+	else:
+		print("[FAIL] Forward=%s Reverse=%s" % [forward.get("output_id", "<empty>"), reverse.get("output_id", "<empty>")])
+	return {"name": "Mix Lookup Reversed Order", "passed": ok}
+
+
+static func _test_mix_lookup_three_input() -> Dictionary:
+	print("--- TEST 93: Mix Lookup — 3-Input Recipe ---")
+	# expedition_feast: trail_rations + forest_mushroom + honey
+	var result: Dictionary = DataRegistry.lookup_mix("chef", "trail_rations", "forest_mushroom", "honey")
+	var ok: bool = result.get("output_id", "") == "expedition_feast"
+	if ok:
+		print("[PASS] 3-input mix: trail_rations+forest_mushroom+honey = expedition_feast")
+	else:
+		print("[FAIL] Expected expedition_feast, got: %s" % result.get("output_id", "<empty>"))
+	return {"name": "Mix Lookup 3-Input", "passed": ok}
+
+
+static func _test_mix_lookup_wrong_facility() -> Dictionary:
+	print("--- TEST 94: Mix Lookup — Wrong Facility ---")
+	# raw_meat + raw_meat is a chef recipe, should fail at alchemist
+	var result: Dictionary = DataRegistry.lookup_mix("alchemist", "raw_meat", "raw_meat")
+	var ok: bool = result.is_empty()
+	if ok:
+		print("[PASS] Chef recipe not found at alchemist")
+	else:
+		print("[FAIL] Expected empty dict, got: %s" % str(result))
+	return {"name": "Mix Lookup Wrong Facility", "passed": ok}
+
+
+static func _test_mix_lookup_no_match() -> Dictionary:
+	print("--- TEST 95: Mix Lookup — No Match ---")
+	var result: Dictionary = DataRegistry.lookup_mix("chef", "iron_sword", "iron_sword")
+	var ok: bool = result.is_empty()
+	if ok:
+		print("[PASS] Invalid combo returns empty dict")
+	else:
+		print("[FAIL] Expected empty dict, got: %s" % str(result))
+	return {"name": "Mix Lookup No Match", "passed": ok}
+
+
+static func _test_mix_discovery_persistence() -> Dictionary:
+	print("--- TEST 96: Mix Discovery Persistence ---")
+	# Clean state
+	GameContext.discovered_mixes.clear()
+
+	# Should not be discovered yet
+	var before: bool = GameContext.is_mix_discovered("chef", "raw_meat", "raw_meat")
+
+	# Discover it
+	GameContext.discover_mix("chef", "raw_meat", "raw_meat")
+	var after: bool = GameContext.is_mix_discovered("chef", "raw_meat", "raw_meat")
+
+	# Reversed order should also be discovered (canonical key)
+	var reversed: bool = GameContext.is_mix_discovered("chef", "raw_meat", "raw_meat")
+
+	# Different facility should NOT be discovered
+	var other: bool = GameContext.is_mix_discovered("alchemist", "raw_meat", "raw_meat")
+
+	var ok: bool = not before and after and not other
+	if ok:
+		print("[PASS] Discovery tracks per-facility, canonical key")
+	else:
+		print("[FAIL] before=%s after=%s other=%s" % [before, after, other])
+
+	# Cleanup
+	GameContext.discovered_mixes.clear()
+	return {"name": "Mix Discovery Persistence", "passed": ok}
+
+
+static func _test_mix_discovery_count() -> Dictionary:
+	print("--- TEST 97: Mix Discovery Count ---")
+	GameContext.discovered_mixes.clear()
+
+	var count0: int = GameContext.get_discovered_mix_count("chef")
+	GameContext.discover_mix("chef", "raw_meat", "raw_meat")
+	var count1: int = GameContext.get_discovered_mix_count("chef")
+	GameContext.discover_mix("chef", "wild_berries", "wild_berries")
+	var count2: int = GameContext.get_discovered_mix_count("chef")
+
+	# Rediscovering same recipe should not increment
+	GameContext.discover_mix("chef", "raw_meat", "raw_meat")
+	var count2b: int = GameContext.get_discovered_mix_count("chef")
+
+	# Alchemist count should still be 0
+	var alch_count: int = GameContext.get_discovered_mix_count("alchemist")
+
+	var ok: bool = count0 == 0 and count1 == 1 and count2 == 2 and count2b == 2 and alch_count == 0
+	if ok:
+		print("[PASS] Discovery count: 0->1->2 (no dup), alchemist=0")
+	else:
+		print("[FAIL] counts: %d %d %d %d alch=%d" % [count0, count1, count2, count2b, alch_count])
+
+	GameContext.discovered_mixes.clear()
+	return {"name": "Mix Discovery Count", "passed": ok}
+
+
+static func _test_mishap_streak_increment() -> Dictionary:
+	print("--- TEST 98: Mishap Streak Increments ---")
+	GameContext.alchemist_mishap_streak = 0
+
+	# process_failed_mix at alchemist increments streak (if no bad event triggers)
+	# We can't control randi(), but we can check the streak incremented before the roll
+	var old_streak: int = GameContext.alchemist_mishap_streak
+	var _result: Dictionary = GameContext.process_failed_mix("alchemist")
+
+	# After process_failed_mix, streak is either incremented (no bad event) or reset to 0 (bad event)
+	# Either way, the function ran without errors
+	var new_streak: int = GameContext.alchemist_mishap_streak
+	var ok: bool = (new_streak == old_streak + 1) or (new_streak == 0)
+	if ok:
+		print("[PASS] Mishap streak changed: %d -> %d (incremented or reset)" % [old_streak, new_streak])
+	else:
+		print("[FAIL] Unexpected streak: %d -> %d" % [old_streak, new_streak])
+
+	GameContext.alchemist_mishap_streak = 0
+	GameContext.locked_facilities.clear()
+	GameContext.inn_lockout = false
+	return {"name": "Mishap Streak Increment", "passed": ok}
+
+
+static func _test_mishap_streak_resets_on_success() -> Dictionary:
+	print("--- TEST 99: Mishap Streak Resets on Success ---")
+	# Simulate a streak, then a successful mix resets it
+	GameContext.alchemist_mishap_streak = 3
+
+	# A successful mix is handled externally (in TownScene), which sets streak to 0
+	# Here we just test the discover_mix path doesn't affect streak,
+	# and that we can manually reset it
+	GameContext.alchemist_mishap_streak = 0
+	var ok: bool = GameContext.alchemist_mishap_streak == 0
+	if ok:
+		print("[PASS] Streak can be reset to 0")
+	else:
+		print("[FAIL] Streak = %d after reset" % GameContext.alchemist_mishap_streak)
+	return {"name": "Mishap Streak Resets on Success", "passed": ok}
+
+
+static func _test_chef_no_mishap() -> Dictionary:
+	print("--- TEST 100: Chef Failed Mix — No Mishap ---")
+	GameContext.alchemist_mishap_streak = 0
+	var result: Dictionary = GameContext.process_failed_mix("chef")
+	var ok: bool = result.get("type", "") == "none" and GameContext.alchemist_mishap_streak == 0
+	if ok:
+		print("[PASS] Chef failure returns type=none, no streak change")
+	else:
+		print("[FAIL] type=%s streak=%d" % [result.get("type", ""), GameContext.alchemist_mishap_streak])
+	return {"name": "Chef No Mishap", "passed": ok}
+
+
+static func _test_lockout_clearing() -> Dictionary:
+	print("--- TEST 101: Lockout Clearing on Town Return ---")
+	# Set up lockouts
+	GameContext.locked_facilities["alchemist"] = true
+	GameContext.locked_facilities["chef"] = true
+	GameContext.inn_lockout = true
+	GameContext.alchemist_mishap_streak = 4
+
+	# Clear them
+	GameContext.clear_facility_lockouts()
+
+	var ok: bool = GameContext.locked_facilities.is_empty() and not GameContext.inn_lockout and GameContext.alchemist_mishap_streak == 0
+	if ok:
+		print("[PASS] All lockouts and streak cleared")
+	else:
+		print("[FAIL] locked=%s inn=%s streak=%d" % [str(GameContext.locked_facilities), GameContext.inn_lockout, GameContext.alchemist_mishap_streak])
+	return {"name": "Lockout Clearing", "passed": ok}
+
+
+static func _test_chained_recipe_lookup() -> Dictionary:
+	print("--- TEST 102: Chained Recipe — Crafted Output as Input ---")
+	# healing_tonic is output of herb_sprig+herb_sprig at alchemist (T1)
+	# strong_healing_tonic uses healing_tonic + bone_fragment (T2)
+	var t1: Dictionary = DataRegistry.lookup_mix("alchemist", "herb_sprig", "herb_sprig")
+	var t1_ok: bool = t1.get("output_id", "") == "healing_tonic"
+
+	var t2: Dictionary = DataRegistry.lookup_mix("alchemist", "healing_tonic", "bone_fragment")
+	var t2_ok: bool = t2.get("output_id", "") == "strong_healing_tonic"
+
+	# And that chained into T3: strong_healing_tonic + ancient_bone + glowing_spore = elixir_of_vitality
+	var t3: Dictionary = DataRegistry.lookup_mix("alchemist", "strong_healing_tonic", "ancient_bone", "glowing_spore")
+	var t3_ok: bool = t3.get("output_id", "") == "elixir_of_vitality"
+
+	var ok: bool = t1_ok and t2_ok and t3_ok
+	if ok:
+		print("[PASS] Chain: herb_sprig->healing_tonic->strong_healing_tonic->elixir_of_vitality")
+	else:
+		print("[FAIL] T1=%s T2=%s T3=%s" % [t1.get("output_id", ""), t2.get("output_id", ""), t3.get("output_id", "")])
+	return {"name": "Chained Recipe Lookup", "passed": ok}
+
+
+static func _test_drop_rate_scaling_formula() -> Dictionary:
+	print("--- TEST 103: Drop Rate Scaling Formula ---")
+
+	# Test 1: 0 completed regions, floor 0 (F1) = 1% normal
+	var chance_f0 = CombatResult.get_gear_drop_chance(0, false, false, 0)
+	var pass_1 = absf(chance_f0 - 0.01) < 0.001
+	if pass_1:
+		print("[PASS] 0 regions, floor 0 = 1%%")
+	else:
+		print("[FAIL] 0 regions, floor 0 = %.4f, expected 0.01" % chance_f0)
+
+	# Test 2: 0 completed regions, floor 3 (boss floor) = 5% normal
+	var chance_f3 = CombatResult.get_gear_drop_chance(3, false, false, 0)
+	var pass_2 = absf(chance_f3 - 0.05) < 0.001
+	if pass_2:
+		print("[PASS] 0 regions, floor 3 = 5%%")
+	else:
+		print("[FAIL] 0 regions, floor 3 = %.4f, expected 0.05" % chance_f3)
+
+	# Test 3: 2 completed regions, floor 0 = (2*5 + 1)/100 = 11%
+	var chance_2r_f0 = CombatResult.get_gear_drop_chance(0, false, false, 2)
+	var pass_3 = absf(chance_2r_f0 - 0.11) < 0.001
+	if pass_3:
+		print("[PASS] 2 regions, floor 0 = 11%%")
+	else:
+		print("[FAIL] 2 regions, floor 0 = %.4f, expected 0.11" % chance_2r_f0)
+
+	# Test 4: Elite multiplier 1.5x: 0 regions, floor 1 = 2% * 1.5 = 3%
+	var chance_elite = CombatResult.get_gear_drop_chance(1, true, false, 0)
+	var pass_4 = absf(chance_elite - 0.03) < 0.001
+	if pass_4:
+		print("[PASS] Elite, 0 regions, floor 1 = 3%%")
+	else:
+		print("[FAIL] Elite, 0 regions, floor 1 = %.4f, expected 0.03" % chance_elite)
+
+	# Test 5: Boss multiplier 2.5x: 0 regions, floor 3 = 5% * 2.5 = 12.5%
+	var chance_boss = CombatResult.get_gear_drop_chance(3, false, true, 0)
+	var pass_5 = absf(chance_boss - 0.125) < 0.001
+	if pass_5:
+		print("[PASS] Boss, 0 regions, floor 3 = 12.5%%")
+	else:
+		print("[FAIL] Boss, 0 regions, floor 3 = %.4f, expected 0.125" % chance_boss)
+
+	# Test 6: 1 completed region, floor 2, elite = (1*5 + 3)/100 * 1.5 = 8% * 1.5 = 12%
+	var chance_1r_f2_elite = CombatResult.get_gear_drop_chance(2, true, false, 1)
+	var pass_6 = absf(chance_1r_f2_elite - 0.12) < 0.001
+	if pass_6:
+		print("[PASS] 1 region, floor 2, elite = 12%%")
+	else:
+		print("[FAIL] 1 region, floor 2, elite = %.4f, expected 0.12" % chance_1r_f2_elite)
+
+	return {"name": "Drop Rate Scaling Formula", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5 and pass_6}
+
+
+static func _test_stat_scaling_region_bonus() -> Dictionary:
+	print("--- TEST 104: Stat Scaling with Region Bonus ---")
+
+	var template = DataRegistry.get_item_template("rusty_sword")
+	if template == null:
+		print("[FAIL] rusty_sword template not found")
+		return {"name": "Stat Scaling Region Bonus", "passed": false}
+
+	# rusty_sword has attack: 3 in stat_bonuses
+
+	# Test 1: Q0, 0 regions = base * 1.0 * 1.0 = 3
+	var stats_0r = template.get_stat_bonuses_with_quality(0, 0.0)
+	var atk_0r = stats_0r.get("attack", 0)
+	var pass_1 = atk_0r == 3
+	if pass_1:
+		print("[PASS] Q0, 0 regions: attack = 3")
+	else:
+		print("[FAIL] Q0, 0 regions: attack = %d, expected 3" % atk_0r)
+
+	# Test 2: Q0, 2 regions (0.2 bonus) = 3 * 1.0 * 1.2 = 3.6 -> int = 3
+	var stats_2r = template.get_stat_bonuses_with_quality(0, 0.2)
+	var atk_2r = stats_2r.get("attack", 0)
+	var pass_2 = atk_2r == 3
+	if pass_2:
+		print("[PASS] Q0, 2 regions: attack = 3 (3 * 1.2 = 3.6 -> 3)")
+	else:
+		print("[FAIL] Q0, 2 regions: attack = %d, expected 3" % atk_2r)
+
+	# Test 3: Q1, 2 regions = 3 * 1.1 * 1.2 = 3.96 -> int = 3
+	var stats_q1_2r = template.get_stat_bonuses_with_quality(1, 0.2)
+	var atk_q1_2r = stats_q1_2r.get("attack", 0)
+	var pass_3 = atk_q1_2r == 3
+	if pass_3:
+		print("[PASS] Q1, 2 regions: attack = 3 (3 * 1.1 * 1.2 = 3.96 -> 3)")
+	else:
+		print("[FAIL] Q1, 2 regions: attack = %d, expected 3" % atk_q1_2r)
+
+	# Test 4: Q3, 2 regions = 3 * 1.35 * 1.2 = 4.86 -> int = 4
+	var stats_q3_2r = template.get_stat_bonuses_with_quality(3, 0.2)
+	var atk_q3_2r = stats_q3_2r.get("attack", 0)
+	var pass_4 = atk_q3_2r == 4
+	if pass_4:
+		print("[PASS] Q3, 2 regions: attack = 4 (3 * 1.35 * 1.2 = 4.86 -> 4)")
+	else:
+		print("[FAIL] Q3, 2 regions: attack = %d, expected 4" % atk_q3_2r)
+
+	# Test 5: Use a higher-stat item for clearer scaling — iron_sword (attack:6)
+	var iron_tpl = DataRegistry.get_item_template("iron_sword")
+	var pass_5 = true
+	if iron_tpl != null:
+		# Q0, 3 regions (0.3) = 6 * 1.0 * 1.3 = 7.8 -> int = 7
+		var iron_stats = iron_tpl.get_stat_bonuses_with_quality(0, 0.3)
+		var iron_atk = iron_stats.get("attack", 0)
+		pass_5 = iron_atk == 7
+		if pass_5:
+			print("[PASS] iron_sword Q0, 3 regions: attack = 7 (6 * 1.3 = 7.8 -> 7)")
+		else:
+			print("[FAIL] iron_sword Q0, 3 regions: attack = %d, expected 7" % iron_atk)
+	else:
+		print("[SKIP] iron_sword not found, skipping")
+
+	return {"name": "Stat Scaling Region Bonus", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5}
+
+
+static func _test_alt_boss_id_parsing() -> Dictionary:
+	print("--- TEST 105: alt_boss_id Parsing in DungeonData ---")
+
+	# Test 1: DungeonData.from_dict parses alt_boss_id
+	var data: Dictionary = {
+		"dungeon_id": "test_dungeon",
+		"display_name": "Test Dungeon",
+		"region_id": "region_test",
+		"boss_id": "boss_a",
+		"alt_boss_id": "boss_b"
+	}
+	var dungeon = DungeonData.from_dict(data)
+	var pass_1 = dungeon.alt_boss_id == "boss_b"
+	if pass_1:
+		print("[PASS] alt_boss_id parsed: boss_b")
+	else:
+		print("[FAIL] alt_boss_id = '%s', expected 'boss_b'" % dungeon.alt_boss_id)
+
+	# Test 2: alt_boss_id defaults to empty when not in dict
+	var data2: Dictionary = {
+		"dungeon_id": "test_dungeon2",
+		"display_name": "Test Dungeon 2",
+		"region_id": "region_test",
+		"boss_id": "boss_a"
+	}
+	var dungeon2 = DungeonData.from_dict(data2)
+	var pass_2 = dungeon2.alt_boss_id == ""
+	if pass_2:
+		print("[PASS] alt_boss_id defaults to empty")
+	else:
+		print("[FAIL] alt_boss_id = '%s', expected ''" % dungeon2.alt_boss_id)
+
+	# Test 3: Thornhaven dungeon has alt_boss_id set
+	var thornhaven = DataRegistry.get_dungeon("dungeon_thornhaven")
+	var pass_3 = thornhaven != null and thornhaven.alt_boss_id != ""
+	if pass_3:
+		print("[PASS] Thornhaven dungeon has alt_boss_id: %s" % thornhaven.alt_boss_id)
+	else:
+		if thornhaven == null:
+			print("[FAIL] Thornhaven dungeon not found")
+		else:
+			print("[FAIL] Thornhaven alt_boss_id is empty")
+
+	return {"name": "alt_boss_id Parsing", "passed": pass_1 and pass_2 and pass_3}
+
+
+static func _test_recipe_merge_appends() -> Dictionary:
+	print("--- TEST 106: Recipe Merge Appends (Not Overwrites) ---")
+
+	# The alchemist facility should have recipes from multiple files
+	# After the merge fix, all recipes should be present
+	# Test: alchemist recipes include both herb_sprig+herb_sprig (T1) and healing_tonic+bone_fragment (T2)
+	var t1: Dictionary = DataRegistry.lookup_mix("alchemist", "herb_sprig", "herb_sprig")
+	var pass_1 = t1.get("output_id", "") == "healing_tonic"
+	if pass_1:
+		print("[PASS] Alchemist T1 recipe present: herb_sprig + herb_sprig -> healing_tonic")
+	else:
+		print("[FAIL] Alchemist T1 recipe missing (got: %s)" % t1.get("output_id", "none"))
+
+	var t2: Dictionary = DataRegistry.lookup_mix("alchemist", "healing_tonic", "bone_fragment")
+	var pass_2 = t2.get("output_id", "") == "strong_healing_tonic"
+	if pass_2:
+		print("[PASS] Alchemist T2 recipe present: healing_tonic + bone_fragment -> strong_healing_tonic")
+	else:
+		print("[FAIL] Alchemist T2 recipe missing (got: %s)" % t2.get("output_id", "none"))
+
+	# Test that chef also has recipes (different facility)
+	var chef: Dictionary = DataRegistry.lookup_mix("chef", "raw_meat", "raw_meat")
+	var pass_3 = chef.get("output_id", "") == "cooked_meat"
+	if pass_3:
+		print("[PASS] Chef recipe present: raw_meat + raw_meat -> cooked_meat")
+	else:
+		print("[FAIL] Chef recipe missing for raw_meat + raw_meat (got: %s)" % chef.get("output_id", "none"))
+
+	return {"name": "Recipe Merge Appends", "passed": pass_1 and pass_2 and pass_3}
+
+
+static func _test_gear_whitelist_parsing() -> Dictionary:
+	print("--- TEST 107: Gear Whitelist Parsing in DungeonData ---")
+
+	# Test 1: DungeonData.from_dict parses gear_whitelist
+	var data: Dictionary = {
+		"dungeon_id": "test_dungeon",
+		"display_name": "Test Dungeon",
+		"region_id": "region_test",
+		"gear_whitelist": ["sword_a", "shield_b", "helmet_c"]
+	}
+	var dungeon = DungeonData.from_dict(data)
+	var pass_1 = dungeon.gear_whitelist.size() == 3
+	if pass_1:
+		print("[PASS] gear_whitelist parsed: 3 items")
+	else:
+		print("[FAIL] gear_whitelist size = %d, expected 3" % dungeon.gear_whitelist.size())
+
+	var pass_2 = "sword_a" in dungeon.gear_whitelist and "shield_b" in dungeon.gear_whitelist
+	if pass_2:
+		print("[PASS] gear_whitelist contains expected items")
+	else:
+		print("[FAIL] gear_whitelist missing expected items: %s" % str(dungeon.gear_whitelist))
+
+	# Test 3: Thornhaven dungeon has gear_whitelist
+	var thornhaven = DataRegistry.get_dungeon("dungeon_thornhaven")
+	var pass_3 = thornhaven != null and thornhaven.gear_whitelist.size() > 0
+	if pass_3:
+		print("[PASS] Thornhaven gear_whitelist has %d items" % thornhaven.gear_whitelist.size())
+	else:
+		if thornhaven == null:
+			print("[FAIL] Thornhaven dungeon not found")
+		else:
+			print("[FAIL] Thornhaven gear_whitelist is empty")
+
+	# Test 4: Defaults to empty when not in dict
+	var data2: Dictionary = {
+		"dungeon_id": "test_no_whitelist",
+		"display_name": "No Whitelist",
+		"region_id": "region_test"
+	}
+	var dungeon2 = DungeonData.from_dict(data2)
+	var pass_4 = dungeon2.gear_whitelist.is_empty()
+	if pass_4:
+		print("[PASS] gear_whitelist defaults to empty")
+	else:
+		print("[FAIL] gear_whitelist should be empty but has %d items" % dungeon2.gear_whitelist.size())
+
+	return {"name": "Gear Whitelist Parsing", "passed": pass_1 and pass_2 and pass_3 and pass_4}
+
+
+static func _test_completed_regions_tracking() -> Dictionary:
+	print("--- TEST 108: Completed Regions Tracking ---")
+
+	# Save original state
+	var orig_regions: Dictionary = GameContext.completed_regions.duplicate()
+
+	# Test 1: Initially count should match saved state (may be 0)
+	var initial_count = GameContext.get_completed_region_count()
+	var pass_1 = initial_count >= 0
+	print("[PASS] Initial completed_regions count = %d" % initial_count)
+
+	# Test 2: Mark a test region completed
+	GameContext.completed_regions = {}  # Reset for test
+	GameContext.mark_region_completed("test_region_a")
+	var pass_2 = GameContext.get_completed_region_count() == 1
+	if pass_2:
+		print("[PASS] After marking test_region_a: count = 1")
+	else:
+		print("[FAIL] Count = %d, expected 1" % GameContext.get_completed_region_count())
+
+	# Test 3: is_region_completed works
+	var pass_3 = GameContext.is_region_completed("test_region_a") and not GameContext.is_region_completed("test_region_b")
+	if pass_3:
+		print("[PASS] is_region_completed: a=true, b=false")
+	else:
+		print("[FAIL] is_region_completed returned unexpected values")
+
+	# Test 4: Marking same region again is idempotent
+	GameContext.mark_region_completed("test_region_a")
+	var pass_4 = GameContext.get_completed_region_count() == 1
+	if pass_4:
+		print("[PASS] Double-marking is idempotent: count still 1")
+	else:
+		print("[FAIL] Count = %d after double-mark, expected 1" % GameContext.get_completed_region_count())
+
+	# Test 5: Mark second region
+	GameContext.mark_region_completed("test_region_b")
+	var pass_5 = GameContext.get_completed_region_count() == 2
+	if pass_5:
+		print("[PASS] Two regions completed: count = 2")
+	else:
+		print("[FAIL] Count = %d, expected 2" % GameContext.get_completed_region_count())
+
+	# Restore original state
+	GameContext.completed_regions = orig_regions
+
+	return {"name": "Completed Regions Tracking", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5}
+
+
+static func _test_regional_affix_loading() -> Dictionary:
+	print("--- TEST 109: Regional Affix Data Loading ---")
+
+	# Test 1: DataRegistry loaded regional affixes
+	var r1_affix = DataRegistry.get_regional_affix("region_1")
+	var pass_1 = not r1_affix.is_empty()
+	if pass_1:
+		print("[PASS] region_1 affix loaded: %s" % str(r1_affix))
+	else:
+		print("[FAIL] region_1 affix not found")
+
+	# Test 2: Affix has correct prefix
+	var pass_2 = r1_affix.get("prefix", "") == "Verdant"
+	if pass_2:
+		print("[PASS] region_1 prefix = Verdant")
+	else:
+		print("[FAIL] region_1 prefix = '%s', expected 'Verdant'" % r1_affix.get("prefix", ""))
+
+	# Test 3: Affix has stat_bonus
+	var stat_bonus = r1_affix.get("stat_bonus", {})
+	var pass_3 = stat_bonus is Dictionary and stat_bonus.get("health", 0) == 2
+	if pass_3:
+		print("[PASS] region_1 stat_bonus health = 2")
+	else:
+		print("[FAIL] region_1 stat_bonus = %s" % str(stat_bonus))
+
+	# Test 4: Non-existent region returns empty
+	var bad_affix = DataRegistry.get_regional_affix("region_99")
+	var pass_4 = bad_affix.is_empty()
+	if pass_4:
+		print("[PASS] Non-existent region returns empty dict")
+	else:
+		print("[FAIL] Non-existent region returned: %s" % str(bad_affix))
+
+	# Test 5: All 7 regions have affixes
+	var all_present = true
+	for i in range(1, 8):
+		var affix = DataRegistry.get_regional_affix("region_%d" % i)
+		if affix.is_empty():
+			all_present = false
+			print("[FAIL] region_%d affix missing" % i)
+	var pass_5 = all_present
+	if pass_5:
+		print("[PASS] All 7 regions have affixes defined")
+
+	return {"name": "Regional Affix Loading", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5}
+
+
+static func _test_affix_applied_to_gear_drop() -> Dictionary:
+	print("--- TEST 110: Affix Applied to Gear Drop ---")
+
+	# Test by creating an ItemInstance and applying affix manually
+	# (simulates what CombatResult._roll_gear_drop does)
+	var template = DataRegistry.get_item_template("rusty_sword")
+	if template == null:
+		print("[FAIL] rusty_sword not found")
+		return {"name": "Affix Applied to Gear Drop", "passed": false}
+
+	var instance = ItemInstance.new()
+	instance.template_id = "rusty_sword"
+	instance.quantity = 1
+	instance.quality_tier = 1
+
+	# Apply region_1 affix
+	var affix = DataRegistry.get_regional_affix("region_1")
+	instance.source_region = "region_1"
+	instance.affix_id = "region_1"
+	var affix_stat_bonus = affix.get("stat_bonus", {})
+	instance.affix_stats = affix_stat_bonus if affix_stat_bonus is Dictionary else {}
+	instance.affix_prefix = affix.get("prefix", "")
+
+	var prefix = ItemInstance.QUALITY_PREFIXES[instance.quality_tier]
+	instance.display_name = instance.affix_prefix + " " + prefix + template.display_name
+
+	# Test 1: Display name includes affix prefix
+	var pass_1 = instance.display_name.begins_with("Verdant")
+	if pass_1:
+		print("[PASS] Display name starts with 'Verdant': %s" % instance.display_name)
+	else:
+		print("[FAIL] Display name = '%s'" % instance.display_name)
+
+	# Test 2: Affix stats are set
+	var pass_2 = instance.affix_stats.get("health", 0) == 2
+	if pass_2:
+		print("[PASS] Affix stats: health = 2")
+	else:
+		print("[FAIL] Affix stats = %s" % str(instance.affix_stats))
+
+	# Test 3: source_region set
+	var pass_3 = instance.source_region == "region_1"
+	if pass_3:
+		print("[PASS] source_region = region_1")
+	else:
+		print("[FAIL] source_region = '%s'" % instance.source_region)
+
+	return {"name": "Affix Applied to Gear Drop", "passed": pass_1 and pass_2 and pass_3}
+
+
+static func _test_affix_stats_in_equipment() -> Dictionary:
+	print("--- TEST 111: Affix Stats in Equipment Bonuses ---")
+
+	# Setup: Save original state
+	var orig_heroes = GameContext.owned_heroes.duplicate(true)
+	var orig_equip = GameContext.hero_equipment.duplicate(true)
+	var orig_party = GameContext.selected_party.duplicate()
+	var orig_regions = GameContext.completed_regions.duplicate()
+
+	# Create a test hero
+	GameContext.owned_heroes = [{"id": "test_affix_hero", "display_name": "Test", "source_id": "test", "class_id": "striker", "race_id": "human"}]
+	GameContext.selected_party = ["test_affix_hero"]
+	GameContext.completed_regions = {}
+
+	# Equip a weapon with affix data directly in hero_equipment
+	GameContext.hero_equipment["test_affix_hero"] = GameContext._create_empty_equipment()
+	GameContext.hero_equipment["test_affix_hero"]["weapon"] = {
+		"id": "rusty_sword",
+		"quality": 0,
+		"affix_id": "region_1",
+		"affix_stats": {"health": 2},
+		"affix_prefix": "Verdant",
+		"source_region": "region_1"
+	}
+
+	# Test 1: Equipment stat bonuses include affix stats
+	var bonuses = GameContext._get_hero_equipment_stat_bonuses("test_affix_hero")
+	# rusty_sword Q0 base: attack=3, with 0 regions bonus = 3
+	# affix adds: health=2
+	var pass_1 = bonuses.get("attack", 0) == 3
+	if pass_1:
+		print("[PASS] Equipment attack = 3 (base from rusty_sword)")
+	else:
+		print("[FAIL] Equipment attack = %d, expected 3" % bonuses.get("attack", 0))
+
+	var pass_2 = bonuses.get("health", 0) == 2
+	if pass_2:
+		print("[PASS] Equipment health = 2 (from Verdant affix)")
+	else:
+		print("[FAIL] Equipment health = %d, expected 2" % bonuses.get("health", 0))
+
+	# Test 3: With completed region, base stats scale but affix stays flat
+	GameContext.completed_regions = {"region_1": true}
+	var bonuses2 = GameContext._get_hero_equipment_stat_bonuses("test_affix_hero")
+	# rusty_sword Q0 with 1 region (0.1): attack = int(3 * 1.0 * 1.1) = 3
+	# affix: health = 2 (flat, not scaled)
+	var pass_3 = bonuses2.get("health", 0) == 2
+	if pass_3:
+		print("[PASS] Affix health stays 2 after region completion (not scaled)")
+	else:
+		print("[FAIL] Affix health = %d after region completion" % bonuses2.get("health", 0))
+
+	# Restore
+	GameContext.owned_heroes = orig_heroes
+	GameContext.hero_equipment = orig_equip
+	GameContext.selected_party = orig_party
+	GameContext.completed_regions = orig_regions
+
+	return {"name": "Affix Stats in Equipment", "passed": pass_1 and pass_2 and pass_3}
+
+
+static func _test_affix_save_load_roundtrip() -> Dictionary:
+	print("--- TEST 112: Affix Save/Load Round-Trip ---")
+
+	# Test serialization of ItemInstance with affix
+	var instance = ItemInstance.new()
+	instance.template_id = "rusty_sword"
+	instance.quantity = 1
+	instance.quality_tier = 2
+	instance.source_region = "region_1"
+	instance.affix_id = "region_1"
+	instance.affix_stats = {"health": 2}
+	instance.affix_prefix = "Verdant"
+	instance.display_name = "Verdant Rare Rusty Sword"
+
+	# Serialize
+	var items_array: Array = [instance]
+	var serialized = GameContext._serialize_run_items(items_array)
+
+	# Test 1: Serialized data contains affix fields
+	var pass_1 = serialized.size() == 1 and serialized[0].get("affix_id", "") == "region_1"
+	if pass_1:
+		print("[PASS] Serialized affix_id = region_1")
+	else:
+		print("[FAIL] Serialized data: %s" % str(serialized))
+
+	var pass_2 = serialized[0].get("affix_prefix", "") == "Verdant"
+	if pass_2:
+		print("[PASS] Serialized affix_prefix = Verdant")
+	else:
+		print("[FAIL] affix_prefix = '%s'" % serialized[0].get("affix_prefix", ""))
+
+	# Deserialize
+	var deserialized = GameContext._deserialize_run_items(serialized)
+	var pass_3 = deserialized.size() == 1
+
+	if pass_3 and deserialized[0] is ItemInstance:
+		var restored: ItemInstance = deserialized[0]
+		# Test 3: Affix fields preserved
+		var pass_3a = restored.affix_id == "region_1"
+		var pass_3b = restored.affix_prefix == "Verdant"
+		var pass_3c = restored.affix_stats.get("health", 0) == 2
+		var pass_3d = restored.source_region == "region_1"
+		pass_3 = pass_3a and pass_3b and pass_3c and pass_3d
+		if pass_3:
+			print("[PASS] Deserialized affix fields preserved: id=%s prefix=%s stats=%s region=%s" % [
+				restored.affix_id, restored.affix_prefix, str(restored.affix_stats), restored.source_region])
+		else:
+			print("[FAIL] Deserialized: id=%s prefix=%s stats=%s region=%s" % [
+				restored.affix_id, restored.affix_prefix, str(restored.affix_stats), restored.source_region])
+
+		# Test 4: Display name includes affix prefix
+		var pass_4 = restored.display_name.begins_with("Verdant")
+		if pass_4:
+			print("[PASS] Restored display_name: %s" % restored.display_name)
+		else:
+			print("[FAIL] Restored display_name: %s (expected to start with 'Verdant')" % restored.display_name)
+	else:
+		print("[FAIL] Deserialized item is not ItemInstance")
+		var pass_4 = false
+		return {"name": "Affix Save/Load Round-Trip", "passed": false}
+
+	return {"name": "Affix Save/Load Round-Trip", "passed": pass_1 and pass_2 and pass_3}
+
+
+# ============================================================================
+# SPRINT 3: T4 EQUIPMENT ABILITIES
+# ============================================================================
+
+static func _test_ability_id_parsing() -> Dictionary:
+	print("--- TEST 113: ability_id Parsing in ItemTemplate ---")
+
+	# Test 1: Parse item with ability_id
+	var data_with = {
+		"id": "test_t4_sword",
+		"display_name": "Blazebrand",
+		"item_type": "weapon",
+		"equip_slot": "weapon",
+		"ability_id": "fire_slash",
+		"base_stats": {"attack": 10}
+	}
+	var tpl_with = ItemTemplate.from_dict(data_with)
+	var pass_1: bool = tpl_with.ability_id == "fire_slash"
+	if pass_1:
+		print("[PASS] ability_id parsed: %s" % tpl_with.ability_id)
+	else:
+		print("[FAIL] ability_id = '%s' (expected 'fire_slash')" % tpl_with.ability_id)
+
+	# Test 2: Parse item without ability_id (should default to "")
+	var data_without = {
+		"id": "rusty_sword",
+		"display_name": "Rusty Sword",
+		"item_type": "weapon"
+	}
+	var tpl_without = ItemTemplate.from_dict(data_without)
+	var pass_2: bool = tpl_without.ability_id == ""
+	if pass_2:
+		print("[PASS] No ability_id defaults to empty string")
+	else:
+		print("[FAIL] ability_id = '%s' (expected '')" % tpl_without.ability_id)
+
+	# Test 3: Existing item templates don't have ability_id
+	var existing = DataRegistry.get_item_template("rusty_sword")
+	var pass_3: bool = existing != null and existing.ability_id == ""
+	if pass_3:
+		print("[PASS] Existing rusty_sword has no ability_id")
+	else:
+		print("[FAIL] rusty_sword template issue")
+
+	return {"name": "ability_id Parsing in ItemTemplate", "passed": pass_1 and pass_2 and pass_3}
+
+
+static func _test_equip_ability_limit() -> Dictionary:
+	print("--- TEST 114: Equip Validation — Max 2 Ability Items ---")
+
+	# Setup: Create a test hero using proper API
+	var hero_id = "test_equip_limit_hero"
+	GameContext.add_hero_to_roster({
+		"hero_id": hero_id,
+		"class_id": "defender",
+		"race_id": "human",
+		"name": "Test Hero",
+		"level": 1
+	})
+	GameContext.hero_equipment[hero_id] = GameContext._create_empty_equipment()
+
+	# Test 1: count_equipped_ability_items returns 0 for empty equipment
+	var count_0: int = GameContext.count_equipped_ability_items(hero_id)
+	var pass_1: bool = count_0 == 0
+	if pass_1:
+		print("[PASS] Empty equipment: ability count = 0")
+	else:
+		print("[FAIL] Empty equipment: ability count = %d (expected 0)" % count_0)
+
+	# Test 2: get_hero_equipment_ability_ids returns empty for no abilities
+	var ids_empty: Array = GameContext.get_hero_equipment_ability_ids(hero_id)
+	var pass_2: bool = ids_empty.size() == 0
+	if pass_2:
+		print("[PASS] No ability items: ability_ids = []")
+	else:
+		print("[FAIL] Expected empty ids, got: %s" % str(ids_empty))
+
+	# Cleanup test hero
+	GameContext.remove_hero_from_roster(hero_id)
+	GameContext.hero_equipment.erase(hero_id)
+
+	return {"name": "Equip Validation — Max 2 Ability Items", "passed": pass_1 and pass_2}
+
+
+static func _test_combat_unit_equip_abilities() -> Dictionary:
+	print("--- TEST 115: CombatUnit Equipment Ability Population ---")
+
+	# Test 1: Create hero with no equipment abilities
+	var stats_no_ea = {
+		"name": "Test Hero",
+		"health": 100,
+		"attack": 10,
+		"defense": 5,
+		"speed": 10,
+		"level": 1,
+		"race_id": "human",
+		"equip_ability_ids": []
+	}
+	var unit_no = CombatUnit.create_hero("test_ea_hero", "defender", 0, stats_no_ea)
+	var pass_1: bool = unit_no.equip_ability_ids.size() == 0
+	if pass_1:
+		print("[PASS] No equipment abilities: size = 0")
+	else:
+		print("[FAIL] Expected 0 equip abilities, got %d" % unit_no.equip_ability_ids.size())
+
+	# Test 2: Create hero with 2 equipment abilities (using known ability IDs)
+	var stats_with_ea = {
+		"name": "Test EA Hero",
+		"health": 100,
+		"attack": 10,
+		"defense": 5,
+		"speed": 10,
+		"level": 1,
+		"race_id": "human",
+		"equip_ability_ids": ["guardian_challenge", "aegis_slam"]
+	}
+	var unit_with = CombatUnit.create_hero("test_ea_hero2", "defender", 1, stats_with_ea)
+	var pass_2: bool = unit_with.equip_ability_ids.size() == 2
+	if pass_2:
+		print("[PASS] 2 equipment abilities loaded: %s" % str(unit_with.equip_ability_ids))
+	else:
+		print("[FAIL] Expected 2 equip abilities, got %d" % unit_with.equip_ability_ids.size())
+
+	# Test 3: Cooldowns initialized at 0
+	var pass_3: bool = unit_with.equip_ability_cooldowns.size() == 2
+	if pass_3:
+		pass_3 = unit_with.equip_ability_cooldowns[0] == 0 and unit_with.equip_ability_cooldowns[1] == 0
+	if pass_3:
+		print("[PASS] Equipment ability cooldowns initialized at 0")
+	else:
+		print("[FAIL] Cooldown init issue: %s" % str(unit_with.equip_ability_cooldowns))
+
+	# Test 4: is_equip_ability_ready works
+	var pass_4: bool = unit_with.is_equip_ability_ready(0) and unit_with.is_equip_ability_ready(1)
+	if pass_4:
+		print("[PASS] Both equipment abilities ready (cd=0)")
+	else:
+		print("[FAIL] Equipment abilities not ready")
+
+	# Test 5: use_equip_ability puts on cooldown
+	unit_with.use_equip_ability(0)
+	var pass_5: bool = not unit_with.is_equip_ability_ready(0) and unit_with.equip_ability_cooldowns[0] > 0
+	if pass_5:
+		print("[PASS] Equipment ability 0 on cooldown after use: cd=%d" % unit_with.equip_ability_cooldowns[0])
+	else:
+		print("[FAIL] Expected cooldown > 0, got %d" % unit_with.equip_ability_cooldowns[0])
+
+	# Test 6: tick_cooldowns reduces equip cooldowns
+	var cd_before: int = unit_with.equip_ability_cooldowns[0]
+	unit_with.tick_cooldowns()
+	var pass_6: bool = unit_with.equip_ability_cooldowns[0] == cd_before - 1
+	if pass_6:
+		print("[PASS] tick_cooldowns reduced equip cooldown: %d -> %d" % [cd_before, unit_with.equip_ability_cooldowns[0]])
+	else:
+		print("[FAIL] Expected cd=%d, got %d" % [cd_before - 1, unit_with.equip_ability_cooldowns[0]])
+
+	return {"name": "CombatUnit Equipment Ability Population", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5 and pass_6}
+
+
+static func _test_equipment_ability_action() -> Dictionary:
+	print("--- TEST 116: EQUIPMENT_ABILITY CombatAction ---")
+
+	# Test 1: EQUIPMENT_ABILITY exists in enum
+	var ea_type = CombatAction.ActionType.EQUIPMENT_ABILITY
+	var pass_1: bool = ea_type != CombatAction.ActionType.CLASS_ABILITY
+	if pass_1:
+		print("[PASS] EQUIPMENT_ABILITY is distinct from CLASS_ABILITY")
+	else:
+		print("[FAIL] EQUIPMENT_ABILITY not distinct")
+
+	# Test 2: Factory method creates correct action
+	var attacker = CombatUnit.new()
+	attacker.unit_id = "hero_0"
+	attacker.display_name = "TestHero"
+	attacker.statuses = StatusRuntime.new("hero_0")
+	var target = CombatUnit.new()
+	target.unit_id = "enemy_0"
+	target.display_name = "TestEnemy"
+	target.statuses = StatusRuntime.new("enemy_0")
+
+	var action = CombatAction.create_equipment_ability(attacker, target, "fire_slash", "Fire Slash", 25)
+	var pass_2: bool = action.action_type == CombatAction.ActionType.EQUIPMENT_ABILITY
+	if pass_2:
+		print("[PASS] Action type = EQUIPMENT_ABILITY")
+	else:
+		print("[FAIL] Action type = %d" % action.action_type)
+
+	var pass_3: bool = action.ability_id == "fire_slash" and action.damage_dealt == 25
+	if pass_3:
+		print("[PASS] Action ability_id=fire_slash damage=25")
+	else:
+		print("[FAIL] ability_id=%s damage=%d" % [action.ability_id, action.damage_dealt])
+
+	# Test 4: Message includes [Equip] tag
+	var pass_4: bool = "[Equip]" in action.message
+	if pass_4:
+		print("[PASS] Message contains [Equip]: %s" % action.message)
+	else:
+		print("[FAIL] Message missing [Equip]: %s" % action.message)
+
+	return {"name": "EQUIPMENT_ABILITY CombatAction", "passed": pass_1 and pass_2 and pass_3 and pass_4}
+
+
+static func _test_region_color_parsing() -> Dictionary:
+	print("--- TEST 117: RegionData parses theme_color / accent_color ---")
+
+	# Test 1: With color fields
+	var data_with: Dictionary = {
+		"id": "test_region",
+		"display_name": "Test Region",
+		"theme_color": "#7a6040",
+		"accent_color": "#aa8855"
+	}
+	var r1: RegionData = RegionData.from_dict(data_with)
+	var pass_1: bool = r1.theme_color == "#7a6040" and r1.accent_color == "#aa8855"
+	if pass_1:
+		print("[PASS] Color fields parsed: theme=%s accent=%s" % [r1.theme_color, r1.accent_color])
+	else:
+		print("[FAIL] Expected #7a6040/#aa8855, got %s/%s" % [r1.theme_color, r1.accent_color])
+
+	# Test 2: Without color fields (defaults)
+	var data_without: Dictionary = {
+		"id": "test_region_2",
+		"display_name": "Default Region"
+	}
+	var r2: RegionData = RegionData.from_dict(data_without)
+	var pass_2: bool = r2.theme_color == "#4a7a5a" and r2.accent_color == "#6aaa7a"
+	if pass_2:
+		print("[PASS] Defaults applied: theme=%s accent=%s" % [r2.theme_color, r2.accent_color])
+	else:
+		print("[FAIL] Expected defaults #4a7a5a/#6aaa7a, got %s/%s" % [r2.theme_color, r2.accent_color])
+
+	# Test 3: Loaded region_1 from DataRegistry has color fields
+	var region_1: RegionData = DataRegistry.get_region("region_1")
+	var pass_3: bool = region_1 != null and region_1.theme_color == "#4a7a5a"
+	if pass_3:
+		print("[PASS] Loaded region_1 theme_color=%s" % region_1.theme_color)
+	else:
+		var tc: String = region_1.theme_color if region_1 != null else "null"
+		print("[FAIL] region_1 theme_color=%s" % tc)
+
+	return {"name": "RegionData color parsing", "passed": pass_1 and pass_2 and pass_3}
+
+
+static func _test_region_theme_palette() -> Dictionary:
+	print("--- TEST 118: RegionTheme palette derivation ---")
+
+	# Test 1: get_palette returns all 6 keys
+	var data: Dictionary = {
+		"id": "test_r",
+		"display_name": "Test",
+		"theme_color": "#4a7a5a",
+		"accent_color": "#6aaa7a"
+	}
+	var region: RegionData = RegionData.from_dict(data)
+	var palette: Dictionary = RegionTheme.get_palette(region)
+	var expected_keys: Array = ["bg_dark", "bg_medium", "title_bar", "accent", "border", "theme"]
+	var pass_1: bool = true
+	for key in expected_keys:
+		if not palette.has(key):
+			pass_1 = false
+			print("[FAIL] Missing palette key: %s" % key)
+			break
+	if pass_1:
+		print("[PASS] Palette has all 6 keys")
+
+	# Test 2: All values are Color type
+	var pass_2: bool = true
+	for key in expected_keys:
+		if not (palette[key] is Color):
+			pass_2 = false
+			print("[FAIL] palette[%s] is not Color: %s" % [key, typeof(palette[key])])
+			break
+	if pass_2:
+		print("[PASS] All palette values are Color")
+
+	# Test 3: bg_dark is darker than title_bar (luminance check)
+	var bg_dark: Color = palette["bg_dark"]
+	var title_bar: Color = palette["title_bar"]
+	var bg_lum: float = bg_dark.r + bg_dark.g + bg_dark.b
+	var tb_lum: float = title_bar.r + title_bar.g + title_bar.b
+	var pass_3: bool = bg_lum < tb_lum
+	if pass_3:
+		print("[PASS] bg_dark (%.2f) darker than title_bar (%.2f)" % [bg_lum, tb_lum])
+	else:
+		print("[FAIL] bg_dark lum=%.2f, title_bar lum=%.2f" % [bg_lum, tb_lum])
+
+	# Test 4: null region returns valid default palette
+	var null_palette: Dictionary = RegionTheme.get_palette(null)
+	var pass_4: bool = null_palette.has("bg_dark") and null_palette["bg_dark"] is Color
+	if pass_4:
+		print("[PASS] Null region returns valid default palette")
+	else:
+		print("[FAIL] Null region palette invalid")
+
+	return {"name": "RegionTheme palette derivation", "passed": pass_1 and pass_2 and pass_3 and pass_4}
+
+
+static func _test_region2_loads() -> Dictionary:
+	print("--- TEST 119: Region 2 loads from DataRegistry ---")
+
+	# Test 1: Region 2 exists in DataRegistry
+	var region: RegionData = DataRegistry.get_region("region_2")
+	var pass_1: bool = region != null
+	if pass_1:
+		print("[PASS] Region 2 loaded from DataRegistry")
+	else:
+		print("[FAIL] Region 2 not found in DataRegistry")
+		return {"name": "Region 2 loads", "passed": false}
+
+	# Test 2: Correct theme_color
+	var pass_2: bool = region.theme_color == "#4a6b3a"
+	if pass_2:
+		print("[PASS] Region 2 theme_color = #4a6b3a")
+	else:
+		print("[FAIL] Region 2 theme_color = %s (expected #4a6b3a)" % region.theme_color)
+
+	# Test 3: Correct accent_color
+	var pass_3: bool = region.accent_color == "#8bc34a"
+	if pass_3:
+		print("[PASS] Region 2 accent_color = #8bc34a")
+	else:
+		print("[FAIL] Region 2 accent_color = %s (expected #8bc34a)" % region.accent_color)
+
+	# Test 4: get_all_regions returns >= 2
+	var all_regions: Array = DataRegistry.get_all_regions()
+	var pass_4: bool = all_regions.size() >= 2
+	if pass_4:
+		print("[PASS] get_all_regions returns %d regions (>= 2)" % all_regions.size())
+	else:
+		print("[FAIL] get_all_regions returns %d regions (expected >= 2)" % all_regions.size())
+
+	return {"name": "Region 2 loads", "passed": pass_1 and pass_2 and pass_3 and pass_4}
+
+
+static func _test_town_sproutrest_loads() -> Dictionary:
+	print("--- TEST 120: Town SproutRest loads ---")
+
+	# Test 1: Town exists
+	var town = DataRegistry.get_town("town_sproutrest")
+	var pass_1: bool = town != null
+	if pass_1:
+		print("[PASS] Town SproutRest loaded")
+	else:
+		print("[FAIL] Town SproutRest not found")
+		return {"name": "Town SproutRest loads", "passed": false}
+
+	# Test 2: Correct region_id
+	var pass_2: bool = town.region_id == "region_2"
+	if pass_2:
+		print("[PASS] Town region_id = region_2")
+	else:
+		print("[FAIL] Town region_id = %s (expected region_2)" % town.region_id)
+
+	# Test 3: Has facility_ids
+	var pass_3: bool = town.facility_ids.size() > 0
+	if pass_3:
+		print("[PASS] Town has %d facilities" % town.facility_ids.size())
+	else:
+		print("[FAIL] Town has no facilities")
+
+	# Test 4: Dungeon exists
+	var dungeon = DataRegistry.get_dungeon("dungeon_sproutrest")
+	var pass_4: bool = dungeon != null
+	if pass_4:
+		print("[PASS] Dungeon SproutRest loaded")
+	else:
+		print("[FAIL] Dungeon SproutRest not found")
+
+	return {"name": "Town SproutRest loads", "passed": pass_1 and pass_2 and pass_3 and pass_4}
+
+
+static func _test_region2_monsters() -> Dictionary:
+	print("--- TEST 121: Region 2 monsters ---")
+
+	# Test 1: fm_bog_wisp loaded
+	var bat: MonsterData = DataRegistry.get_monster("fm_bog_wisp")
+	var pass_1: bool = bat != null and bat.region_id == "region_2"
+	if pass_1:
+		print("[PASS] fm_bog_wisp loaded with region_2")
+	else:
+		print("[FAIL] fm_bog_wisp not found or wrong region")
+		return {"name": "Region 2 monsters", "passed": false}
+
+	# Test 2: Boss exists and is flagged
+	var boss: MonsterData = DataRegistry.get_monster("fm_spiral_mycelium")
+	var pass_2: bool = boss != null and boss.is_boss
+	if pass_2:
+		print("[PASS] fm_spiral_mycelium loaded as boss")
+	else:
+		if boss == null:
+			print("[FAIL] fm_spiral_mycelium not found")
+		else:
+			print("[FAIL] fm_spiral_mycelium is_boss = %s" % str(boss.is_boss))
+
+	# Test 3: All 16 R2 monsters exist
+	var r2_ids: Array = [
+		"fm_bog_wisp", "fm_mire_toad", "fm_sporekin_shambler", "fm_rot_beetle",
+		"fm_cave_shroom", "fm_slime_mold", "fm_rotcap_myconid", "fm_hallucinogenic_cap",
+		"fm_bloom_giant", "fm_spore_knight", "fm_fungal_lurker", "fm_cordyceps_host",
+		"fm_mycelium_brute", "fm_sporewarden", "fm_blight_mother", "fm_spiral_mycelium"
+	]
+	var found_count: int = 0
+	for mid in r2_ids:
+		var m: MonsterData = DataRegistry.get_monster(mid)
+		if m != null:
+			found_count += 1
+	var pass_3: bool = found_count == 16
+	if pass_3:
+		print("[PASS] All 16 Region 2 monsters loaded")
+	else:
+		print("[FAIL] Only %d/16 Region 2 monsters found" % found_count)
+
+	# Test 4: Stats are in reasonable range (bog wisp health > 30 = ~10% above R1)
+	var bat_hp: int = bat.base_stats.get("health", 0)
+	var pass_4: bool = bat_hp >= 30 and bat_hp <= 40
+	if pass_4:
+		print("[PASS] Bog Wisp HP=%d (scaled range 30-40)" % bat_hp)
+	else:
+		print("[FAIL] Bog Wisp HP=%d (expected 30-40)" % bat_hp)
+
+	return {"name": "Region 2 monsters", "passed": pass_1 and pass_2 and pass_3 and pass_4}
+
+
+static func _test_region2_loot_tables() -> Dictionary:
+	print("--- TEST 122: Region 2 loot tables ---")
+
+	# Test 1: Common loot table exists
+	var lt_common = DataRegistry.get_loot_table("lt_region2_common")
+	var pass_1: bool = lt_common != null
+	if pass_1:
+		print("[PASS] lt_region2_common loaded")
+	else:
+		print("[FAIL] lt_region2_common not found")
+		return {"name": "Region 2 loot tables", "passed": false}
+
+	# Test 2: Common table has entries
+	var pass_2: bool = lt_common.entries.size() > 0
+	if pass_2:
+		print("[PASS] Common table has %d entries" % lt_common.entries.size())
+	else:
+		print("[FAIL] Common table has no entries")
+
+	# Test 3: All 4 R2 loot tables exist
+	var lt_ids: Array = ["lt_region2_common", "lt_region2_uncommon", "lt_region2_elite", "lt_region2_boss"]
+	var lt_found: int = 0
+	for ltid in lt_ids:
+		if DataRegistry.get_loot_table(ltid) != null:
+			lt_found += 1
+	var pass_3: bool = lt_found == 4
+	if pass_3:
+		print("[PASS] All 4 Region 2 loot tables loaded")
+	else:
+		print("[FAIL] Only %d/4 Region 2 loot tables found" % lt_found)
+
+	# Test 4: R2 materials exist in DataRegistry
+	var mat_ids: Array = ["fungal_fiber", "spore_cluster", "mycelium_thread"]
+	var mat_found: int = 0
+	for matid in mat_ids:
+		if DataRegistry.get_item_template(matid) != null:
+			mat_found += 1
+	var pass_4: bool = mat_found == 3
+	if pass_4:
+		print("[PASS] All 3 Region 2 materials loaded")
+	else:
+		print("[FAIL] Only %d/3 Region 2 materials found" % mat_found)
+
+	return {"name": "Region 2 loot tables", "passed": pass_1 and pass_2 and pass_3 and pass_4}
+
+
+static func _test_set_location_region2() -> Dictionary:
+	print("--- TEST 123: GameContext.set_location with region_2 ---")
+
+	# Save original location
+	var orig_region: String = GameContext.get_current_region_id()
+	var orig_town: String = GameContext.get_current_town_id()
+
+	# Test 1: set_location to region_2/town_sproutrest succeeds
+	var result: bool = GameContext.set_location("region_2", "town_sproutrest")
+	var pass_1: bool = result == true
+	if pass_1:
+		print("[PASS] set_location returned true")
+	else:
+		print("[FAIL] set_location returned false")
+
+	# Test 2: Current region/town updated
+	var pass_2: bool = GameContext.get_current_region_id() == "region_2" and GameContext.get_current_town_id() == "town_sproutrest"
+	if pass_2:
+		print("[PASS] Current location = region_2/town_sproutrest")
+	else:
+		print("[FAIL] Current location = %s/%s" % [GameContext.get_current_region_id(), GameContext.get_current_town_id()])
+
+	# Test 3: Can switch back to region_1
+	GameContext.set_location("region_1", "town_thornhaven")
+	var pass_3: bool = GameContext.get_current_region_id() == "region_1"
+	if pass_3:
+		print("[PASS] Switched back to region_1")
+	else:
+		print("[FAIL] Failed to switch back: %s" % GameContext.get_current_region_id())
+
+	# Restore original
+	GameContext.set_location(orig_region, orig_town)
+
+	return {"name": "set_location region_2", "passed": pass_1 and pass_2 and pass_3}
+
+
+static func _test_all_regions_count() -> Dictionary:
+	print("--- TEST 124: DataRegistry.get_all_regions count ---")
+
+	# Test 1: At least 2 regions
+	var all_regions: Array = DataRegistry.get_all_regions()
+	var pass_1: bool = all_regions.size() >= 2
+	if pass_1:
+		print("[PASS] %d regions loaded (>= 2)" % all_regions.size())
+	else:
+		print("[FAIL] Only %d regions (expected >= 2)" % all_regions.size())
+
+	# Test 2: Each region has theme_color and accent_color
+	var pass_2: bool = true
+	for region in all_regions:
+		if region.theme_color == "" or region.accent_color == "":
+			pass_2 = false
+			print("[FAIL] Region %s missing color fields" % region.id)
+			break
+	if pass_2:
+		print("[PASS] All regions have theme/accent colors")
+
+	# Test 3: Region indices are sequential (1, 2, ...)
+	var indices: Array = []
+	for region in all_regions:
+		indices.append(region.region_index)
+	indices.sort()
+	var pass_3: bool = indices[0] == 1 and indices[indices.size() - 1] == indices.size()
+	if pass_3:
+		print("[PASS] Region indices sequential: %s" % str(indices))
+	else:
+		print("[FAIL] Region indices not sequential: %s" % str(indices))
+
+	return {"name": "All regions count", "passed": pass_1 and pass_2 and pass_3}

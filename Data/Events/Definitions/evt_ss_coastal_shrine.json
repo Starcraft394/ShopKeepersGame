@@ -1,0 +1,42 @@
+{
+  "id": "evt_ss_coastal_shrine",
+  "title": "Shrine of the Drowned God",
+  "description": "A shrine built from layered shells and living coral stands in a grotto where the tide barely reaches. Offerings of driftwood and pearl line the altar, left by hands long gone. The air hums with something old and patient.",
+  "kind": "choice",
+  "tags": ["coastal", "tidal"],
+  "choices": [
+    {
+      "id": "pray",
+      "label": "Pray at the shrine",
+      "description": "The sea god's blessing washes over you like a warm current.",
+      "effects": [
+        { "type": "heal_party", "value": 12 }
+      ]
+    },
+    {
+      "id": "offer_gold",
+      "label": "Offer gold at the altar",
+      "description": "A generous offering earns a deeper blessing.",
+      "effects": [
+        { "type": "add_gold_range", "min": -8, "max": -8 },
+        { "type": "heal_party", "value": 18 }
+      ]
+    },
+    {
+      "id": "take_pearl",
+      "label": "Take the pearl offering",
+      "description": "The pearl gleams with iridescent light. Surely no god will miss it.",
+      "effects": [
+        { "type": "add_item", "item_id": "tidal_pearl", "min_qty": 1, "max_qty": 1 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Leave the shrine undisturbed",
+      "description": "Some things are better left to the deep.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

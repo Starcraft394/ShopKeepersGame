@@ -1,0 +1,14 @@
+{
+  "id": "fr_null_fragment",
+  "display_name": "Null Fragment",
+  "description": "Anti-magic crystal from null wisps. Suppresses enchantments nearby.",
+  "icon_hint": "dull gray crystal that absorbs surrounding light creating a dark halo around it",
+  "item_type": "material",
+  "item_subtype": "monster_part",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 35,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_7", "material", "monster_part", "final_realm"]
+}

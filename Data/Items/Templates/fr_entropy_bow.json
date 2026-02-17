@@ -1,0 +1,31 @@
+{
+  "id": "fr_entropy_bow",
+  "display_name": "Entropy Bow",
+  "description": "A bow that fires arrows of compressed void. What they hit tends to stop existing.",
+  "icon_hint": "warped dark bow that bends reality around it with purple-black void energy for a string",
+  "item_type": "weapon",
+  "item_subtype": "bow",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 5,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 22
+  },
+  "stat_bonuses": {
+    "attack": 22,
+    "speed": 5
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 145,
+  "icon_path": "",
+  "tags": ["region_7", "weapon", "bow", "ranged", "final_realm", "tier_5"]
+}

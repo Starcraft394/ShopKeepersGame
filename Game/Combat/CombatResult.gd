@@ -68,15 +68,18 @@ func set_context(ctx: Dictionary) -> void:
 
 
 func _get_bias_tags() -> Array:
-	var tags: Array = ["region_1"]  # Always include region
-	var dungeon_id = _context.get("dungeon_id", "")
-	match dungeon_id:
-		"dungeon_greenroot":
-			tags.append("greenroot")
-			tags.append("forest")
-		"dungeon_timberfall":
-			tags.append("timberfall")
-			tags.append("frontier")
+	var tags: Array = []
+	# Add region tag dynamically
+	var region_id: String = _context.get("region_id", "")
+	if region_id != "":
+		tags.append(region_id)
+	# Add dungeon encounter_tags from data
+	var dungeon_id: String = _context.get("dungeon_id", "")
+	var dungeon = DataRegistry.get_dungeon(dungeon_id)
+	if dungeon != null:
+		for tag in dungeon.encounter_tags:
+			if tag not in tags:
+				tags.append(tag)
 	return tags
 
 
@@ -148,7 +151,8 @@ func add_action(action: CombatAction) -> void:
 
 	# Update statistics
 	if action.action_type == CombatAction.ActionType.BASIC_ATTACK or \
-	   action.action_type == CombatAction.ActionType.WEAPON_ABILITY:
+	   action.action_type == CombatAction.ActionType.WEAPON_ABILITY or \
+	   action.action_type == CombatAction.ActionType.EQUIPMENT_ABILITY:
 		if action.actor_id.begins_with("hero"):
 			total_damage_dealt_by_players += action.damage_dealt
 		else:
@@ -167,13 +171,8 @@ func add_action(action: CombatAction) -> void:
 # REWARD CALCULATION (Placeholder)
 # ============================================================================
 
-# Region 1 equipment whitelist for gear drops
-const REGION1_GEAR_WHITELIST := ["rusty_sword", "wooden_shield", "leather_vest", "hunting_bow"]
-
-# Gear drop chance by encounter type: normal=8%, elite=15%, boss=25%
-const GEAR_DROP_CHANCE_NORMAL := 0.08
-const GEAR_DROP_CHANCE_ELITE := 0.15
-const GEAR_DROP_CHANCE_BOSS := 0.25
+# Gear drop rate scaling: base % per floor index (0-3)
+const FLOOR_DROP_BONUS := [1, 2, 3, 5]
 
 # Quality roll weights: Q0=70%, Q1=20%, Q2=9%, Q3=1%
 const QUALITY_WEIGHTS := [
@@ -184,36 +183,51 @@ const QUALITY_WEIGHTS := [
 ]
 
 
+## Calculate gear drop chance based on floor index and completed regions.
+## Formula: (completed_regions * 5 + floor_bonus) / 100, with elite/boss multipliers.
+static func get_gear_drop_chance(floor_index: int, is_elite: bool, is_boss: bool, completed_region_count: int = -1) -> float:
+	var completed: int = completed_region_count if completed_region_count >= 0 else GameContext.get_completed_region_count()
+	var base: float = (completed * 5 + FLOOR_DROP_BONUS[clampi(floor_index, 0, FLOOR_DROP_BONUS.size() - 1)]) / 100.0
+	if is_boss:
+		return base * 2.5
+	elif is_elite:
+		return base * 1.5
+	return base
+
+
 ## Roll for a gear drop. Returns ItemInstance or null.
-## Only drops from Region 1 whitelist. Quality rolled separately.
+## Uses dungeon gear_whitelist and scaled drop chance.
 func _roll_gear_drop(bias_tags: Array) -> ItemInstance:
 	if _rng == null:
 		return null
 
-	# Check if we're in region_1
-	if not "region_1" in bias_tags:
+	# Get dungeon data for gear whitelist
+	var dungeon_id: String = _context.get("dungeon_id", "")
+	var dungeon = DataRegistry.get_dungeon(dungeon_id)
+	if dungeon == null or dungeon.gear_whitelist.is_empty():
 		return null
 
-	# Determine drop chance based on encounter type
-	var drop_chance := GEAR_DROP_CHANCE_NORMAL
+	# Calculate drop chance from floor + completed regions
+	var floor_index: int = _context.get("floor_index", 0)
+	var is_elite: bool = GameContext.is_current_room_elite()
+	var drop_chance: float = get_gear_drop_chance(floor_index, is_elite, is_boss_encounter)
+
 	var source_type := "combat_normal"
 	if is_boss_encounter:
-		drop_chance = GEAR_DROP_CHANCE_BOSS
 		source_type = "boss"
-	elif GameContext.is_current_room_elite():
-		drop_chance = GEAR_DROP_CHANCE_ELITE
+	elif is_elite:
 		source_type = "combat_elite"
 
 	# Roll for gear drop
-	var roll = _rng.randf()
+	var roll: float = _rng.randf()
 	if roll >= drop_chance:
-		return null  # No gear drop this time
+		return null
 
-	# Select random gear from whitelist
-	var gear_id = REGION1_GEAR_WHITELIST[_rng.randi() % REGION1_GEAR_WHITELIST.size()]
+	# Select random gear from dungeon whitelist
+	var gear_id: String = dungeon.gear_whitelist[_rng.randi() % dungeon.gear_whitelist.size()]
 
 	# Roll quality tier
-	var quality_tier = SeededRNG.choose_weighted(QUALITY_WEIGHTS, _rng)
+	var quality_tier: int = SeededRNG.choose_weighted(QUALITY_WEIGHTS, _rng)
 
 	# Create ItemInstance
 	var template = DataRegistry.get_item_template(gear_id)
@@ -226,10 +240,23 @@ func _roll_gear_drop(bias_tags: Array) -> ItemInstance:
 	instance.quality_tier = quality_tier
 
 	# Build display name with quality prefix
-	var prefix = ItemInstance.QUALITY_PREFIXES[quality_tier] if quality_tier < ItemInstance.QUALITY_PREFIXES.size() else ""
-	instance.display_name = prefix + template.display_name
+	var prefix: String = ItemInstance.QUALITY_PREFIXES[quality_tier] if quality_tier < ItemInstance.QUALITY_PREFIXES.size() else ""
+	var base_name: String = prefix + template.display_name
 
-	print("[Loot] gear_drop item=%s q=%d source=%s" % [gear_id, quality_tier, source_type])
+	# Apply regional affix
+	var region_id: String = _context.get("region_id", "")
+	var affix: Dictionary = DataRegistry.get_regional_affix(region_id)
+	if not affix.is_empty():
+		instance.source_region = region_id
+		instance.affix_id = region_id
+		var affix_stat_bonus = affix.get("stat_bonus", {})
+		instance.affix_stats = affix_stat_bonus if affix_stat_bonus is Dictionary else {}
+		instance.affix_prefix = affix.get("prefix", "")
+		instance.display_name = instance.affix_prefix + " " + base_name
+	else:
+		instance.display_name = base_name
+
+	print("[Loot] gear_drop item=%s q=%d chance=%.1f%% source=%s floor=%d affix=%s" % [gear_id, quality_tier, drop_chance * 100.0, source_type, floor_index, instance.affix_prefix])
 	return instance
 
 

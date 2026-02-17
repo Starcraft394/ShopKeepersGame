@@ -1,0 +1,41 @@
+{
+  "id": "evt_mushroom_grove",
+  "title": "Mushroom Grove",
+  "description": "The tunnel widens into a small underground grove where giant mushrooms tower overhead, their caps dripping with moisture. Thick fungal fibers hang like curtains from the stalks, and clusters of bioluminescent spores cling to every surface. A hollowed-out stump nearby shows signs of a previous camp.",
+  "kind": "choice",
+  "tags": ["spore", "fungal"],
+  "choices": [
+    {
+      "id": "take_ore",
+      "label": "Harvest the fibers",
+      "description": "Strip the thick fungal fibers from the mushroom stalks.",
+      "effects": [
+        { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 2, "max_qty": 4 }
+      ]
+    },
+    {
+      "id": "take_coal",
+      "label": "Gather the threads",
+      "description": "Collect the fine mycelium threads from the root network.",
+      "effects": [
+        { "type": "add_item", "item_id": "mycelium_thread", "min_qty": 2, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "search_seat",
+      "label": "Search the old camp",
+      "description": "Someone left supplies in that hollowed stump.",
+      "effects": [
+        { "type": "add_gold_range", "min": 8, "max": 15 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Move on",
+      "description": "Leave the grove undisturbed.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

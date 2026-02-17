@@ -1,0 +1,24 @@
+{
+  "id": "fr_null_barrier",
+  "display_name": "Null Barrier",
+  "description": "A shield that absorbs incoming force by shunting it into the void. Nothing that hits it makes a sound.",
+  "icon_hint": "matte black shield with a void vortex at its center that absorbs surrounding light",
+  "item_type": "armor",
+  "item_subtype": "shield",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 5,
+  "base_stats": {
+    "defense": 15
+  },
+  "stat_bonuses": {
+    "defense": 16,
+    "health": 30
+  },
+  "base_value": 145,
+  "buy_value": 0,
+  "can_refine": true,
+  "icon_path": "",
+  "tags": ["region_7", "offhand", "shield", "final_realm", "tier_5"]
+}

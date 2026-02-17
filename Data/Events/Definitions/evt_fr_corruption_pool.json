@@ -1,0 +1,41 @@
+{
+  "id": "evt_fr_corruption_pool",
+  "title": "Corruption Pool",
+  "description": "A pool of liquid corruption bubbles silently in a depression where the ground has given way to something deeper. Its surface is a mirror that reflects nothing — or perhaps reflects what lies beneath everything. The stone around its edges has crystallized into jagged formations, warped by prolonged exposure.",
+  "kind": "choice",
+  "tags": ["void", "corruption"],
+  "choices": [
+    {
+      "id": "skim_corruption",
+      "label": "Skim the corruption",
+      "description": "Carefully draw samples of the living corruption into sealed containers.",
+      "effects": [
+        { "type": "add_item", "item_id": "fr_corruption_ichor", "min_qty": 1, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "harvest_crystals",
+      "label": "Harvest the crystallized edges",
+      "description": "Break off the entropy-saturated crystal formations ringing the pool.",
+      "effects": [
+        { "type": "add_item", "item_id": "fr_entropy_residue", "min_qty": 2, "max_qty": 4 }
+      ]
+    },
+    {
+      "id": "search_debris",
+      "label": "Search the warped debris",
+      "description": "Pick through the distorted remains of objects half-consumed by the corruption.",
+      "effects": [
+        { "type": "add_gold_range", "min": 12, "max": 22 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Leave it undisturbed",
+      "description": "The pool seems to watch you. Better not to linger.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

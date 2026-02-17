@@ -1,0 +1,14 @@
+{
+  "id": "volcanic_glass",
+  "display_name": "Volcanic Glass",
+  "description": "Smooth dark glass formed by rapid lava cooling, prized for blades and tools.",
+  "icon_hint": "smooth glossy black volcanic glass with sharp edges reflecting orange firelight",
+  "item_type": "material",
+  "item_subtype": "crafting",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 14,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_4", "material", "crafting", "ashen_horizons"]
+}

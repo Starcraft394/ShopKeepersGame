@@ -1,0 +1,27 @@
+{
+  "id": "nc_ghoul_stalker",
+  "display_name": "Ghoul Stalker",
+  "description": "A hunched corpse-eater that lurks behind sarcophagi, waiting for the scent of the living.",
+  "icon_hint": "hunched emaciated undead creature with long claws and glowing green eyes lurking in shadows",
+  "family": "necro",
+  "region_id": "region_6",
+  "tier": 1,
+  "ai_tier": 1,
+  "base_stats": {
+    "health": 66,
+    "attack": 20,
+    "defense": 10,
+    "speed": 14
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region6_common",
+  "gold_drop_min": 15,
+  "gold_drop_max": 28,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/nc_ghoul_stalker.png"
+}

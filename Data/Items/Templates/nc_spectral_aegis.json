@@ -1,0 +1,24 @@
+{
+  "id": "nc_spectral_aegis",
+  "display_name": "Spectral Aegis",
+  "description": "A shield that phases between the material and spectral planes. Physical blows partially pass through it.",
+  "icon_hint": "translucent ghostly shield that phases between solid and ethereal with green spectral energy rippling across its surface",
+  "item_type": "armor",
+  "item_subtype": "shield",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 4,
+  "base_stats": {
+    "defense": 12
+  },
+  "stat_bonuses": {
+    "defense": 13,
+    "health": 24
+  },
+  "base_value": 120,
+  "buy_value": 0,
+  "can_refine": true,
+  "icon_path": "",
+  "tags": ["region_6", "offhand", "shield", "necropolis", "tier_4"]
+}

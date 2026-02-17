@@ -1,0 +1,93 @@
+{
+  "facility_id": "chef",
+  "recipes": [
+    {
+      "input_a": "raw_meat",
+      "input_b": "raw_meat",
+      "input_c": "",
+      "output_id": "cooked_meat",
+      "output_qty": 1,
+      "required_tier": 1
+    },
+    {
+      "input_a": "wild_berries",
+      "input_b": "wild_berries",
+      "input_c": "",
+      "output_id": "berry_tart",
+      "output_qty": 1,
+      "required_tier": 1
+    },
+    {
+      "input_a": "forest_mushroom",
+      "input_b": "forest_mushroom",
+      "input_c": "",
+      "output_id": "mushroom_stew",
+      "output_qty": 1,
+      "required_tier": 1
+    },
+    {
+      "input_a": "raw_meat",
+      "input_b": "wild_berries",
+      "input_c": "",
+      "output_id": "trail_rations",
+      "output_qty": 1,
+      "required_tier": 1
+    },
+    {
+      "input_a": "raw_meat",
+      "input_b": "forest_mushroom",
+      "input_c": "",
+      "output_id": "hunters_feast",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "wild_berries",
+      "input_b": "forest_mushroom",
+      "input_c": "",
+      "output_id": "forest_bounty",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "raw_meat",
+      "input_b": "honey",
+      "input_c": "",
+      "output_id": "honey_roast",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "wild_berries",
+      "input_b": "honey",
+      "input_c": "",
+      "output_id": "sweet_preserves",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "trail_rations",
+      "input_b": "forest_mushroom",
+      "input_c": "honey",
+      "output_id": "expedition_feast",
+      "output_qty": 1,
+      "required_tier": 3
+    },
+    {
+      "input_a": "hunters_feast",
+      "input_b": "aged_cheese",
+      "input_c": "wild_berries",
+      "output_id": "hero_banquet",
+      "output_qty": 1,
+      "required_tier": 3
+    },
+    {
+      "input_a": "forest_bounty",
+      "input_b": "rare_truffle",
+      "input_c": "honey",
+      "output_id": "legendary_feast",
+      "output_qty": 1,
+      "required_tier": 4
+    }
+  ]
+}

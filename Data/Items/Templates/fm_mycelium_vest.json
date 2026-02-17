@@ -1,0 +1,33 @@
+{
+  "id": "fm_mycelium_vest",
+  "display_name": "Mycelium Vest",
+  "description": "Woven from living fungal threads, this vest hardens on impact and slowly repairs itself.",
+  "icon_hint": "dense woven vest of pale white mycelium fibers with faint bioluminescent green veins throughout",
+  "item_type": "armor",
+  "item_subtype": "medium_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 6,
+    "speed": -1
+  },
+  "stat_bonuses": {
+    "defense": 6,
+    "health": 12,
+    "speed": -1
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 55,
+  "icon_path": "",
+  "tags": ["region_2", "armor", "fungalmire", "tier_2"]
+}

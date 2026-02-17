@@ -6,9 +6,17 @@
   "family": "humanoid",
   "region_id": "region_1",
   "tier": 1,
-  "base_stats": { "health": 18, "attack": 7, "defense": 1, "speed": 12 },
-  "ability_ids": ["basic_attack"],
+  "base_stats": {
+    "health": 18,
+    "attack": 7,
+    "defense": 1,
+    "speed": 12
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
   "loot_table_id": "lt_cultist_parts",
   "gold_drop_min": 5,
-  "gold_drop_max": 13
+  "gold_drop_max": 13,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon14.png"
 }

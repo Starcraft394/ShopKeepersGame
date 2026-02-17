@@ -1,0 +1,14 @@
+{
+  "id": "soul_ore",
+  "display_name": "Soul Ore",
+  "description": "Dark metal infused with trapped souls. Glows faintly in darkness.",
+  "icon_hint": "dark metallic ore chunk with faint ghostly faces visible in its surface",
+  "item_type": "material",
+  "item_subtype": "mineral",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 28,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_6", "material", "mineral", "necropolis"]
+}

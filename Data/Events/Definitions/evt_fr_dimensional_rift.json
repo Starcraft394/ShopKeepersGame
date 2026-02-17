@@ -1,0 +1,41 @@
+{
+  "id": "evt_fr_dimensional_rift",
+  "title": "Dimensional Rift",
+  "description": "A stable rift between dimensions hums with impossible energy, its edges perfectly circular and utterly black. The air around it tastes of ozone and forgotten languages. Objects tossed near it stretch into infinity before vanishing, and thin membranes of compressed space peel away from its boundary like shed skin.",
+  "kind": "choice",
+  "tags": ["void", "corruption"],
+  "choices": [
+    {
+      "id": "extract_essence",
+      "label": "Extract dimensional essence",
+      "description": "Carefully siphon the raw dimensional energy bleeding from the rift's stable edges.",
+      "effects": [
+        { "type": "add_item", "item_id": "fr_dimensional_essence", "min_qty": 1, "max_qty": 2 }
+      ]
+    },
+    {
+      "id": "collect_membrane",
+      "label": "Collect the rift membrane",
+      "description": "Peel the thin layers of compressed space that separate this dimension from the next.",
+      "effects": [
+        { "type": "add_item", "item_id": "fr_rift_membrane", "min_qty": 2, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "reach_through",
+      "label": "Reach through for valuables",
+      "description": "Blindly fish through the rift, hoping to pull back something worth the risk.",
+      "effects": [
+        { "type": "add_gold_range", "min": 18, "max": 30 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Leave it alone",
+      "description": "Stable does not mean safe. You move on.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

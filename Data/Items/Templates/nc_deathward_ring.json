@@ -1,0 +1,31 @@
+{
+  "id": "nc_deathward_ring",
+  "display_name": "Deathward Ring",
+  "description": "A ring of bone and soul-ore that surrounds the wearer with a faint deathly chill. The cold numbs pain.",
+  "icon_hint": "ring carved from pale bone with a dark soul-ore gem that emits a faint green mist",
+  "item_type": "accessory",
+  "item_subtype": "ring",
+  "category": "equipment",
+  "slot": "accessory_1",
+  "equip_slot": "ring",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "health": 20
+  },
+  "stat_bonuses": {
+    "health": 20,
+    "defense": 3
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 110,
+  "icon_path": "",
+  "tags": ["region_6", "accessory", "ring", "necropolis", "tier_4"]
+}

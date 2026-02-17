@@ -9,6 +9,7 @@
 
   "keeper_name": "Elara",
   "keeper_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon18.png",
+  "keeper_description": "Silver-haired hooded woman with violet eyes, arcane sigils floating around her fingertips, shelves of crystals behind her",
   "keeper_greetings": [
     "The arcane winds whisper of your arrival, ShopKeeper.",
     "Ah, come in! The crystals are humming with energy today.",

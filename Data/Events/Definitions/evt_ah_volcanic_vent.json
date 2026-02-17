@@ -1,0 +1,41 @@
+{
+  "id": "evt_ah_volcanic_vent",
+  "title": "Hissing Volcanic Vent",
+  "description": "A jagged crack in the earth spews columns of superheated gas and acrid sulfurous fumes that sting the eyes and throat. Yellow mineral crusts have built up around the vent's lip, and scattered coins from unlucky travelers glint in the haze. The ground trembles with each violent exhalation.",
+  "kind": "choice",
+  "tags": ["volcanic", "fire"],
+  "choices": [
+    {
+      "id": "collect_sulfite",
+      "label": "Collect sulfite deposits",
+      "description": "Scrape the crystallized sulfite growths from around the vent.",
+      "effects": [
+        { "type": "add_item", "item_id": "ah_sulfite_gland", "min_qty": 1, "max_qty": 2 }
+      ]
+    },
+    {
+      "id": "harvest_crust",
+      "label": "Harvest the mineral crust",
+      "description": "Chip away the ember-rich mineral deposits ringing the opening.",
+      "effects": [
+        { "type": "add_item", "item_id": "ember_dust", "min_qty": 2, "max_qty": 4 }
+      ]
+    },
+    {
+      "id": "brave_the_heat",
+      "label": "Brave the heat for coins",
+      "description": "Dash through the fumes to grab the scattered coins near the vent.",
+      "effects": [
+        { "type": "add_gold_range", "min": 10, "max": 20 }
+      ]
+    },
+    {
+      "id": "retreat",
+      "label": "Retreat",
+      "description": "The fumes are too dangerous to risk.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

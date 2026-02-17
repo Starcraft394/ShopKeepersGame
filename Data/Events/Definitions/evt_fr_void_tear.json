@@ -1,0 +1,41 @@
+{
+  "id": "evt_fr_void_tear",
+  "title": "Void Tear",
+  "description": "A ragged tear in reality hangs in the air like a wound that refuses to close, leaking dark energy that distorts the ground beneath it. The edges pulse with a sickening un-light, and the faint sound of something vast breathing echoes from within. Fragments of shattered matter orbit the tear slowly, drawn toward oblivion.",
+  "kind": "choice",
+  "tags": ["void", "corruption"],
+  "choices": [
+    {
+      "id": "reach_into_void",
+      "label": "Reach into the void",
+      "description": "Plunge your hand past the boundary of reality to seize a crystallized shard of nothingness.",
+      "effects": [
+        { "type": "add_item", "item_id": "void_crystal", "min_qty": 1, "max_qty": 1 }
+      ]
+    },
+    {
+      "id": "collect_residue",
+      "label": "Collect the leaking residue",
+      "description": "Scrape the condensed entropy dripping from the tear's edges into a container.",
+      "effects": [
+        { "type": "add_item", "item_id": "fr_entropy_residue", "min_qty": 2, "max_qty": 4 }
+      ]
+    },
+    {
+      "id": "search_ground",
+      "label": "Search the distorted ground",
+      "description": "Sift through the warped debris scattered beneath the tear for anything of value.",
+      "effects": [
+        { "type": "add_gold_range", "min": 15, "max": 25 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Leave it alone",
+      "description": "Some wounds in reality are best left undisturbed.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "id": "evt_nc_wraith_cache",
+  "title": "Wraith-Hunter's Cache",
+  "description": "A cache of supplies lies half-buried beneath a collapsed wall, its leather wrappings stamped with the crossed-lantern sigil of the wraith-hunters' guild. Fading ward-glyphs flicker across its surface, their protective magic nearly spent. Whoever stashed these supplies never returned to claim them.",
+  "kind": "choice",
+  "tags": ["necro", "crypt"],
+  "choices": [
+    {
+      "id": "break_wards",
+      "label": "Break the wards",
+      "description": "The wards are weak enough to crack — coin and supplies wait inside.",
+      "effects": [
+        { "type": "add_gold_range", "min": 12, "max": 20 }
+      ]
+    },
+    {
+      "id": "collect_ore",
+      "label": "Collect the soul ore",
+      "description": "Wraith-hunters always carry soul ore for ammunition and wards.",
+      "effects": [
+        { "type": "add_item", "item_id": "soul_ore", "min_qty": 2, "max_qty": 4 }
+      ]
+    },
+    {
+      "id": "gather_grass",
+      "label": "Gather the deadman's grass",
+      "description": "Bundles of dried deadman's grass are packed alongside the other supplies.",
+      "effects": [
+        { "type": "add_item", "item_id": "deadmans_grass", "min_qty": 1, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "move_on",
+      "label": "Leave the cache",
+      "description": "Those wards were placed for a reason.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

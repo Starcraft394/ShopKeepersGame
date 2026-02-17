@@ -1,0 +1,13 @@
+{
+  "id": "fungal_fiber",
+  "display_name": "Fungal Fiber",
+  "description": "Tough, stringy fibers harvested from the root systems of giant mushrooms in the Fungalmire.",
+  "icon_hint": "bundle of tough gray-green fibrous strands pulled from giant mushroom roots trailing fine spore dust",
+  "item_type": "material",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 8,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_2", "fungalmire", "material", "fungal", "crafting"]
+}

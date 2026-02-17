@@ -1,0 +1,43 @@
+{
+  "id": "evt_rotting_caravan",
+  "title": "Rotting Caravan",
+  "description": "A merchant's caravan lies half-consumed by fungal growth, its wooden frame sprouting shelf mushrooms and draped in mycelium webbing. Crates of goods have burst open, their contents scattered across the damp ground. The fungi have been feeding well — but not everything has been consumed.",
+  "kind": "choice",
+  "tags": ["spore", "fungal"],
+  "choices": [
+    {
+      "id": "salvage_tools",
+      "label": "Salvage the hardware",
+      "description": "Strip the caravan for metal fittings and anything salvageable.",
+      "effects": [
+        { "type": "add_item", "item_id": "iron_scrap", "min_qty": 1, "max_qty": 2 },
+        { "type": "add_gold_range", "min": 5, "max": 10 }
+      ]
+    },
+    {
+      "id": "search_materials",
+      "label": "Harvest the fungi",
+      "description": "The mushrooms growing on the caravan are mature and valuable.",
+      "effects": [
+        { "type": "add_item", "item_id": "mycelium_thread", "min_qty": 2, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "light_the_forge",
+      "label": "Search the cargo",
+      "description": "Dig through the scattered crate contents for useful materials.",
+      "effects": [
+        { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 1, "max_qty": 2 },
+        { "type": "add_item", "item_id": "iron_scrap", "min_qty": 1, "max_qty": 1 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Move on",
+      "description": "Leave the caravan to the fungi.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

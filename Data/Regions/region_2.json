@@ -1,0 +1,13 @@
+{
+  "id": "region_2",
+  "display_name": "The Fungalmire",
+  "description": "A deep fungal forest where bioluminescent spores drift through the canopy and ancient mycelium networks pulse beneath the bog. Beauty masks danger.",
+  "region_index": 2,
+  "requires_region_id": "region_1",
+  "dungeon_floor_count": 4,
+  "monster_families": ["spore"],
+  "town_ids": ["town_sproutrest"],
+  "boss_id": "fm_spiral_mycelium",
+  "theme_color": "#4a6b3a",
+  "accent_color": "#8bc34a"
+}

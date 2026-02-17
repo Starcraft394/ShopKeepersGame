@@ -1,0 +1,141 @@
+{
+  "id": "pool_region2_general",
+  "display_name": "Region 2 General Shop Pool",
+  "description": "Item pool for general stores in Region 2 mountain towns",
+
+  "weight_by_tier": {
+    "1": 10,
+    "2": 6,
+    "3": 3,
+    "4": 1
+  },
+
+  "consumables": [
+    {
+      "item_id": "healing_tonic",
+      "weight": 20,
+      "price_gold": 25,
+      "tier": 1,
+      "requires_unlock_group": "consumables_t1",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 1
+    },
+    {
+      "item_id": "antidote",
+      "weight": 15,
+      "price_gold": 20,
+      "tier": 1,
+      "requires_unlock_group": "consumables_t1",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 1
+    },
+    {
+      "item_id": "stamina_draught",
+      "weight": 12,
+      "price_gold": 30,
+      "tier": 2,
+      "requires_unlock_group": "consumables_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "focus_elixir",
+      "weight": 10,
+      "price_gold": 40,
+      "tier": 2,
+      "requires_unlock_group": "consumables_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "resistance_salve",
+      "weight": 10,
+      "price_gold": 45,
+      "tier": 2,
+      "requires_unlock_group": "consumables_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    }
+  ],
+
+  "weapons": [
+    {
+      "item_id": "iron_sword",
+      "weight": 15,
+      "price_gold": 65,
+      "tier": 1,
+      "requires_unlock_group": "weapons_t1",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 1
+    },
+    {
+      "item_id": "iron_greataxe",
+      "weight": 12,
+      "price_gold": 85,
+      "tier": 2,
+      "requires_unlock_group": "weapons_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "composite_bow",
+      "weight": 10,
+      "price_gold": 80,
+      "tier": 2,
+      "requires_unlock_group": "weapons_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    }
+  ],
+
+  "offhands": [
+    {
+      "item_id": "reinforced_shield",
+      "weight": 12,
+      "price_gold": 80,
+      "tier": 2,
+      "requires_unlock_group": "offhands_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "wooden_focus",
+      "weight": 10,
+      "price_gold": 75,
+      "tier": 2,
+      "requires_unlock_group": "offhands_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    }
+  ],
+
+  "books": [
+    {
+      "item_id": "book_defender",
+      "weight": 10,
+      "price_gold": 100,
+      "tier": 1,
+      "requires_unlock_group": "books_t1",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 1
+    },
+    {
+      "item_id": "book_striker",
+      "weight": 10,
+      "price_gold": 100,
+      "tier": 1,
+      "requires_unlock_group": "books_t1",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 1
+    },
+    {
+      "item_id": "book_warden",
+      "weight": 10,
+      "price_gold": 100,
+      "tier": 1,
+      "requires_unlock_group": "books_t1",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 1
+    }
+  ]
+}

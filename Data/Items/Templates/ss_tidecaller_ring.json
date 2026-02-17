@@ -1,0 +1,31 @@
+{
+  "id": "ss_tidecaller_ring",
+  "display_name": "Tidecaller's Ring",
+  "description": "A ring of sea-glass and silver that hums with the rhythm of distant waves.",
+  "icon_hint": "silver ring with a smooth oval sea-glass stone that shifts between blue and green",
+  "item_type": "accessory",
+  "item_subtype": "ring",
+  "category": "equipment",
+  "slot": "accessory_1",
+  "equip_slot": "ring",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "health": 12
+  },
+  "stat_bonuses": {
+    "health": 12,
+    "attack": 2
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 60,
+  "icon_path": "",
+  "tags": ["region_3", "accessory", "ring", "sunken_strand", "tier_3"]
+}

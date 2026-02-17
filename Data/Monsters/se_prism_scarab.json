@@ -1,0 +1,27 @@
+{
+  "id": "se_prism_scarab",
+  "display_name": "Prism Scarab",
+  "description": "An iridescent beetle that refracts light into blinding beams to disorient predators.",
+  "icon_hint": "large iridescent beetle with crystalline shell refracting rainbow light beams",
+  "family": "crystal",
+  "region_id": "region_5",
+  "tier": 1,
+  "ai_tier": 1,
+  "base_stats": {
+    "health": 68,
+    "attack": 13,
+    "defense": 11,
+    "speed": 10
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region5_common",
+  "gold_drop_min": 12,
+  "gold_drop_max": 22,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/se_prism_scarab.png"
+}

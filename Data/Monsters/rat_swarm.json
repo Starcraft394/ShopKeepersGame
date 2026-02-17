@@ -12,8 +12,11 @@
     "defense": 1,
     "speed": 14
   },
-  "ability_ids": ["basic_attack"],
+  "ability_ids": [
+    "basic_attack"
+  ],
   "loot_table_id": "lt_region1_common",
   "gold_drop_min": 3,
-  "gold_drop_max": 9
+  "gold_drop_max": 9,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon31.png"
 }

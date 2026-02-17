@@ -1,0 +1,27 @@
+{
+  "id": "fm_sporewarden",
+  "display_name": "Sporewarden",
+  "description": "An ancient fungal sentinel that commands lesser sporekin to swarm.",
+  "icon_hint": "tall elegant mushroom being with a crown-like cap and staff of living wood dripping with luminous spores",
+  "family": "spore",
+  "region_id": "region_2",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 72,
+    "attack": 14,
+    "defense": 8,
+    "speed": 10
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region2_elite",
+  "gold_drop_min": 18,
+  "gold_drop_max": 35,
+  "sprite_path": "",
+  "is_elite": true,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fm_sporewarden.png"
+}

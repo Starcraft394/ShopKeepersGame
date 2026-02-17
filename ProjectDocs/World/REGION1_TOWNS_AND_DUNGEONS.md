@@ -2,20 +2,20 @@
 
 ## Overview
 
-Region 1 (Forest Haven) is the starter region. It contains two towns that introduce the player to core gameplay systems.
+Region 1 (Forest Haven) is the starter region. It contains one town that introduces the player to core gameplay systems.
 
 ---
 
 ## Towns
 
-### Town A: Greenroot (Starter Town)
+### Thornhaven (Starter Town)
 
 | Field | Value |
 |-------|-------|
-| town_id | `town_greenroot` |
-| display_name | Greenroot |
+| town_id | `town_thornhaven` |
+| display_name | Thornhaven |
 | region_id | `region_1` |
-| dungeon_id | `dungeon_greenroot` |
+| dungeon_id | `dungeon_thornhaven` |
 
 **Theme:** A quiet forest settlement nestled among ancient oaks. The first safe haven for new shopkeepers. Warm lantern-lit interiors, overgrown paths, and the smell of fresh timber.
 
@@ -24,32 +24,16 @@ Region 1 (Forest Haven) is the starter region. It contains two towns that introd
 
 ---
 
-### Town B: Timberfall (Starter Class Town)
-
-| Field | Value |
-|-------|-------|
-| town_id | `town_timberfall` |
-| display_name | Timberfall |
-| region_id | `region_1` |
-| dungeon_id | `dungeon_timberfall` |
-
-**Theme:** A logging outpost at the forest's edge where woodcutters and rangers gather. More rugged than Greenroot, with sawdust-covered streets and the constant ring of axes.
-
-**Facilities:** All 8 canonical facilities with `_tf` suffix:
-- blacksmith_tf, leatherworker_tf, woodsman_tf, chef_tf, alchemist_tf, training_hall_tf, storage_tf, housing_tf
-
----
-
 ## Dungeons
 
-### Dungeon: Greenroot Woods
+### Dungeon: Thornhaven Woods
 
 | Field | Value |
 |-------|-------|
-| dungeon_id | `dungeon_greenroot` |
-| display_name | Greenroot Woods |
+| dungeon_id | `dungeon_thornhaven` |
+| display_name | Thornhaven Woods |
 | region_id | `region_1` |
-| town_id | `town_greenroot` |
+| town_id | `town_thornhaven` |
 | floor_count | 4 |
 | boss_id | `thorn_ent` |
 
@@ -66,32 +50,3 @@ Region 1 (Forest Haven) is the starter region. It contains two towns that introd
 
 4. **Floor 4 — The Heartwood**
    Ancient trees twisted by corruption. The Thorn Ent guards the forest's core.
-
----
-
-### Dungeon: Timberfall Depths
-
-| Field | Value |
-|-------|-------|
-| dungeon_id | `dungeon_timberfall` |
-| display_name | Timberfall Depths |
-| region_id | `region_1` |
-| town_id | `town_timberfall` |
-| floor_count | 4 |
-| boss_id | `` |
-
-> **TODO:** Boss not created yet. Assign boss_id when a Timberfall-specific boss is added to Data/Monsters.
-
-**Floor Themes:**
-
-1. **Floor 1 — Abandoned Lumber Camp**
-   Collapsed scaffolding and rusted saws. Bandits have claimed the ruins.
-
-2. **Floor 2 — Fungal Hollows**
-   Damp tunnels beneath the logging site. Slimes and spore-touched creatures lurk.
-
-3. **Floor 3 — The Sunken Mill**
-   A flooded sawmill overrun by corrupted wildlife. Watch for ambushes.
-
-4. **Floor 4 — The Sawblade Pit**
-   Industrial machinery fused with corruption. The dungeon boss awaits.

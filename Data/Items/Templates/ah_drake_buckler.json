@@ -1,0 +1,24 @@
+{
+  "id": "ah_drake_buckler",
+  "display_name": "Drake Buckler",
+  "description": "A small round shield of layered drake scales. Light enough to parry with.",
+  "icon_hint": "small round buckler covered in red-orange drake scales with a scorched brass boss",
+  "item_type": "armor",
+  "item_subtype": "shield",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 3,
+  "base_stats": {
+    "defense": 8
+  },
+  "stat_bonuses": {
+    "defense": 9,
+    "health": 16
+  },
+  "base_value": 80,
+  "buy_value": 0,
+  "can_refine": true,
+  "icon_path": "",
+  "tags": ["region_4", "offhand", "shield", "ashen_horizons", "tier_3"]
+}

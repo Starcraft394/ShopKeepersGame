@@ -1,0 +1,27 @@
+{
+  "id": "nc_bone_colossus",
+  "display_name": "Bone Colossus",
+  "description": "A towering skeleton assembled from hundreds of remains, crackling with necromantic sinew.",
+  "icon_hint": "massive skeletal construct made of hundreds of fused bones with green energy between joints",
+  "family": "necro",
+  "region_id": "region_6",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 128,
+    "attack": 21,
+    "defense": 19,
+    "speed": 9
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region6_uncommon",
+  "gold_drop_min": 30,
+  "gold_drop_max": 48,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/nc_bone_colossus.png"
+}

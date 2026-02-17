@@ -1,0 +1,42 @@
+{
+  "id": "evt_mycelium_vein",
+  "title": "Mycelium Vein",
+  "description": "The tunnel wall is shot through with thick veins of glowing mycelium, each strand pulsing with bioluminescent light. The network runs deep into the rock — you could spend hours tracing its branches, or harvest what you can reach and move on.",
+  "kind": "choice",
+  "tags": ["spore", "fungal"],
+  "choices": [
+    {
+      "id": "mine_carefully",
+      "label": "Harvest carefully",
+      "description": "Take your time and extract the fungal fibers properly.",
+      "effects": [
+        { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 2, "max_qty": 4 }
+      ]
+    },
+    {
+      "id": "rush_mining",
+      "label": "Rip the veins out",
+      "description": "Tear the mycelium free quickly, but risk a spore burst.",
+      "effects": [
+        { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 1, "max_qty": 3 },
+        { "type": "damage_party", "value": 5 }
+      ]
+    },
+    {
+      "id": "search_crystals",
+      "label": "Look for spore clusters",
+      "description": "Where mycelium grows thick, spore clusters often form.",
+      "effects": [
+        { "type": "add_item", "item_id": "spore_cluster", "min_qty": 1, "max_qty": 2 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Move on",
+      "description": "Leave the mycelium undisturbed.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

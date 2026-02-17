@@ -1,0 +1,41 @@
+{
+  "id": "evt_ah_dragon_nest",
+  "title": "Abandoned Drake Nest",
+  "description": "A crude nest of scorched bones and volcanic rock sits wedged into a cliffside alcove, still reeking of smoke and charred meat. Shed scales litter the ground like broken mirrors, catching the red glow of distant lava. Whatever drake built this has moved on, but the remains of its kills tell a violent story.",
+  "kind": "choice",
+  "tags": ["volcanic", "fire"],
+  "choices": [
+    {
+      "id": "collect_scales",
+      "label": "Collect shed scales",
+      "description": "Gather the discarded drake scales scattered around the nest.",
+      "effects": [
+        { "type": "add_item", "item_id": "ah_drake_scale", "min_qty": 1, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "search_nest",
+      "label": "Search the nest",
+      "description": "Dig through the debris for anything the drake may have hoarded.",
+      "effects": [
+        { "type": "add_gold_range", "min": 12, "max": 22 }
+      ]
+    },
+    {
+      "id": "gather_fangs",
+      "label": "Gather fang fragments",
+      "description": "Pry loose the scorched fangs embedded in the prey bones.",
+      "effects": [
+        { "type": "add_item", "item_id": "ah_scorched_fang", "min_qty": 1, "max_qty": 2 }
+      ]
+    },
+    {
+      "id": "leave_quietly",
+      "label": "Leave quietly",
+      "description": "The drake may not be far. Best not to linger.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

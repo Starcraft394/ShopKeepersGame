@@ -1,0 +1,14 @@
+{
+  "id": "se_void_silk",
+  "display_name": "Void Silk",
+  "description": "Thread-like material spun by void moths. Absorbs ambient magic.",
+  "icon_hint": "spool of nearly invisible thread with a faint dark purple shimmer",
+  "item_type": "material",
+  "item_subtype": "monster_part",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 26,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_5", "material", "monster_part", "starfall_expanse"]
+}

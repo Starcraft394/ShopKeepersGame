@@ -1,0 +1,27 @@
+{
+  "id": "fr_entropy_slug",
+  "display_name": "Entropy Slug",
+  "description": "A slow-moving creature that dissolves matter at a molecular level wherever it slithers.",
+  "icon_hint": "large slug-like creature of dissolving dark matter leaving a trail of erased ground",
+  "family": "void",
+  "region_id": "region_7",
+  "tier": 1,
+  "ai_tier": 1,
+  "base_stats": {
+    "health": 95,
+    "attack": 18,
+    "defense": 16,
+    "speed": 9
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region7_common",
+  "gold_drop_min": 20,
+  "gold_drop_max": 35,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fr_entropy_slug.png"
+}

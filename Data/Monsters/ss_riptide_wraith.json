@@ -1,0 +1,27 @@
+{
+  "id": "ss_riptide_wraith",
+  "display_name": "Riptide Wraith",
+  "description": "A drowned spirit that manifests as a churning vortex, pulling victims into the undertow.",
+  "icon_hint": "swirling spectral water vortex with a ghostly face visible in the churning foam",
+  "family": "coastal",
+  "region_id": "region_3",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 65,
+    "attack": 14,
+    "defense": 9,
+    "speed": 13
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region3_uncommon",
+  "gold_drop_min": 15,
+  "gold_drop_max": 26,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/ss_riptide_wraith.png"
+}

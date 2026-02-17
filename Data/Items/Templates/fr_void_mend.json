@@ -1,0 +1,15 @@
+{
+  "id": "fr_void_mend",
+  "display_name": "Void Mend",
+  "description": "A potion that reverses entropy in the drinker's body. Wounds close as if they never happened.",
+  "icon_hint": "small vial of swirling black-purple liquid with white star motes drifting through it",
+  "item_type": "consumable",
+  "item_subtype": "potion",
+  "category": "consumable",
+  "tier": 5,
+  "use_effect": "heal",
+  "heal_amount": 120,
+  "base_value": 85,
+  "icon_path": "",
+  "tags": ["region_7", "consumable", "potion", "healing", "final_realm", "tier_5"]
+}

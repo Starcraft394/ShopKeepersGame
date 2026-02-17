@@ -7,13 +7,21 @@
   "region_id": "region_1",
   "tier": 3,
   "ai_tier": 3,
-  "base_stats": { "health": 92, "attack": 13, "defense": 12, "speed": 8 },
-  "ability_ids": ["basic_attack"],
+  "base_stats": {
+    "health": 92,
+    "attack": 13,
+    "defense": 12,
+    "speed": 8
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
   "passive_ids": [],
   "loot_table_id": "lt_region1_boss",
   "gold_drop_min": 45,
   "gold_drop_max": 80,
   "sprite_path": "",
   "is_elite": false,
-  "is_boss": true
+  "is_boss": true,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon13.png"
 }

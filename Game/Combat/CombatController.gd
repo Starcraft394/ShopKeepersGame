@@ -761,12 +761,10 @@ func step_one_turn() -> Array:
 		if remaining > 0 and _current_multi_action_unit.is_alive:
 			_process_unit_turn_step(_current_multi_action_unit)
 			# After processing, check if we need to emit signal
-			# (_consume_action may have ended the turn and set _current_multi_action_unit = null)
-			if _current_multi_action_unit == null:
-				# Turn ended during action processing - need to signal for next turn
-				if not _check_combat_end():
-					if not _awaiting_player_input:
-						combat_continue_ready.emit()
+			if not _check_combat_end():
+				if not _awaiting_player_input:
+					# Signal to continue — whether turn ended or unit has more actions
+					combat_continue_ready.emit()
 			return _pending_actions
 		else:
 			# Done with this unit
@@ -900,8 +898,19 @@ func _unit_to_snapshot(unit: CombatUnit) -> Dictionary:
 		"is_alive": unit.is_alive,
 		"team": team_str,
 		"pos": {"x": unit.grid_x, "y": unit.grid_y},
-		"team_pos_key": "%s:%d,%d" % [team_str, unit.grid_x, unit.grid_y]
+		"team_pos_key": "%s:%d,%d" % [team_str, unit.grid_x, unit.grid_y],
+		"portrait_path": _get_unit_portrait(unit),
 	}
+
+
+## Get portrait path for a combat unit (hero or monster).
+func _get_unit_portrait(unit: CombatUnit) -> String:
+	if unit.team == CombatUnit.Team.PLAYER:
+		var hero = GameContext.get_hero(unit.source_id)
+		return hero.get("portrait_path", "") if not hero.is_empty() else ""
+	else:
+		var monster = DataRegistry.get_monster(unit.source_id)
+		return monster.portrait_path if monster != null else ""
 
 
 ## Get current turn info for UI.
@@ -1053,11 +1062,15 @@ func get_unit_buff_snapshot_sorted(unit_id: String) -> Array:
 
 
 ## v1.9B: Get turn timeline snapshot showing upcoming N units.
-## Returns Array of {unit_id, name, team, speed, is_current}.
+## Returns Array of {unit_id, name, team, speed, is_current, portrait_path}.
 func get_turn_timeline_snapshot(count: int = 6) -> Array:
 	if _turn_queue == null:
 		return []
-	return _turn_queue.get_upcoming_units_snapshot(count)
+	var snapshot = _turn_queue.get_upcoming_units_snapshot(count)
+	for entry in snapshot:
+		var unit = get_unit_by_id(entry["unit_id"])
+		entry["portrait_path"] = _get_unit_portrait(unit) if unit != null else ""
+	return snapshot
 
 
 # ============================================================================
@@ -2125,8 +2138,11 @@ func _check_combat_end() -> bool:
 		_is_combat_active = false
 		_result.set_outcome_from_combat(_player_units, _enemy_units)
 		_result.set_rng(_rng)
-		# Set context for loot bias (look up dungeon from town)
-		var ctx = { "region_id": GameContext.get_current_region_id() }
+		# Set context for loot bias and drop rate scaling
+		var ctx = {
+			"region_id": GameContext.get_current_region_id(),
+			"floor_index": maxi(GameContext.current_floor - 1, 0)
+		}
 		var town = DataRegistry.get_town(GameContext.get_current_town_id())
 		if town != null:
 			ctx["dungeon_id"] = town.dungeon_id
@@ -2142,14 +2158,22 @@ func _check_combat_end() -> bool:
 			for item in _result.items_dropped:
 				var drop_id = ""
 				var drop_quality = 0
+				var drop_affix: Dictionary = {}
 				if item is ItemInstance:
 					drop_id = item.template_id
 					drop_quality = item.quality_tier
+					if item.affix_id != "":
+						drop_affix = {
+							"source_region": item.source_region,
+							"affix_id": item.affix_id,
+							"affix_stats": item.affix_stats,
+							"affix_prefix": item.affix_prefix
+						}
 				elif item is Dictionary:
 					drop_id = item.get("item_id", item.get("template_id", ""))
 					drop_quality = int(item.get("quality_tier", 0))
 				if drop_id != "":
-					GameContext.acquire_item_with_recipient(drop_id, 1, drop_quality, "combat")
+					GameContext.acquire_item_with_recipient(drop_id, 1, drop_quality, "combat", drop_affix)
 			# Apply dungeon floor bonus using SNAPSHOT values (not mutable GameContext state)
 			GameContext.apply_dungeon_floor_reward_snapshot(
 				_encounter_dungeon_id,
@@ -2160,6 +2184,10 @@ func _check_combat_end() -> bool:
 				_rng
 			)
 			print("[RunStash] Gold=%d Items=%d Pending=%d" % [GameContext.run_gold, GameContext.run_items.size(), GameContext.get_all_pending_acquisitions().size()])
+		# Region completion: mark region as completed when boss is defeated
+		if _encounter_is_boss:
+			var region_id: String = GameContext.get_current_region_id()
+			GameContext.mark_region_completed(region_id)
 		# Health Persistence v1: Save surviving heroes' HP
 		_persist_hero_hp()
 		combat_ended.emit(_result)
@@ -2665,6 +2693,20 @@ func _get_available_actions(unit: CombatUnit) -> Array:
 			"ability": ability
 		})
 
+	# Equipment abilities (T4 gear, max 2)
+	for idx in range(unit.equip_ability_ids.size()):
+		var ea_id = unit.equip_ability_ids[idx]
+		if ea_id != "":
+			var ea_data = DataRegistry.get_ability(ea_id)
+			actions.append({
+				"type": "equip_ability_%d" % idx,
+				"name": ea_data.display_name if ea_data else ea_id,
+				"enabled": unit.is_equip_ability_ready(idx),
+				"cooldown": unit.equip_ability_cooldowns[idx],
+				"ability": ea_data,
+				"equip_index": idx
+			})
+
 	# Pass action - skip remaining actions and end turn
 	actions.append({"type": "pass", "name": "Pass", "enabled": true, "cooldown": 0})
 
@@ -2685,6 +2727,12 @@ func submit_player_action(action_type: String) -> void:
 		_selected_ability = DataRegistry.get_ability(_input_unit.ability_a_id)
 	elif action_type == "ability_b":
 		_selected_ability = DataRegistry.get_ability(_input_unit.ability_b_id)
+	elif action_type.begins_with("equip_ability_"):
+		var idx = int(action_type.substr(14))
+		if idx >= 0 and idx < _input_unit.equip_ability_ids.size():
+			_selected_ability = DataRegistry.get_ability(_input_unit.equip_ability_ids[idx])
+		else:
+			_selected_ability = null
 	else:
 		_selected_ability = null
 
@@ -2761,6 +2809,10 @@ func submit_player_target(target_id: String) -> void:
 
 ## Execute a player-chosen action.
 func _execute_player_action(unit: CombatUnit, action_type: String, target: CombatUnit, ability: AbilityData) -> void:
+	if action_type.begins_with("equip_ability_"):
+		var idx = int(action_type.substr(14))
+		_execute_equipment_ability_step(unit, ability, idx, target)
+		return
 	match action_type:
 		"basic":
 			_execute_basic_attack_player(unit, target)
@@ -2794,6 +2846,23 @@ func _execute_basic_attack_player(unit: CombatUnit, target: CombatUnit) -> void:
 		_result.add_action(death_action)
 		action_performed.emit(death_action)
 		_trigger_on_kill_passives(unit, target.source_id)
+
+
+## Execute an equipment ability (T4 gear-granted ability).
+## Routes through the same class ability execution pipeline.
+func _execute_equipment_ability_step(unit: CombatUnit, ability: AbilityData, equip_index: int, target: CombatUnit) -> void:
+	if ability == null:
+		print("[Combat] %s equip ability %d: no ability data" % [unit.display_name, equip_index])
+		return
+
+	print("[Combat] %s uses equipment ability [%d] %s" % [unit.display_name, equip_index, ability.display_name])
+
+	# Use the same execution pipeline as class abilities
+	_execute_class_ability_step(unit, ability, "equip_%d" % equip_index)
+
+	# Put equipment ability on cooldown (class ability step handles class cooldowns,
+	# but we need to handle equip cooldown separately)
+	unit.use_equip_ability(equip_index)
 
 
 ## Called by UI when player uses a consumable from hero bag.

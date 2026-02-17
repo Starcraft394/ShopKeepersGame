@@ -1,0 +1,27 @@
+{
+  "id": "ss_crustacean_brute",
+  "display_name": "Crustacean Brute",
+  "description": "A hulking crab warrior whose calcified claws can shear through iron plate.",
+  "icon_hint": "massive armored crab warrior standing upright with enormous crushing claws and coral growths",
+  "family": "coastal",
+  "region_id": "region_3",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 85,
+    "attack": 14,
+    "defense": 13,
+    "speed": 8
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region3_uncommon",
+  "gold_drop_min": 16,
+  "gold_drop_max": 26,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/ss_crustacean_brute.png"
+}

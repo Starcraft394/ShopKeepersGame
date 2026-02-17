@@ -1,0 +1,12 @@
+{
+  "id": "town_duskhollow",
+  "display_name": "Duskhollow",
+  "description": "A somber settlement at the edge of the great ossuary, where spectral lanterns line cobblestone streets and the living coexist uneasily with the restless dead.",
+  "region_id": "region_6",
+  "dungeon_id": "dungeon_duskhollow",
+  "facility_ids": [
+    "dungeon_duskhollow", "inn", "shop_duskhollow", "blacksmith", "huntsman",
+    "enchanter", "chef", "alchemist", "training_hall", "storage"
+  ],
+  "unlock_region": 6
+}

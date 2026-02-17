@@ -1,0 +1,31 @@
+{
+  "id": "fr_void_edge",
+  "display_name": "Void Edge",
+  "description": "A blade that cuts through dimensions. Its edge exists in multiple planes simultaneously.",
+  "icon_hint": "sleek black sword with edges that blur into nothingness and dark purple void energy trailing behind",
+  "item_type": "weapon",
+  "item_subtype": "sword",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 5,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 23
+  },
+  "stat_bonuses": {
+    "attack": 23,
+    "speed": 3
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 150,
+  "icon_path": "",
+  "tags": ["region_7", "weapon", "sword", "final_realm", "tier_5"]
+}

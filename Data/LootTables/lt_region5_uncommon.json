@@ -1,0 +1,16 @@
+{
+  "id": "lt_region5_uncommon",
+  "display_name": "Region 5 Uncommon Loot",
+  "description": "Materials and consumables from tier 2 Starfall Expanse monsters.",
+  "min_drops": 1,
+  "max_drops": 3,
+  "entries": [
+    { "item_id": "starfall_dust", "weight": 20, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "se_crystal_chitin", "weight": 20, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "se_echo_essence", "weight": 15, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "se_void_silk", "weight": 10, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "prism_shard", "weight": 10, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "se_starlight_elixir", "weight": 10, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 10, "min_qty": 0, "max_qty": 0 }
+  ]
+}

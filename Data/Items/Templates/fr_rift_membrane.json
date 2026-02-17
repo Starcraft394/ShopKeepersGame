@@ -1,0 +1,14 @@
+{
+  "id": "fr_rift_membrane",
+  "display_name": "Rift Membrane",
+  "description": "Thin dimensional tissue from between planes. Flexible and reality-bending.",
+  "icon_hint": "thin translucent sheet of dimensional tissue showing warped views of other planes",
+  "item_type": "material",
+  "item_subtype": "monster_part",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 38,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_7", "material", "monster_part", "final_realm"]
+}

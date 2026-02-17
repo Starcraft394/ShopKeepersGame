@@ -1,0 +1,41 @@
+{
+  "id": "evt_se_timelost_camp",
+  "title": "Timelost Camp",
+  "description": "An explorer's camp sits frozen between heartbeats of time, a half-eaten meal still steaming on a plate that hasn't aged in decades. Supplies and equipment hang suspended in perfect preservation, untouched by rust or rot, waiting for a moment that will never come.",
+  "kind": "choice",
+  "tags": ["crystal", "starfall"],
+  "choices": [
+    {
+      "id": "take_supplies",
+      "label": "Take the preserved supplies",
+      "description": "The food, coin purses, and trade goods are all in pristine condition.",
+      "effects": [
+        { "type": "add_gold_range", "min": 15, "max": 25 }
+      ]
+    },
+    {
+      "id": "gather_residue",
+      "label": "Gather the temporal residue",
+      "description": "The edges of the time bubble shed flakes of solidified temporal energy.",
+      "effects": [
+        { "type": "add_item", "item_id": "temporal_residue", "min_qty": 1, "max_qty": 2 }
+      ]
+    },
+    {
+      "id": "search_explorer",
+      "label": "Search the frozen explorer",
+      "description": "The explorer's pack contains trophies from creatures of the Expanse.",
+      "effects": [
+        { "type": "add_item", "item_id": "se_crystal_chitin", "min_qty": 1, "max_qty": 2 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Leave the camp untouched",
+      "description": "Disturbing a time-frozen site feels like tampering with something best left alone.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

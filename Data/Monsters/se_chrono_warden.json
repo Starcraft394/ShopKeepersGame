@@ -1,0 +1,27 @@
+{
+  "id": "se_chrono_warden",
+  "display_name": "Chrono Warden",
+  "description": "A time-lost champion who rewinds wounds and accelerates strikes in temporal combat.",
+  "icon_hint": "crystalline armored warrior wielding clock-like blade with temporal distortion aura",
+  "family": "crystal",
+  "region_id": "region_5",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 108,
+    "attack": 24,
+    "defense": 16,
+    "speed": 14
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region5_elite",
+  "gold_drop_min": 34,
+  "gold_drop_max": 56,
+  "sprite_path": "",
+  "is_elite": true,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/se_chrono_warden.png"
+}

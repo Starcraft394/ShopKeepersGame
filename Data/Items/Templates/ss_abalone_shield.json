@@ -1,0 +1,31 @@
+{
+  "id": "ss_abalone_shield",
+  "display_name": "Abalone Shield",
+  "description": "A shield of polished abalone shell over driftwood. Its iridescent surface is mesmerizing.",
+  "icon_hint": "round shield of iridescent abalone shell with a driftwood frame and rope handle",
+  "item_type": "armor",
+  "item_subtype": "shield",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 7
+  },
+  "stat_bonuses": {
+    "defense": 8,
+    "health": 14
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 65,
+  "icon_path": "",
+  "tags": ["region_3", "offhand", "shield", "sunken_strand", "tier_3"]
+}

@@ -1,0 +1,41 @@
+{
+  "id": "evt_nc_cursed_altar",
+  "title": "Cursed Altar",
+  "description": "A black stone altar squats in a chamber lit by guttering green flames that burn without fuel. Old blood stains its surface in concentric rings, and dark energy pulses from deep within the stone in a slow, rhythmic throb like a second heartbeat. Small offerings — coins, trinkets, a severed hand — are arrayed around its base.",
+  "kind": "choice",
+  "tags": ["necro", "crypt"],
+  "choices": [
+    {
+      "id": "take_relic",
+      "label": "Take the cursed relic",
+      "description": "A blackened artifact rests at the altar's center, thrumming with power.",
+      "effects": [
+        { "type": "add_item", "item_id": "cursed_relic", "min_qty": 1, "max_qty": 1 }
+      ]
+    },
+    {
+      "id": "harvest_dust",
+      "label": "Harvest the altar dust",
+      "description": "The residue of countless rituals has left a thick layer of potent grave dust.",
+      "effects": [
+        { "type": "add_item", "item_id": "nc_grave_dust", "min_qty": 2, "max_qty": 4 }
+      ]
+    },
+    {
+      "id": "search_offerings",
+      "label": "Search the offerings",
+      "description": "The faithful left coin and trinket alike at the altar's feet.",
+      "effects": [
+        { "type": "add_gold_range", "min": 12, "max": 20 }
+      ]
+    },
+    {
+      "id": "move_on",
+      "label": "Back away slowly",
+      "description": "Cursed altars are best left to their dark purpose.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

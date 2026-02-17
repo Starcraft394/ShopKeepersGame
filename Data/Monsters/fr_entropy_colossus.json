@@ -1,0 +1,27 @@
+{
+  "id": "fr_entropy_colossus",
+  "display_name": "Entropy Colossus",
+  "description": "A shambling giant of decaying matter that accelerates the aging of everything nearby.",
+  "icon_hint": "massive shambling giant of crumbling decaying matter with visible time-distortion waves",
+  "family": "void",
+  "region_id": "region_7",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 148,
+    "attack": 24,
+    "defense": 21,
+    "speed": 9
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region7_uncommon",
+  "gold_drop_min": 36,
+  "gold_drop_max": 56,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fr_entropy_colossus.png"
+}

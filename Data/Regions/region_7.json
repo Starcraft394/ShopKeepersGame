@@ -1,0 +1,13 @@
+{
+  "id": "region_7",
+  "display_name": "Final Realm",
+  "description": "Reality collapses at the edge of existence. Void fissures tear through fractured geometry as the source of all corruption pulses at the heart of the abyss.",
+  "region_index": 7,
+  "requires_region_id": "region_6",
+  "dungeon_floor_count": 6,
+  "monster_families": ["void"],
+  "town_ids": ["town_void_threshold"],
+  "boss_id": "fr_prime_corruptor",
+  "theme_color": "#1a1a2e",
+  "accent_color": "#4a2a6b"
+}

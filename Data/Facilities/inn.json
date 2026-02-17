@@ -9,6 +9,7 @@
 
   "keeper_name": "Mira",
   "keeper_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
+  "keeper_description": "Friendly young woman with auburn hair tied back, flour on her apron, warm lantern-lit tavern behind her",
   "keeper_greetings": [
     "Welcome, ShopKeeper! Looking for brave souls to join your cause?",
     "Come in, come in! The fire's warm and the ale is cold.",

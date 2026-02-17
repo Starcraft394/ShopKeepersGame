@@ -1,0 +1,27 @@
+{
+  "id": "ss_mistborn_leviathan",
+  "display_name": "Mistborn Leviathan",
+  "description": "A colossal sea dragon shrouded in fog, whose roar summons tidal waves from the deep.",
+  "icon_hint": "enormous sea dragon wreathed in fog with massive jaws and bioluminescent underbelly",
+  "family": "coastal",
+  "region_id": "region_3",
+  "tier": 3,
+  "ai_tier": 3,
+  "base_stats": {
+    "health": 140,
+    "attack": 18,
+    "defense": 13,
+    "speed": 10
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region3_boss",
+  "gold_drop_min": 42,
+  "gold_drop_max": 65,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": true,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/ss_mistborn_leviathan.png"
+}

@@ -1,0 +1,27 @@
+{
+  "id": "ss_coral_golem",
+  "display_name": "Coral Golem",
+  "description": "A lumbering construct of living coral whose jagged fists leave festering wounds.",
+  "icon_hint": "towering humanoid figure made of living coral with jagged orange and white fists",
+  "family": "coastal",
+  "region_id": "region_3",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 82,
+    "attack": 13,
+    "defense": 12,
+    "speed": 8
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region3_uncommon",
+  "gold_drop_min": 16,
+  "gold_drop_max": 28,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/ss_coral_golem.png"
+}

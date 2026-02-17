@@ -1,0 +1,23 @@
+{
+  "id": "dungeon_duskhollow",
+  "display_name": "Dungeon Board",
+  "description": "Select a starting floor for The Ossuary Depths.",
+  "icon_path": "res://Assets/Icons/Facilities/icon_facility_dungeon.png",
+  "facility_type": "dungeon",
+  "max_tier": 1,
+  "unlock_region": 6,
+  "keeper_name": "",
+  "keeper_portrait": "",
+  "keeper_greetings": [
+    "The dead grow restless the deeper you go. Choose your starting floor wisely.",
+    "Bone corridors twist endlessly beneath the ossuary — many have lost their way.",
+    "Grave dust fills the air down there. Breathe shallow and strike true."
+  ],
+  "slots_per_tier": {},
+  "upgrade_costs": {},
+  "services_per_tier": {"1": ["select_floor"]},
+  "produces_item_types": [],
+  "input_resource_types": [],
+  "allows_hero_assignment": false,
+  "max_assigned_heroes": 0
+}

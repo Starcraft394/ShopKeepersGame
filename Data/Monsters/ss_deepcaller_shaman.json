@@ -1,0 +1,27 @@
+{
+  "id": "ss_deepcaller_shaman",
+  "display_name": "Deepcaller Shaman",
+  "description": "A tidewalker priest who channels the ocean's fury into crushing walls of water.",
+  "icon_hint": "robed amphibious priest with coral staff channeling a glowing wall of seawater",
+  "family": "coastal",
+  "region_id": "region_3",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 80,
+    "attack": 18,
+    "defense": 11,
+    "speed": 12
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region3_elite",
+  "gold_drop_min": 24,
+  "gold_drop_max": 40,
+  "sprite_path": "",
+  "is_elite": true,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/ss_deepcaller_shaman.png"
+}

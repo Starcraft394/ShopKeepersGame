@@ -1,0 +1,41 @@
+{
+  "id": "evt_nc_crypt_entrance",
+  "title": "Crumbling Crypt Entrance",
+  "description": "A yawning doorway sinks into the hillside, its stone lintel carved with faded runes that still pulse faintly against the dark. Cold air seeps from within, carrying the mineral tang of old earth and something sweeter — embalming oils, perhaps. Iron fittings on the door frame have turned green with age but remain stubbornly intact.",
+  "kind": "choice",
+  "tags": ["necro", "crypt"],
+  "choices": [
+    {
+      "id": "explore_crypt",
+      "label": "Explore the crypt",
+      "description": "The dead sometimes leave their wealth behind.",
+      "effects": [
+        { "type": "add_gold_range", "min": 15, "max": 25 }
+      ]
+    },
+    {
+      "id": "collect_dust",
+      "label": "Collect the grave dust",
+      "description": "Fine grey dust coats every surface — alchemists pay well for it.",
+      "effects": [
+        { "type": "add_item", "item_id": "nc_grave_dust", "min_qty": 2, "max_qty": 4 }
+      ]
+    },
+    {
+      "id": "pry_fittings",
+      "label": "Pry the iron fittings",
+      "description": "The corroded iron still holds traces of soul-forged ore.",
+      "effects": [
+        { "type": "add_item", "item_id": "soul_ore", "min_qty": 1, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "move_on",
+      "label": "Leave it alone",
+      "description": "Some crypts are best left undisturbed.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

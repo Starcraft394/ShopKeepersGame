@@ -1,0 +1,41 @@
+{
+  "id": "evt_se_time_rift",
+  "title": "Time Rift",
+  "description": "A shimmering tear hangs in the air where past and present bleed together. Through the distortion you glimpse landscapes that haven't existed for centuries, overlaid with visions of places yet to be. The edges of the rift crackle with temporal energy that makes your skin prickle.",
+  "kind": "choice",
+  "tags": ["crystal", "starfall"],
+  "choices": [
+    {
+      "id": "reach_through",
+      "label": "Reach through the rift",
+      "description": "Plunge your hand into the temporal distortion and pull back whatever you can grasp.",
+      "effects": [
+        { "type": "add_item", "item_id": "temporal_residue", "min_qty": 1, "max_qty": 2 }
+      ]
+    },
+    {
+      "id": "study_patterns",
+      "label": "Study the temporal patterns",
+      "description": "Carefully observe the rift's oscillations to collect the echo essence it sheds.",
+      "effects": [
+        { "type": "add_item", "item_id": "se_echo_essence", "min_qty": 1, "max_qty": 2 }
+      ]
+    },
+    {
+      "id": "wait_stabilize",
+      "label": "Wait for it to stabilize",
+      "description": "As the rift collapses, it deposits coins from a dozen different eras on the ground.",
+      "effects": [
+        { "type": "add_gold_range", "min": 15, "max": 25 }
+      ]
+    },
+    {
+      "id": "back_away",
+      "label": "Back away carefully",
+      "description": "Temporal anomalies are unpredictable. Discretion is the wiser choice.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

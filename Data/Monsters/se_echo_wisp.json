@@ -1,0 +1,27 @@
+{
+  "id": "se_echo_wisp",
+  "display_name": "Echo Wisp",
+  "description": "A floating mote of residual starlight that mimics sounds and shapes of nearby creatures.",
+  "icon_hint": "small glowing silver-white orb with faint afterimage copies trailing around it",
+  "family": "crystal",
+  "region_id": "region_5",
+  "tier": 1,
+  "ai_tier": 1,
+  "base_stats": {
+    "health": 57,
+    "attack": 15,
+    "defense": 9,
+    "speed": 12
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region5_common",
+  "gold_drop_min": 13,
+  "gold_drop_max": 24,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/se_echo_wisp.png"
+}

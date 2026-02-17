@@ -1,0 +1,12 @@
+{
+  "id": "town_embercradle",
+  "display_name": "Embercradle",
+  "description": "A forge-town carved into the side of a dormant volcano, its streets glowing with rivers of cooling magma. The heat never fades.",
+  "region_id": "region_4",
+  "dungeon_id": "dungeon_embercradle",
+  "facility_ids": [
+    "dungeon_embercradle", "inn", "shop_embercradle", "blacksmith", "huntsman",
+    "enchanter", "chef", "alchemist", "training_hall", "storage"
+  ],
+  "unlock_region": 4
+}

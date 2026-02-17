@@ -1,0 +1,14 @@
+{
+  "id": "starfall_dust",
+  "display_name": "Starfall Dust",
+  "description": "Glittering powder from meteor impact sites. Hums with cosmic energy.",
+  "icon_hint": "sparkling silver-blue powder in a pouch with tiny motes of light drifting upward",
+  "item_type": "material",
+  "item_subtype": "crafting",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 20,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_5", "material", "crafting", "starfall_expanse"]
+}

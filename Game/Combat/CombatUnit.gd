@@ -43,6 +43,11 @@ var weapon_ability_id: String = ""
 var weapon_ability_cooldown: int = 0
 var weapon_ability_max_cooldown: int = 3
 
+# Equipment abilities (T4 gear, max 2)
+var equip_ability_ids: Array = []  # Array of ability_id strings
+var equip_ability_cooldowns: Array = []  # Current cooldown per slot
+var equip_ability_max_cooldowns: Array = []  # Max cooldown per slot
+
 # ============================================================================
 # CLASS KIT (M4)
 # ============================================================================
@@ -225,6 +230,17 @@ static func create_hero(hero_id: String, class_id_param: String, unit_index: int
 	unit.weapon_ability_id = "weapon_sword_strike"
 	unit.weapon_ability_max_cooldown = 3
 
+	# T4 equipment abilities: load from effective_stats if provided
+	var equip_ids = effective_stats.get("equip_ability_ids", [])
+	if equip_ids is Array and equip_ids.size() > 0:
+		for ea_id in equip_ids:
+			unit.equip_ability_ids.append(str(ea_id))
+			var ea_data = registry.get_ability(str(ea_id)) if registry else null
+			var ea_cd: int = ea_data.cooldown if ea_data != null else 3
+			unit.equip_ability_cooldowns.append(0)
+			unit.equip_ability_max_cooldowns.append(ea_cd)
+		print("[CombatUnit] Equipment abilities: %s" % str(unit.equip_ability_ids))
+
 	print("[CombatUnit] Created hero: %s (HP:%d ATK:%d DEF:%d SPD:%d)" % [
 		unit.display_name, unit.max_health, unit.attack, unit.defense, unit.speed])
 
@@ -345,6 +361,22 @@ func use_ability_b() -> void:
 	print("[CombatUnit] %s used ability B (%s). Cooldown: %d" % [display_name, ability_b_id, ability_b_cooldown])
 
 
+## Check if equipment ability at given index is ready (off cooldown).
+func is_equip_ability_ready(index: int) -> bool:
+	if index < 0 or index >= equip_ability_ids.size():
+		return false
+	return equip_ability_cooldowns[index] <= 0 and equip_ability_ids[index] != ""
+
+
+## Use equipment ability at given index (put on cooldown).
+func use_equip_ability(index: int) -> void:
+	if index < 0 or index >= equip_ability_ids.size():
+		return
+	equip_ability_cooldowns[index] = equip_ability_max_cooldowns[index]
+	print("[CombatUnit] %s used equip ability %d (%s). Cooldown: %d" % [
+		display_name, index, equip_ability_ids[index], equip_ability_cooldowns[index]])
+
+
 ## Reduce weapon cooldown by amount (for on_kill passive effects).
 func reduce_weapon_cooldown(amount: int) -> void:
 	weapon_ability_cooldown = maxi(0, weapon_ability_cooldown - amount)
@@ -359,6 +391,9 @@ func tick_cooldowns() -> void:
 		ability_a_cooldown -= 1
 	if ability_b_cooldown > 0:
 		ability_b_cooldown -= 1
+	for idx in range(equip_ability_cooldowns.size()):
+		if equip_ability_cooldowns[idx] > 0:
+			equip_ability_cooldowns[idx] -= 1
 
 
 ## Get initiative value for turn ordering (uses effective speed including buffs).
@@ -863,6 +898,9 @@ func get_status_string() -> String:
 		cooldown_parts.append("A:%d" % ability_a_cooldown)
 	if ability_b_cooldown > 0:
 		cooldown_parts.append("B:%d" % ability_b_cooldown)
+	for idx in range(equip_ability_cooldowns.size()):
+		if equip_ability_cooldowns[idx] > 0:
+			cooldown_parts.append("E%d:%d" % [idx, equip_ability_cooldowns[idx]])
 	var cooldown_str = ""
 	if cooldown_parts.size() > 0:
 		cooldown_str = " [CD:" + ",".join(cooldown_parts) + "]"

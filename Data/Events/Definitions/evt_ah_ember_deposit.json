@@ -1,0 +1,41 @@
+{
+  "id": "evt_ah_ember_deposit",
+  "title": "Smoldering Ember Deposit",
+  "description": "A wall of dark basalt glows with veins of trapped embers, pulsing faintly like a dying heartbeat. Heat radiates from the stone in waves, and fine ash drifts from cracks where the rock has split. Below the formation, a shallow drift of powdered ash has accumulated over countless eruptions.",
+  "kind": "choice",
+  "tags": ["volcanic", "fire"],
+  "choices": [
+    {
+      "id": "mine_embers",
+      "label": "Mine the ember dust",
+      "description": "Scrape the glowing veins free and collect the smoldering powder.",
+      "effects": [
+        { "type": "add_item", "item_id": "ember_dust", "min_qty": 2, "max_qty": 4 }
+      ]
+    },
+    {
+      "id": "chip_glass",
+      "label": "Chip out the volcanic glass",
+      "description": "Pry loose the dark, glassy deposits fused into the basalt.",
+      "effects": [
+        { "type": "add_item", "item_id": "volcanic_glass", "min_qty": 2, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "search_ash",
+      "label": "Search the ash below",
+      "description": "Sift through the accumulated ash for anything the heat has left behind.",
+      "effects": [
+        { "type": "add_gold_range", "min": 10, "max": 18 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Leave it alone",
+      "description": "The heat is too intense to linger.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

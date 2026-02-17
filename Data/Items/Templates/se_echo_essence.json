@@ -1,0 +1,14 @@
+{
+  "id": "se_echo_essence",
+  "display_name": "Echo Essence",
+  "description": "Bottled residual energy from an echo wisp. Flickers with phantom light.",
+  "icon_hint": "small glowing orb of pale silver light trapped in a glass sphere, flickering",
+  "item_type": "material",
+  "item_subtype": "monster_part",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 22,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_5", "material", "monster_part", "alchemy", "starfall_expanse"]
+}

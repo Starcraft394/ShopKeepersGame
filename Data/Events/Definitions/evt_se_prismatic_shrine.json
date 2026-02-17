@@ -1,0 +1,42 @@
+{
+  "id": "evt_se_prismatic_shrine",
+  "title": "Prismatic Shrine",
+  "description": "A shrine hewn from a single enormous crystal pulses with slow, rhythmic light, as though it breathes. The air around it shimmers with impossible colors that have no name, and a profound calm settles over anyone who draws near.",
+  "kind": "choice",
+  "tags": ["crystal", "starfall"],
+  "choices": [
+    {
+      "id": "meditate",
+      "label": "Meditate before the shrine",
+      "description": "The shrine's radiance washes over your party, mending wounds and easing fatigue.",
+      "effects": [
+        { "type": "heal_party", "value": 12 }
+      ]
+    },
+    {
+      "id": "offer_gold",
+      "label": "Offer gold to the shrine",
+      "description": "Place coins at the shrine's base. The crystal flares brightly, and deep healing floods through you.",
+      "effects": [
+        { "type": "add_gold_range", "min": -10, "max": -10 },
+        { "type": "heal_party", "value": 20 }
+      ]
+    },
+    {
+      "id": "take_shard",
+      "label": "Take a shard from the altar",
+      "description": "A sliver of the shrine's crystal hums with trapped temporal energy.",
+      "effects": [
+        { "type": "add_item", "item_id": "temporal_residue", "min_qty": 1, "max_qty": 1 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Leave the shrine in peace",
+      "description": "You bow your head respectfully and continue on your way.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

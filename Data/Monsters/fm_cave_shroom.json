@@ -1,0 +1,27 @@
+{
+  "id": "fm_cave_shroom",
+  "display_name": "Cave Shroom",
+  "description": "A squat mushroom creature that releases toxic clouds when struck.",
+  "icon_hint": "short mushroom creature with a wide spotted red-and-white cap and stubby legs, releasing green spore puffs",
+  "family": "spore",
+  "region_id": "region_2",
+  "tier": 1,
+  "ai_tier": 1,
+  "base_stats": {
+    "health": 38,
+    "attack": 8,
+    "defense": 4,
+    "speed": 9
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region2_common",
+  "gold_drop_min": 6,
+  "gold_drop_max": 14,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fm_cave_shroom.png"
+}

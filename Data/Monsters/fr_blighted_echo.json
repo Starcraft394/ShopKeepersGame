@@ -1,0 +1,27 @@
+{
+  "id": "fr_blighted_echo",
+  "display_name": "Blighted Echo",
+  "description": "A corrupted reflection of a fallen adventurer, mimicking their fighting style.",
+  "icon_hint": "dark shadow copy of an adventurer with corrupted glitching edges and void eyes",
+  "family": "void",
+  "region_id": "region_7",
+  "tier": 1,
+  "ai_tier": 1,
+  "base_stats": {
+    "health": 88,
+    "attack": 20,
+    "defense": 14,
+    "speed": 12
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region7_common",
+  "gold_drop_min": 19,
+  "gold_drop_max": 33,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fr_blighted_echo.png"
+}

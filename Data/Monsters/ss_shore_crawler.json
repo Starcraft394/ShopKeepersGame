@@ -1,0 +1,27 @@
+{
+  "id": "ss_shore_crawler",
+  "display_name": "Shore Crawler",
+  "description": "A barnacle-encrusted crab that scuttles from tidal pools to ambush the unwary.",
+  "icon_hint": "giant barnacle-covered crab with massive blue-green pincers emerging from a tidal pool",
+  "family": "coastal",
+  "region_id": "region_3",
+  "tier": 1,
+  "ai_tier": 1,
+  "base_stats": {
+    "health": 50,
+    "attack": 10,
+    "defense": 7,
+    "speed": 8
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region3_common",
+  "gold_drop_min": 9,
+  "gold_drop_max": 16,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/ss_shore_crawler.png"
+}

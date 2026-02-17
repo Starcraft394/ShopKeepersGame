@@ -1,0 +1,14 @@
+{
+  "id": "wailing_shard",
+  "display_name": "Wailing Shard",
+  "description": "Soul-infused bone that emits a faint wail. Resonates with death magic.",
+  "icon_hint": "jagged bone fragment glowing sickly green, faint wailing sound emanating from it",
+  "item_type": "material",
+  "item_subtype": "legendary",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 100,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_6", "material", "legendary", "necropolis"]
+}

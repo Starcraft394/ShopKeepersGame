@@ -1,0 +1,14 @@
+{
+  "id": "fr_entropy_residue",
+  "display_name": "Entropy Residue",
+  "description": "Decayed matter from void breaches. Dissolves slowly into nothing.",
+  "icon_hint": "pile of slowly dissolving dark matter with edges that blur into nothingness",
+  "item_type": "material",
+  "item_subtype": "crafting",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 30,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_7", "material", "crafting", "final_realm"]
+}

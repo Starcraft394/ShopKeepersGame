@@ -1,0 +1,27 @@
+{
+  "id": "ah_magma_mite",
+  "display_name": "Magma Mite",
+  "description": "A tiny elemental that skitters across lava pools, leaving burning footprints on solid ground.",
+  "icon_hint": "tiny glowing orange-red elemental creature skittering with molten footprints trailing behind",
+  "family": "volcanic",
+  "region_id": "region_4",
+  "tier": 1,
+  "ai_tier": 1,
+  "base_stats": {
+    "health": 50,
+    "attack": 14,
+    "defense": 6,
+    "speed": 12
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region4_common",
+  "gold_drop_min": 10,
+  "gold_drop_max": 18,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/ah_magma_mite.png"
+}

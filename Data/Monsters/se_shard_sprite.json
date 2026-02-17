@@ -1,0 +1,27 @@
+{
+  "id": "se_shard_sprite",
+  "display_name": "Shard Sprite",
+  "description": "A tiny elemental of fractured crystal that zips through the air trailing prismatic sparks.",
+  "icon_hint": "tiny crystalline fairy trailing rainbow sparks with jagged translucent wings",
+  "family": "crystal",
+  "region_id": "region_5",
+  "tier": 1,
+  "ai_tier": 1,
+  "base_stats": {
+    "health": 56,
+    "attack": 14,
+    "defense": 8,
+    "speed": 14
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region5_common",
+  "gold_drop_min": 12,
+  "gold_drop_max": 24,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/se_shard_sprite.png"
+}

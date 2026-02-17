@@ -1,0 +1,62 @@
+{
+  "id": "dungeon_embercradle",
+  "display_name": "The Caldera Descent",
+  "description": "A volcanic chasm where rivers of lava flow between obsidian platforms. The heat intensifies with every step deeper into the Cinder Monarch's domain.",
+  "region_id": "region_4",
+  "town_id": "town_embercradle",
+  "floor_count": 4,
+  "rooms_per_floor": 3,
+  "boss_id": "ah_cinder_monarch",
+  "alt_boss_id": "ah_magma_wyrm",
+  "min_rooms_per_floor": 3,
+  "max_rooms_per_floor": 5,
+  "choice_b_event_weight": 0.55,
+  "choice_b_elite_weight": 0.45,
+  "event_table_id": "et_region4_combined",
+  "encounter_tags": ["volcanic", "fire", "lava", "ash", "obsidian", "scorched"],
+  "gear_whitelist": [
+    "ah_ember_blade", "ah_scorched_longbow", "ah_magma_plate",
+    "ah_drake_buckler", "ah_cinder_amulet"
+  ],
+  "floor_theme": [
+    "Scorched Approach",
+    "Lava Fields",
+    "Obsidian Caverns",
+    "The Caldera Heart"
+  ],
+  "tier1_monster_ids": [
+    "ah_cinder_beetle", "ah_ember_drake", "ah_ash_crawler",
+    "ah_magma_mite", "ah_scorched_viper", "ah_soot_imp"
+  ],
+  "tier2_monster_ids": [
+    "ah_lava_golem", "ah_ash_wraith", "ah_scorpion_ravager",
+    "ah_flame_stalker", "ah_pyroclast_hurler", "ah_inferno_djinn"
+  ],
+  "elite_monster_ids": [
+    "ah_scorpion_titan", "ah_fire_djinn_lord", "ah_magma_wyrm"
+  ],
+  "tier1_by_floor": [
+    ["ah_cinder_beetle", "ah_ember_drake", "ah_magma_mite", "ah_soot_imp"],
+    ["ah_ash_crawler", "ah_scorched_viper", "ah_cinder_beetle", "ah_ember_drake"],
+    ["ah_magma_mite", "ah_soot_imp", "ah_scorched_viper", "ah_ash_crawler"],
+    ["ah_cinder_beetle", "ah_ember_drake", "ah_ash_crawler", "ah_scorched_viper"]
+  ],
+  "tier2_by_floor": [
+    ["ah_lava_golem", "ah_ash_wraith"],
+    ["ah_lava_golem", "ah_scorpion_ravager", "ah_flame_stalker", "ah_ash_wraith"],
+    ["ah_flame_stalker", "ah_pyroclast_hurler", "ah_inferno_djinn", "ah_scorpion_ravager"],
+    ["ah_lava_golem", "ah_ash_wraith", "ah_pyroclast_hurler", "ah_inferno_djinn", "ah_flame_stalker"]
+  ],
+  "elite_by_floor": [
+    [],
+    ["ah_scorpion_titan"],
+    ["ah_scorpion_titan", "ah_fire_djinn_lord"],
+    ["ah_scorpion_titan", "ah_fire_djinn_lord", "ah_magma_wyrm"]
+  ],
+  "room_types_by_floor": [
+    ["combat", "event", "combat"],
+    ["combat", "treasure", "combat"],
+    ["combat", "shrine", "elite"],
+    ["combat", "event", "combat"]
+  ]
+}

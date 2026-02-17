@@ -1,0 +1,31 @@
+{
+  "id": "fm_spore_blade",
+  "display_name": "Spore Blade",
+  "description": "A curved sword grown from hardened mycelium, its edge perpetually damp with toxic spores.",
+  "icon_hint": "curved pale green sword blade grown from hardened mycelium with spore clusters along the spine",
+  "item_type": "weapon",
+  "item_subtype": "sword",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 8
+  },
+  "stat_bonuses": {
+    "attack": 8,
+    "speed": 1
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 55,
+  "icon_path": "",
+  "tags": ["region_2", "weapon", "sword", "fungalmire", "tier_2"]
+}

@@ -1,0 +1,23 @@
+{
+  "id": "dungeon_void_threshold",
+  "display_name": "Dungeon Board",
+  "description": "Select a starting floor for The Void Descent.",
+  "icon_path": "res://Assets/Icons/Facilities/icon_facility_dungeon.png",
+  "facility_type": "dungeon",
+  "max_tier": 1,
+  "unlock_region": 7,
+  "keeper_name": "",
+  "keeper_portrait": "",
+  "keeper_greetings": [
+    "Reality collapses further in with every step. Choose your starting floor wisely.",
+    "The void hungers for form and memory — guard both jealously.",
+    "Nothing returns unchanged from the Descent. Most things do not return at all."
+  ],
+  "slots_per_tier": {},
+  "upgrade_costs": {},
+  "services_per_tier": {"1": ["select_floor"]},
+  "produces_item_types": [],
+  "input_resource_types": [],
+  "allows_hero_assignment": false,
+  "max_assigned_heroes": 0
+}

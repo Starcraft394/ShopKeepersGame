@@ -1,0 +1,14 @@
+{
+  "id": "ss_kelp_sinew",
+  "display_name": "Kelp Sinew",
+  "description": "Tough fibrous strands from deep-water kelp, used for binding and bowstrings.",
+  "icon_hint": "coiled bundle of tough dark green kelp fibers twisted into rope-like strands",
+  "item_type": "material",
+  "item_subtype": "monster_part",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 12,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_3", "material", "monster_part", "sunken_strand"]
+}

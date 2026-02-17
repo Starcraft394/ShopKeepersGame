@@ -1,0 +1,31 @@
+{
+  "id": "fr_rift_band",
+  "display_name": "Rift Band",
+  "description": "A ring of solidified void. The wearer's body occasionally flickers, making them harder to pin down.",
+  "icon_hint": "ring of solid darkness that warps light around it with tiny stars visible in its depths",
+  "item_type": "accessory",
+  "item_subtype": "ring",
+  "category": "equipment",
+  "slot": "accessory_1",
+  "equip_slot": "ring",
+  "tier": 5,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "health": 24
+  },
+  "stat_bonuses": {
+    "health": 24,
+    "speed": 4
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 135,
+  "icon_path": "",
+  "tags": ["region_7", "accessory", "ring", "final_realm", "tier_5"]
+}

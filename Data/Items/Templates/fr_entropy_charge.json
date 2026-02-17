@@ -1,0 +1,17 @@
+{
+  "id": "fr_entropy_charge",
+  "display_name": "Entropy Charge",
+  "description": "A sphere of compressed dimensional instability. Warps space violently on impact.",
+  "icon_hint": "sphere of swirling dark matter contained in a cracked glass shell leaking purple void energy",
+  "item_type": "consumable",
+  "item_subtype": "thrown",
+  "category": "consumable",
+  "tier": 5,
+  "use_effect": "debuff_accuracy",
+  "debuff_stat": "accuracy",
+  "debuff_amount": 8,
+  "debuff_duration": 4,
+  "base_value": 80,
+  "icon_path": "",
+  "tags": ["region_7", "consumable", "thrown", "debuff", "final_realm", "tier_5"]
+}

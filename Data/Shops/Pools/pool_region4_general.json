@@ -1,0 +1,114 @@
+{
+  "id": "pool_region4_general",
+  "display_name": "Region 4 General Shop Pool",
+  "description": "Item pool for general stores in Region 4 volcanic settlements",
+
+  "weight_by_tier": {
+    "1": 10,
+    "2": 6,
+    "3": 3,
+    "4": 1
+  },
+
+  "consumables": [
+    {
+      "item_id": "healing_tonic",
+      "weight": 20,
+      "price_gold": 25,
+      "tier": 1,
+      "requires_unlock_group": "consumables_t1",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 1
+    },
+    {
+      "item_id": "antidote",
+      "weight": 15,
+      "price_gold": 20,
+      "tier": 1,
+      "requires_unlock_group": "consumables_t1",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 1
+    },
+    {
+      "item_id": "ah_magma_tonic",
+      "weight": 12,
+      "price_gold": 40,
+      "tier": 2,
+      "requires_unlock_group": "consumables_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "ah_dragonfire_oil",
+      "weight": 10,
+      "price_gold": 45,
+      "tier": 2,
+      "requires_unlock_group": "consumables_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "ah_charred_feast",
+      "weight": 10,
+      "price_gold": 35,
+      "tier": 2,
+      "requires_unlock_group": "consumables_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    }
+  ],
+
+  "weapons": [
+    {
+      "item_id": "ah_ember_blade",
+      "weight": 15,
+      "price_gold": 110,
+      "tier": 2,
+      "requires_unlock_group": "weapons_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "ah_scorched_longbow",
+      "weight": 12,
+      "price_gold": 105,
+      "tier": 2,
+      "requires_unlock_group": "weapons_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    }
+  ],
+
+  "offhands": [
+    {
+      "item_id": "ah_drake_buckler",
+      "weight": 12,
+      "price_gold": 120,
+      "tier": 2,
+      "requires_unlock_group": "offhands_t2",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    }
+  ],
+
+  "books": [
+    {
+      "item_id": "book_pyrewarden",
+      "weight": 10,
+      "price_gold": 130,
+      "tier": 1,
+      "requires_unlock_group": "books_t1",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 1
+    },
+    {
+      "item_id": "book_ashblade",
+      "weight": 10,
+      "price_gold": 130,
+      "tier": 1,
+      "requires_unlock_group": "books_t1",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 1
+    }
+  ]
+}

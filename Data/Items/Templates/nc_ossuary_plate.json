@@ -1,0 +1,33 @@
+{
+  "id": "nc_ossuary_plate",
+  "display_name": "Ossuary Plate",
+  "description": "Armor assembled from sanctified bones. Each plate is a fragment of a fallen guardian.",
+  "icon_hint": "chest armor of interlocking pale bone plates with faint green runes carved into each piece",
+  "item_type": "armor",
+  "item_subtype": "heavy_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 15,
+    "speed": -2
+  },
+  "stat_bonuses": {
+    "defense": 15,
+    "health": 30,
+    "speed": -2
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 130,
+  "icon_path": "",
+  "tags": ["region_6", "armor", "necropolis", "tier_4"]
+}

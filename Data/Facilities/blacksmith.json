@@ -9,6 +9,7 @@
 
   "keeper_name": "Garrick",
   "keeper_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon3.png",
+  "keeper_description": "Bald bearded muscular man in a soot-stained leather apron, heavy hammer resting on his shoulder, forge glowing behind him",
   "keeper_greetings": [
     "Good day, ShopKeeper! What would you like to discuss today?",
     "Ah, welcome back! The forge is hot and ready.",

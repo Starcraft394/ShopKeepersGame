@@ -1,0 +1,37 @@
+{
+  "region_1": {
+    "prefix": "Verdant",
+    "stat_bonus": { "health": 2 },
+    "description": "Infused with forest vitality"
+  },
+  "region_2": {
+    "prefix": "Stoneforged",
+    "stat_bonus": { "defense": 3 },
+    "description": "Tempered in mountain stone"
+  },
+  "region_3": {
+    "prefix": "Tideforged",
+    "stat_bonus": { "speed": 2 },
+    "description": "Tempered in deep tides"
+  },
+  "region_4": {
+    "prefix": "Embertouched",
+    "stat_bonus": { "attack": 3 },
+    "description": "Forged in volcanic fire"
+  },
+  "region_5": {
+    "prefix": "Starforged",
+    "stat_bonus": { "attack": 2, "speed": 2 },
+    "description": "Infused with fallen stars"
+  },
+  "region_6": {
+    "prefix": "Deathbound",
+    "stat_bonus": { "health": 3, "attack": 2 },
+    "description": "Infused with necrotic energy"
+  },
+  "region_7": {
+    "prefix": "Voidtouched",
+    "stat_bonus": { "speed": 2, "defense": 3 },
+    "description": "Drawn from the void"
+  }
+}

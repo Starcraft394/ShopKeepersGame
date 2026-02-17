@@ -1,0 +1,14 @@
+{
+  "id": "molten_core",
+  "display_name": "Molten Core",
+  "description": "A solidified sphere of dragonfire that never fully cools. Radiates immense heat.",
+  "icon_hint": "sphere of solidified dragonfire glowing deep orange-red with swirling magma patterns",
+  "item_type": "material",
+  "item_subtype": "legendary",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 70,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_4", "material", "legendary", "ashen_horizons"]
+}

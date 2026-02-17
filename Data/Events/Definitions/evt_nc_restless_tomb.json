@@ -1,0 +1,41 @@
+{
+  "id": "evt_nc_restless_tomb",
+  "title": "Restless Tomb",
+  "description": "A stone sarcophagus lies open, its heavy lid shoved aside with inhuman force. Claw marks score the interior walls where the occupant dragged itself free, and a trail of grave dirt leads off into the darkness. Whatever rose from this tomb is long gone, but it left its burial goods behind.",
+  "kind": "choice",
+  "tags": ["necro", "crypt"],
+  "choices": [
+    {
+      "id": "search_tomb",
+      "label": "Search the tomb",
+      "description": "The risen dead seldom take their gold with them.",
+      "effects": [
+        { "type": "add_gold_range", "min": 15, "max": 25 }
+      ]
+    },
+    {
+      "id": "collect_wood",
+      "label": "Collect the spectral wood",
+      "description": "The coffin's inner frame is made of wood suffused with spectral energy.",
+      "effects": [
+        { "type": "add_item", "item_id": "spectral_log", "min_qty": 2, "max_qty": 4 }
+      ]
+    },
+    {
+      "id": "harvest_threads",
+      "label": "Harvest the wraith threads",
+      "description": "Gossamer strands of ectoplasm cling to the sarcophagus lid.",
+      "effects": [
+        { "type": "add_item", "item_id": "nc_wraith_thread", "min_qty": 1, "max_qty": 2 }
+      ]
+    },
+    {
+      "id": "move_on",
+      "label": "Move on quickly",
+      "description": "The occupant might come back.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

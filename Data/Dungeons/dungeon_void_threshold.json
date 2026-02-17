@@ -1,0 +1,72 @@
+{
+  "id": "dungeon_void_threshold",
+  "display_name": "The Collapsing Abyss",
+  "description": "Reality fractures at the edge of existence. Each floor descends deeper into the void where space and time lose meaning, and the Prime Corruptor waits at the end of all things.",
+  "region_id": "region_7",
+  "town_id": "town_void_threshold",
+  "floor_count": 6,
+  "rooms_per_floor": 3,
+  "boss_id": "fr_prime_corruptor",
+  "alt_boss_id": "fr_void_sovereign",
+  "min_rooms_per_floor": 3,
+  "max_rooms_per_floor": 5,
+  "choice_b_event_weight": 0.45,
+  "choice_b_elite_weight": 0.55,
+  "event_table_id": "et_region7_combined",
+  "encounter_tags": ["void", "corruption", "entropy", "dimensional", "rift", "abyss"],
+  "gear_whitelist": [
+    "fr_void_edge", "fr_entropy_bow", "fr_dimensional_plate",
+    "fr_null_barrier", "fr_rift_band"
+  ],
+  "floor_theme": [
+    "The Fraying Edge",
+    "Entropy Fields",
+    "Dimensional Crossroads",
+    "The Null Zone",
+    "Corruption's Heart",
+    "The Abyss Throne"
+  ],
+  "tier1_monster_ids": [
+    "fr_corruption_tendril", "fr_void_mite", "fr_blighted_echo",
+    "fr_null_wisp", "fr_entropy_slug", "fr_rift_imp"
+  ],
+  "tier2_monster_ids": [
+    "fr_corruption_avatar", "fr_reality_shredder", "fr_abyssal_sentinel",
+    "fr_thoughtrender", "fr_void_weaver", "fr_entropy_colossus"
+  ],
+  "elite_monster_ids": [
+    "fr_corruption_champion", "fr_dimensional_horror", "fr_void_sovereign"
+  ],
+  "tier1_by_floor": [
+    ["fr_corruption_tendril", "fr_void_mite", "fr_rift_imp", "fr_null_wisp"],
+    ["fr_blighted_echo", "fr_entropy_slug", "fr_corruption_tendril", "fr_void_mite"],
+    ["fr_null_wisp", "fr_rift_imp", "fr_blighted_echo", "fr_entropy_slug"],
+    ["fr_corruption_tendril", "fr_void_mite", "fr_blighted_echo", "fr_null_wisp"],
+    ["fr_entropy_slug", "fr_rift_imp", "fr_corruption_tendril", "fr_blighted_echo"],
+    ["fr_void_mite", "fr_null_wisp", "fr_entropy_slug", "fr_rift_imp"]
+  ],
+  "tier2_by_floor": [
+    [],
+    ["fr_corruption_avatar", "fr_reality_shredder"],
+    ["fr_corruption_avatar", "fr_abyssal_sentinel", "fr_thoughtrender"],
+    ["fr_reality_shredder", "fr_void_weaver", "fr_entropy_colossus", "fr_thoughtrender"],
+    ["fr_corruption_avatar", "fr_abyssal_sentinel", "fr_void_weaver", "fr_entropy_colossus", "fr_reality_shredder"],
+    ["fr_corruption_avatar", "fr_reality_shredder", "fr_abyssal_sentinel", "fr_thoughtrender", "fr_void_weaver", "fr_entropy_colossus"]
+  ],
+  "elite_by_floor": [
+    [],
+    [],
+    [],
+    ["fr_corruption_champion"],
+    ["fr_corruption_champion", "fr_dimensional_horror"],
+    ["fr_corruption_champion", "fr_dimensional_horror", "fr_void_sovereign"]
+  ],
+  "room_types_by_floor": [
+    ["combat", "event", "combat"],
+    ["combat", "treasure", "combat"],
+    ["combat", "event", "combat"],
+    ["combat", "shrine", "elite"],
+    ["combat", "event", "combat"],
+    ["combat", "event", "combat"]
+  ]
+}

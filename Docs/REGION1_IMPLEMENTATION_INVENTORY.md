@@ -9,33 +9,22 @@ This document catalogs all Region 1 implementation artifacts.
 ### 1.1 Town Definitions
 | File | ID | Facilities |
 |------|-----|------------|
-| `Data/Towns/town_greenroot.json` | town_greenroot | 10 facilities (see below) |
-| `Data/Towns/town_timberfall.json` | town_timberfall | 10 facilities (see below) |
+| `Data/Towns/town_thornhaven.json` | town_thornhaven | 10 facilities (see below) |
 
 ### 1.2 Facility JSON Files
 
 | File | ID | Type | Sells Items? | Notes |
 |------|-----|------|--------------|-------|
-| `Data/Facilities/dungeon_greenroot.json` | dungeon_greenroot | dungeon | NO | Floor selection |
-| `Data/Facilities/dungeon_timberfall.json` | dungeon_timberfall | dungeon | NO | Floor selection |
+| `Data/Facilities/dungeon_thornhaven.json` | dungeon_thornhaven | dungeon | NO | Floor selection |
 | `Data/Facilities/inn.json` | inn | inn | NO | Hero recruitment (merged with Housing) |
-| `Data/Facilities/inn_tf.json` | inn_tf | inn | NO | Timberfall variant |
-| `Data/Facilities/shop_greenroot.json` | shop_greenroot | shop | YES | General Store - pool-driven |
-| `Data/Facilities/shop_timberfall.json` | shop_timberfall | shop | YES | General Store - pool-driven |
+| `Data/Facilities/shop_thornhaven.json` | shop_thornhaven | shop | YES | General Store - pool-driven |
 | `Data/Facilities/blacksmith.json` | blacksmith | blacksmith | NO | Unlocks offhands_t1 |
-| `Data/Facilities/blacksmith_tf.json` | blacksmith_tf | blacksmith | NO | Timberfall variant |
 | `Data/Facilities/leatherworker.json` | leatherworker | production | NO | Crafting placeholder |
-| `Data/Facilities/leatherworker_tf.json` | leatherworker_tf | production | NO | Timberfall variant |
 | `Data/Facilities/woodsman.json` | woodsman | woodsman | NO | Flavor only |
-| `Data/Facilities/woodsman_tf.json` | woodsman_tf | woodsman | NO | Timberfall variant |
 | `Data/Facilities/chef.json` | chef | production | NO | Crafting placeholder |
-| `Data/Facilities/chef_tf.json` | chef_tf | production | NO | Timberfall variant |
 | `Data/Facilities/alchemist.json` | alchemist | alchemist | NO | Unlocks consumables_t2 |
-| `Data/Facilities/alchemist_tf.json` | alchemist_tf | alchemist | NO | Timberfall variant |
 | `Data/Facilities/training_hall.json` | training_hall | training_hall | YES | Sells class books |
-| `Data/Facilities/training_hall_tf.json` | training_hall_tf | training_hall | YES | Timberfall variant |
 | `Data/Facilities/storage.json` | storage | storage | NO | Bank/stash management |
-| `Data/Facilities/storage_tf.json` | storage_tf | storage | NO | Timberfall variant |
 
 ### 1.3 Shop Pool Files
 | File | ID | Categories |
@@ -186,7 +175,7 @@ shop_refresh_counts
 ## 6. Verified Compliance
 
 ### 6.1 Item Selling
-- General Store (shop_greenroot, shop_timberfall): HAS shop_pool_id, shop_rolls, shop_profile
+- General Store (shop_thornhaven): HAS shop_pool_id, shop_rolls, shop_profile
 - Training Hall: HAS shop_items with class books
 - All other facilities: shop_items = [] (correct)
 

@@ -1,0 +1,13 @@
+{
+  "id": "mycelium_thread",
+  "display_name": "Mycelium Thread",
+  "description": "Fine thread-like strands extracted from the mycelium network beneath the bog. Surprisingly strong.",
+  "icon_hint": "spool of pale white thread-like mycelium strands with faint bioluminescent green glow along the fibers",
+  "item_type": "material",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 5,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_2", "fungalmire", "material", "mycelium", "crafting"]
+}

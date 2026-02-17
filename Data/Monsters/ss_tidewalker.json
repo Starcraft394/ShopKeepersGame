@@ -1,0 +1,27 @@
+{
+  "id": "ss_tidewalker",
+  "display_name": "Tidewalker",
+  "description": "A waterlogged humanoid that shambles through the shallows, dragging kelp and broken nets.",
+  "icon_hint": "waterlogged humanoid figure draped in kelp and tangled fishing nets, dripping seawater",
+  "family": "coastal",
+  "region_id": "region_3",
+  "tier": 1,
+  "ai_tier": 1,
+  "base_stats": {
+    "health": 48,
+    "attack": 11,
+    "defense": 5,
+    "speed": 9
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region3_common",
+  "gold_drop_min": 8,
+  "gold_drop_max": 17,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/ss_tidewalker.png"
+}

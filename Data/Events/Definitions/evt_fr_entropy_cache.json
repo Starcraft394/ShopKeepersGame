@@ -1,0 +1,41 @@
+{
+  "id": "evt_fr_entropy_cache",
+  "title": "Entropy Cache",
+  "description": "A cache of supplies phases in and out of reality, left behind by a previous dimensional traveler who never made it back. The containers shimmer at their edges, half-dissolved by entropy, but their contents remain intact — frozen in the moment between existence and dissolution. Whoever left these knew this place well.",
+  "kind": "choice",
+  "tags": ["void", "corruption"],
+  "choices": [
+    {
+      "id": "grab_supplies",
+      "label": "Grab the supplies",
+      "description": "Snatch coins and trade goods from the cache before it phases out again.",
+      "effects": [
+        { "type": "add_gold_range", "min": 18, "max": 30 }
+      ]
+    },
+    {
+      "id": "collect_entropy",
+      "label": "Collect the entropy residue",
+      "description": "Harvest the thick layer of entropy residue coating the cache's dissolving containers.",
+      "effects": [
+        { "type": "add_item", "item_id": "fr_entropy_residue", "min_qty": 3, "max_qty": 5 }
+      ]
+    },
+    {
+      "id": "harvest_null",
+      "label": "Harvest the null fragments",
+      "description": "Break apart the null-space crystals forming where the cache meets empty reality.",
+      "effects": [
+        { "type": "add_item", "item_id": "fr_null_fragment", "min_qty": 2, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Leave it be",
+      "description": "Whatever happened to the last traveler, you would rather not share their fate.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

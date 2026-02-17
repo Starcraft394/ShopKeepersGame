@@ -1,0 +1,27 @@
+{
+  "id": "se_starfall_stalker",
+  "display_name": "Starfall Stalker",
+  "description": "A predator born from a meteor impact, its hide crackling with residual cosmic energy.",
+  "icon_hint": "sleek panther-like beast with meteorite-studded dark hide crackling with blue cosmic energy",
+  "family": "crystal",
+  "region_id": "region_5",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 92,
+    "attack": 22,
+    "defense": 13,
+    "speed": 14
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region5_uncommon",
+  "gold_drop_min": 25,
+  "gold_drop_max": 38,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/se_starfall_stalker.png"
+}

@@ -1,0 +1,12 @@
+{
+  "id": "town_void_threshold",
+  "display_name": "Void Threshold",
+  "description": "The last outpost before reality ends. Buildings flicker between existence and void, anchored by containment wards that hum with desperate energy.",
+  "region_id": "region_7",
+  "dungeon_id": "dungeon_void_threshold",
+  "facility_ids": [
+    "dungeon_void_threshold", "inn", "shop_void_threshold", "blacksmith", "huntsman",
+    "enchanter", "chef", "alchemist", "training_hall", "storage"
+  ],
+  "unlock_region": 7
+}

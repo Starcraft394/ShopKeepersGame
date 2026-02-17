@@ -1,0 +1,14 @@
+{
+  "id": "stormglass_fragment",
+  "display_name": "Stormglass Fragment",
+  "description": "Crystallized lightning trapped in sand during a coastal storm. Hums with electrical energy.",
+  "icon_hint": "jagged shard of dark glass with frozen lightning bolts visible inside, crackling faintly",
+  "item_type": "material",
+  "item_subtype": "legendary",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 55,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_3", "material", "legendary", "sunken_strand"]
+}

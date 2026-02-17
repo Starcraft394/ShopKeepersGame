@@ -1,0 +1,21 @@
+{
+  "facility_id": "chef",
+  "recipes": [
+    {
+      "input_a": "mycelium_thread",
+      "input_b": "raw_meat",
+      "input_c": "",
+      "output_id": "cooked_meat",
+      "output_qty": 2,
+      "required_tier": 1
+    },
+    {
+      "input_a": "fungal_fiber",
+      "input_b": "mycelium_thread",
+      "input_c": "raw_meat",
+      "output_id": "miners_ration",
+      "output_qty": 1,
+      "required_tier": 2
+    }
+  ]
+}

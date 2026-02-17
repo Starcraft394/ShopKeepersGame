@@ -1,0 +1,27 @@
+{
+  "id": "se_refraction_golem",
+  "display_name": "Refraction Golem",
+  "description": "A construct of fused crystal that splits incoming attacks into harmless light.",
+  "icon_hint": "towering humanoid of fused clear and purple crystals with light refracting through its body",
+  "family": "crystal",
+  "region_id": "region_5",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 115,
+    "attack": 17,
+    "defense": 17,
+    "speed": 9
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region5_uncommon",
+  "gold_drop_min": 28,
+  "gold_drop_max": 42,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/se_refraction_golem.png"
+}

@@ -1,0 +1,23 @@
+{
+  "id": "dungeon_shelldrift",
+  "display_name": "Dungeon Board",
+  "description": "Select a starting floor for The Drowned Depths.",
+  "icon_path": "res://Assets/Icons/Facilities/icon_facility_dungeon.png",
+  "facility_type": "dungeon",
+  "max_tier": 1,
+  "unlock_region": 3,
+  "keeper_name": "",
+  "keeper_portrait": "",
+  "keeper_greetings": [
+    "The depths pull you deeper with every tide. Choose your starting floor wisely.",
+    "The sea never lets go of what it claims — tread carefully below.",
+    "Drowned things stir in the flooded corridors. Steel yourself."
+  ],
+  "slots_per_tier": {},
+  "upgrade_costs": {},
+  "services_per_tier": {"1": ["select_floor"]},
+  "produces_item_types": [],
+  "input_resource_types": [],
+  "allows_hero_assignment": false,
+  "max_assigned_heroes": 0
+}

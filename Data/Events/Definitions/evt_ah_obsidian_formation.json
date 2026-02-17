@@ -1,0 +1,41 @@
+{
+  "id": "evt_ah_obsidian_formation",
+  "title": "Obsidian Pillars",
+  "description": "A cluster of jet-black obsidian pillars juts from the cracked earth like the teeth of some buried leviathan. Their surfaces are razor-sharp and reflect the orange sky in dark, warped streaks. Between them, narrow gaps hold pockets of volcanic glass and wind-blown debris.",
+  "kind": "choice",
+  "tags": ["volcanic", "fire"],
+  "choices": [
+    {
+      "id": "break_shards",
+      "label": "Break off shards",
+      "description": "Carefully fracture pieces from the obsidian pillars.",
+      "effects": [
+        { "type": "add_item", "item_id": "obsidian_shard", "min_qty": 1, "max_qty": 2 }
+      ]
+    },
+    {
+      "id": "harvest_glass",
+      "label": "Harvest the glass deposits",
+      "description": "Collect the volcanic glass wedged between the pillars.",
+      "effects": [
+        { "type": "add_item", "item_id": "volcanic_glass", "min_qty": 2, "max_qty": 4 }
+      ]
+    },
+    {
+      "id": "search_between",
+      "label": "Search between the pillars",
+      "description": "Rummage through the debris caught in the narrow gaps.",
+      "effects": [
+        { "type": "add_gold_range", "min": 8, "max": 16 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Leave them standing",
+      "description": "The edges look dangerously sharp.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

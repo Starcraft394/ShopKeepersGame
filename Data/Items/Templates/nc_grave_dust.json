@@ -1,0 +1,14 @@
+{
+  "id": "nc_grave_dust",
+  "display_name": "Grave Dust",
+  "description": "Fine powder from disturbed crypts, used in necromantic alchemy.",
+  "icon_hint": "pouch of fine gray-brown powder with tiny bone fragments mixed in",
+  "item_type": "material",
+  "item_subtype": "monster_part",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 22,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_6", "material", "monster_part", "alchemy", "necropolis"]
+}

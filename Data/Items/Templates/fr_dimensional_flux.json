@@ -1,0 +1,17 @@
+{
+  "id": "fr_dimensional_flux",
+  "display_name": "Dimensional Flux",
+  "description": "A draught that splits the drinker's existence across timelines, vastly increasing reaction speed.",
+  "icon_hint": "hourglass-shaped flask of shimmering void-black liquid with purple lightning crackling inside",
+  "item_type": "consumable",
+  "item_subtype": "potion",
+  "category": "consumable",
+  "tier": 5,
+  "use_effect": "buff_speed",
+  "buff_stat": "speed",
+  "buff_amount": 8,
+  "buff_duration": 5,
+  "base_value": 90,
+  "icon_path": "",
+  "tags": ["region_7", "consumable", "potion", "buff", "final_realm", "tier_5"]
+}

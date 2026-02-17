@@ -1,0 +1,31 @@
+{
+  "id": "se_starfall_bow",
+  "display_name": "Starfall Bow",
+  "description": "A bow carved from a single meteorite crystal. Its arrows trail silver light.",
+  "icon_hint": "elegant crystalline bow with silver-blue glow and tiny star motes drifting around the limbs",
+  "item_type": "weapon",
+  "item_subtype": "bow",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 15
+  },
+  "stat_bonuses": {
+    "attack": 15,
+    "speed": 4
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 100,
+  "icon_path": "",
+  "tags": ["region_5", "weapon", "bow", "ranged", "starfall_expanse", "tier_4"]
+}

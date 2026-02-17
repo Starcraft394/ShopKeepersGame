@@ -1,0 +1,14 @@
+{
+  "id": "ah_drake_scale",
+  "display_name": "Drake Scale",
+  "description": "A heat-resistant scale from an ember drake. Excellent for fire-proof armor.",
+  "icon_hint": "large curved red-orange scale with heat shimmer rising from its surface",
+  "item_type": "material",
+  "item_subtype": "monster_part",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 20,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_4", "material", "monster_part", "ashen_horizons"]
+}

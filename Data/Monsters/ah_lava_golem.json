@@ -1,0 +1,27 @@
+{
+  "id": "ah_lava_golem",
+  "display_name": "Lava Golem",
+  "description": "A towering construct of molten rock whose every step leaves pools of liquid fire.",
+  "icon_hint": "towering humanoid of cooling black rock with glowing molten lava visible in cracks",
+  "family": "volcanic",
+  "region_id": "region_4",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 100,
+    "attack": 16,
+    "defense": 15,
+    "speed": 8
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region4_uncommon",
+  "gold_drop_min": 20,
+  "gold_drop_max": 34,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/ah_lava_golem.png"
+}

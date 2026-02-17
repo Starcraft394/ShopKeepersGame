@@ -1,0 +1,14 @@
+{
+  "id": "fractured_soulglass",
+  "display_name": "Fractured Soulglass",
+  "description": "Shattered lens of compressed souls. Refracts reality into impossible angles.",
+  "icon_hint": "cracked lens of compressed souls refracting reality into impossible angles",
+  "item_type": "material",
+  "item_subtype": "legendary",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 130,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_7", "material", "legendary", "final_realm"]
+}

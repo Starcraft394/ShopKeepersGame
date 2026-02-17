@@ -1,0 +1,27 @@
+{
+  "id": "fm_mycelium_brute",
+  "display_name": "Mycelium Brute",
+  "description": "An armored fungal mass that regenerates faster than you can cut.",
+  "icon_hint": "massive hulking creature of interwoven fungal roots and hardened bark with glowing green veins",
+  "family": "spore",
+  "region_id": "region_2",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 88,
+    "attack": 12,
+    "defense": 11,
+    "speed": 8
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region2_elite",
+  "gold_drop_min": 18,
+  "gold_drop_max": 35,
+  "sprite_path": "",
+  "is_elite": true,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fm_mycelium_brute.png"
+}

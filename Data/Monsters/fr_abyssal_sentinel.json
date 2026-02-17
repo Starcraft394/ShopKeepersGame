@@ -1,0 +1,27 @@
+{
+  "id": "fr_abyssal_sentinel",
+  "display_name": "Abyssal Sentinel",
+  "description": "A towering guardian at the threshold between realms, immune to conventional damage.",
+  "icon_hint": "towering armored void entity standing guard before a massive dimensional rift",
+  "family": "void",
+  "region_id": "region_7",
+  "tier": 2,
+  "ai_tier": 2,
+  "base_stats": {
+    "health": 150,
+    "attack": 23,
+    "defense": 22,
+    "speed": 9
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region7_uncommon",
+  "gold_drop_min": 38,
+  "gold_drop_max": 58,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fr_abyssal_sentinel.png"
+}

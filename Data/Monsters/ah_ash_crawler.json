@@ -1,0 +1,27 @@
+{
+  "id": "ah_ash_crawler",
+  "display_name": "Ash Crawler",
+  "description": "A low-slung reptile coated in hardened ash that blends with the scorched terrain.",
+  "icon_hint": "flat armored gray lizard coated in volcanic ash with red eyes peering from cracks",
+  "family": "volcanic",
+  "region_id": "region_4",
+  "tier": 1,
+  "ai_tier": 1,
+  "base_stats": {
+    "health": 58,
+    "attack": 12,
+    "defense": 9,
+    "speed": 8
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region4_common",
+  "gold_drop_min": 10,
+  "gold_drop_max": 19,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/ah_ash_crawler.png"
+}

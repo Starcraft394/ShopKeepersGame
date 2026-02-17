@@ -1,0 +1,27 @@
+{
+  "id": "ah_cinder_monarch",
+  "display_name": "The Cinder Monarch",
+  "description": "A titanic drake enthroned in the caldera's heart, whose wingbeats rain fire across the wastes.",
+  "icon_hint": "massive dragon sitting on volcanic throne with magma-veined wings spread wide",
+  "family": "volcanic",
+  "region_id": "region_4",
+  "tier": 3,
+  "ai_tier": 3,
+  "base_stats": {
+    "health": 195,
+    "attack": 24,
+    "defense": 17,
+    "speed": 9
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region4_boss",
+  "gold_drop_min": 60,
+  "gold_drop_max": 90,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": true,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/ah_cinder_monarch.png"
+}

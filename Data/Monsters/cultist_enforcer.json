@@ -7,13 +7,21 @@
   "region_id": "region_1",
   "tier": 2,
   "ai_tier": 1,
-  "base_stats": { "health": 30, "attack": 9, "defense": 3, "speed": 12 },
-  "ability_ids": ["basic_attack"],
+  "base_stats": {
+    "health": 30,
+    "attack": 9,
+    "defense": 3,
+    "speed": 12
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
   "passive_ids": [],
   "loot_table_id": "lt_cultist_parts",
   "gold_drop_min": 9,
   "gold_drop_max": 20,
   "sprite_path": "",
   "is_elite": false,
-  "is_boss": false
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon34.png"
 }

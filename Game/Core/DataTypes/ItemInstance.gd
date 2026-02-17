@@ -16,6 +16,12 @@ var quality_tier: int = 0
 # Generated display name with quality prefix
 var display_name: String = ""
 
+# Regional affix data (applied to gear drops)
+var source_region: String = ""    # Region where this item was obtained
+var affix_id: String = ""         # Regional affix key (e.g., "region_1")
+var affix_stats: Dictionary = {}  # Bonus stats from affix (e.g., { "health": 2 })
+var affix_prefix: String = ""     # Display prefix (e.g., "Verdant")
+
 # Quality tier weights for deterministic rolling
 const QUALITY_WEIGHTS := [
 	{ "value": 0, "weight": 70.0 },  # common

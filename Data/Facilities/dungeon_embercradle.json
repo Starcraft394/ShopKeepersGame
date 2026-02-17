@@ -1,0 +1,23 @@
+{
+  "id": "dungeon_embercradle",
+  "display_name": "Dungeon Board",
+  "description": "Select a starting floor for The Caldera Descent.",
+  "icon_path": "res://Assets/Icons/Facilities/icon_facility_dungeon.png",
+  "facility_type": "dungeon",
+  "max_tier": 1,
+  "unlock_region": 4,
+  "keeper_name": "",
+  "keeper_portrait": "",
+  "keeper_greetings": [
+    "The caldera burns hotter the deeper you descend. Choose your starting floor wisely.",
+    "Rivers of magma carve new passages each day — what awaits below shifts constantly.",
+    "The Cinder Monarch stirs in the deepest chamber. Do not linger."
+  ],
+  "slots_per_tier": {},
+  "upgrade_costs": {},
+  "services_per_tier": {"1": ["select_floor"]},
+  "produces_item_types": [],
+  "input_resource_types": [],
+  "allows_hero_assignment": false,
+  "max_assigned_heroes": 0
+}

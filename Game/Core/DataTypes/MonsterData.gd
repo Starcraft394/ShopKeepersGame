@@ -33,6 +33,7 @@ var gold_drop_max: int = 0
 
 # Visual
 var sprite_path: String = ""
+var portrait_path: String = ""
 
 # Special Flags
 var is_elite: bool = false
@@ -56,6 +57,7 @@ static func from_dict(data: Dictionary) -> MonsterData:
 	instance.gold_drop_min = data.get("gold_drop_min", 0)
 	instance.gold_drop_max = data.get("gold_drop_max", 0)
 	instance.sprite_path = data.get("sprite_path", "")
+	instance.portrait_path = data.get("portrait_path", "")
 	instance.is_elite = data.get("is_elite", false)
 	instance.is_boss = data.get("is_boss", false)
 

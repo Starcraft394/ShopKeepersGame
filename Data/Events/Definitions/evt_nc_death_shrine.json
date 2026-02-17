@@ -1,0 +1,42 @@
+{
+  "id": "evt_nc_death_shrine",
+  "title": "Shrine of the Death Lord",
+  "description": "A shrine of polished bone and black iron rises from a circular clearing, its spire crowned with a skull that weeps trails of pale light. The air here is unnaturally still, and the silence presses against your ears like deep water. An offering bowl sits at the shrine's base, and chunks of soul ore are mortared into the altar's foundation.",
+  "kind": "choice",
+  "tags": ["necro", "crypt"],
+  "choices": [
+    {
+      "id": "pray",
+      "label": "Pray at the shrine",
+      "description": "The death lord's blessing is a cold comfort, but comfort nonetheless.",
+      "effects": [
+        { "type": "heal_party", "value": 12 }
+      ]
+    },
+    {
+      "id": "offer_gold",
+      "label": "Offer gold for a greater blessing",
+      "description": "A generous offering earns a deeper restoration from the lord of the dead.",
+      "effects": [
+        { "type": "add_gold_range", "min": -10, "max": -10 },
+        { "type": "heal_party", "value": 20 }
+      ]
+    },
+    {
+      "id": "take_ore",
+      "label": "Pry the soul ore from the altar",
+      "description": "The ore set into the stonework is valuable, if you dare desecrate the shrine.",
+      "effects": [
+        { "type": "add_item", "item_id": "soul_ore", "min_qty": 2, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "move_on",
+      "label": "Pass the shrine in silence",
+      "description": "The death lord's gaze is not something to invite lightly.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

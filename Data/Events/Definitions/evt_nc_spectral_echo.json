@@ -1,0 +1,41 @@
+{
+  "id": "evt_nc_spectral_echo",
+  "title": "Spectral Echo",
+  "description": "The translucent image of a long-dead warrior flickers in and out of existence at a crossroads of crumbling stone corridors. Its mouth moves soundlessly, one gauntleted hand gesturing down a passage choked with shadow. Whether it means to warn or to lure, the spirit seems bound to this place, repeating its final moments for eternity.",
+  "kind": "choice",
+  "tags": ["necro", "crypt"],
+  "choices": [
+    {
+      "id": "follow_echo",
+      "label": "Follow the echo",
+      "description": "The dead sometimes guard forgotten treasure.",
+      "effects": [
+        { "type": "add_gold_range", "min": 15, "max": 25 }
+      ]
+    },
+    {
+      "id": "capture_thread",
+      "label": "Capture the spectral thread",
+      "description": "A quick hand can snare the ectoplasmic strands that trail behind it.",
+      "effects": [
+        { "type": "add_item", "item_id": "nc_wraith_thread", "min_qty": 2, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "listen_whispers",
+      "label": "Listen to its whispers",
+      "description": "The echo's murmuring carries a strange, restorative calm.",
+      "effects": [
+        { "type": "heal_party", "value": 8 }
+      ]
+    },
+    {
+      "id": "move_on",
+      "label": "Ignore the apparition",
+      "description": "Spectral echoes are unreliable guides at best.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

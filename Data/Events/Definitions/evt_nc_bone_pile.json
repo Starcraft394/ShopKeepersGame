@@ -1,0 +1,41 @@
+{
+  "id": "evt_nc_bone_pile",
+  "title": "Glowing Bone Pile",
+  "description": "A mound of ancient bones rises from the cracked flagstones, some still faintly glowing with necrotic energy that gutters like a dying candle. The air hums with residual magic, and thin wisps of spectral light drift upward from the pile. Whatever creature these belonged to, it was large — and it did not die willingly.",
+  "kind": "choice",
+  "tags": ["necro", "crypt"],
+  "choices": [
+    {
+      "id": "harvest_marrow",
+      "label": "Harvest the marrow",
+      "description": "Necrotic marrow is a prized component for dark crafting.",
+      "effects": [
+        { "type": "add_item", "item_id": "nc_bone_marrow", "min_qty": 1, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "collect_residue",
+      "label": "Collect the spectral residue",
+      "description": "Threads of wraith-stuff cling to the bones like cobwebs.",
+      "effects": [
+        { "type": "add_item", "item_id": "nc_wraith_thread", "min_qty": 1, "max_qty": 2 }
+      ]
+    },
+    {
+      "id": "search_valuables",
+      "label": "Search for valuables",
+      "description": "Burial goods are sometimes interred with the bones.",
+      "effects": [
+        { "type": "add_gold_range", "min": 10, "max": 20 }
+      ]
+    },
+    {
+      "id": "move_on",
+      "label": "Leave the dead be",
+      "description": "Disturbing the dead invites their attention.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

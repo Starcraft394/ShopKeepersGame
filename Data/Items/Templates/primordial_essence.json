@@ -1,0 +1,14 @@
+{
+  "id": "primordial_essence",
+  "display_name": "Primordial Essence",
+  "description": "The first-matter of reality itself. Impossible to fully contain.",
+  "icon_hint": "swirling containment jar of pure creation-stuff, shifting between all states of matter",
+  "item_type": "material",
+  "item_subtype": "legendary",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 150,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_7", "material", "legendary", "final_realm"]
+}

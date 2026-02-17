@@ -1,0 +1,19 @@
+{
+  "id": "lt_region5_boss",
+  "display_name": "Region 5 Boss Loot",
+  "description": "Rich drops from Starfall Expanse bosses.",
+  "min_drops": 3,
+  "max_drops": 5,
+  "entries": [
+    { "item_id": "se_crystal_chitin", "weight": 12, "min_qty": 3, "max_qty": 5 },
+    { "item_id": "temporal_residue", "weight": 12, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "starfall_core_fragment", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "strong_healing_tonic", "weight": 12, "min_qty": 2, "max_qty": 3 },
+    { "item_id": "se_prism_blade", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "se_starfall_bow", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "se_echo_shield", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "se_temporal_band", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "se_crystal_ward", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 5, "min_qty": 0, "max_qty": 0 }
+  ]
+}

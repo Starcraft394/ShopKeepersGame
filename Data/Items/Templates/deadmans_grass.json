@@ -1,0 +1,14 @@
+{
+  "id": "deadmans_grass",
+  "display_name": "Deadman's Grass",
+  "description": "Pale grass that grows only on mass graves. Potent in death-warding brews.",
+  "icon_hint": "bundle of pale white grass with gray roots, giving off a faint deathly chill",
+  "item_type": "material",
+  "item_subtype": "herb",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 26,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_6", "material", "herb", "alchemy", "necropolis"]
+}

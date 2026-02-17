@@ -19,6 +19,10 @@ var town_id: String = ""
 var floor_count: int = 4
 var rooms_per_floor: int = 1  # Legacy static value, see min/max_rooms_per_floor
 var boss_id: String = ""
+var alt_boss_id: String = ""  # Alternate boss (50/50 random pick if set)
+
+# Gear whitelist for equipment drops
+var gear_whitelist: Array[String] = []
 
 # Dynamic room generation (2-choice system)
 var min_rooms_per_floor: int = 3
@@ -59,6 +63,14 @@ static func from_dict(data: Dictionary) -> DungeonData:
 	instance.floor_count = data.get("floor_count", 4)
 	instance.rooms_per_floor = data.get("rooms_per_floor", 1)
 	instance.boss_id = data.get("boss_id", "")
+	instance.alt_boss_id = data.get("alt_boss_id", "")
+
+	# Gear whitelist for equipment drops
+	instance.gear_whitelist.clear()
+	var gear_whitelist_val = data.get("gear_whitelist", [])
+	var gear_whitelist_arr = gear_whitelist_val if gear_whitelist_val is Array else []
+	for item in gear_whitelist_arr:
+		instance.gear_whitelist.append(str(item))
 
 	# Dynamic room generation fields
 	instance.min_rooms_per_floor = data.get("min_rooms_per_floor", 3)

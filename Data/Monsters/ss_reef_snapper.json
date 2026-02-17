@@ -1,0 +1,27 @@
+{
+  "id": "ss_reef_snapper",
+  "display_name": "Reef Snapper",
+  "description": "A sharp-toothed fish that launches itself from the surf to bite at exposed ankles.",
+  "icon_hint": "aggressive armored fish with rows of razor teeth lunging from crashing surf",
+  "family": "coastal",
+  "region_id": "region_3",
+  "tier": 1,
+  "ai_tier": 1,
+  "base_stats": {
+    "health": 42,
+    "attack": 12,
+    "defense": 5,
+    "speed": 12
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region3_common",
+  "gold_drop_min": 9,
+  "gold_drop_max": 17,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/ss_reef_snapper.png"
+}

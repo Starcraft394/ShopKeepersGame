@@ -1,0 +1,12 @@
+{
+  "id": "town_crystalhearth",
+  "display_name": "Crystalhearth",
+  "description": "An outpost of crystalline spires among floating stones, lit by the perpetual glow of fallen starlight trapped in prismatic formations.",
+  "region_id": "region_5",
+  "dungeon_id": "dungeon_crystalhearth",
+  "facility_ids": [
+    "dungeon_crystalhearth", "inn", "shop_crystalhearth", "blacksmith", "huntsman",
+    "enchanter", "chef", "alchemist", "training_hall", "storage"
+  ],
+  "unlock_region": 5
+}

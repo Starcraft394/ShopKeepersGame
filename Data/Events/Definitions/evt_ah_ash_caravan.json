@@ -1,0 +1,41 @@
+{
+  "id": "evt_ah_ash_caravan",
+  "title": "Ash-Buried Caravan",
+  "description": "The skeletal remains of a trade caravan emerge from a dune of gray ash, wagon wheels jutting at broken angles and canvas long since burned away. Crates and barrels lie split open, their contents scattered by eruption and scavengers alike. The traders never made it out of the Ashen Horizons.",
+  "kind": "choice",
+  "tags": ["volcanic", "fire"],
+  "choices": [
+    {
+      "id": "search_wagons",
+      "label": "Search the wagons",
+      "description": "Dig through the buried wagons for coin purses and strongboxes.",
+      "effects": [
+        { "type": "add_gold_range", "min": 15, "max": 25 }
+      ]
+    },
+    {
+      "id": "salvage_cargo",
+      "label": "Salvage the cargo",
+      "description": "Recover intact volcanic glass from the shattered trade goods.",
+      "effects": [
+        { "type": "add_item", "item_id": "volcanic_glass", "min_qty": 2, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "strip_materials",
+      "label": "Strip leather and bone",
+      "description": "Salvage drake-hide panels and bone reinforcements from the wagon frames.",
+      "effects": [
+        { "type": "add_item", "item_id": "ah_drake_scale", "min_qty": 1, "max_qty": 2 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Leave the dead in peace",
+      "description": "There is nothing worth disturbing here.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

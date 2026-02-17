@@ -9,8 +9,8 @@ const TOWN_SCENE = preload("res://Game/UI/Town/TownScene.tscn")
 const _SLOT_STYLE = preload("res://Themes/CraftPix/slot_inventory.tres")
 const _HEADER_STYLE = preload("res://Themes/CraftPix/header_bar_teal_tinted.tres")
 
-# Known town IDs (hardcoded — matches Data/Towns/*.json)
-const KNOWN_TOWNS: Array[String] = ["town_greenroot", "town_timberfall"]
+# Town IDs loaded dynamically from region data
+var _known_towns: Array[String] = []
 
 # Facility type → short nav label
 const NAV_LABELS: Dictionary = {
@@ -44,6 +44,18 @@ var _nav_travel_buttons: Array[Button] = []
 var _icon_cache: Dictionary = {}  # icon_path → Texture2D
 
 
+func _get_known_towns() -> Array[String]:
+	if _known_towns.is_empty():
+		var region_id: String = GameContext.get_current_region_id() if GameContext.has_method("get_current_region_id") else "region_1"
+		var region = DataRegistry.get_region(region_id) if DataRegistry.has_method("get_region") else null
+		if region and not region.town_ids.is_empty():
+			for tid in region.town_ids:
+				_known_towns.append(tid)
+		else:
+			_known_towns = ["town_thornhaven"]
+	return _known_towns
+
+
 func _ready() -> void:
 	print("[TownHub] Scene loaded — CraftPix shell active")
 	_embed_town_scene()
@@ -62,15 +74,22 @@ func _embed_town_scene() -> void:
 	_town_scene_instance = TOWN_SCENE.instantiate()
 	_town_scene_instance.use_craftpix_skin = true
 	_town_scene_instance.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_town_scene_instance.size_flags_vertical = Control.SIZE_SHRINK_END
-	_content_vbox.add_child(_town_scene_instance)
+	_town_scene_instance.size_flags_vertical = Control.SIZE_EXPAND_FILL
 
-	# Create a container for the hero party bar at the bottom of the content area
+	# Create party bar container and add it to the tree BEFORE TownScene,
+	# so it's already in the scene tree when TownScene._ready() populates it.
+	# (Adding children to an orphan container causes layout to not calculate.)
 	var party_bar_vbox = VBoxContainer.new()
 	party_bar_vbox.name = "PartyBarVBox"
 	party_bar_vbox.add_theme_constant_override("separation", 6)
-	_content_vbox.add_child(party_bar_vbox)
+	party_bar_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	party_bar_vbox.size_flags_vertical = Control.SIZE_SHRINK_END
 	_town_scene_instance.party_bar_target = party_bar_vbox
+
+	_content_vbox.add_child(party_bar_vbox)
+	_content_vbox.add_child(_town_scene_instance)
+	# Move party bar below TownScene so it renders at the bottom
+	_content_vbox.move_child(party_bar_vbox, _content_vbox.get_child_count() - 1)
 
 	print("[TownHub] Embedded TownScene into content area (CraftPix skin enabled)")
 
@@ -80,21 +99,15 @@ func _embed_town_scene() -> void:
 # ============================================================================
 
 func _build_nav_rail() -> void:
-	# Clear old dynamic buttons (keep NavHeader)
-	for btn in _nav_facility_buttons:
-		if is_instance_valid(btn):
-			btn.queue_free()
+	# Clear ALL dynamic children (keep NavHeader panel which contains NavHeaderLabel)
 	_nav_facility_buttons.clear()
-	for btn in _nav_travel_buttons:
-		if is_instance_valid(btn):
-			btn.queue_free()
 	_nav_travel_buttons.clear()
-
-	# Remove old dynamic nodes (travel, dev) if present
-	for old_name in ["TravelSeparator", "TravelLabel", "DevLabel", "DevResetSave", "DevAddGold"]:
-		var old_node = _nav_vbox.get_node_or_null(old_name)
-		if old_node:
-			old_node.queue_free()
+	var nav_header_panel = _nav_header_label.get_parent() if is_instance_valid(_nav_header_label) else null
+	for child in _nav_vbox.get_children():
+		if child == nav_header_panel:
+			continue
+		_nav_vbox.remove_child(child)
+		child.queue_free()
 
 	var town_id = GameContext.get_current_town_id()
 	var town = DataRegistry.get_town(town_id) if DataRegistry.has_method("get_town") else null
@@ -104,16 +117,52 @@ func _build_nav_rail() -> void:
 	if town == null:
 		return
 
-	# Facility buttons
+	# Facility buttons (tinted by region theme)
+	var palette: Dictionary = RegionTheme.get_palette_for_current_region()
+	var theme_col: Color = palette.get("theme", Color(0.4, 0.6, 0.5))
+	var nav_tint: Color = Color(
+		clampf(theme_col.r * 1.5 + 0.2, 0.0, 1.0),
+		clampf(theme_col.g * 1.5 + 0.2, 0.0, 1.0),
+		clampf(theme_col.b * 1.5 + 0.2, 0.0, 1.0)
+	)
 	for facility_id in town.facility_ids:
 		var facility = DataRegistry.get_facility(facility_id) if DataRegistry.has_method("get_facility") else null
 		var label_text = _get_nav_label(facility_id, facility)
 		var btn = Button.new()
 		btn.text = label_text
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn.modulate = nav_tint
 		btn.pressed.connect(_on_facility_clicked.bind(facility_id))
 		_nav_vbox.add_child(btn)
 		_nav_facility_buttons.append(btn)
+
+	# Region navigation section
+	var all_regions: Array = DataRegistry.get_all_regions() if DataRegistry.has_method("get_all_regions") else []
+	if all_regions.size() > 1:
+		all_regions.sort_custom(func(a, b): return a.region_index < b.region_index)
+		var region_label = Label.new()
+		region_label.text = "— Regions —"
+		region_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		region_label.add_theme_font_size_override("font_size", 11)
+		region_label.modulate = Color(0.7, 0.7, 0.7)
+		region_label.name = "RegionLabel"
+		_nav_vbox.add_child(region_label)
+
+		var current_region_id: String = GameContext.get_current_region_id() if GameContext.has_method("get_current_region_id") else "region_1"
+		for region in all_regions:
+			var rbtn = Button.new()
+			rbtn.text = region.display_name
+			rbtn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			var region_color: Color = Color.from_string(region.theme_color, Color.WHITE)
+			rbtn.modulate = Color(
+				clampf(region_color.r * 1.5 + 0.2, 0.0, 1.0),
+				clampf(region_color.g * 1.5 + 0.2, 0.0, 1.0),
+				clampf(region_color.b * 1.5 + 0.2, 0.0, 1.0)
+			)
+			if region.region_id == current_region_id:
+				rbtn.disabled = true
+			rbtn.pressed.connect(_on_region_pressed.bind(region.region_id))
+			_nav_vbox.add_child(rbtn)
 
 	# Spacer before travel
 	var spacer = Control.new()
@@ -121,27 +170,37 @@ func _build_nav_rail() -> void:
 	spacer.name = "TravelSeparator"
 	_nav_vbox.add_child(spacer)
 
-	# Travel label
-	var travel_label = Label.new()
-	travel_label.text = "— Travel —"
-	travel_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	travel_label.add_theme_font_size_override("font_size", 11)
-	travel_label.modulate = Color(0.7, 0.7, 0.7)
-	travel_label.name = "TravelLabel"
-	_nav_vbox.add_child(travel_label)
+	# Travel section (hidden when only 1 town in region)
+	var towns: Array[String] = _get_known_towns()
+	if towns.size() > 1:
+		var travel_label = Label.new()
+		travel_label.text = "— Travel —"
+		travel_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		travel_label.add_theme_font_size_override("font_size", 11)
+		travel_label.modulate = Color(0.7, 0.7, 0.7)
+		travel_label.name = "TravelLabel"
+		_nav_vbox.add_child(travel_label)
 
-	# Travel buttons
-	for tid in KNOWN_TOWNS:
-		var t = DataRegistry.get_town(tid) if DataRegistry.has_method("get_town") else null
-		var t_name = t.display_name if t else tid
-		var btn = Button.new()
-		btn.text = t_name
-		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		if tid == town_id:
-			btn.disabled = true
-		btn.pressed.connect(_on_travel_pressed.bind(tid))
-		_nav_vbox.add_child(btn)
-		_nav_travel_buttons.append(btn)
+		for tid in towns:
+			var t = DataRegistry.get_town(tid) if DataRegistry.has_method("get_town") else null
+			var t_name = t.display_name if t else tid
+			var btn = Button.new()
+			btn.text = t_name
+			btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			if tid == town_id:
+				btn.disabled = true
+			btn.pressed.connect(_on_travel_pressed.bind(tid))
+			_nav_vbox.add_child(btn)
+			_nav_travel_buttons.append(btn)
+
+	# Save & Exit button
+	var btn_save_exit = Button.new()
+	btn_save_exit.text = "Save & Exit"
+	btn_save_exit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	btn_save_exit.modulate = Color(0.6, 1.0, 0.6)
+	btn_save_exit.pressed.connect(_on_save_and_exit)
+	btn_save_exit.name = "SaveExit"
+	_nav_vbox.add_child(btn_save_exit)
 
 	# Dev buttons at bottom of nav
 	var dev_label = Label.new()
@@ -197,7 +256,16 @@ func _build_town_map() -> void:
 	if header_panel == null:
 		header_panel = PanelContainer.new()
 		header_panel.name = "TownMapHeader"
-		header_panel.add_theme_stylebox_override("panel", _HEADER_STYLE)
+		# Region-tinted header (runtime StyleBoxFlat instead of static .tres)
+		var palette: Dictionary = RegionTheme.get_palette_for_current_region()
+		var header_style = StyleBoxFlat.new()
+		header_style.bg_color = palette.get("title_bar", Color(0.18, 0.22, 0.3, 0.9))
+		header_style.content_margin_left = 8
+		header_style.content_margin_top = 4
+		header_style.content_margin_right = 8
+		header_style.content_margin_bottom = 4
+		header_style.set_corner_radius_all(4)
+		header_panel.add_theme_stylebox_override("panel", header_style)
 		header_panel.custom_minimum_size = Vector2(0, 32)
 		var header_label = Label.new()
 		header_label.name = "TownMapHeaderLabel"
@@ -221,6 +289,7 @@ func _build_town_map() -> void:
 		scroll.name = "TownMapScroll"
 		scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		scroll.size_flags_stretch_ratio = 3  # Take 75% of shared space with TownScene
 		scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 		# Insert after header
 		_content_vbox.add_child(scroll)
@@ -248,6 +317,7 @@ func _create_building_panel(facility_id: String, facility) -> PanelContainer:
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(140, 100)
 	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	panel.add_theme_stylebox_override("panel", _SLOT_STYLE)
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	panel.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -285,7 +355,7 @@ func _create_building_panel(facility_id: String, facility) -> PanelContainer:
 
 	# Building name label
 	var label = Label.new()
-	label.text = facility.display_name if facility else facility_id
+	label.text = _get_nav_label(facility_id, facility)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.add_theme_font_size_override("font_size", 11)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -314,6 +384,18 @@ func _on_travel_pressed(town_id: String) -> void:
 		_town_scene_instance.switch_town(town_id)
 
 
+func _on_region_pressed(region_id: String) -> void:
+	var region: RegionData = DataRegistry.get_region(region_id)
+	if region == null or region.town_ids.is_empty():
+		print("[TownHub] Cannot travel to region %s — no towns" % region_id)
+		return
+	var target_town: String = region.town_ids[0]
+	print("[TownHub] Travelling to region %s → %s" % [region_id, target_town])
+	_known_towns.clear()
+	if _town_scene_instance and _town_scene_instance.has_method("switch_town"):
+		_town_scene_instance.switch_town(target_town)
+
+
 func _on_location_changed(_region_id: String, _town_id: String) -> void:
 	print("[TownHub] Location changed — rebuilding nav rail + town map")
 	_build_nav_rail()
@@ -327,6 +409,12 @@ func _on_location_changed(_region_id: String, _town_id: String) -> void:
 
 	# Defer rebuild so queue_free completes first
 	call_deferred("_build_town_map")
+
+
+func _on_save_and_exit() -> void:
+	print("[TownHub] Save & Exit pressed")
+	GameContext.save_game()
+	get_tree().quit()
 
 
 func _on_dev_reset_save() -> void:

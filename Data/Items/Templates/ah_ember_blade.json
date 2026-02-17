@@ -1,0 +1,31 @@
+{
+  "id": "ah_ember_blade",
+  "display_name": "Ember Blade",
+  "description": "A sword of obsidian and dragonfire steel. Heat radiates from the blade even at rest.",
+  "icon_hint": "dark obsidian blade with glowing orange-red cracks along the edge and a dragon-bone crossguard",
+  "item_type": "weapon",
+  "item_subtype": "sword",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 13
+  },
+  "stat_bonuses": {
+    "attack": 13,
+    "speed": 2
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 85,
+  "icon_path": "",
+  "tags": ["region_4", "weapon", "sword", "ashen_horizons", "tier_3"]
+}

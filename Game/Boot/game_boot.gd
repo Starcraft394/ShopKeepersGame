@@ -7,7 +7,7 @@ extends Control
 # Debug: Force location for testing (set to true to enable)
 const DEBUG_FORCE_LOCATION := false
 const DEBUG_REGION_ID := "region_1"
-const DEBUG_TOWN_ID := "town_greenroot"
+const DEBUG_TOWN_ID := "town_thornhaven"
 
 # Debug: Force TownHub MVP UI on startup (set false to resume normal TOWN flow)
 const DEBUG_FORCE_TOWN_HUB := true

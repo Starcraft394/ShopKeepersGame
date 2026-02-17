@@ -1,0 +1,31 @@
+{
+  "id": "ah_cinder_amulet",
+  "display_name": "Cinder Amulet",
+  "description": "A blackite pendant with a trapped ember that never cools. Warms the blood and quickens the spirit.",
+  "icon_hint": "black volcanic stone amulet on a brass chain with a glowing orange ember trapped inside",
+  "item_type": "accessory",
+  "item_subtype": "amulet",
+  "category": "equipment",
+  "slot": "accessory_1",
+  "equip_slot": "ring",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "health": 14
+  },
+  "stat_bonuses": {
+    "health": 14,
+    "attack": 3
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 75,
+  "icon_path": "",
+  "tags": ["region_4", "accessory", "amulet", "ashen_horizons", "tier_3"]
+}

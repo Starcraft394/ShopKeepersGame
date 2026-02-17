@@ -1,0 +1,13 @@
+{
+  "id": "region_6",
+  "display_name": "The Necropolis",
+  "description": "A gothic realm of bone, grave-dust, and lingering souls. The dead walk these ossuary depths, and forbidden magic permeates every shadow.",
+  "region_index": 6,
+  "requires_region_id": "region_5",
+  "dungeon_floor_count": 5,
+  "monster_families": ["necro"],
+  "town_ids": ["town_duskhollow"],
+  "boss_id": "nc_ossuary_king",
+  "theme_color": "#3a3a4a",
+  "accent_color": "#6d4c6e"
+}

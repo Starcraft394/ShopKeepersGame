@@ -1,0 +1,13 @@
+{
+  "id": "spore_cluster",
+  "display_name": "Spore Cluster",
+  "description": "A dense cluster of bioluminescent spores that pulse with faint green light. Prized by alchemists.",
+  "icon_hint": "dense cluster of small bioluminescent spore pods pulsing with soft green light in a glass jar",
+  "item_type": "material",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 12,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_2", "fungalmire", "material", "spore", "crafting"]
+}

@@ -1,0 +1,10 @@
+{
+  "_note": "Sprite animation pack with 6 creature folders, not numbered icons. Keys reference creature folder names. Each creature has Idle, Walk, Attack, Hurt, Death animation frames.",
+  "Bear": "Large brown-furred bear on all fours, shaggy dark brown coat with lighter underbelly, hunched shoulders, small dark eyes",
+  "Bird": "Dark gray-black crow or raven in flight, wings spread wide, orange-yellow beak, compact body with dark plumage",
+  "Bird_Stone": "Stone variant of the bird, gray-brown rocky texture, carries a round boulder in talons while flying, same silhouette as normal bird",
+  "Dworf": "Short stout armored dwarf warrior with iron helmet, brown leather armor, orange beard, wielding a large battle axe",
+  "Orc": "Large muscular green-skinned orc with bald head, small red eye, brown leather loincloth and arm wraps, wielding a crude stone mallet on a wooden handle",
+  "Snake": "Green cobra-like serpent with raised hood, olive-green scales, pale yellow underbelly, reddish-brown rattle or frill at tail tip",
+  "Yeti": "Small cute white-furred yeti or abominable snowman, round body, stubby limbs, dark eyes and open mouth showing teeth, icy pale coloring"
+}

@@ -1,0 +1,12 @@
+{
+  "id": "town_shelldrift",
+  "display_name": "Shelldrift",
+  "description": "A ramshackle harbor built from salvaged ship hulls and driftwood, perched on barnacle-crusted stilts above the tide line. Salt spray fills the air.",
+  "region_id": "region_3",
+  "dungeon_id": "dungeon_shelldrift",
+  "facility_ids": [
+    "dungeon_shelldrift", "inn", "shop_shelldrift", "blacksmith", "huntsman",
+    "enchanter", "chef", "alchemist", "training_hall", "storage"
+  ],
+  "unlock_region": 3
+}

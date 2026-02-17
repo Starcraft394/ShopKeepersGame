@@ -1,0 +1,27 @@
+{
+  "id": "nc_tombdust_wraith",
+  "display_name": "Tombdust Wraith",
+  "description": "A wispy spirit that rises from disturbed graves, wailing loud enough to shatter concentration.",
+  "icon_hint": "wispy translucent ghost rising from grave dust with gaping wailing mouth",
+  "family": "necro",
+  "region_id": "region_6",
+  "tier": 1,
+  "ai_tier": 1,
+  "base_stats": {
+    "health": 68,
+    "attack": 18,
+    "defense": 10,
+    "speed": 12
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region6_common",
+  "gold_drop_min": 15,
+  "gold_drop_max": 27,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/nc_tombdust_wraith.png"
+}

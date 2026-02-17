@@ -1,0 +1,41 @@
+{
+  "id": "evt_se_echo_chamber",
+  "title": "Echo Chamber",
+  "description": "A natural cavern of crystallized stone amplifies every sound into an infinite cascade of whispers. Footsteps from hours ago still reverberate off the walls, and the boundary between what is real and what is merely an echo grows impossibly thin.",
+  "kind": "choice",
+  "tags": ["crystal", "starfall"],
+  "choices": [
+    {
+      "id": "capture_echoes",
+      "label": "Capture the echoes",
+      "description": "Use a vial to trap the concentrated echo essence swirling in the chamber.",
+      "effects": [
+        { "type": "add_item", "item_id": "se_echo_essence", "min_qty": 1, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "gather_crystals",
+      "label": "Gather crystallized sound",
+      "description": "Some echoes have hardened into delicate prismatic formations on the walls.",
+      "effects": [
+        { "type": "add_item", "item_id": "prism_shard", "min_qty": 1, "max_qty": 3 }
+      ]
+    },
+    {
+      "id": "listen",
+      "label": "Listen for hidden messages",
+      "description": "Among the layered echoes, some carry the words of past travelers who spoke of hidden caches.",
+      "effects": [
+        { "type": "add_gold_range", "min": 10, "max": 20 }
+      ]
+    },
+    {
+      "id": "leave",
+      "label": "Leave the echoes behind",
+      "description": "The overlapping voices are disorienting. Best to move on before losing your way.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

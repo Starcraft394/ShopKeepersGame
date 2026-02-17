@@ -1,0 +1,31 @@
+{
+  "id": "ah_scorched_longbow",
+  "display_name": "Scorched Longbow",
+  "description": "A heat-treated bow of volcanic ash-wood. Its arrows fly like embers in the wind.",
+  "icon_hint": "dark charred longbow with red-hot string and ember glow at the nocked tips",
+  "item_type": "weapon",
+  "item_subtype": "bow",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 12
+  },
+  "stat_bonuses": {
+    "attack": 12,
+    "speed": 3
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 80,
+  "icon_path": "",
+  "tags": ["region_4", "weapon", "bow", "ranged", "ashen_horizons", "tier_3"]
+}

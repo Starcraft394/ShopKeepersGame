@@ -1,0 +1,14 @@
+{
+  "id": "driftwood",
+  "display_name": "Driftwood",
+  "description": "Waterlogged timber washed up on the strand, still usable for building and fuel.",
+  "icon_hint": "waterlogged gray timber with barnacles and green algae clinging to the surface",
+  "item_type": "material",
+  "item_subtype": "crafting",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 10,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_3", "material", "crafting", "sunken_strand"]
+}

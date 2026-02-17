@@ -1,0 +1,14 @@
+{
+  "id": "prism_shard",
+  "display_name": "Prism Shard",
+  "description": "A faceted crystal fragment that splits light into rainbows. Used in enchanting.",
+  "icon_hint": "small faceted crystal splitting white light into a rainbow spectrum",
+  "item_type": "material",
+  "item_subtype": "mineral",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 22,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_5", "material", "mineral", "enchanting", "starfall_expanse"]
+}

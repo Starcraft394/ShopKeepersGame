@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://bxq6k8mj4qhfl"]
 
 [ext_resource type="Script" path="res://Game/UI/Combat/CombatScene.gd" id="1_script"]
-[ext_resource type="Theme" uid="uid://game_theme_001" path="res://Themes/game_theme.tres" id="2_theme"]
+[ext_resource type="Theme" uid="uid://craftpix_ui_tinted_001" path="res://Themes/CraftPix/craftpix_ui_tinted.tres" id="2_theme"]
 
 [node name="CombatScene" type="Control"]
 theme = ExtResource("2_theme")
@@ -20,7 +20,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.12, 0.12, 0.15, 1)
+color = Color(0.10, 0.09, 0.08, 1)
 
 [node name="TopBar" type="Label" parent="."]
 layout_mode = 1
@@ -40,7 +40,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.2, 0.2, 0.25, 1)
+color = Color(0.15, 0.13, 0.11, 0.95)
 
 [node name="DungeonProgressLabel" type="Label" parent="."]
 unique_name_in_owner = true
@@ -109,7 +109,7 @@ size_flags_horizontal = 3
 text = "BACK"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 9
-theme_override_colors/font_color = Color(0.5, 0.7, 0.9, 0.8)
+theme_override_colors/font_color = Color(0.7, 0.85, 1.0, 0.7)
 
 [node name="LabelMid" type="Label" parent="MainContent/Battlefield/PartyGrid/PartyColLabels"]
 layout_mode = 2
@@ -125,7 +125,7 @@ size_flags_horizontal = 3
 text = "FRONT"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 9
-theme_override_colors/font_color = Color(0.9, 0.5, 0.5, 0.8)
+theme_override_colors/font_color = Color(1.0, 0.6, 0.5, 0.7)
 
 [node name="PartyRow_0" type="HBoxContainer" parent="MainContent/Battlefield/PartyGrid"]
 layout_mode = 2
@@ -227,7 +227,7 @@ size_flags_horizontal = 3
 text = "FRONT"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 9
-theme_override_colors/font_color = Color(0.9, 0.5, 0.5, 0.8)
+theme_override_colors/font_color = Color(1.0, 0.6, 0.5, 0.7)
 
 [node name="LabelMid" type="Label" parent="MainContent/Battlefield/EnemyGrid/EnemyColLabels"]
 layout_mode = 2
@@ -243,7 +243,7 @@ size_flags_horizontal = 3
 text = "BACK"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 9
-theme_override_colors/font_color = Color(0.5, 0.7, 0.9, 0.8)
+theme_override_colors/font_color = Color(0.7, 0.85, 1.0, 0.7)
 
 [node name="EnemyRow_0" type="HBoxContainer" parent="MainContent/Battlefield/EnemyGrid"]
 layout_mode = 2
@@ -336,16 +336,18 @@ anchors_preset = -1
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -195.0
+offset_top = -200.0
 grow_horizontal = 2
 grow_vertical = 0
 
 [node name="LogLabel" type="Label" parent="BottomPanel"]
 layout_mode = 2
 text = "Combat Log:"
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.6, 0.55, 0.45, 0.7)
 
 [node name="CombatLog" type="RichTextLabel" parent="BottomPanel"]
-custom_minimum_size = Vector2(0, 120)
+custom_minimum_size = Vector2(0, 85)
 layout_mode = 2
 size_flags_vertical = 3
 bbcode_enabled = true
@@ -355,6 +357,7 @@ scroll_following = true
 [node name="ButtonRow" type="HBoxContainer" parent="BottomPanel"]
 layout_mode = 2
 alignment = 1
+theme_override_constants/separation = 12
 
 [node name="StepButton" type="Button" parent="BottomPanel/ButtonRow"]
 custom_minimum_size = Vector2(100, 35)

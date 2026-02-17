@@ -1,0 +1,31 @@
+{
+  "id": "dungeon_thornhaven",
+  "display_name": "Dungeon Board",
+  "description": "Select a starting floor for the Thornhaven Depths dungeon.",
+  "icon_path": "res://Assets/Icons/Facilities/icon_facility_dungeon.png",
+  "facility_type": "dungeon",
+  "max_tier": 1,
+  "unlock_region": 1,
+
+  "keeper_name": "",
+  "keeper_portrait": "",
+  "keeper_greetings": [
+    "The depths of Thornhaven await. Choose your starting floor wisely.",
+    "Dark things stir below — both forest horrors and industrial nightmares.",
+    "Each floor holds greater danger — and greater reward."
+  ],
+
+  "slots_per_tier": {},
+
+  "upgrade_costs": {},
+
+  "services_per_tier": {
+    "1": ["select_floor"]
+  },
+
+  "produces_item_types": [],
+  "input_resource_types": [],
+
+  "allows_hero_assignment": false,
+  "max_assigned_heroes": 0
+}

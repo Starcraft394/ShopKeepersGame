@@ -1,0 +1,41 @@
+{
+  "id": "evt_ah_lava_tube",
+  "title": "Ancient Lava Tube",
+  "description": "A natural tunnel stretches into the mountainside, its smooth walls carved by rivers of molten rock long since cooled. The air inside is warm and dry, carrying the faint scent of sulfur. Ridges of hardened obsidian line the passage where the lava once pooled before draining away.",
+  "kind": "choice",
+  "tags": ["volcanic", "fire"],
+  "choices": [
+    {
+      "id": "explore_deeper",
+      "label": "Explore deeper",
+      "description": "Push further into the tunnel where forgotten valuables may have been trapped by the flow.",
+      "effects": [
+        { "type": "add_gold_range", "min": 15, "max": 25 }
+      ]
+    },
+    {
+      "id": "harvest_obsidian",
+      "label": "Harvest cooled obsidian",
+      "description": "Break free a shard of the obsidian ridges lining the tunnel walls.",
+      "effects": [
+        { "type": "add_item", "item_id": "obsidian_shard", "min_qty": 1, "max_qty": 1 }
+      ]
+    },
+    {
+      "id": "rest_in_warmth",
+      "label": "Rest in the warmth",
+      "description": "The steady heat soothes aching muscles and weary bones.",
+      "effects": [
+        { "type": "heal_party", "value": 8 }
+      ]
+    },
+    {
+      "id": "turn_back",
+      "label": "Turn back",
+      "description": "The tunnel could collapse at any moment.",
+      "effects": [
+        { "type": "nothing" }
+      ]
+    }
+  ]
+}

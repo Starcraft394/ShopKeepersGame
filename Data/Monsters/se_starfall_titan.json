@@ -1,0 +1,27 @@
+{
+  "id": "se_starfall_titan",
+  "display_name": "Starfall Titan",
+  "description": "A living meteor that assembled a body from the crystallized impact site over eons.",
+  "icon_hint": "colossal being of fused meteorite and crystal with a blazing cosmic core visible inside",
+  "family": "crystal",
+  "region_id": "region_5",
+  "tier": 3,
+  "ai_tier": 3,
+  "base_stats": {
+    "health": 250,
+    "attack": 28,
+    "defense": 20,
+    "speed": 9
+  },
+  "ability_ids": [
+    "basic_attack"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region5_boss",
+  "gold_drop_min": 80,
+  "gold_drop_max": 110,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": true,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/se_starfall_titan.png"
+}

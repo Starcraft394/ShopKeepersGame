@@ -1,0 +1,19 @@
+{
+  "id": "lt_region4_boss",
+  "display_name": "Region 4 Boss Loot",
+  "description": "Rich drops from Ashen Horizons bosses.",
+  "min_drops": 3,
+  "max_drops": 5,
+  "entries": [
+    { "item_id": "ah_drake_scale", "weight": 15, "min_qty": 3, "max_qty": 5 },
+    { "item_id": "obsidian_shard", "weight": 12, "min_qty": 2, "max_qty": 3 },
+    { "item_id": "molten_core", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "strong_healing_tonic", "weight": 12, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "ah_ember_blade", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "ah_scorched_longbow", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "ah_drake_buckler", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "ah_cinder_amulet", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "ah_magma_plate", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 5, "min_qty": 0, "max_qty": 0 }
+  ]
+}
