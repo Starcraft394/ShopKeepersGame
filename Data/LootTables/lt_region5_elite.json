@@ -1,18 +1,15 @@
 {
   "id": "lt_region5_elite",
   "display_name": "Region 5 Elite Loot",
-  "description": "Materials and equipment from Starfall Expanse elites.",
+  "description": "Materials from Starfall Expanse elites.",
   "min_drops": 2,
   "max_drops": 4,
   "entries": [
-    { "item_id": "se_crystal_chitin", "weight": 18, "min_qty": 2, "max_qty": 3 },
-    { "item_id": "se_void_silk", "weight": 15, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "temporal_residue", "weight": 12, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "se_echo_essence", "weight": 12, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "strong_healing_tonic", "weight": 10, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "se_prism_blade", "weight": 5, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "se_starfall_bow", "weight": 5, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "se_temporal_band", "weight": 5, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "", "weight": 10, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "se_crystal_chitin", "weight": 22, "min_qty": 2, "max_qty": 3 },
+    { "item_id": "se_void_silk", "weight": 18, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "temporal_residue", "weight": 14, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "se_echo_essence", "weight": 14, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "strong_healing_tonic", "weight": 12, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "", "weight": 12, "min_qty": 0, "max_qty": 0 }
   ]
 }

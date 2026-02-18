@@ -1,0 +1,14 @@
+{
+  "id": "fr_dimensional_essence",
+  "display_name": "Dimensional Essence",
+  "description": "A shimmering, unstable substance harvested from tears in reality along the Fractured Reach.",
+  "icon_hint": "A swirling orb of purple and blue energy with cracks of white light",
+  "item_type": "material",
+  "item_subtype": "crafting",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 35,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_7", "material", "crafting", "final_realm"]
+}

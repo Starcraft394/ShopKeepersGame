@@ -598,6 +598,11 @@ func set_location(region_id: String, town_id: String) -> bool:
 	_current_region_id = region_id
 	_current_town_id = town_id
 
+	# Sync the integer current_region from the string region_id
+	var region_num = int(region_id.replace("region_", ""))
+	if region_num >= 1 and region_num <= 7:
+		set_current_region(region_num)
+
 	if changed:
 		print("[GameContext] Location: region='%s', town='%s'" % [region_id, town_id])
 		location_changed.emit(region_id, town_id)
@@ -973,7 +978,7 @@ func has_player_item(item_id: String, qty: int = 1) -> bool:
 ## Debug: Give test items to player.
 func debug_give_test_items() -> void:
 	add_player_item("herb", 5)
-	add_player_item("wood", 3)
+	add_player_item("wood_bundle", 3)
 	add_player_item("iron_scrap", 3)
 	add_player_gold(50)
 	print("[Facility][Debug] Gave test items: herb x5, wood x3, iron_scrap x3, +50 gold")
@@ -4128,6 +4133,8 @@ func save_game() -> void:
 		# Region progression
 		"current_region": current_region,
 		"completed_regions": completed_regions,
+		"region_id": _current_region_id,
+		"town_id": _current_town_id,
 		# Dead heroes (Permadeath / Book of the Dead)
 		"dead_heroes": dead_heroes,
 		# Mixing system (discovery + mishaps)
@@ -4501,6 +4508,13 @@ func load_game() -> void:
 			current_region = clampi(int(save_data.current_region), 1, 7)
 		if save_data.has("completed_regions") and save_data.completed_regions is Dictionary:
 			completed_regions = save_data.completed_regions
+		# Restore location strings (region_id + town_id)
+		if save_data.has("region_id") and save_data.region_id is String and save_data.region_id != "":
+			_current_region_id = save_data.region_id
+		else:
+			_current_region_id = "region_%d" % current_region
+		if save_data.has("town_id") and save_data.town_id is String and save_data.town_id != "":
+			_current_town_id = save_data.town_id
 		# Load dead heroes (Permadeath / Book of the Dead)
 		if save_data.has("dead_heroes") and save_data.dead_heroes is Array:
 			dead_heroes = save_data.dead_heroes

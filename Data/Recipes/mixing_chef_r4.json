@@ -1,0 +1,21 @@
+{
+  "facility_id": "chef",
+  "recipes": [
+    {
+      "input_a": "ah_scorched_fang",
+      "input_b": "raw_meat",
+      "input_c": "",
+      "output_id": "ah_charred_feast",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "ah_drake_scale",
+      "input_b": "ah_scorched_fang",
+      "input_c": "ember_dust",
+      "output_id": "ah_magma_tonic",
+      "output_qty": 1,
+      "required_tier": 3
+    }
+  ]
+}

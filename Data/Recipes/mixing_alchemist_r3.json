@@ -1,0 +1,29 @@
+{
+  "facility_id": "alchemist",
+  "recipes": [
+    {
+      "input_a": "ss_brine_venom",
+      "input_b": "herb_sprig",
+      "input_c": "",
+      "output_id": "ss_brine_salve",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "sea_salt_crystal",
+      "input_b": "herb_sprig",
+      "input_c": "",
+      "output_id": "ss_tidal_tonic",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "ss_brine_venom",
+      "input_b": "ss_crustacean_shell",
+      "input_c": "sea_salt_crystal",
+      "output_id": "ss_fog_bomb",
+      "output_qty": 1,
+      "required_tier": 3
+    }
+  ]
+}

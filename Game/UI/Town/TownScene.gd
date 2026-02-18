@@ -1350,7 +1350,7 @@ func _get_item_category(template_id: String) -> String:
 		# Fallback for known IDs
 		if template_id.begins_with("book_"):
 			return "books"
-		if template_id in ["herb", "mushroom", "wood", "iron_scrap", "wood_bundle"]:
+		if template_id in ["herb", "mushroom", "iron_scrap", "wood_bundle"]:
 			return "materials"
 		return "other"
 

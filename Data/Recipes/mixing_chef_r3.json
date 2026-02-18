@@ -1,0 +1,21 @@
+{
+  "facility_id": "chef",
+  "recipes": [
+    {
+      "input_a": "ss_kelp_sinew",
+      "input_b": "raw_meat",
+      "input_c": "",
+      "output_id": "ss_kelp_wrap",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "ss_crustacean_shell",
+      "input_b": "ss_kelp_sinew",
+      "input_c": "sea_salt_crystal",
+      "output_id": "ss_tidal_tonic",
+      "output_qty": 1,
+      "required_tier": 3
+    }
+  ]
+}

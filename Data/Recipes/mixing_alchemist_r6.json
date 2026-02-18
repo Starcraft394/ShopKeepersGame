@@ -1,0 +1,29 @@
+{
+  "facility_id": "alchemist",
+  "recipes": [
+    {
+      "input_a": "nc_grave_dust",
+      "input_b": "herb_sprig",
+      "input_c": "",
+      "output_id": "nc_spectral_draught",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "soul_ore",
+      "input_b": "herb_sprig",
+      "input_c": "",
+      "output_id": "nc_grave_elixir",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "nc_grave_dust",
+      "input_b": "nc_wraith_thread",
+      "input_c": "nc_bone_marrow",
+      "output_id": "nc_banshee_vial",
+      "output_qty": 1,
+      "required_tier": 3
+    }
+  ]
+}

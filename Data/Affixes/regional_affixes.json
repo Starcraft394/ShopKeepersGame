@@ -5,9 +5,9 @@
     "description": "Infused with forest vitality"
   },
   "region_2": {
-    "prefix": "Stoneforged",
+    "prefix": "Sporetouched",
     "stat_bonus": { "defense": 3 },
-    "description": "Tempered in mountain stone"
+    "description": "Laced with fungal mycelium"
   },
   "region_3": {
     "prefix": "Tideforged",

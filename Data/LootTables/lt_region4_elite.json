@@ -1,18 +1,14 @@
 {
   "id": "lt_region4_elite",
   "display_name": "Region 4 Elite Loot",
-  "description": "Materials and equipment from Ashen Horizons elites.",
+  "description": "Materials from Ashen Horizons elites.",
   "min_drops": 2,
   "max_drops": 4,
   "entries": [
-    { "item_id": "ah_drake_scale", "weight": 20, "min_qty": 2, "max_qty": 3 },
-    { "item_id": "ah_sulfite_gland", "weight": 15, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "obsidian_shard", "weight": 15, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "healing_tonic", "weight": 10, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "ah_ember_blade", "weight": 5, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "ah_scorched_longbow", "weight": 5, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "ah_magma_plate", "weight": 5, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "ah_cinder_amulet", "weight": 5, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "", "weight": 10, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "ah_drake_scale", "weight": 26, "min_qty": 2, "max_qty": 3 },
+    { "item_id": "ah_sulfite_gland", "weight": 19, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "obsidian_shard", "weight": 19, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "healing_tonic", "weight": 13, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "", "weight": 13, "min_qty": 0, "max_qty": 0 }
   ]
 }

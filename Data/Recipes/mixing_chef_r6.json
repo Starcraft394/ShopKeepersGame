@@ -1,0 +1,21 @@
+{
+  "facility_id": "chef",
+  "recipes": [
+    {
+      "input_a": "nc_bone_marrow",
+      "input_b": "raw_meat",
+      "input_c": "",
+      "output_id": "nc_corpsebloom_stew",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "nc_bone_marrow",
+      "input_b": "nc_grave_dust",
+      "input_c": "spectral_log",
+      "output_id": "nc_grave_elixir",
+      "output_qty": 1,
+      "required_tier": 3
+    }
+  ]
+}

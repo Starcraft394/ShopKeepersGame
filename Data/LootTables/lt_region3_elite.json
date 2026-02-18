@@ -1,18 +1,15 @@
 {
   "id": "lt_region3_elite",
   "display_name": "Region 3 Elite Loot",
-  "description": "Materials and equipment from Sunken Strand elites.",
+  "description": "Materials from Sunken Strand elites.",
   "min_drops": 2,
   "max_drops": 4,
   "entries": [
-    { "item_id": "ss_crustacean_shell", "weight": 20, "min_qty": 2, "max_qty": 3 },
-    { "item_id": "ss_brine_venom", "weight": 15, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "ss_kelp_sinew", "weight": 15, "min_qty": 2, "max_qty": 3 },
-    { "item_id": "tidal_pearl", "weight": 10, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "healing_tonic", "weight": 10, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "ss_coral_blade", "weight": 5, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "ss_tidestriker_bow", "weight": 5, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "ss_barnacle_plate", "weight": 5, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "", "weight": 10, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "ss_crustacean_shell", "weight": 24, "min_qty": 2, "max_qty": 3 },
+    { "item_id": "ss_brine_venom", "weight": 18, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "ss_kelp_sinew", "weight": 18, "min_qty": 2, "max_qty": 3 },
+    { "item_id": "tidal_pearl", "weight": 12, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "healing_tonic", "weight": 12, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "", "weight": 11, "min_qty": 0, "max_qty": 0 }
   ]
 }

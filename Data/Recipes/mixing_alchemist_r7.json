@@ -1,0 +1,21 @@
+{
+  "facility_id": "alchemist",
+  "recipes": [
+    {
+      "input_a": "fr_corruption_ichor",
+      "input_b": "herb_sprig",
+      "input_c": "",
+      "output_id": "fr_void_mend",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "fr_corruption_ichor",
+      "input_b": "fr_null_fragment",
+      "input_c": "fr_entropy_residue",
+      "output_id": "fr_dimensional_flux",
+      "output_qty": 1,
+      "required_tier": 3
+    }
+  ]
+}

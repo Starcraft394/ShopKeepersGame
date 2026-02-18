@@ -1,0 +1,29 @@
+{
+  "facility_id": "alchemist",
+  "recipes": [
+    {
+      "input_a": "se_echo_essence",
+      "input_b": "herb_sprig",
+      "input_c": "",
+      "output_id": "se_chrono_draught",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "starfall_dust",
+      "input_b": "herb_sprig",
+      "input_c": "",
+      "output_id": "se_starlight_elixir",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "se_echo_essence",
+      "input_b": "se_void_silk",
+      "input_c": "prism_shard",
+      "output_id": "se_reality_flare",
+      "output_qty": 1,
+      "required_tier": 3
+    }
+  ]
+}

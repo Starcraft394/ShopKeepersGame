@@ -1,18 +1,14 @@
 {
   "id": "lt_region6_elite",
   "display_name": "Region 6 Elite Loot",
-  "description": "Materials and equipment from Necropolis elites.",
+  "description": "Materials from Necropolis elites.",
   "min_drops": 2,
   "max_drops": 4,
   "entries": [
-    { "item_id": "nc_wraith_thread", "weight": 18, "min_qty": 2, "max_qty": 3 },
-    { "item_id": "nc_bone_marrow", "weight": 15, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "soul_ore", "weight": 15, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "strong_healing_tonic", "weight": 10, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "nc_soul_reaver", "weight": 5, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "nc_wraith_bow", "weight": 5, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "nc_spectral_aegis", "weight": 5, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "nc_deathward_ring", "weight": 5, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "", "weight": 10, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "nc_wraith_thread", "weight": 24, "min_qty": 2, "max_qty": 3 },
+    { "item_id": "nc_bone_marrow", "weight": 19, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "soul_ore", "weight": 19, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "strong_healing_tonic", "weight": 13, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "", "weight": 13, "min_qty": 0, "max_qty": 0 }
   ]
 }

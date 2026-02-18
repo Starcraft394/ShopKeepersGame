@@ -34,7 +34,6 @@
       "weight": 12,
       "price_gold": 35,
       "tier": 2,
-      "requires_unlock_group": "consumables_t2",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
     },
@@ -43,7 +42,6 @@
       "weight": 10,
       "price_gold": 40,
       "tier": 2,
-      "requires_unlock_group": "consumables_t2",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
     },
@@ -52,7 +50,6 @@
       "weight": 10,
       "price_gold": 30,
       "tier": 2,
-      "requires_unlock_group": "consumables_t2",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
     }
@@ -60,20 +57,27 @@
 
   "weapons": [
     {
-      "item_id": "ss_coral_blade",
+      "item_id": "iron_sword",
       "weight": 15,
-      "price_gold": 90,
+      "price_gold": 75,
+      "tier": 1,
+      "requires_unlock_group": "weapons_t1",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 1
+    },
+    {
+      "item_id": "iron_greataxe",
+      "weight": 12,
+      "price_gold": 95,
       "tier": 2,
-      "requires_unlock_group": "weapons_t2",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "ss_tidestriker_bow",
-      "weight": 12,
-      "price_gold": 85,
+      "item_id": "composite_bow",
+      "weight": 10,
+      "price_gold": 90,
       "tier": 2,
-      "requires_unlock_group": "weapons_t2",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
     }
@@ -81,34 +85,20 @@
 
   "offhands": [
     {
-      "item_id": "ss_abalone_shield",
+      "item_id": "reinforced_shield",
       "weight": 12,
-      "price_gold": 100,
+      "price_gold": 90,
       "tier": 2,
-      "requires_unlock_group": "offhands_t2",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
-    }
-  ],
-
-  "books": [
-    {
-      "item_id": "book_tidechaser",
-      "weight": 10,
-      "price_gold": 120,
-      "tier": 1,
-      "requires_unlock_group": "books_t1",
-      "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 1
     },
     {
-      "item_id": "book_stormcaller",
+      "item_id": "wooden_focus",
       "weight": 10,
-      "price_gold": 120,
-      "tier": 1,
-      "requires_unlock_group": "books_t1",
+      "price_gold": 85,
+      "tier": 2,
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 1
+      "required_dungeon_floor_unlocked": 2
     }
   ]
 }

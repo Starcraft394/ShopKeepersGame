@@ -8,11 +8,14 @@
     { "item_id": "spore_cluster", "weight": 20, "min_qty": 3, "max_qty": 5 },
     { "item_id": "fungal_fiber", "weight": 15, "min_qty": 3, "max_qty": 5 },
     { "item_id": "healing_tonic", "weight": 15, "min_qty": 2, "max_qty": 3 },
-    { "item_id": "iron_greataxe", "weight": 10, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "composite_bow", "weight": 10, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "reinforced_shield", "weight": 8, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "iron_helmet", "weight": 8, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "silver_ring", "weight": 5, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "fm_spore_blade", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "fm_fungal_longbow", "weight": 7, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "fm_fungal_staff", "weight": 7, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "fm_sporecap_shield", "weight": 6, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "fm_spore_focus", "weight": 6, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "fm_mycelium_vest", "weight": 5, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "fm_bioluminescent_ring", "weight": 3, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "fm_mycelium_pendant", "weight": 3, "min_qty": 1, "max_qty": 1 },
     { "item_id": "", "weight": 5, "min_qty": 0, "max_qty": 0 }
   ]
 }

@@ -275,12 +275,10 @@ func _get_effective_table_id(original_table_id: String) -> String:
 	if is_boss_encounter:
 		return original_table_id  # Boss can use any table
 
-	# Non-boss: override to material-only tables
-	match original_table_id:
-		"lt_region1_boss", "lt_region1_elite":
-			return "lt_region1_uncommon"  # Downgrade to materials + consumables
-		_:
-			return original_table_id  # Keep common/uncommon as-is
+	# Non-boss: downgrade boss/elite tables to uncommon (materials + consumables)
+	if original_table_id.ends_with("_boss") or original_table_id.ends_with("_elite"):
+		return original_table_id.rsplit("_", true, 1)[0] + "_uncommon"
+	return original_table_id  # Keep common/uncommon as-is
 
 
 func calculate_rewards(enemy_data: Array) -> void:

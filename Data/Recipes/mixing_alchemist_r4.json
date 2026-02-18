@@ -1,0 +1,29 @@
+{
+  "facility_id": "alchemist",
+  "recipes": [
+    {
+      "input_a": "ah_sulfite_gland",
+      "input_b": "herb_sprig",
+      "input_c": "",
+      "output_id": "ah_dragonfire_oil",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "ember_dust",
+      "input_b": "herb_sprig",
+      "input_c": "",
+      "output_id": "ah_magma_tonic",
+      "output_qty": 1,
+      "required_tier": 2
+    },
+    {
+      "input_a": "ah_sulfite_gland",
+      "input_b": "ah_drake_scale",
+      "input_c": "volcanic_glass",
+      "output_id": "ah_ash_bomb",
+      "output_qty": 1,
+      "required_tier": 3
+    }
+  ]
+}
