@@ -1,0 +1,13 @@
+{
+  "id": "boss_trophy_fractured_realm",
+  "display_name": "Void Shard",
+  "description": "A fragment of pure void energy, warping reality around it and whispering of dimensions beyond.",
+  "icon_hint": "jagged black crystalline shard with swirling purple-black void energy distorting space around its edges",
+  "item_type": "material",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 175,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_7", "fractured_realm", "material", "boss_trophy", "crafting"]
+}

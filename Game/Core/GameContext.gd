@@ -176,16 +176,18 @@ const DEFAULT_UNLOCKS: Array[String] = ["healing_tonic", "rusty_sword"]
 # ============================================================================
 
 # Tracks which recipes have been unlocked at which facility.
-# Structure: { "item_id": { "source_facility": "blacksmith", "facility_tier": 2 } }
+# Key format: "item_id:t{upgrade_tier}" (e.g. "rusty_sword:t1", "rusty_sword:t2")
+# Legacy keys without ":t" suffix are treated as upgrade_tier 1.
+# Structure: { "key": { "source_facility": "blacksmith", "facility_tier": 2, "upgrade_tier": 1, "output_id": "rusty_sword" } }
+# upgrade_tier: 1=plain, 2=regional affix, 3=better base+affix
 # When an item is in this dict, it can appear in the General Store.
-# The source facility's tier at time of unlock determines quality distribution.
 var unlocked_recipes: Dictionary = {}
 
 # Default recipes unlocked on fresh save (basic starter items)
 const DEFAULT_UNLOCKED_RECIPES: Dictionary = {
-	"healing_tonic": { "source_facility": "alchemist", "facility_tier": 1 },
-	"rusty_sword": { "source_facility": "blacksmith", "facility_tier": 1 },
-	"wooden_shield": { "source_facility": "blacksmith", "facility_tier": 1 }
+	"healing_tonic": { "source_facility": "alchemist", "facility_tier": 1, "upgrade_tier": 1, "output_id": "healing_tonic" },
+	"rusty_sword:t1": { "source_facility": "blacksmith", "facility_tier": 1, "upgrade_tier": 1, "output_id": "rusty_sword" },
+	"wooden_shield:t1": { "source_facility": "blacksmith", "facility_tier": 1, "upgrade_tier": 1, "output_id": "wooden_shield" }
 }
 
 # ============================================================================
@@ -1895,49 +1897,102 @@ func get_unlocked_groups() -> Array:
 # PUBLIC API - RECIPE UNLOCKS (Shop Item Generation)
 # ============================================================================
 
-## Check if a recipe/item is unlocked for the shop.
-func is_recipe_unlocked(item_id: String) -> bool:
+## Build recipe key from item_id and upgrade_tier. Format: "item_id:t{tier}"
+## For non-equipment items (consumables etc.), uses plain item_id as key.
+static func _recipe_key(item_id: String, upgrade_tier: int = 0) -> String:
+	if upgrade_tier > 0:
+		return "%s:t%d" % [item_id, upgrade_tier]
+	return item_id
+
+## Check if a specific recipe tier is unlocked.
+## If upgrade_tier == 0, checks if ANY tier of this item is unlocked.
+func is_recipe_unlocked(item_id: String, upgrade_tier: int = 0) -> bool:
 	if item_id == "":
 		return false
-	# Check default unlocks
-	if DEFAULT_UNLOCKED_RECIPES.has(item_id):
+	if upgrade_tier > 0:
+		var key = _recipe_key(item_id, upgrade_tier)
+		return DEFAULT_UNLOCKED_RECIPES.has(key) or unlocked_recipes.has(key)
+	# upgrade_tier == 0: check any tier (legacy + new format)
+	if DEFAULT_UNLOCKED_RECIPES.has(item_id) or unlocked_recipes.has(item_id):
 		return true
-	return unlocked_recipes.has(item_id)
+	# Check keyed versions t1-t3
+	for t in range(1, 4):
+		var key = _recipe_key(item_id, t)
+		if DEFAULT_UNLOCKED_RECIPES.has(key) or unlocked_recipes.has(key):
+			return true
+	return false
 
+## Get the highest unlocked upgrade_tier for an item. Returns 0 if not unlocked.
+func get_recipe_upgrade_tier(item_id: String) -> int:
+	var highest: int = 0
+	# Check legacy plain key
+	if DEFAULT_UNLOCKED_RECIPES.has(item_id) or unlocked_recipes.has(item_id):
+		var data: Dictionary = unlocked_recipes.get(item_id, DEFAULT_UNLOCKED_RECIPES.get(item_id, {}))
+		highest = maxi(highest, int(data.get("upgrade_tier", 1)))
+	# Check keyed versions t1-t3
+	for t in range(1, 4):
+		var key = _recipe_key(item_id, t)
+		if DEFAULT_UNLOCKED_RECIPES.has(key) or unlocked_recipes.has(key):
+			highest = maxi(highest, t)
+	return highest
 
 ## Unlock a recipe so its item appears in the General Store.
-## source_facility: The facility that unlocked this recipe (determines quality).
-## facility_tier: The tier of the facility at time of unlock.
-func unlock_recipe(item_id: String, source_facility: String, facility_tier: int = 1) -> void:
+func unlock_recipe(item_id: String, source_facility: String, facility_tier: int = 1, upgrade_tier: int = 1, replaces: String = "") -> void:
 	if item_id == "":
 		return
-	if is_recipe_unlocked(item_id):
-		print("[Recipe] Already unlocked: %s" % item_id)
+	var key = _recipe_key(item_id, upgrade_tier)
+	if DEFAULT_UNLOCKED_RECIPES.has(key) or unlocked_recipes.has(key):
+		print("[Recipe] Already unlocked: %s" % key)
 		return
-	unlocked_recipes[item_id] = {
+	var data: Dictionary = {
 		"source_facility": source_facility,
-		"facility_tier": facility_tier
+		"facility_tier": facility_tier,
+		"upgrade_tier": upgrade_tier,
+		"output_id": item_id
 	}
-	print("[Recipe] Unlocked item=%s source=%s tier=%d" % [item_id, source_facility, facility_tier])
+	if replaces != "":
+		data["replaces"] = replaces
+	unlocked_recipes[key] = data
+	print("[Recipe] Unlocked key=%s item=%s source=%s fac_tier=%d upgrade_tier=%d" % [key, item_id, source_facility, facility_tier, upgrade_tier])
 	save_game()
 
 
 ## Get recipe unlock data for an item. Returns empty dict if not unlocked.
-func get_recipe_data(item_id: String) -> Dictionary:
+## If upgrade_tier > 0, gets the specific tier data.
+func get_recipe_data(item_id: String, upgrade_tier: int = 0) -> Dictionary:
+	if upgrade_tier > 0:
+		var key = _recipe_key(item_id, upgrade_tier)
+		if DEFAULT_UNLOCKED_RECIPES.has(key):
+			return DEFAULT_UNLOCKED_RECIPES[key]
+		return unlocked_recipes.get(key, {})
+	# Legacy: try plain key first, then keyed
 	if DEFAULT_UNLOCKED_RECIPES.has(item_id):
 		return DEFAULT_UNLOCKED_RECIPES[item_id]
-	return unlocked_recipes.get(item_id, {})
+	if unlocked_recipes.has(item_id):
+		return unlocked_recipes[item_id]
+	# Check highest tier
+	for t in range(3, 0, -1):
+		var key = _recipe_key(item_id, t)
+		if DEFAULT_UNLOCKED_RECIPES.has(key):
+			return DEFAULT_UNLOCKED_RECIPES[key]
+		if unlocked_recipes.has(key):
+			return unlocked_recipes[key]
+	return {}
 
 
 ## Get all unlocked recipe item IDs (for shop generation).
 func get_all_unlocked_recipes() -> Array:
 	var result: Array = []
-	for item_id in DEFAULT_UNLOCKED_RECIPES.keys():
-		if item_id not in result:
-			result.append(item_id)
-	for item_id in unlocked_recipes.keys():
-		if item_id not in result:
-			result.append(item_id)
+	for key in DEFAULT_UNLOCKED_RECIPES.keys():
+		var data: Dictionary = DEFAULT_UNLOCKED_RECIPES[key]
+		var oid: String = data.get("output_id", key.split(":")[0])
+		if oid not in result:
+			result.append(oid)
+	for key in unlocked_recipes.keys():
+		var data: Dictionary = unlocked_recipes[key]
+		var oid: String = data.get("output_id", key.split(":")[0])
+		if oid not in result:
+			result.append(oid)
 	return result
 
 
@@ -1957,15 +2012,15 @@ func can_afford_recipe_unlock(unlock_cost: Array) -> bool:
 
 ## Purchase/unlock a recipe by spending materials from run stash.
 ## Returns true if successful, false if not enough materials or already unlocked.
-func purchase_recipe_unlock(output_id: String, unlock_cost: Array, source_facility: String, facility_tier: int = 1) -> bool:
+func purchase_recipe_unlock(output_id: String, unlock_cost: Array, source_facility: String, facility_tier: int = 1, upgrade_tier: int = 1, replaces: String = "") -> bool:
 	# Already unlocked?
-	if is_recipe_unlocked(output_id):
-		print("[Recipe] Already unlocked: %s" % output_id)
+	if is_recipe_unlocked(output_id, upgrade_tier):
+		print("[Recipe] Already unlocked: %s:t%d" % [output_id, upgrade_tier])
 		return false
 
 	# Check affordability
 	if not can_afford_recipe_unlock(unlock_cost):
-		print("[Recipe] Cannot afford unlock for: %s" % output_id)
+		print("[Recipe] Cannot afford unlock for: %s:t%d" % [output_id, upgrade_tier])
 		return false
 
 	# Spend materials
@@ -1976,8 +2031,8 @@ func purchase_recipe_unlock(output_id: String, unlock_cost: Array, source_facili
 			remove_run_item(item_id, qty)
 
 	# Unlock the recipe
-	unlock_recipe(output_id, source_facility, facility_tier)
-	print("[Recipe] Purchased unlock for %s at %s (tier %d)" % [output_id, source_facility, facility_tier])
+	unlock_recipe(output_id, source_facility, facility_tier, upgrade_tier, replaces)
+	print("[Recipe] Purchased unlock for %s:t%d at %s (fac_tier %d)" % [output_id, upgrade_tier, source_facility, facility_tier])
 	return true
 
 
@@ -3091,24 +3146,48 @@ func get_shop_slot_allocations(town_id: String) -> Dictionary:
 	return shop_slot_allocations.get(town_id, {}).duplicate()
 
 
-## Get unlocked recipes for a specific facility.
-## Returns array of item_ids that can appear in shop for this facility.
+## Get unlocked recipes for a specific facility — effective shop list.
+## Returns array of dictionaries with upgrade_tier and replacement resolved:
+##   { "item_id": "rusty_sword", "upgrade_tier": 2, "facility_tier": 1 }
+## Items that have been replaced by higher-tier unlocks are excluded.
 func get_facility_unlocked_recipes(facility_id: String) -> Array:
+	# Collect all unlocked entries for this facility
+	var all_entries: Array = []
+	var _collect = func(source: Dictionary) -> void:
+		for key in source.keys():
+			var data: Dictionary = source[key]
+			if data.get("source_facility", "") != facility_id:
+				continue
+			var oid: String = data.get("output_id", key.split(":")[0])
+			all_entries.append({
+				"item_id": oid,
+				"upgrade_tier": int(data.get("upgrade_tier", 1)),
+				"facility_tier": int(data.get("facility_tier", 1)),
+				"replaces": data.get("replaces", "")
+			})
+	_collect.call(DEFAULT_UNLOCKED_RECIPES)
+	_collect.call(unlocked_recipes)
+
+	# Per item_id keep only the highest upgrade_tier
+	var best: Dictionary = {}  # item_id -> entry dict
+	for entry in all_entries:
+		var oid: String = entry.item_id
+		if not best.has(oid) or entry.upgrade_tier > best[oid].upgrade_tier:
+			best[oid] = entry
+
+	# Build replacement set: if iron_sword(t3) replaces rusty_sword, remove rusty_sword
+	var replaced_set: Dictionary = {}
+	for oid in best.keys():
+		var rep: String = best[oid].get("replaces", "")
+		if rep != "":
+			replaced_set[rep] = true
+
+	# Return effective list (excluding replaced items)
 	var result: Array = []
-
-	# Check default recipes
-	for item_id in DEFAULT_UNLOCKED_RECIPES.keys():
-		var recipe = DEFAULT_UNLOCKED_RECIPES[item_id]
-		if recipe.get("source_facility", "") == facility_id:
-			result.append(item_id)
-
-	# Check player unlocked recipes
-	for item_id in unlocked_recipes.keys():
-		var recipe = unlocked_recipes[item_id]
-		if recipe.get("source_facility", "") == facility_id:
-			if item_id not in result:
-				result.append(item_id)
-
+	for oid in best.keys():
+		if replaced_set.has(oid):
+			continue
+		result.append(best[oid])
 	return result
 
 

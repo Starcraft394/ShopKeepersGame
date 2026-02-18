@@ -1,0 +1,13 @@
+{
+  "id": "boss_trophy_necropolis",
+  "display_name": "Lich Phylactery",
+  "description": "A soul vessel torn from an undead overlord, crackling with trapped spirits and dark power.",
+  "icon_hint": "ornate dark metal phylactery with swirling green soul energy trapped inside cracked glass chamber",
+  "item_type": "material",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 150,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_6", "necropolis", "material", "boss_trophy", "crafting"]
+}

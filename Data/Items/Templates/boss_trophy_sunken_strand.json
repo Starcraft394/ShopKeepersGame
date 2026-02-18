@@ -1,0 +1,13 @@
+{
+  "id": "boss_trophy_sunken_strand",
+  "display_name": "Leviathan Scale",
+  "description": "An iridescent scale torn from a deep-sea leviathan, harder than steel and warm to the touch.",
+  "icon_hint": "large iridescent blue-green scale with pearl-like sheen and barnacle fragments along the edge",
+  "item_type": "material",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 90,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_3", "sunken_strand", "material", "boss_trophy", "crafting"]
+}

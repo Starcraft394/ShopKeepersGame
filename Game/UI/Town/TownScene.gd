@@ -2306,13 +2306,15 @@ func _refresh_sell_window(popup: Window, gold_label: Label, items_container: VBo
 ## Each facility gets its own seeded RNG to avoid cross-contamination when allocations change.
 func _generate_facility_allocated_items(town_id: String, base_rng: RandomNumberGenerator) -> Array:
 	var result: Array = []
+	var region_id: String = GameContext.get_current_region_id()
+	var affix: Dictionary = DataRegistry.get_regional_affix(region_id)
 
 	for facility_id in GameContext.SHOP_CONTRIBUTING_FACILITIES:
 		var slots = GameContext.get_facility_slot_allocation(town_id, facility_id)
 		if slots <= 0:
 			continue
 
-		# Get unlocked recipes for this facility
+		# Get unlocked recipes for this facility (dict entries with upgrade_tier)
 		var recipes = GameContext.get_facility_unlocked_recipes(facility_id)
 		if recipes.is_empty():
 			continue
@@ -2324,29 +2326,38 @@ func _generate_facility_allocated_items(town_id: String, base_rng: RandomNumberG
 
 		# Generate one item per allocated slot
 		for i in range(slots):
-			# Create unique slot key for tracking purchases
 			var slot_key = "%s:%d" % [facility_id, i]
 
-			# Pick a random recipe (seeded per facility)
+			# Pick a random recipe entry (seeded per facility)
 			var recipe_idx = facility_rng.randi() % recipes.size()
-			var item_id = recipes[recipe_idx]
+			var recipe_entry: Dictionary = recipes[recipe_idx]
+			var item_id: String = recipe_entry.get("item_id", "")
+			var upgrade_tier: int = int(recipe_entry.get("upgrade_tier", 1))
+			var facility_tier: int = int(recipe_entry.get("facility_tier", 1))
 
 			var template = DataRegistry.get_item_template(item_id)
 			if template == null:
 				continue
 
-			# Get facility tier for quality roll
-			var recipe_data = GameContext.get_recipe_data(item_id)
-			var facility_tier = recipe_data.get("facility_tier", 1)
-
 			# Roll quality based on facility tier (seeded per facility)
 			var quality_roll = facility_rng.randf() * 100.0
 			var quality_tier = _roll_quality_seeded(quality_roll, facility_tier)
 
-			# Calculate price based on template value and quality
+			# Calculate price based on template value, quality, and affix
 			var base_price = template.get_buy_value()
-			var quality_mult = [1.0, 1.2, 1.5, 2.0]  # Price multiplier per quality
-			var final_price = int(base_price * quality_mult[quality_tier])
+			var quality_mult = [1.0, 1.2, 1.5, 2.0]
+			var affix_mult: float = 1.0 + (0.25 * (upgrade_tier - 1)) if upgrade_tier >= 2 else 1.0
+			var final_price = int(base_price * quality_mult[quality_tier] * affix_mult)
+
+			# Build affix_data for T2+ items
+			var shop_affix: Dictionary = {}
+			if upgrade_tier >= 2 and not affix.is_empty():
+				shop_affix = {
+					"source_region": region_id,
+					"affix_id": region_id,
+					"affix_stats": affix.get("stat_bonus", {}),
+					"affix_prefix": affix.get("prefix", "")
+				}
 
 			result.append({
 				"type": "item",
@@ -2355,7 +2366,9 @@ func _generate_facility_allocated_items(town_id: String, base_rng: RandomNumberG
 				"quality_tier": quality_tier,
 				"source_facility": facility_id,
 				"slot_key": slot_key,
-				"from_recipe": true
+				"from_recipe": true,
+				"upgrade_tier": upgrade_tier,
+				"affix_data": shop_affix
 			})
 
 	# Sort by facility then item name for consistent display
@@ -2404,6 +2417,8 @@ func _create_shop_row(shop_item: Dictionary, shop_id: String = "") -> HBoxContai
 	var price = shop_item.get("price_gold", 0)
 	var quality_tier = int(shop_item.get("quality_tier", 0))
 	var slot_key = shop_item.get("slot_key", "")
+	var affix_data: Dictionary = shop_item.get("affix_data", {})
+	var affix_prefix: String = affix_data.get("affix_prefix", "")
 
 	# Get display name from template
 	var display_name = item_id
@@ -2416,8 +2431,14 @@ func _create_shop_row(shop_item: Dictionary, shop_id: String = "") -> HBoxContai
 	if quality_tier > 0:
 		text_color = ItemInstance.QUALITY_COLORS[clampi(quality_tier, 0, 3)]
 
-	# Build tooltip with item stats
+	# Build tooltip with item stats (include affix stats if present)
 	var tooltip_text = _build_item_tooltip(template, quality_tier)
+	if not affix_data.is_empty():
+		var affix_stats: Dictionary = affix_data.get("affix_stats", {})
+		if not affix_stats.is_empty():
+			tooltip_text += "\nAffix: " + affix_prefix
+			for stat_name in affix_stats:
+				tooltip_text += "\n  +%d %s" % [affix_stats[stat_name], stat_name.capitalize()]
 
 	# Item icon with quality border + name label
 	if template != null:
@@ -2425,16 +2446,21 @@ func _create_shop_row(shop_item: Dictionary, shop_id: String = "") -> HBoxContai
 		if icon_ctrl != null:
 			row.add_child(icon_ctrl)
 
+	# Build display name: [affix_prefix] [quality_prefix] base_name
 	var name_label = Label.new()
+	var quality_prefix: String = ""
 	if quality_tier > 0:
-		var quality_prefix = ItemInstance.QUALITY_PREFIXES[clampi(quality_tier, 0, 3)]
+		quality_prefix = ItemInstance.QUALITY_PREFIXES[clampi(quality_tier, 0, 3)]
+	if affix_prefix != "":
+		name_label.text = "%s %s%s" % [affix_prefix, quality_prefix, display_name]
+	elif quality_prefix != "":
 		name_label.text = "%s%s" % [quality_prefix, display_name]
 	else:
 		name_label.text = display_name
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	name_label.modulate = text_color
 	name_label.tooltip_text = tooltip_text
-	name_label.mouse_filter = Control.MOUSE_FILTER_STOP  # Enable tooltip on hover
+	name_label.mouse_filter = Control.MOUSE_FILTER_STOP
 	row.add_child(name_label)
 
 	# Buy button with gold cost
@@ -2443,7 +2469,7 @@ func _create_shop_row(shop_item: Dictionary, shop_id: String = "") -> HBoxContai
 	btn.text = "%dg" % price
 	btn.custom_minimum_size = Vector2(60, 26)
 	btn.disabled = not can_afford
-	btn.pressed.connect(_on_shop_buy_pressed.bind(item_id, price, quality_tier, shop_id, slot_key))
+	btn.pressed.connect(_on_shop_buy_pressed.bind(item_id, price, quality_tier, shop_id, slot_key, affix_data))
 	row.add_child(btn)
 
 	return row
@@ -2515,7 +2541,7 @@ func _build_item_tooltip(template, quality_tier: int) -> String:
 	return "\n".join(lines)
 
 
-func _on_shop_buy_pressed(item_id: String, price: int, quality_tier: int = 0, shop_id: String = "", slot_key: String = "") -> void:
+func _on_shop_buy_pressed(item_id: String, price: int, quality_tier: int = 0, shop_id: String = "", slot_key: String = "", affix_data: Dictionary = {}) -> void:
 	var had_gold = GameContext.get_run_gold()
 	if had_gold < price:
 		print("[Store] buy item=%s qty=1 cost=%d gold_before=%d gold_after=FAIL (insufficient)" % [item_id, price, had_gold])
@@ -2523,9 +2549,9 @@ func _on_shop_buy_pressed(item_id: String, price: int, quality_tier: int = 0, sh
 
 	GameContext.spend_run_gold(price)
 
-	# Add item with quality tier
-	if quality_tier > 0:
-		GameContext._add_item_with_quality(item_id, quality_tier)
+	# Add item with quality tier and affix data
+	if quality_tier > 0 or not affix_data.is_empty():
+		GameContext._add_item_with_quality(item_id, quality_tier, affix_data)
 	else:
 		GameContext.add_run_item(item_id, 1)
 
@@ -2533,7 +2559,8 @@ func _on_shop_buy_pressed(item_id: String, price: int, quality_tier: int = 0, sh
 	if shop_id != "" and slot_key != "":
 		GameContext.mark_shop_slot_purchased(shop_id, slot_key)
 
-	print("[Store] buy item=%s qty=1 q=%d cost=%d gold_before=%d gold_after=%d slot=%s" % [item_id, quality_tier, price, had_gold, GameContext.get_run_gold(), slot_key])
+	var affix_str: String = affix_data.get("affix_prefix", "") if not affix_data.is_empty() else ""
+	print("[Store] buy item=%s qty=1 q=%d affix=%s cost=%d gold_before=%d gold_after=%d slot=%s" % [item_id, quality_tier, affix_str, price, had_gold, GameContext.get_run_gold(), slot_key])
 	_refresh_facility_panel()
 
 
@@ -3083,21 +3110,54 @@ func _get_filtered_equipment_recipes(facility, current_tier: int) -> Array:
 	var all_recipes = facility.crafting_recipes
 	var filtered: Array = []
 
+	var current_region: String = GameContext.get_current_region_id()
+
 	for recipe in all_recipes:
 		var output_id = recipe.get("output_id", "")
 		var required_tier = recipe.get("required_tier", 1)
 		var equipment_type = recipe.get("equipment_type", "")
-		var is_unlocked = GameContext.is_recipe_unlocked(output_id)
-		var is_tier_locked = required_tier > current_tier
-		var is_default = is_unlocked and GameContext.DEFAULT_UNLOCKED_RECIPES.has(output_id)
+		var upgrade_tier: int = int(recipe.get("upgrade_tier", 1))
+		var is_craft: bool = recipe.get("is_craft", false)
+
+		# T4 craft recipes are region-specific — skip if wrong region
+		if is_craft:
+			var recipe_region: String = recipe.get("region", "")
+			if recipe_region != "" and recipe_region != current_region:
+				continue
+
+		# Check unlock state using compound key
+		var is_unlocked: bool = GameContext.is_recipe_unlocked(output_id, upgrade_tier)
+		var is_tier_locked: bool = required_tier > current_tier
+
+		# Check if this recipe's output has been superseded by a higher-tier unlock
+		var replaces: String = recipe.get("replaces", "")
+		var is_superseded: bool = false
+		if upgrade_tier <= 2 and not is_craft:
+			# Check if a higher upgrade_tier recipe for this item is unlocked
+			for check_tier in range(upgrade_tier + 1, 4):
+				if GameContext.is_recipe_unlocked(output_id, check_tier):
+					is_superseded = true
+					break
+			# Also check if another recipe replaces this output_id
+			if not is_superseded:
+				for other_recipe in all_recipes:
+					if other_recipe.get("replaces", "") == output_id:
+						var other_ut: int = int(other_recipe.get("upgrade_tier", 1))
+						if GameContext.is_recipe_unlocked(other_recipe.get("output_id", ""), other_ut):
+							is_superseded = true
+							break
+
+		# Check for default status
+		var recipe_key: String = GameContext._recipe_key(output_id, upgrade_tier)
+		var is_default: bool = is_unlocked and GameContext.DEFAULT_UNLOCKED_RECIPES.has(recipe_key)
 
 		# Filter by tab
 		match _equipment_tab:
 			"locked":
-				if is_unlocked:
+				if is_unlocked or is_superseded:
 					continue
 			"unlocked":
-				if not is_unlocked:
+				if not is_unlocked and not is_superseded:
 					continue
 			# "all" shows everything
 
@@ -3106,26 +3166,26 @@ func _get_filtered_equipment_recipes(facility, current_tier: int) -> Array:
 			if equipment_type != _equipment_type_filter:
 				continue
 
-		# Sort priority: 0=default, 1=unlocked, 2=learnable
-		var sort_priority: int = 2  # learnable (locked but available at current tier)
-		if is_default:
+		# Sort priority: 0=default, 1=unlocked, 2=learnable, 3=superseded
+		var sort_priority: int = 2
+		if is_superseded:
+			sort_priority = 3
+		elif is_default:
 			sort_priority = 0
 		elif is_unlocked:
 			sort_priority = 1
 		elif is_tier_locked:
 			continue  # Hide tier-locked recipes — they appear in the Upgrade view
 
-		# Add to filtered list with metadata
 		filtered.append({
 			"recipe": recipe,
 			"is_unlocked": is_unlocked,
 			"is_tier_locked": is_tier_locked,
+			"is_superseded": is_superseded,
 			"sort_priority": sort_priority
 		})
 
-	# Sort: Default → Unlocked → Learnable → Tier-locked
 	filtered.sort_custom(func(a, b): return a.sort_priority < b.sort_priority)
-
 	return filtered
 
 
@@ -3136,11 +3196,14 @@ func _create_equipment_recipe_row(recipe_data: Dictionary, facility_id: String, 
 	var recipe = recipe_data.get("recipe", {})
 	var is_unlocked = recipe_data.get("is_unlocked", false)
 	var is_tier_locked = recipe_data.get("is_tier_locked", false)
+	var is_superseded = recipe_data.get("is_superseded", false)
 
 	var output_id = recipe.get("output_id", "")
 	var required_tier = recipe.get("required_tier", 1)
 	var equipment_type = recipe.get("equipment_type", "")
 	var unlock_cost = recipe.get("unlock_cost", [])
+	var upgrade_tier: int = int(recipe.get("upgrade_tier", 1))
+	var replaces: String = recipe.get("replaces", "")
 
 	# Get output item info
 	var output_template = DataRegistry.get_item_template(output_id)
@@ -3148,8 +3211,24 @@ func _create_equipment_recipe_row(recipe_data: Dictionary, facility_id: String, 
 	if output_template != null and output_template.display_name != "":
 		output_name = output_template.display_name
 
-	# Type label
+	# For T2/T3 unlock recipes, show affix prefix in the name (NOT for T4 craft recipes)
+	var is_craft: bool = recipe.get("is_craft", false)
+	var region_id: String = GameContext.get_current_region_id()
+	var affix: Dictionary = DataRegistry.get_regional_affix(region_id)
+	var affix_prefix: String = affix.get("prefix", "") if upgrade_tier >= 2 and upgrade_tier <= 3 and not is_craft and not affix.is_empty() else ""
+	if affix_prefix != "":
+		output_name = "%s %s" % [affix_prefix, output_name]
+
 	var type_str = _get_equipment_type_label(equipment_type)
+
+	# Tier badge for T2/T3/T4
+	var tier_badge: String = ""
+	if upgrade_tier == 2:
+		tier_badge = "[T2] "
+	elif upgrade_tier == 3:
+		tier_badge = "[T3] "
+	elif upgrade_tier == 4:
+		tier_badge = "[T4] "
 
 	# Icon + name row with status
 	var name_row = HBoxContainer.new()
@@ -3161,31 +3240,62 @@ func _create_equipment_recipe_row(recipe_data: Dictionary, facility_id: String, 
 			name_row.add_child(icon_rect)
 
 	var name_label = Label.new()
-	if is_unlocked:
-		var status = "[DEFAULT]" if GameContext.DEFAULT_UNLOCKED_RECIPES.has(output_id) else "[UNLOCKED]"
-		name_label.text = "%s %s (%s)" % [status, output_name, type_str]
+	var recipe_key: String = GameContext._recipe_key(output_id, upgrade_tier)
+	if is_superseded:
+		name_label.text = "[SUPERSEDED] %s%s (%s)" % [tier_badge, output_name, type_str]
+		name_label.modulate = Color(0.4, 0.4, 0.4, 1)
+		container.modulate = Color(0.5, 0.5, 0.5, 1)
+	elif is_unlocked:
+		var status: String = "[DEFAULT]" if GameContext.DEFAULT_UNLOCKED_RECIPES.has(recipe_key) else "[UNLOCKED]"
+		name_label.text = "%s %s%s (%s)" % [status, tier_badge, output_name, type_str]
 		name_label.modulate = Color(0.5, 0.9, 0.5, 1)
 	elif is_tier_locked:
-		name_label.text = "[TIER %d] %s (%s)" % [required_tier, output_name, type_str]
+		name_label.text = "[TIER %d] %s%s (%s)" % [required_tier, tier_badge, output_name, type_str]
 		name_label.modulate = Color(0.5, 0.5, 0.5, 1)
 		container.modulate = Color(0.6, 0.6, 0.6, 1)
 	else:
-		name_label.text = "%s (%s)" % [output_name, type_str]
+		name_label.text = "%s%s (%s)" % [tier_badge, output_name, type_str]
 	name_row.add_child(name_label)
 	container.add_child(name_row)
 
-	# Add tooltip with item stats
+	# Add tooltip with item stats + affix info
 	if output_template != null:
-		name_label.tooltip_text = _build_equipment_item_tooltip(output_template)
+		var tip: String = _build_equipment_item_tooltip(output_template)
+		if affix_prefix != "":
+			var affix_stats: Dictionary = affix.get("stat_bonus", {})
+			tip += "\nAffix: %s" % affix_prefix
+			for stat_name in affix_stats:
+				tip += "\n  +%d %s" % [affix_stats[stat_name], stat_name.capitalize()]
+		name_label.tooltip_text = tip
 		name_label.mouse_filter = Control.MOUSE_FILTER_STOP
 
-	# If unlocked, just show availability message
+	# Superseded: show what replaced it
+	if is_superseded:
+		var sup_label = Label.new()
+		sup_label.text = "  Replaced by a higher-tier version"
+		sup_label.add_theme_font_size_override("font_size", 11)
+		sup_label.modulate = Color(0.4, 0.4, 0.4, 1)
+		container.add_child(sup_label)
+		return container
+
+	# If unlocked, show availability message
 	if is_unlocked:
 		var unlocked_label = Label.new()
-		unlocked_label.text = "  Available in General Store"
+		if upgrade_tier >= 2 and affix_prefix != "":
+			unlocked_label.text = "  %s version in General Store" % affix_prefix
+		else:
+			unlocked_label.text = "  Available in General Store"
 		unlocked_label.add_theme_font_size_override("font_size", 11)
 		unlocked_label.modulate = Color(0.6, 0.8, 0.6, 1)
 		container.add_child(unlocked_label)
+		if replaces != "":
+			var rep_label = Label.new()
+			var rep_tpl = DataRegistry.get_item_template(replaces)
+			var rep_name: String = rep_tpl.display_name if rep_tpl != null else replaces
+			rep_label.text = "  (replaces %s)" % rep_name
+			rep_label.add_theme_font_size_override("font_size", 10)
+			rep_label.modulate = Color(0.5, 0.5, 0.5, 1)
+			container.add_child(rep_label)
 		return container
 
 	# If tier locked, show what tier is needed
@@ -3196,6 +3306,55 @@ func _create_equipment_recipe_row(recipe_data: Dictionary, facility_id: String, 
 		tier_label.modulate = Color(0.6, 0.6, 0.6, 1)
 		container.add_child(tier_label)
 		return container
+
+	# T4 craft recipes: show craft inputs and a Craft button
+	if is_craft:
+		var craft_inputs: Array = recipe.get("craft_inputs", [])
+		var run_items_dict = GameContext.get_run_items_dict()
+		var can_craft: bool = true
+		var input_parts: Array = []
+
+		for input_entry in craft_inputs:
+			var item_id = input_entry.get("item_id", "")
+			var qty_needed = input_entry.get("qty", 1)
+			var qty_have = run_items_dict.get(item_id, 0)
+
+			var item_name = item_id
+			var item_template = DataRegistry.get_item_template(item_id)
+			if item_template != null and item_template.display_name != "":
+				item_name = item_template.display_name
+
+			input_parts.append("%s %d/%d" % [item_name, qty_have, qty_needed])
+			if qty_have < qty_needed:
+				can_craft = false
+
+		var inputs_label = Label.new()
+		inputs_label.text = "  Requires: %s" % ", ".join(input_parts)
+		inputs_label.add_theme_font_size_override("font_size", 11)
+		inputs_label.modulate = Color(0.8, 0.8, 0.8, 1) if can_craft else Color(1, 0.5, 0.5, 1)
+		container.add_child(inputs_label)
+
+		var craft_btn = Button.new()
+		craft_btn.custom_minimum_size = Vector2(120, 28)
+		if can_craft:
+			craft_btn.text = "Craft Item"
+			craft_btn.disabled = false
+			craft_btn.pressed.connect(_on_t4_craft_pressed.bind(output_id, craft_inputs, facility_id))
+		else:
+			craft_btn.text = "Need Materials"
+			craft_btn.disabled = true
+		container.add_child(craft_btn)
+		return container
+
+	# Show what this upgrade replaces
+	if replaces != "":
+		var rep_tpl = DataRegistry.get_item_template(replaces)
+		var rep_name: String = rep_tpl.display_name if rep_tpl != null else replaces
+		var replaces_label = Label.new()
+		replaces_label.text = "  Replaces: %s" % rep_name
+		replaces_label.add_theme_font_size_override("font_size", 11)
+		replaces_label.modulate = Color(0.9, 0.7, 0.4, 1)
+		container.add_child(replaces_label)
 
 	# Show unlock cost
 	var cost_parts = []
@@ -3226,9 +3385,9 @@ func _create_equipment_recipe_row(recipe_data: Dictionary, facility_id: String, 
 	var btn = Button.new()
 	btn.custom_minimum_size = Vector2(120, 28)
 	if can_afford:
-		btn.text = "Unlock Recipe"
+		btn.text = "Upgrade Recipe" if upgrade_tier >= 2 else "Unlock Recipe"
 		btn.disabled = false
-		btn.pressed.connect(_on_equipment_unlock_pressed.bind(output_id, unlock_cost, facility_id, current_tier))
+		btn.pressed.connect(_on_equipment_unlock_pressed.bind(output_id, unlock_cost, facility_id, current_tier, upgrade_tier, replaces))
 	else:
 		btn.text = "Need Materials"
 		btn.disabled = true
@@ -3382,12 +3541,36 @@ func _on_upgrade_tier_tab_pressed(tier: int) -> void:
 	_refresh_facility_panel()
 
 
-func _on_equipment_unlock_pressed(output_id: String, unlock_cost: Array, facility_id: String, facility_tier: int) -> void:
-	var success = GameContext.purchase_recipe_unlock(output_id, unlock_cost, facility_id, facility_tier)
+func _on_equipment_unlock_pressed(output_id: String, unlock_cost: Array, facility_id: String, facility_tier: int, upgrade_tier: int = 1, replaces: String = "") -> void:
+	var success = GameContext.purchase_recipe_unlock(output_id, unlock_cost, facility_id, facility_tier, upgrade_tier, replaces)
 	if success:
-		print("[EquipmentUI] unlocked recipe=%s facility=%s tier=%d" % [output_id, facility_id, facility_tier])
+		print("[EquipmentUI] unlocked recipe=%s:t%d facility=%s fac_tier=%d replaces=%s" % [output_id, upgrade_tier, facility_id, facility_tier, replaces])
 	else:
-		print("[EquipmentUI] unlock_failed recipe=%s" % output_id)
+		print("[EquipmentUI] unlock_failed recipe=%s:t%d" % [output_id, upgrade_tier])
+	_refresh_facility_panel()
+
+
+func _on_t4_craft_pressed(output_id: String, craft_inputs: Array, facility_id: String) -> void:
+	# Verify all inputs available
+	var run_items_dict = GameContext.get_run_items_dict()
+	for input_entry in craft_inputs:
+		var item_id = input_entry.get("item_id", "")
+		var qty_needed = input_entry.get("qty", 1)
+		if run_items_dict.get(item_id, 0) < qty_needed:
+			print("[T4Craft] insufficient %s: have=%d need=%d" % [item_id, run_items_dict.get(item_id, 0), qty_needed])
+			_refresh_facility_panel()
+			return
+
+	# Consume inputs
+	for input_entry in craft_inputs:
+		var item_id = input_entry.get("item_id", "")
+		var qty_needed = input_entry.get("qty", 1)
+		GameContext.remove_run_item(item_id, qty_needed)
+
+	# Produce the T4 item as a quality-0 ItemInstance
+	GameContext._add_item_with_quality(output_id, 0)
+	print("[T4Craft] crafted %s at facility=%s" % [output_id, facility_id])
+	GameContext.save_game()
 	_refresh_facility_panel()
 
 

@@ -1,0 +1,13 @@
+{
+  "id": "boss_trophy_fungalmire",
+  "display_name": "Mycelium Heart",
+  "description": "The pulsating core of a massive fungal monstrosity, still alive with bioluminescent energy.",
+  "icon_hint": "large pulsating fungal heart glowing green with visible mycelium veins and spore tendrils",
+  "item_type": "material",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 75,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_2", "fungalmire", "material", "boss_trophy", "crafting"]
+}

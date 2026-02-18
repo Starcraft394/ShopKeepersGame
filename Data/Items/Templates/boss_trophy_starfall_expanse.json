@@ -1,0 +1,13 @@
+{
+  "id": "boss_trophy_starfall_expanse",
+  "display_name": "Starfall Core",
+  "description": "A crystallized fragment of pure temporal energy, humming with the echoes of collapsed timelines.",
+  "icon_hint": "brilliant prismatic crystal core radiating white-blue temporal energy with floating shards orbiting it",
+  "item_type": "material",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 130,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_5", "starfall_expanse", "material", "boss_trophy", "crafting"]
+}
