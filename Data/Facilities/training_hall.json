@@ -220,6 +220,9 @@
   "unlocks": [],
 
   "shop_items": [
+    { "item_id": "book_defender",          "price_gold": 50,  "required_facility_tier": 1 },
+    { "item_id": "book_striker",           "price_gold": 50,  "required_facility_tier": 1 },
+    { "item_id": "book_warden",            "price_gold": 50,  "required_facility_tier": 1 },
     { "item_id": "book_druid",            "price_gold": 150, "required_facility_tier": 2 },
     { "item_id": "book_fungal_berserker",  "price_gold": 200, "required_facility_tier": 4 },
     { "item_id": "book_tidechaser",        "price_gold": 175, "required_facility_tier": 2 },
