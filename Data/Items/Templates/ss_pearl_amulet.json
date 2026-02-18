@@ -1,0 +1,32 @@
+{
+  "id": "ss_pearl_amulet",
+  "display_name": "Pearl Amulet",
+  "description": "An iridescent pearl set in a barnacle-encrusted silver chain, faintly warm from the deep currents.",
+  "icon_hint": "large iridescent pearl pendant set in a tarnished silver frame with small barnacles clinging to the chain links",
+  "item_type": "accessory",
+  "item_subtype": "amulet",
+  "category": "equipment",
+  "slot": "accessory_2",
+  "equip_slot": "amulet",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "health": 6
+  },
+  "stat_bonuses": {
+    "attack": 3,
+    "defense": 3,
+    "health": 6
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 72,
+  "icon_path": "",
+  "tags": ["region_3", "accessory", "amulet", "sunken_strand", "tier_3"]
+}

@@ -10,7 +10,7 @@
   "equip_slot": "offhand",
   "tier": 3,
   "base_stats": {
-    "defense": 8
+    "defense": 9
   },
   "stat_bonuses": {
     "defense": 9,

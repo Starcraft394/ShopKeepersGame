@@ -1,0 +1,32 @@
+{
+  "id": "fm_spore_focus",
+  "display_name": "Spore Focus",
+  "description": "A glowing spore cluster sealed in bog glass, pulsing with dim bioluminescence.",
+  "icon_hint": "round bog glass orb containing a glowing green-yellow spore cluster, faint bioluminescent veins visible inside",
+  "item_type": "offhand",
+  "item_subtype": "focus",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 3
+  },
+  "stat_bonuses": {
+    "attack": 3,
+    "speed": 1,
+    "health": 6
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 52,
+  "icon_path": "",
+  "tags": ["region_2", "offhand", "focus", "fungalmire", "tier_2"]
+}

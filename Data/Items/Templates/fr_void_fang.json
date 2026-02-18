@@ -1,0 +1,31 @@
+{
+  "id": "fr_void_fang",
+  "display_name": "Void Fang",
+  "description": "A shard of absolute nothing sharpened to an edge that cuts between moments.",
+  "icon_hint": "translucent black crystalline dagger with edges that distort the space around them and a hilt of frozen void energy",
+  "item_type": "weapon",
+  "item_subtype": "dagger",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 5,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 17
+  },
+  "stat_bonuses": {
+    "attack": 17,
+    "speed": 7
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 152,
+  "icon_path": "",
+  "tags": ["region_7", "weapon", "dagger", "final_realm", "tier_5"]
+}

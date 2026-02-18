@@ -10,6 +10,7 @@
   "tier": 2,
   "min_quality": 0,
   "max_quality": 3,
+  "category": "equipment",
   "base_stats": { "health": 8 },
   "stat_bonuses": { "health": 8 },
   "allowed_affixes": [],
@@ -21,5 +22,5 @@
   "max_refinement": 10,
   "base_value": 40,
   "icon_path": "res://Assets/_ArtPacks/Rings/PNG/Transperent/Icon8.png",
-  "tags": ["region_1", "accessory"]
+  "tags": ["region_1", "accessory", "tier_2"]
 }

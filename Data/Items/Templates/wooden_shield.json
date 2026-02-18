@@ -10,7 +10,7 @@
   "equip_slot": "offhand",
   "tier": 1,
   "base_stats": {
-    "defense": 2
+    "defense": 3
   },
   "stat_bonuses": {
     "defense": 3,
@@ -20,5 +20,5 @@
   "buy_value": 0,
   "can_refine": true,
   "icon_path": "res://Assets/_ArtPacks/ShieldsAmulets/PNG/Transperent/Icon9.png",
-  "tags": ["offhand", "shield", "region_1", "crafted"]
+  "tags": ["offhand", "shield", "region_1", "crafted", "tier_1"]
 }

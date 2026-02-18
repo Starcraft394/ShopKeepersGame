@@ -12,7 +12,7 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "defense": 5
+    "defense": 6
   },
   "stat_bonuses": {
     "defense": 6,

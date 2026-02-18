@@ -1,0 +1,32 @@
+{
+  "id": "fr_dimensional_locket",
+  "display_name": "Dimensional Locket",
+  "description": "A locket containing a pocket dimension, opening it briefly warps local reality.",
+  "icon_hint": "ornate silver locket slightly ajar revealing a swirling miniature galaxy inside with reality-warping distortion around it",
+  "item_type": "accessory",
+  "item_subtype": "amulet",
+  "category": "equipment",
+  "slot": "accessory_2",
+  "equip_slot": "amulet",
+  "tier": 5,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 6
+  },
+  "stat_bonuses": {
+    "attack": 6,
+    "defense": 5,
+    "speed": 2
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 165,
+  "icon_path": "",
+  "tags": ["region_7", "accessory", "amulet", "final_realm", "tier_5"]
+}

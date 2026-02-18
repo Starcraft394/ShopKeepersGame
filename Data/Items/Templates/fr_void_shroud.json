@@ -1,0 +1,32 @@
+{
+  "id": "fr_void_shroud",
+  "display_name": "Void Shroud",
+  "description": "A cloak of woven void-silk that bends light around the wearer.",
+  "icon_hint": "flowing cloak of deep black silk with edges that dissolve into translucent nothingness and faint starfield patterns",
+  "item_type": "armor",
+  "item_subtype": "light_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 5,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 12
+  },
+  "stat_bonuses": {
+    "defense": 12,
+    "speed": 3,
+    "health": 14
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 158,
+  "icon_path": "",
+  "tags": ["region_7", "armor", "light_chest", "final_realm", "tier_5"]
+}

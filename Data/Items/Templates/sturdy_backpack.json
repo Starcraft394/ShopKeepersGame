@@ -16,5 +16,5 @@
   "buy_value": 0,
   "can_refine": false,
   "icon_path": "res://Assets/_ArtPacks/RPGThings/PNG/Transperent/icons_30_33.png",
-  "tags": ["region_1", "backpack"]
+  "tags": ["region_1", "backpack", "tier_2"]
 }

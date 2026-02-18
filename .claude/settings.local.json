@@ -74,7 +74,13 @@
       "Bash(powershell.exe -NoProfile -Command \"Set-Location ''c:\\\\Users\\\\rober\\\\OneDrive\\\\ShopKeepers Game''; & cmd.exe /c ''DevTools\\\\run_headless.bat''\")",
       "Bash(\"c:\\\\Users\\\\rober\\\\OneDrive\\\\ShopKeepers Game\\\\DevTools\\\\Godot_v4.5.1-stable_win64_console.exe\" --headless --path \"c:\\\\Users\\\\rober\\\\OneDrive\\\\ShopKeepers Game\" --script \"res://DevTools/run_tests_headless.gd\" --quit)",
       "Bash(grep:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "WebFetch(domain:www.pixellab.ai)",
+      "WebFetch(domain:api.pixellab.ai)",
+      "Bash(DevTools/run_headless.bat)",
+      "Bash(fi)",
+      "Bash(awk:*)",
+      "Bash(# Count Runes ls \"\"c:/Users/rober/OneDrive/ShopKeepers Game/Assets/_ArtPacks/Runes/PNG/Transperent/\"\"*.png)"
     ]
   }
 }

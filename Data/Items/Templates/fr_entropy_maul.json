@@ -1,0 +1,31 @@
+{
+  "id": "fr_entropy_maul",
+  "display_name": "Entropy Maul",
+  "description": "A great axe of crystallized entropy, each swing unravels the fabric of what it strikes.",
+  "icon_hint": "massive dark crystalline axe head with cracks leaking white-hot dissolution energy on a warped obsidian haft",
+  "item_type": "weapon",
+  "item_subtype": "axe",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 5,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 28
+  },
+  "stat_bonuses": {
+    "attack": 28,
+    "speed": -3
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 175,
+  "icon_path": "",
+  "tags": ["region_7", "weapon", "axe", "final_realm", "tier_5"]
+}

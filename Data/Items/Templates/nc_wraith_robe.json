@@ -1,0 +1,32 @@
+{
+  "id": "nc_wraith_robe",
+  "display_name": "Wraith Robe",
+  "description": "Tattered robes that billow with spectral energy, half-phased into the ethereal plane.",
+  "icon_hint": "tattered dark grey robes with translucent edges trailing wisps of ghostly blue-green energy",
+  "item_type": "armor",
+  "item_subtype": "light_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 10
+  },
+  "stat_bonuses": {
+    "defense": 10,
+    "speed": 2,
+    "health": 12
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 122,
+  "icon_path": "",
+  "tags": ["region_6", "armor", "light_chest", "necropolis", "tier_4"]
+}

@@ -10,6 +10,7 @@ The recommended workflow order is:
 Repo Auditor → Implementer → UI Refiner (optional) → Data Curator (optional)
                                                     → Art Director (optional)
                                                     → Story Architect (optional)
+                                                    → Balancer (optional)
 ```
 
 1. **Repo Auditor** decides WHAT to build next
@@ -29,6 +30,7 @@ Repo Auditor → Implementer → UI Refiner (optional) → Data Curator (optiona
 | Data Curator | `data-curator.md` | JSON validation, content extension |
 | Art Director | `art-director.md` | Art asset tracking, integration, consistency |
 | Story Architect | `story-architect.md` | Narrative content, lore, campaign arcs, event text |
+| Balancer | `balancer.md` | Game balance audits, stat curves, variety, economy |
 
 ## Usage
 
@@ -41,6 +43,7 @@ Or reference the agent by saying:
 - "Use the Data Curator agent to add [item/monster]"
 - "Use the Art Director agent to integrate art for [feature]"
 - "Use the Story Architect agent to write lore for [region/event]"
+- "Use the Balancer agent to review balance for [region/tier/category]"
 
 ## Invariants (All Agents Must Respect)
 

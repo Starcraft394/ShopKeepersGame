@@ -1,0 +1,31 @@
+{
+  "id": "nc_bonecaller_amulet",
+  "display_name": "Bonecaller Amulet",
+  "description": "A vertebra pendant strung on sinew cord, hums when undead are near.",
+  "icon_hint": "polished vertebra bone pendant on a dark sinew cord with faint necromantic runes etched into the surface",
+  "item_type": "accessory",
+  "item_subtype": "amulet",
+  "category": "equipment",
+  "slot": "accessory_2",
+  "equip_slot": "amulet",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "health": 18
+  },
+  "stat_bonuses": {
+    "health": 18,
+    "defense": 5
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 128,
+  "icon_path": "",
+  "tags": ["region_6", "accessory", "amulet", "necropolis", "tier_4"]
+}

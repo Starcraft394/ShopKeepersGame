@@ -1,0 +1,31 @@
+{
+  "id": "ss_coral_staff",
+  "display_name": "Coral Staff",
+  "description": "A bleached coral branch tipped with a pulsing sea-stone, still damp with brine.",
+  "icon_hint": "tall white bleached coral branch staff with a glowing blue sea-stone mounted at the tip, small barnacles along the shaft",
+  "item_type": "weapon",
+  "item_subtype": "staff",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 9
+  },
+  "stat_bonuses": {
+    "attack": 9,
+    "health": 12
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 70,
+  "icon_path": "",
+  "tags": ["region_3", "weapon", "staff", "sunken_strand", "tier_3"]
+}

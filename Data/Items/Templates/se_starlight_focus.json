@@ -1,0 +1,32 @@
+{
+  "id": "se_starlight_focus",
+  "display_name": "Starlight Focus",
+  "description": "Compressed starlight trapped in a floating crystal lattice.",
+  "icon_hint": "hovering crystal lattice sphere radiating soft white-blue starlight with tiny sparkling motes",
+  "item_type": "offhand",
+  "item_subtype": "focus",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 6
+  },
+  "stat_bonuses": {
+    "attack": 6,
+    "speed": 2,
+    "health": 12
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 100,
+  "icon_path": "",
+  "tags": ["region_5", "offhand", "focus", "starfall_expanse", "tier_4"]
+}

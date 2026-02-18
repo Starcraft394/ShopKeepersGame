@@ -1,0 +1,32 @@
+{
+  "id": "nc_soulfire_focus",
+  "display_name": "Soulfire Focus",
+  "description": "A spectral flame bound in a cage of blackened silver, cold to the touch.",
+  "icon_hint": "blackened silver wire cage containing a hovering pale green spectral flame with wisps trailing upward",
+  "item_type": "offhand",
+  "item_subtype": "focus",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 7
+  },
+  "stat_bonuses": {
+    "attack": 7,
+    "speed": 1,
+    "health": 14
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 120,
+  "icon_path": "",
+  "tags": ["region_6", "offhand", "focus", "necropolis", "tier_4"]
+}

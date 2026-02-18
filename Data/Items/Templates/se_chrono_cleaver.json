@@ -1,0 +1,31 @@
+{
+  "id": "se_chrono_cleaver",
+  "display_name": "Chrono Cleaver",
+  "description": "A crescent-bladed axe of temporal crystal that leaves afterimages when swung.",
+  "icon_hint": "crescent-bladed axe of translucent temporal crystal with ghostly afterimages trailing the blade",
+  "item_type": "weapon",
+  "item_subtype": "axe",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 20
+  },
+  "stat_bonuses": {
+    "attack": 20,
+    "speed": -2
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 115,
+  "icon_path": "",
+  "tags": ["region_5", "weapon", "axe", "starfall_expanse", "tier_4"]
+}

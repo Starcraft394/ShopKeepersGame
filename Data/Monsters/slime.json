@@ -3,7 +3,7 @@
   "display_name": "Slime",
   "description": "A gelatinous blob that absorbs everything it touches.",
   "icon_hint": "translucent green slime blob with glowing acidic core",
-  "family": "fungi",
+  "family": "ooze",
   "region_id": "region_1",
   "tier": 1,
   "base_stats": {

@@ -1,0 +1,31 @@
+{
+  "id": "ah_obsidian_staff",
+  "display_name": "Obsidian Staff",
+  "description": "A jagged obsidian rod capped with a smoldering ember crystal.",
+  "icon_hint": "jagged black obsidian staff with a glowing orange-red ember crystal at the tip",
+  "item_type": "weapon",
+  "item_subtype": "staff",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 11
+  },
+  "stat_bonuses": {
+    "attack": 11,
+    "health": 14
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 78,
+  "icon_path": "",
+  "tags": ["region_4", "weapon", "staff", "ashen_horizons", "tier_3"]
+}

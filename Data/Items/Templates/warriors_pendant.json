@@ -10,8 +10,9 @@
   "tier": 2,
   "min_quality": 0,
   "max_quality": 3,
-  "base_stats": { "attack": 2, "defense": 1 },
-  "stat_bonuses": { "attack": 2, "defense": 1 },
+  "category": "equipment",
+  "base_stats": { "attack": 3, "defense": 2 },
+  "stat_bonuses": { "attack": 3, "defense": 2, "health": 3 },
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -21,5 +22,5 @@
   "max_refinement": 10,
   "base_value": 45,
   "icon_path": "res://Assets/_ArtPacks/Rings/PNG/Transperent/Icon34.png",
-  "tags": ["region_1", "accessory"]
+  "tags": ["region_1", "accessory", "tier_2"]
 }

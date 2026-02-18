@@ -1,0 +1,32 @@
+{
+  "id": "ah_drake_jerkin",
+  "display_name": "Drake Jerkin",
+  "description": "A sleek vest stitched from overlapping drake scales, heat-resistant and flexible.",
+  "icon_hint": "sleek vest of overlapping red-orange drake scales with leather trim and flexible joints",
+  "item_type": "armor",
+  "item_subtype": "light_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 7
+  },
+  "stat_bonuses": {
+    "defense": 7,
+    "speed": 1,
+    "health": 8
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 76,
+  "icon_path": "",
+  "tags": ["region_4", "armor", "light_chest", "ashen_horizons", "tier_3"]
+}

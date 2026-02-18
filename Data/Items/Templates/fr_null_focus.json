@@ -1,0 +1,32 @@
+{
+  "id": "fr_null_focus",
+  "display_name": "Null Focus",
+  "description": "A void-pearl suspended in a lattice of frozen lightning.",
+  "icon_hint": "iridescent black pearl hovering inside a lattice of crackling frozen blue-white lightning bolts",
+  "item_type": "offhand",
+  "item_subtype": "focus",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 5,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 9
+  },
+  "stat_bonuses": {
+    "attack": 9,
+    "speed": 3,
+    "health": 18
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 150,
+  "icon_path": "",
+  "tags": ["region_7", "offhand", "focus", "final_realm", "tier_5"]
+}

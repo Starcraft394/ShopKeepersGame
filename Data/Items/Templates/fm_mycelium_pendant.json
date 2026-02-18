@@ -1,0 +1,31 @@
+{
+  "id": "fm_mycelium_pendant",
+  "display_name": "Mycelium Pendant",
+  "description": "A pendant of woven mycelium threads with a hardened spore core, warm to the touch.",
+  "icon_hint": "pendant made of woven white mycelium threads cradling a dark hardened spore core, hanging from a thin fibrous cord",
+  "item_type": "accessory",
+  "item_subtype": "amulet",
+  "category": "equipment",
+  "slot": "accessory_2",
+  "equip_slot": "amulet",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "health": 8
+  },
+  "stat_bonuses": {
+    "defense": 3,
+    "health": 8
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 48,
+  "icon_path": "",
+  "tags": ["region_2", "accessory", "amulet", "fungalmire", "tier_2"]
+}

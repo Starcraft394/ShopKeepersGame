@@ -1,0 +1,32 @@
+{
+  "id": "se_echo_amulet",
+  "display_name": "Echo Amulet",
+  "description": "A silver locket containing an echo of a dying star, warm to the touch.",
+  "icon_hint": "ornate silver locket on a fine chain with a faintly glowing dying star fragment inside",
+  "item_type": "accessory",
+  "item_subtype": "amulet",
+  "category": "equipment",
+  "slot": "accessory_2",
+  "equip_slot": "amulet",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "health": 8
+  },
+  "stat_bonuses": {
+    "attack": 5,
+    "defense": 4,
+    "health": 8
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 108,
+  "icon_path": "",
+  "tags": ["region_5", "accessory", "amulet", "starfall_expanse", "tier_4"]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "fr_rift_staff",
+  "display_name": "Rift Staff",
+  "description": "A fracture in reality given form, its head a window into the void between dimensions.",
+  "icon_hint": "twisted dark metal staff with a cracked reality portal at the top showing swirling purple-black void energy",
+  "item_type": "weapon",
+  "item_subtype": "staff",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 5,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 20
+  },
+  "stat_bonuses": {
+    "attack": 20,
+    "health": 26
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 155,
+  "icon_path": "",
+  "tags": ["region_7", "weapon", "staff", "final_realm", "tier_5"]
+}

@@ -1,0 +1,32 @@
+{
+  "id": "ss_sea_glass_focus",
+  "display_name": "Sea Glass Focus",
+  "description": "A smooth sea-glass orb that hums with tidal resonance, cool and slick to the touch.",
+  "icon_hint": "smooth frosted blue-green sea glass orb with faint swirling light inside, resting on a small driftwood handle",
+  "item_type": "offhand",
+  "item_subtype": "focus",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 4
+  },
+  "stat_bonuses": {
+    "attack": 4,
+    "speed": 2,
+    "health": 8
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 68,
+  "icon_path": "",
+  "tags": ["region_3", "offhand", "focus", "sunken_strand", "tier_3"]
+}

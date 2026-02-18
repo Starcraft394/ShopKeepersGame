@@ -26,36 +26,34 @@
     "The Corrupted Forge"
   ],
   "tier1_monster_ids": [
-    "goblin", "wolf", "slime", "giant_spider", "rat_swarm", "boar",
-    "bandit", "bandit_elite", "scarecrow", "skeleton", "zombie", "cultist"
+    "goblin", "wolf", "slime", "giant_spider", "boar",
+    "bandit", "bandit_elite"
   ],
   "tier2_monster_ids": [
-    "gr_moss_troll", "gr_rootkin_sprite", "gr_bramble_stalker", "gr_rootbound_shaman",
-    "dire_boar", "webspinner",
-    "tf_bandit_raider", "tf_logsplitter_brute", "tf_rustwood_construct",
-    "cultist_enforcer", "skeleton_veteran", "acid_slime"
+    "gr_bramble_stalker", "webspinner",
+    "tf_logsplitter_brute", "tf_rustwood_construct",
+    "cultist_enforcer"
   ],
   "elite_monster_ids": [
-    "gr_briar_guardian", "dire_boar_elite", "webspinner_elite",
-    "tf_sawbone_enforcer", "cultist_enforcer_elite", "skeleton_veteran_elite"
+    "tf_sawbone_enforcer", "cultist_enforcer_elite"
   ],
   "tier1_by_floor": [
-    ["goblin", "wolf", "slime", "bandit", "scarecrow"],
-    ["goblin", "giant_spider", "rat_swarm", "zombie", "cultist"],
-    ["wolf", "boar", "giant_spider", "bandit_elite", "skeleton"],
-    ["boar", "rat_swarm", "cultist", "scarecrow", "bandit_elite"]
+    ["goblin", "wolf", "slime", "bandit", "giant_spider"],
+    ["goblin", "giant_spider", "boar", "bandit_elite", "wolf"],
+    ["wolf", "boar", "giant_spider", "bandit_elite", "slime"],
+    ["boar", "bandit_elite", "wolf", "slime", "goblin"]
   ],
   "tier2_by_floor": [
-    ["gr_rootkin_sprite", "tf_bandit_raider"],
-    ["gr_moss_troll", "gr_rootkin_sprite", "tf_bandit_raider", "tf_logsplitter_brute"],
-    ["gr_bramble_stalker", "gr_rootbound_shaman", "dire_boar", "tf_rustwood_construct", "cultist_enforcer"],
-    ["gr_moss_troll", "gr_bramble_stalker", "webspinner", "tf_logsplitter_brute", "tf_rustwood_construct", "acid_slime"]
+    ["cultist_enforcer", "tf_logsplitter_brute"],
+    ["cultist_enforcer", "tf_logsplitter_brute", "webspinner", "gr_bramble_stalker"],
+    ["gr_bramble_stalker", "tf_rustwood_construct", "cultist_enforcer", "webspinner", "tf_logsplitter_brute"],
+    ["gr_bramble_stalker", "webspinner", "tf_logsplitter_brute", "tf_rustwood_construct", "cultist_enforcer"]
   ],
   "elite_by_floor": [
     [],
-    ["dire_boar_elite", "skeleton_veteran_elite"],
-    ["webspinner_elite", "dire_boar_elite", "cultist_enforcer_elite"],
-    ["gr_briar_guardian", "webspinner_elite", "tf_sawbone_enforcer", "cultist_enforcer_elite"]
+    ["cultist_enforcer_elite"],
+    ["cultist_enforcer_elite", "tf_sawbone_enforcer"],
+    ["tf_sawbone_enforcer", "cultist_enforcer_elite"]
   ],
   "room_types_by_floor": [
     ["combat", "event", "combat"],

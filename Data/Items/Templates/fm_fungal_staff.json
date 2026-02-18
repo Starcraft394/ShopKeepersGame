@@ -1,0 +1,31 @@
+{
+  "id": "fm_fungal_staff",
+  "display_name": "Fungal Staff",
+  "description": "A staff grown from a giant mushroom stalk, its cap still attached and faintly luminous.",
+  "icon_hint": "tall pale mushroom stalk staff with a glowing spotted cap still attached at the top, dripping faint spores",
+  "item_type": "weapon",
+  "item_subtype": "staff",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 7
+  },
+  "stat_bonuses": {
+    "attack": 7,
+    "health": 8
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 55,
+  "icon_path": "",
+  "tags": ["region_2", "weapon", "staff", "fungalmire", "tier_2"]
+}

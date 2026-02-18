@@ -178,11 +178,11 @@
 <body>
 
 <h1>ShopKeepers — Icon Reference & Art Pack Browser</h1>
-<p class="subtitle">185 items across 7 regions + 143 monster portraits + NPC/race portraits + art pack galleries</p>
+<p class="subtitle">212 items across 7 regions + 112 monster portraits + NPC/race portraits + art pack galleries</p>
 
 <div class="stats-bar">
-  <div class="stat-box stat-blue"><div class="num">185</div><div class="label">Total Items</div></div>
-  <div class="stat-box stat-green"><div class="num">143</div><div class="label">Monster Portraits</div></div>
+  <div class="stat-box stat-blue"><div class="num">212</div><div class="label">Total Items</div></div>
+  <div class="stat-box stat-green"><div class="num">112</div><div class="label">Monster Portraits</div></div>
   <div class="stat-box stat-yellow"><div class="num">7</div><div class="label">Regions</div></div>
   <div class="stat-box stat-yellow"><div class="num">2100+</div><div class="label">Available Sprites</div></div>
 </div>
@@ -283,8 +283,8 @@
 // DATA
 // ============================================================================
 
-// Total items: 185
-//   base: 18, region_1: 65, region_2: 22, region_3: 16, region_4: 16, region_5: 16, region_6: 16, region_7: 16
+// Total items: 212
+//   base: 18, region_1: 65, region_2: 25, region_3: 20, region_4: 20, region_5: 21, region_6: 21, region_7: 22
 
 const ITEM_REGIONS = [
   {key:"base", label:"Base Items", color:"#888"},
@@ -537,7 +537,7 @@ const ALL_ITEMS = [
   {id:"iron_sword", name:"Iron Sword", region:"region_1", cat:"equipment", type:"weapon", tier:2, meta:"sword | ATK +6 SPD +1 | tier 2", hint:"straight iron blade with brown leather-wrapped crossguard grip", icon:"../Assets/_ArtPacks/Swords/PNG/Transperent/Icon1.png"},
   {id:"reinforced_shield", name:"Reinforced Shield", region:"region_1", cat:"equipment", type:"armor", tier:2, meta:"shield | HP +8 DEF +5 | tier 2", hint:"kite-shaped oak shield with crossed iron bands and riveted edges", icon:"../Assets/_ArtPacks/ShieldsAmulets/PNG/Transperent/Icon7.png"},
   {id:"silver_ring", name:"Silver Ring", region:"region_1", cat:"equipment", type:"accessory", tier:2, meta:"ring | HP +8 | tier 2", hint:"polished silver ring with a faint inner glow and smooth rounded band", icon:"../Assets/_ArtPacks/Rings/PNG/Transperent/Icon8.png"},
-  {id:"warriors_pendant", name:"Warrior's Pendant", region:"region_1", cat:"equipment", type:"accessory", tier:2, meta:"amulet | ATK +2 DEF +1 | tier 2", hint:"bronze amulet on a leather cord with an iron fist emblem inset", icon:"../Assets/_ArtPacks/Rings/PNG/Transperent/Icon34.png"},
+  {id:"warriors_pendant", name:"Warrior's Pendant", region:"region_1", cat:"equipment", type:"accessory", tier:2, meta:"amulet | ATK +3 HP +3 DEF +2 | tier 2", hint:"bronze amulet on a leather cord with an iron fist emblem inset", icon:"../Assets/_ArtPacks/Rings/PNG/Transperent/Icon34.png"},
   {id:"wooden_focus", name:"Wooden Focus", region:"region_1", cat:"equipment", type:"offhand", tier:2, meta:"focus | ATK +2 HP +5 SPD +1 | tier 2", hint:"smooth carved oak orb with faintly glowing rune lines on its surface", icon:"../Assets/_ArtPacks/CraftingMaterials/PNG/Transperent/Icon12.png"},
   {id:"bat_wing", name:"Bat Wing", region:"region_1", cat:"material", type:"material", tier:1, meta:"monster_part", hint:"stretched dark brown leathery bat wing with thin bone ridges", icon:"../Assets/_ArtPacks/Loot_Chaos/PNG/Transperent/Icon5.png"},
   {id:"boar_tusk", name:"Boar Tusk", region:"region_1", cat:"material", type:"material", tier:1, meta:"monster_part", hint:"curved yellowed ivory boar tusk with a rough hollow base", icon:"../Assets/_ArtPacks/Loot_Chaos/PNG/Transperent/Icon42.png"},
@@ -571,8 +571,11 @@ const ALL_ITEMS = [
   {id:"legendary_feast", name:"Legendary Feast", region:"region_2", cat:"consumable", type:"consumable", tier:4, meta:"food | tier 4", hint:"magnificent feast table with golden dishes, glowing food, and magical steam rising", icon:""},
   {id:"fm_bioluminescent_ring", name:"Bioluminescent Ring", region:"region_2", cat:"equipment", type:"accessory", tier:2, meta:"ring | HP +10 SPD +1 | tier 2", hint:"dark amber ring with a tiny glowing green spore trapped inside the translucent stone", icon:""},
   {id:"fm_fungal_longbow", name:"Fungal Longbow", region:"region_2", cat:"equipment", type:"weapon", tier:2, meta:"bow | ATK +7 SPD +2 | tier 2", hint:"tall longbow made from pale mushroom stalk wood with glowing green sinew string", icon:""},
+  {id:"fm_fungal_staff", name:"Fungal Staff", region:"region_2", cat:"equipment", type:"weapon", tier:2, meta:"staff | ATK +7 HP +8 | tier 2", hint:"tall pale mushroom stalk staff with a glowing spotted cap still attached at the top, dripping faint spores", icon:""},
+  {id:"fm_mycelium_pendant", name:"Mycelium Pendant", region:"region_2", cat:"equipment", type:"accessory", tier:2, meta:"amulet | HP +8 DEF +3 | tier 2", hint:"pendant made of woven white mycelium threads cradling a dark hardened spore core, hanging from a thin fibrous cord", icon:""},
   {id:"fm_mycelium_vest", name:"Mycelium Vest", region:"region_2", cat:"equipment", type:"armor", tier:2, meta:"medium_chest | HP +12 DEF +6 SPD +-1 | tier 2", hint:"dense woven vest of pale white mycelium fibers with faint bioluminescent green veins throughout", icon:""},
   {id:"fm_spore_blade", name:"Spore Blade", region:"region_2", cat:"equipment", type:"weapon", tier:2, meta:"sword | ATK +8 SPD +1 | tier 2", hint:"curved pale green sword blade grown from hardened mycelium with spore clusters along the spine", icon:""},
+  {id:"fm_spore_focus", name:"Spore Focus", region:"region_2", cat:"equipment", type:"offhand", tier:2, meta:"focus | ATK +3 HP +6 SPD +1 | tier 2", hint:"round bog glass orb containing a glowing green-yellow spore cluster, faint bioluminescent veins visible inside", icon:""},
   {id:"fm_sporecap_shield", name:"Sporecap Shield", region:"region_2", cat:"equipment", type:"armor", tier:2, meta:"shield | HP +10 DEF +6 | tier 2", hint:"round shield carved from a large brown-green mushroom cap with concentric ring patterns", icon:""},
   {id:"fungal_fiber", name:"Fungal Fiber", region:"region_2", cat:"material", type:"material", tier:1, meta:"material", hint:"bundle of tough gray-green fibrous strands pulled from giant mushroom roots trailing fine spore dust", icon:""},
   {id:"mycelium_thread", name:"Mycelium Thread", region:"region_2", cat:"material", type:"material", tier:1, meta:"material", hint:"spool of pale white thread-like mycelium strands with faint bioluminescent green glow along the fibers", icon:""},
@@ -590,6 +593,10 @@ const ALL_ITEMS = [
   {id:"ss_abalone_shield", name:"Abalone Shield", region:"region_3", cat:"equipment", type:"armor", tier:3, meta:"shield | HP +14 DEF +8 | tier 3", hint:"round shield of iridescent abalone shell with a driftwood frame and rope handle", icon:""},
   {id:"ss_barnacle_plate", name:"Barnacle Plate", region:"region_3", cat:"equipment", type:"armor", tier:3, meta:"heavy_chest | HP +16 DEF +8 SPD +-1 | tier 3", hint:"chest armor of overlapping gray shells and barnacle-crusted iron plates with teal leather straps", icon:""},
   {id:"ss_coral_blade", name:"Coral Blade", region:"region_3", cat:"equipment", type:"weapon", tier:3, meta:"sword | ATK +11 SPD +1 | tier 3", hint:"curved sea-green blade with jagged coral fragments embedded along the cutting edge and a barnacle-crusted hilt", icon:""},
+  {id:"ss_coral_staff", name:"Coral Staff", region:"region_3", cat:"equipment", type:"weapon", tier:3, meta:"staff | ATK +9 HP +12 | tier 3", hint:"tall white bleached coral branch staff with a glowing blue sea-stone mounted at the tip, small barnacles along the shaft", icon:""},
+  {id:"ss_kelp_vest", name:"Kelp Vest", region:"region_3", cat:"equipment", type:"armor", tier:3, meta:"light_chest | DEF +5 SPD +2 | tier 3", hint:"green-brown woven kelp vest with thin iridescent shell plates stitched along the front, lightweight and flexible", icon:""},
+  {id:"ss_pearl_amulet", name:"Pearl Amulet", region:"region_3", cat:"equipment", type:"accessory", tier:3, meta:"amulet | ATK +3 HP +6 DEF +3 | tier 3", hint:"large iridescent pearl pendant set in a tarnished silver frame with small barnacles clinging to the chain links", icon:""},
+  {id:"ss_sea_glass_focus", name:"Sea Glass Focus", region:"region_3", cat:"equipment", type:"offhand", tier:3, meta:"focus | ATK +4 HP +8 SPD +2 | tier 3", hint:"smooth frosted blue-green sea glass orb with faint swirling light inside, resting on a small driftwood handle", icon:""},
   {id:"ss_tidecaller_ring", name:"Tidecaller's Ring", region:"region_3", cat:"equipment", type:"accessory", tier:3, meta:"ring | ATK +2 HP +12 | tier 3", hint:"silver ring with a smooth oval sea-glass stone that shifts between blue and green", icon:""},
   {id:"ss_tidestriker_bow", name:"Tidestriker Bow", region:"region_3", cat:"equipment", type:"weapon", tier:3, meta:"bow | ATK +10 SPD +3 | tier 3", hint:"recurved driftwood bow with pale whale sinew string and barnacle accents on the limbs", icon:""},
   {id:"ss_brine_venom", name:"Brine Venom", region:"region_3", cat:"material", type:"material", tier:1, meta:"monster_part", hint:"small glass vial of cloudy yellow-green caustic liquid with salt crystals on the rim", icon:""},
@@ -606,9 +613,13 @@ const ALL_ITEMS = [
   {id:"ah_magma_tonic", name:"Magma Tonic", region:"region_4", cat:"consumable", type:"consumable", tier:3, meta:"potion | heal 65 | tier 3", hint:"thick glass flask of bubbling orange-red liquid with heat shimmer rising from the top", icon:""},
   {id:"ah_cinder_amulet", name:"Cinder Amulet", region:"region_4", cat:"equipment", type:"accessory", tier:3, meta:"amulet | ATK +3 HP +14 | tier 3", hint:"black volcanic stone amulet on a brass chain with a glowing orange ember trapped inside", icon:""},
   {id:"ah_drake_buckler", name:"Drake Buckler", region:"region_4", cat:"equipment", type:"armor", tier:3, meta:"shield | HP +16 DEF +9 | tier 3", hint:"small round buckler covered in red-orange drake scales with a scorched brass boss", icon:""},
+  {id:"ah_drake_jerkin", name:"Drake Jerkin", region:"region_4", cat:"equipment", type:"armor", tier:3, meta:"light_chest | HP +8 DEF +7 SPD +1 | tier 3", hint:"sleek vest of overlapping red-orange drake scales with leather trim and flexible joints", icon:""},
   {id:"ah_ember_blade", name:"Ember Blade", region:"region_4", cat:"equipment", type:"weapon", tier:3, meta:"sword | ATK +13 SPD +2 | tier 3", hint:"dark obsidian blade with glowing orange-red cracks along the edge and a dragon-bone crossguard", icon:""},
+  {id:"ah_ember_focus", name:"Ember Focus", region:"region_4", cat:"equipment", type:"offhand", tier:3, meta:"focus | ATK +5 HP +10 SPD +1 | tier 3", hint:"cracked lava-glass sphere with a flickering fire-wisp trapped inside radiating orange light", icon:""},
   {id:"ah_magma_plate", name:"Magma Plate", region:"region_4", cat:"equipment", type:"armor", tier:3, meta:"heavy_chest | HP +20 DEF +10 SPD +-2 | tier 3", hint:"heavy dark iron chest plate with glowing orange magma veins between the plates", icon:""},
+  {id:"ah_obsidian_staff", name:"Obsidian Staff", region:"region_4", cat:"equipment", type:"weapon", tier:3, meta:"staff | ATK +11 HP +14 | tier 3", hint:"jagged black obsidian staff with a glowing orange-red ember crystal at the tip", icon:""},
   {id:"ah_scorched_longbow", name:"Scorched Longbow", region:"region_4", cat:"equipment", type:"weapon", tier:3, meta:"bow | ATK +12 SPD +3 | tier 3", hint:"dark charred longbow with red-hot string and ember glow at the nocked tips", icon:""},
+  {id:"ah_volcanic_maul", name:"Volcanic Maul", region:"region_4", cat:"equipment", type:"weapon", tier:3, meta:"mace | ATK +15 SPD +-2 | tier 3", hint:"massive dark basalt war maul with glowing orange lava veins running through the head", icon:""},
   {id:"ah_drake_scale", name:"Drake Scale", region:"region_4", cat:"material", type:"material", tier:1, meta:"monster_part", hint:"large curved red-orange scale with heat shimmer rising from its surface", icon:""},
   {id:"ember_dust", name:"Ember Dust", region:"region_4", cat:"material", type:"material", tier:1, meta:"crafting", hint:"pile of fine red-orange ash with tiny glowing embers scattered throughout", icon:""},
   {id:"molten_core", name:"Molten Core", region:"region_4", cat:"material", type:"material", tier:1, meta:"legendary", hint:"sphere of solidified dragonfire glowing deep orange-red with swirling magma patterns", icon:""},
@@ -621,10 +632,15 @@ const ALL_ITEMS = [
   {id:"se_crystal_fruit", name:"Crystal Fruit", region:"region_5", cat:"consumable", type:"consumable", tier:4, meta:"food | tier 4", hint:"translucent crystal-shaped fruit with prismatic colors inside sitting on a silver leaf", icon:""},
   {id:"se_reality_flare", name:"Reality Flare", region:"region_5", cat:"consumable", type:"consumable", tier:4, meta:"thrown | tier 4", hint:"jagged crystal shard crackling with prismatic lightning in a leather pouch", icon:""},
   {id:"se_starlight_elixir", name:"Starlight Elixir", region:"region_5", cat:"consumable", type:"consumable", tier:4, meta:"potion | heal 80 | tier 4", hint:"elegant crystal flask of shimmering silver-blue liquid with tiny star motes floating inside", icon:""},
+  {id:"se_astral_robe", name:"Astral Robe", region:"region_5", cat:"equipment", type:"armor", tier:4, meta:"light_chest | HP +8 DEF +8 SPD +2 | tier 4", hint:"flowing dark blue robe woven with shimmering starlight threads and celestial constellation patterns", icon:""},
+  {id:"se_chrono_cleaver", name:"Chrono Cleaver", region:"region_5", cat:"equipment", type:"weapon", tier:4, meta:"axe | ATK +20 SPD +-2 | tier 4", hint:"crescent-bladed axe of translucent temporal crystal with ghostly afterimages trailing the blade", icon:""},
   {id:"se_crystal_ward", name:"Crystal Ward", region:"region_5", cat:"equipment", type:"armor", tier:4, meta:"medium_chest | HP +24 DEF +12 SPD +-1 | tier 4", hint:"chest armor of overlapping translucent crystal plates with prismatic light shimmering between the seams", icon:""},
+  {id:"se_echo_amulet", name:"Echo Amulet", region:"region_5", cat:"equipment", type:"accessory", tier:4, meta:"amulet | ATK +5 HP +8 DEF +4 | tier 4", hint:"ornate silver locket on a fine chain with a faintly glowing dying star fragment inside", icon:""},
   {id:"se_echo_shield", name:"Echo Shield", region:"region_5", cat:"equipment", type:"armor", tier:4, meta:"shield | HP +20 DEF +11 | tier 4", hint:"translucent kite shield with a ghostly after-image slightly offset creating a double-vision effect", icon:""},
   {id:"se_prism_blade", name:"Prism Blade", region:"region_5", cat:"equipment", type:"weapon", tier:4, meta:"sword | ATK +16 SPD +2 | tier 4", hint:"translucent crystalline sword blade splitting light into rainbow refractions with a silver wire-wrapped hilt", icon:""},
+  {id:"se_prism_staff", name:"Prism Staff", region:"region_5", cat:"equipment", type:"weapon", tier:4, meta:"staff | ATK +14 HP +18 | tier 4", hint:"tall platinum-veined staff topped with a multifaceted crystal prism refracting rainbow light", icon:""},
   {id:"se_starfall_bow", name:"Starfall Bow", region:"region_5", cat:"equipment", type:"weapon", tier:4, meta:"bow | ATK +15 SPD +4 | tier 4", hint:"elegant crystalline bow with silver-blue glow and tiny star motes drifting around the limbs", icon:""},
+  {id:"se_starlight_focus", name:"Starlight Focus", region:"region_5", cat:"equipment", type:"offhand", tier:4, meta:"focus | ATK +6 HP +12 SPD +2 | tier 4", hint:"hovering crystal lattice sphere radiating soft white-blue starlight with tiny sparkling motes", icon:""},
   {id:"se_temporal_band", name:"Temporal Band", region:"region_5", cat:"equipment", type:"accessory", tier:4, meta:"ring | HP +16 SPD +3 | tier 4", hint:"ring of swirling amber crystal with ghostly after-images trailing from its surface", icon:""},
   {id:"se_crystal_chitin", name:"Crystal Chitin", region:"region_5", cat:"material", type:"material", tier:1, meta:"monster_part", hint:"iridescent crystalline exoskeleton plate that refracts light into prismatic colors", icon:""},
   {id:"se_echo_essence", name:"Echo Essence", region:"region_5", cat:"material", type:"material", tier:1, meta:"monster_part", hint:"small glowing orb of pale silver light trapped in a glass sphere, flickering", icon:""},
@@ -638,11 +654,16 @@ const ALL_ITEMS = [
   {id:"nc_corpsebloom_stew", name:"Corpsebloom Stew", region:"region_6", cat:"consumable", type:"consumable", tier:4, meta:"food | tier 4", hint:"stone bowl of thick gray-green stew with pale mushroom caps floating on top and ghostly steam", icon:""},
   {id:"nc_grave_elixir", name:"Grave Elixir", region:"region_6", cat:"consumable", type:"consumable", tier:4, meta:"potion | heal 95 | tier 4", hint:"tall narrow flask of pale green luminous liquid with ghostly faces swirling inside", icon:""},
   {id:"nc_spectral_draught", name:"Spectral Draught", region:"region_6", cat:"consumable", type:"consumable", tier:4, meta:"potion | tier 4", hint:"ghostly translucent flask where the liquid and glass both phase between visible and invisible", icon:""},
+  {id:"nc_bone_staff", name:"Bone Staff", region:"region_6", cat:"equipment", type:"weapon", tier:4, meta:"staff | ATK +17 HP +22 | tier 4", hint:"pale bone staff carved from a massive femur topped with a small horned skull with glowing green eye sockets", icon:""},
+  {id:"nc_bonecaller_amulet", name:"Bonecaller Amulet", region:"region_6", cat:"equipment", type:"accessory", tier:4, meta:"amulet | HP +18 DEF +5 | tier 4", hint:"polished vertebra bone pendant on a dark sinew cord with faint necromantic runes etched into the surface", icon:""},
   {id:"nc_deathward_ring", name:"Deathward Ring", region:"region_6", cat:"equipment", type:"accessory", tier:4, meta:"ring | HP +20 DEF +3 | tier 4", hint:"ring carved from pale bone with a dark soul-ore gem that emits a faint green mist", icon:""},
+  {id:"nc_grave_dagger", name:"Grave Dagger", region:"region_6", cat:"equipment", type:"weapon", tier:4, meta:"dagger | ATK +14 SPD +5 | tier 4", hint:"sleek blackened iron dagger with a translucent ghostly edge and a hilt wrapped in frayed grave cloth", icon:""},
   {id:"nc_ossuary_plate", name:"Ossuary Plate", region:"region_6", cat:"equipment", type:"armor", tier:4, meta:"heavy_chest | HP +30 DEF +15 SPD +-2 | tier 4", hint:"chest armor of interlocking pale bone plates with faint green runes carved into each piece", icon:""},
   {id:"nc_soul_reaver", name:"Soul Reaver", region:"region_6", cat:"equipment", type:"weapon", tier:4, meta:"sword | ATK +19 SPD +2 | tier 4", hint:"jagged dark iron sword with a ghostly green glow along the blade and a bone-wrapped hilt", icon:""},
+  {id:"nc_soulfire_focus", name:"Soulfire Focus", region:"region_6", cat:"equipment", type:"offhand", tier:4, meta:"focus | ATK +7 HP +14 SPD +1 | tier 4", hint:"blackened silver wire cage containing a hovering pale green spectral flame with wisps trailing upward", icon:""},
   {id:"nc_spectral_aegis", name:"Spectral Aegis", region:"region_6", cat:"equipment", type:"armor", tier:4, meta:"shield | HP +24 DEF +13 | tier 4", hint:"translucent ghostly shield that phases between solid and ethereal with green spectral energy rippling across its surface", icon:""},
   {id:"nc_wraith_bow", name:"Wraith Bow", region:"region_6", cat:"equipment", type:"weapon", tier:4, meta:"bow | ATK +18 SPD +4 | tier 4", hint:"pale bone bow with translucent ghostly string and faint green spectral wisps trailing from the tips", icon:""},
+  {id:"nc_wraith_robe", name:"Wraith Robe", region:"region_6", cat:"equipment", type:"armor", tier:4, meta:"light_chest | HP +12 DEF +10 SPD +2 | tier 4", hint:"tattered dark grey robes with translucent edges trailing wisps of ghostly blue-green energy", icon:""},
   {id:"nc_bone_marrow", name:"Bone Marrow", region:"region_6", cat:"material", type:"material", tier:1, meta:"monster_part", hint:"sealed jar of pale luminescent paste with dark necrotic veins swirling inside", icon:""},
   {id:"deadmans_grass", name:"Deadman's Grass", region:"region_6", cat:"material", type:"material", tier:1, meta:"herb", hint:"bundle of pale white grass with gray roots, giving off a faint deathly chill", icon:""},
   {id:"nc_grave_dust", name:"Grave Dust", region:"region_6", cat:"material", type:"material", tier:1, meta:"monster_part", hint:"pouch of fine gray-brown powder with tiny bone fragments mixed in", icon:""},
@@ -655,11 +676,17 @@ const ALL_ITEMS = [
   {id:"fr_entropy_charge", name:"Entropy Charge", region:"region_7", cat:"consumable", type:"consumable", tier:5, meta:"thrown | tier 5", hint:"sphere of swirling dark matter contained in a cracked glass shell leaking purple void energy", icon:""},
   {id:"fr_null_feast", name:"Null Feast", region:"region_7", cat:"consumable", type:"consumable", tier:5, meta:"food | tier 5", hint:"plate of food that phases between visible and invisible with void particles rising from it like steam", icon:""},
   {id:"fr_void_mend", name:"Void Mend", region:"region_7", cat:"consumable", type:"consumable", tier:5, meta:"potion | tier 5", hint:"small vial of swirling black-purple liquid with white star motes drifting through it", icon:""},
+  {id:"fr_dimensional_locket", name:"Dimensional Locket", region:"region_7", cat:"equipment", type:"accessory", tier:5, meta:"amulet | ATK +6 DEF +5 SPD +2 | tier 5", hint:"ornate silver locket slightly ajar revealing a swirling miniature galaxy inside with reality-warping distortion around it", icon:""},
   {id:"fr_dimensional_plate", name:"Dimensional Plate", region:"region_7", cat:"equipment", type:"armor", tier:5, meta:"heavy_chest | HP +36 DEF +18 SPD +-2 | tier 5", hint:"dark plate armor with sections that phase in and out of visibility and purple void cracks between the plates", icon:""},
   {id:"fr_entropy_bow", name:"Entropy Bow", region:"region_7", cat:"equipment", type:"weapon", tier:5, meta:"bow | ATK +22 SPD +5 | tier 5", hint:"warped dark bow that bends reality around it with purple-black void energy for a string", icon:""},
+  {id:"fr_entropy_maul", name:"Entropy Maul", region:"region_7", cat:"equipment", type:"weapon", tier:5, meta:"axe | ATK +28 SPD +-3 | tier 5", hint:"massive dark crystalline axe head with cracks leaking white-hot dissolution energy on a warped obsidian haft", icon:""},
   {id:"fr_null_barrier", name:"Null Barrier", region:"region_7", cat:"equipment", type:"armor", tier:5, meta:"shield | HP +30 DEF +16 | tier 5", hint:"matte black shield with a void vortex at its center that absorbs surrounding light", icon:""},
+  {id:"fr_null_focus", name:"Null Focus", region:"region_7", cat:"equipment", type:"offhand", tier:5, meta:"focus | ATK +9 HP +18 SPD +3 | tier 5", hint:"iridescent black pearl hovering inside a lattice of crackling frozen blue-white lightning bolts", icon:""},
   {id:"fr_rift_band", name:"Rift Band", region:"region_7", cat:"equipment", type:"accessory", tier:5, meta:"ring | HP +24 SPD +4 | tier 5", hint:"ring of solid darkness that warps light around it with tiny stars visible in its depths", icon:""},
+  {id:"fr_rift_staff", name:"Rift Staff", region:"region_7", cat:"equipment", type:"weapon", tier:5, meta:"staff | ATK +20 HP +26 | tier 5", hint:"twisted dark metal staff with a cracked reality portal at the top showing swirling purple-black void energy", icon:""},
   {id:"fr_void_edge", name:"Void Edge", region:"region_7", cat:"equipment", type:"weapon", tier:5, meta:"sword | ATK +23 SPD +3 | tier 5", hint:"sleek black sword with edges that blur into nothingness and dark purple void energy trailing behind", icon:""},
+  {id:"fr_void_fang", name:"Void Fang", region:"region_7", cat:"equipment", type:"weapon", tier:5, meta:"dagger | ATK +17 SPD +7 | tier 5", hint:"translucent black crystalline dagger with edges that distort the space around them and a hilt of frozen void energy", icon:""},
+  {id:"fr_void_shroud", name:"Void Shroud", region:"region_7", cat:"equipment", type:"armor", tier:5, meta:"light_chest | HP +14 DEF +12 SPD +3 | tier 5", hint:"flowing cloak of deep black silk with edges that dissolve into translucent nothingness and faint starfield patterns", icon:""},
   {id:"fr_corruption_ichor", name:"Corruption Ichor", region:"region_7", cat:"material", type:"material", tier:1, meta:"monster_part", hint:"sealed vial of thick black-purple fluid that stains the glass where it touches", icon:""},
   {id:"fr_entropy_residue", name:"Entropy Residue", region:"region_7", cat:"material", type:"material", tier:1, meta:"crafting", hint:"pile of slowly dissolving dark matter with edges that blur into nothingness", icon:""},
   {id:"fractured_soulglass", name:"Fractured Soulglass", region:"region_7", cat:"material", type:"material", tier:1, meta:"legendary", hint:"cracked lens of compressed souls refracting reality into impossible angles", icon:""},
@@ -1159,60 +1186,23 @@ function renderRaces() {
 // ============================================================================
 
 const MONSTERS = [
-  // beast family
-  {id:"bat_swarm", name:"Bat Swarm", family:"beast", tier:1, elite:false, boss:false, desc:"A cloud of wings that harasses and distracts.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon32.png"},
+  // Region 1 — Forest Haven (beast, construct, humanoid, ooze, plant)
   {id:"boar", name:"Boar", family:"beast", tier:1, elite:false, boss:false, desc:"A bruising charge wrapped in muscle and tusk.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon46.png"},
-  {id:"bandit", name:"Bandit", family:"beast", tier:1, elite:false, boss:false, desc:"A desperate outlaw who preys on travelers.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon44.png"},
-  {id:"forest_hare", name:"Forest Hare", family:"beast", tier:1, elite:false, boss:false, desc:"A quick woodland creature. Prized for its tender meat.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon33.png"},
+  {id:"bandit", name:"Bandit", family:"humanoid", tier:1, elite:false, boss:false, desc:"A desperate outlaw who preys on travelers.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon44.png"},
   {id:"giant_spider", name:"Giant Spider", family:"beast", tier:1, elite:false, boss:false, desc:"A venomous arachnid that lurks in dark places.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon16.png"},
-  {id:"goblin", name:"Goblin", family:"beast", tier:1, elite:false, boss:false, desc:"A small, cunning creature that attacks in groups.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon7.png"},
-  {id:"rat_swarm", name:"Rat Swarm", family:"beast", tier:1, elite:false, boss:false, desc:"A chittering pack that overwhelms distracted fighters.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon31.png"},
-  {id:"wild_turkey", name:"Wild Turkey", family:"beast", tier:1, elite:false, boss:false, desc:"A plump forest bird that makes excellent eating.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon37.png"},
+  {id:"goblin", name:"Goblin", family:"humanoid", tier:1, elite:false, boss:false, desc:"A small, cunning creature that attacks in groups.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon7.png"},
   {id:"wolf", name:"Wolf", family:"beast", tier:1, elite:false, boss:false, desc:"A fierce predator that hunts in packs.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon43.png"},
-  {id:"wolf_elite", name:"Dire Wolf", family:"beast", tier:1, elite:true, boss:false, desc:"Bigger jaws. Faster feet. No hesitation.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon43.png"},
-  {id:"dire_boar", name:"Dire Boar", family:"beast", tier:2, elite:false, boss:false, desc:"A brutal tusker that shrugs off weak hits.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon3.png"},
-  {id:"dire_boar_elite", name:"Dire Boar (Elite)", family:"beast", tier:2, elite:true, boss:false, desc:"A plated tusker that shrugs off punishment and keeps charging.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon3.png"},
-  {id:"gr_bramble_stalker", name:"Bramble Stalker", family:"beast", tier:2, elite:false, boss:false, desc:"A thorny predator that moves silently through dense underbrush.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon39.png"},
-  {id:"gr_moss_troll", name:"Moss Troll", family:"beast", tier:2, elite:false, boss:false, desc:"A hulking brute wrapped in wet moss and stubborn rage.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon8.png"},
-  {id:"gr_rootbound_shaman", name:"Rootbound Shaman", family:"beast", tier:2, elite:false, boss:false, desc:"A forest mystic fused with living roots, channeling primal fury.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon17.png"},
-  {id:"gr_rootkin_sprite", name:"Rootkin Sprite", family:"beast", tier:2, elite:false, boss:false, desc:"A mischievous forest wisp that strikes and slips away.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon11.png"},
-  {id:"webspinner", name:"Webspinner", family:"beast", tier:2, elite:false, boss:false, desc:"A patient hunter that waits for the right moment.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon36.png"},
-  {id:"webspinner_elite", name:"Webspinner (Elite)", family:"beast", tier:2, elite:true, boss:false, desc:"A silent hunter that never wastes a turn.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon36.png"},
-  {id:"phase_spider", name:"Phase Spider", family:"beast", tier:3, elite:false, boss:true, desc:"It vanishes between heartbeats and reappears in your blind spot.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon1.png"},
-  {id:"thorn_ent", name:"Thorn-Ent", family:"beast", tier:3, elite:false, boss:true, desc:"A walking bramble-heart that answers steel with splinters.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon13.png"},
-  // construct family
-  {id:"scarecrow", name:"Scarecrow", family:"construct", tier:1, elite:false, boss:false, desc:"Stitched straw given motion by a bitter spark.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon15.png"},
-  {id:"tf_rustwood_construct", name:"Rustwood Construct", family:"construct", tier:2, elite:false, boss:false, desc:"A lumber-hauling automaton corrupted by dark influence.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon25.png"},
-  {id:"gr_briar_guardian", name:"Briar Guardian", family:"construct", tier:3, elite:true, boss:false, desc:"A thorn-plated sentinel grown to defend sacred groves.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon10.png"},
-  {id:"ironbound_scarecrow", name:"Ironbound Scarecrow", family:"construct", tier:3, elite:true, boss:false, desc:"Reinforced straw and rusted plate\u2014built to endure.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon45.png"},
-  // fungi family
-  {id:"slime", name:"Slime", family:"fungi", tier:1, elite:false, boss:false, desc:"A gelatinous blob that absorbs everything it touches.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon21.png"},
-  // humanoid family
+  {id:"slime", name:"Slime", family:"ooze", tier:1, elite:false, boss:false, desc:"A gelatinous blob that absorbs everything it touches.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon21.png"},
   {id:"bandit_elite", name:"Bandit Captain", family:"humanoid", tier:1, elite:true, boss:false, desc:"A ruthless leader who fights like every hit is a wager.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon44.png"},
-  {id:"cultist", name:"Cultist", family:"humanoid", tier:1, elite:false, boss:false, desc:"A frantic devotee who strikes hard and falls fast.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon14.png"},
-  {id:"goblin_elite", name:"Goblin Elite", family:"humanoid", tier:1, elite:true, boss:false, desc:"Sharper blades, meaner grin, fewer mistakes.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon7.png"},
+  {id:"gr_bramble_stalker", name:"Bramble Stalker", family:"plant", tier:2, elite:false, boss:false, desc:"A thorny predator that moves silently through dense underbrush.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon39.png"},
+  {id:"webspinner", name:"Webspinner", family:"beast", tier:2, elite:false, boss:false, desc:"A patient hunter that waits for the right moment.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon36.png"},
+  {id:"tf_rustwood_construct", name:"Rustwood Construct", family:"construct", tier:2, elite:false, boss:false, desc:"A lumber-hauling automaton corrupted by dark influence.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon25.png"},
   {id:"cultist_enforcer", name:"Cultist Enforcer", family:"humanoid", tier:2, elite:false, boss:false, desc:"A hardened zealot that hits hard and doesn't flinch.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon34.png"},
   {id:"cultist_enforcer_elite", name:"Cultist Enforcer (Elite)", family:"humanoid", tier:2, elite:true, boss:false, desc:"A fanatic champion who hits first and hits last.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon34.png"},
-  {id:"tf_bandit_raider", name:"Bandit Raider", family:"humanoid", tier:2, elite:false, boss:false, desc:"A timber-thief turned knife-fighter, quick and mean.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon9.png"},
   {id:"tf_logsplitter_brute", name:"Logsplitter Brute", family:"humanoid", tier:2, elite:false, boss:false, desc:"A massive woodcutter gone feral, swinging a heavy splitting maul.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon4.png"},
   {id:"tf_sawbone_enforcer", name:"Sawbone Enforcer", family:"humanoid", tier:3, elite:true, boss:false, desc:"A brutal foreman who fights with splintered tools and cruelty.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon35.png"},
-  {id:"forest_hag", name:"Forest Hag", family:"humanoid", tier:3, elite:false, boss:true, desc:"A crooked spirit that turns fear into strength.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon6.png"},
+  {id:"thorn_ent", name:"Thorn-Ent", family:"beast", tier:3, elite:false, boss:true, desc:"A walking bramble-heart that answers steel with splinters.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon13.png"},
   {id:"tf_iron_foreman", name:"Iron Foreman", family:"humanoid", tier:3, elite:false, boss:true, desc:"The tyrannical overseer of Timberfall's cursed mills.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon40.png"},
-  // ooze family
-  {id:"slime_elite", name:"Elder Slime", family:"ooze", tier:1, elite:true, boss:false, desc:"Denser gel, tougher skin, slower to split apart.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon21.png"},
-  {id:"acid_slime", name:"Acid Slime", family:"ooze", tier:2, elite:false, boss:false, desc:"A corrosive ooze that turns armor to mush.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon26.png"},
-  {id:"acid_slime_elite", name:"Acid Slime (Elite)", family:"ooze", tier:2, elite:true, boss:false, desc:"A dense corrosive mass that dissolves defenses over time.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon26.png"},
-  {id:"black_ooze", name:"Black Ooze", family:"ooze", tier:3, elite:true, boss:false, desc:"A tar-dark mass that clings and refuses to die.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon28.png"},
-  // plant family
-  {id:"berry_thicket", name:"Berry Thicket", family:"plant", tier:1, elite:false, boss:false, desc:"A dense patch of wild berries protected by thorny vines.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon20.png"},
-  {id:"mushroom_cluster", name:"Mushroom Cluster", family:"plant", tier:1, elite:false, boss:false, desc:"A cluster of edible forest mushrooms that release spores when disturbed.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon5.png"},
-  // undead family
-  {id:"skeleton", name:"Skeleton", family:"undead", tier:1, elite:false, boss:false, desc:"Reanimated bones held together by dark magic.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon12.png"},
-  {id:"skeleton_elite", name:"Skeleton Elite", family:"undead", tier:1, elite:true, boss:false, desc:"A veteran's bones that still remember the rhythm of war.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon12.png"},
-  {id:"zombie", name:"Zombie", family:"undead", tier:1, elite:false, boss:false, desc:"Slow, stubborn, and hard to put down.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon48.png"},
-  {id:"skeleton_veteran", name:"Skeleton Veteran", family:"undead", tier:2, elite:false, boss:false, desc:"A disciplined revenant that strikes with practiced timing.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon19.png"},
-  {id:"skeleton_veteran_elite", name:"Skeleton Veteran (Elite)", family:"undead", tier:2, elite:true, boss:false, desc:"A revenant officer that punishes sloppy lines.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon19.png"},
-  {id:"crypt_lord", name:"Crypt Lord", family:"undead", tier:3, elite:false, boss:true, desc:"An ancient commander bound to bone and oath.", portrait:"../Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon42.png"},
   // spore family (Region 2 — The Fungalmire)
   {id:"fm_bog_wisp", name:"Bog Wisp", family:"spore", tier:1, elite:false, boss:false, desc:"A flickering bioluminescent mote that leads travelers astray.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fm_bog_wisp.png"},
   {id:"fm_mire_toad", name:"Mire Toad", family:"spore", tier:1, elite:false, boss:false, desc:"A bloated amphibian that spits toxic spore clouds.", portrait:"../Assets/_ArtPacks/Monsters_Recolored/fm_mire_toad.png"},
@@ -1319,7 +1309,7 @@ const MONSTERS = [
 
 // Region-based monster grouping (families mapped to regions)
 const MONSTER_REGIONS = [
-  {key:"region_1", label:"Region 1 \u2014 Forest Haven", families:["beast","construct","fungi","humanoid","ooze","plant","undead"], color:"#4a7a5a"},
+  {key:"region_1", label:"Region 1 \u2014 Forest Haven", families:["beast","construct","humanoid","ooze","plant"], color:"#4a7a5a"},
   {key:"region_2", label:"Region 2 \u2014 The Fungalmire", families:["spore"], color:"#4a6b3a"},
   {key:"region_3", label:"Region 3 \u2014 The Sunken Strand", families:["coastal"], color:"#2c6e7a"},
   {key:"region_4", label:"Region 4 \u2014 Ashen Horizons", families:["volcanic"], color:"#d4622a"},
@@ -1330,7 +1320,7 @@ const MONSTER_REGIONS = [
 
 // Family colors for per-monster badges
 const FAMILY_COLORS = {
-  beast:"#8bc34a", construct:"#78909c", fungi:"#ab47bc", humanoid:"#42a5f5",
+  beast:"#8bc34a", construct:"#78909c", humanoid:"#42a5f5",
   coastal:"#4a90a4", crystal:"#9c6abf", necro:"#6d4c6e", spore:"#4a6b3a",
   ooze:"#66bb6a", plant:"#4caf50", undead:"#ef5350", void:"#2d1b4e", volcanic:"#c44d2b"
 };
