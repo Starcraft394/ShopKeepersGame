@@ -166,7 +166,6 @@ func _update_display() -> void:
 	elif _is_descend_mode:
 		# End of floor, not final floor -> show Descend button (use A for descend)
 		choice_a_button.visible = true
-		choice_a_button.disabled = false
 		choice_a_button.text = "Descend to Floor %d (A)" % (floor_num + 1)
 		choice_b_container.visible = false
 		choice_b_button_container.visible = false
@@ -175,6 +174,22 @@ func _update_display() -> void:
 		extract_button.disabled = false
 		choice_a_label.text = "Floor %d complete!" % floor_num
 		hotkey_hint.text = "A=Descend | E=Extract | F=Flee"
+
+		# Boss gate: if next floor is the final floor, check facility T4 prerequisite
+		var next_floor_is_boss: bool = (floor_num + 1 >= floor_count)
+		if next_floor_is_boss:
+			var town_id: String = GameContext.get_current_town_id()
+			var gate: Dictionary = GameContext.can_challenge_boss(town_id)
+			if not gate.get("ready", true):
+				choice_a_button.disabled = true
+				choice_a_label.text = "Boss Floor Locked! Upgrade %d more facilities to Tier 4 (%d/%d ready)" % [
+					gate.required - gate.current, gate.current, gate.required
+				]
+				hotkey_hint.text = "E=Extract | F=Flee"
+			else:
+				choice_a_button.disabled = false
+		else:
+			choice_a_button.disabled = false
 	else:
 		# Normal room choices mode
 		var choice_b_disabled = _choice_b.get("disabled", false)

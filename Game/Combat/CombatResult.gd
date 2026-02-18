@@ -57,6 +57,7 @@ var _context: Dictionary = {}
 
 # Boss encounter flag - affects loot table selection
 var is_boss_encounter: bool = false
+var is_campaign_victory: bool = false
 
 
 func set_rng(rng: RandomNumberGenerator) -> void:

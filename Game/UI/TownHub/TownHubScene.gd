@@ -151,16 +151,29 @@ func _build_nav_rail() -> void:
 		var current_region_id: String = GameContext.get_current_region_id() if GameContext.has_method("get_current_region_id") else "region_1"
 		for region in all_regions:
 			var rbtn = Button.new()
-			rbtn.text = region.display_name
-			rbtn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			var region_color: Color = Color.from_string(region.theme_color, Color.WHITE)
-			rbtn.modulate = Color(
-				clampf(region_color.r * 1.5 + 0.2, 0.0, 1.0),
-				clampf(region_color.g * 1.5 + 0.2, 0.0, 1.0),
-				clampf(region_color.b * 1.5 + 0.2, 0.0, 1.0)
-			)
-			if region.region_id == current_region_id:
+			rbtn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+			var is_unlocked: bool = GameContext.is_region_unlocked(region.region_id)
+			if not is_unlocked:
+				rbtn.text = region.display_name + " [Locked]"
 				rbtn.disabled = true
+				rbtn.modulate = Color(0.4, 0.4, 0.4)
+			elif region.region_id == current_region_id:
+				rbtn.text = region.display_name
+				rbtn.disabled = true
+				rbtn.modulate = Color(
+					clampf(region_color.r * 1.5 + 0.2, 0.0, 1.0),
+					clampf(region_color.g * 1.5 + 0.2, 0.0, 1.0),
+					clampf(region_color.b * 1.5 + 0.2, 0.0, 1.0)
+				)
+			else:
+				rbtn.text = region.display_name
+				rbtn.modulate = Color(
+					clampf(region_color.r * 1.5 + 0.2, 0.0, 1.0),
+					clampf(region_color.g * 1.5 + 0.2, 0.0, 1.0),
+					clampf(region_color.b * 1.5 + 0.2, 0.0, 1.0)
+				)
 			rbtn.pressed.connect(_on_region_pressed.bind(region.region_id))
 			_nav_vbox.add_child(rbtn)
 

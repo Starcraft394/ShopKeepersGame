@@ -2188,6 +2188,9 @@ func _check_combat_end() -> bool:
 		if _encounter_is_boss:
 			var region_id: String = GameContext.get_current_region_id()
 			GameContext.mark_region_completed(region_id)
+			# Campaign victory: R7 boss defeated = campaign complete
+			if region_id == "region_7":
+				_result.is_campaign_victory = true
 		# Health Persistence v1: Save surviving heroes' HP
 		_persist_hero_hp()
 		combat_ended.emit(_result)

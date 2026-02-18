@@ -338,18 +338,25 @@ var _combat_consumables_used: Dictionary = {}  # hero_id -> true
 # HERO LEVELING CONSTANTS (per GDD Section 33.3)
 # ============================================================================
 
-# Max hero level for Region 1 (MVP)
-const MAX_HERO_LEVEL: int = 5
+# Max hero level (55 levels across 7 regions, RuneScape-style XP curve)
+const MAX_HERO_LEVEL: int = 55
 
-# XP required to reach each level (index = target level)
-# Early levels: fast, Mid: steady, Late: slower
+# XP required to reach each level (index = level - 1, so index 0 = level 1)
+# Exponential curve: floor(8 + 7*(L-1) + 3.2*(L-1)^1.7)
+# Total XP to 55: ~68,613
 const XP_THRESHOLDS: Array[int] = [
-	0,    # Level 1 (starting)
-	100,  # Level 2
-	250,  # Level 3
-	450,  # Level 4
-	700   # Level 5
+	0, 18, 50, 99, 168, 260, 377, 521, 694, 899,           # L1-L10
+	1137, 1410, 1720, 2069, 2459, 2891, 3367, 3889, 4458, 5076,  # L11-L20
+	5745, 6466, 7240, 8069, 8955, 9899, 10902, 11966, 13093, 14284, # L21-L30
+	15540, 16862, 18252, 19711, 21241, 22843, 24518, 26267, 28092, 29994, # L31-L40
+	31974, 34034, 36175, 38398, 40704, 43095, 45572, 48135, 50787, 53528, # L41-L50
+	56359, 59282, 62298, 65408, 68613  # L51-L55
 ]
+
+# Base XP award per normal combat encounter by region
+const REGION_XP_BASE: Dictionary = {
+	1: 15, 2: 28, 3: 45, 4: 70, 5: 100, 6: 140, 7: 190
+}
 
 # ============================================================================
 # STASH UPGRADES (persistent, purchased from General Store)
@@ -508,6 +515,64 @@ func get_completed_region_count() -> int:
 ## Check if a specific region has been completed.
 func is_region_completed(region_id: String) -> bool:
 	return completed_regions.get(region_id, false)
+
+
+## Check if a region is unlocked (previous region's boss defeated).
+## Region 1 is always unlocked.
+func is_region_unlocked(region_id: String) -> bool:
+	var region_data: RegionData = DataRegistry.get_region(region_id) if DataRegistry.has_method("get_region") else null
+	if region_data == null:
+		return false
+	var req: String = region_data.requires_region_id
+	if req == "":
+		return true  # R1 has no prerequisite
+	return is_region_completed(req)
+
+
+## Check if the player can challenge the dungeon boss in a given town.
+## Requires at least half of the T4-capable facilities to be at Tier 4.
+## Returns { "ready": bool, "current": int, "required": int }
+func can_challenge_boss(town_id: String) -> Dictionary:
+	var town_data = DataRegistry.get_town(town_id)
+	if town_data == null:
+		return {"ready": true, "current": 0, "required": 0}
+
+	var t4_capable: int = 0
+	var at_t4: int = 0
+
+	for fac_id in town_data.facility_ids:
+		var max_tier: int = get_facility_max_tier(fac_id)
+		if max_tier >= 4:
+			t4_capable += 1
+			if get_facility_tier(town_id, fac_id) >= 4:
+				at_t4 += 1
+
+	var required: int = ceili(t4_capable / 2.0)
+	return {"ready": at_t4 >= required, "current": at_t4, "required": required}
+
+
+## Strip all equipment and bag items from a hero (used on flee).
+func strip_hero_gear(hero_id: String) -> void:
+	if hero_equipment.has(hero_id):
+		hero_equipment.erase(hero_id)
+		print("[Flee] Stripped equipment from hero=%s" % hero_id)
+	if hero_bags.has(hero_id):
+		hero_bags.erase(hero_id)
+		print("[Flee] Stripped bag from hero=%s" % hero_id)
+
+
+## Strip gear from all surviving heroes in the selected party (used on flee).
+## Dead heroes are excluded (they'll be removed by permadeath).
+func strip_surviving_heroes_gear() -> void:
+	var stripped: int = 0
+	for hero_id in selected_party:
+		var hp_data = get_hero_hp(hero_id)
+		var current_hp: int = int(hp_data.get("current", 1))
+		if current_hp > 0:
+			strip_hero_gear(hero_id)
+			stripped += 1
+	print("[Flee] Stripped gear from %d surviving heroes" % stripped)
+	save_game()
 
 
 func get_current_town_id() -> String:
@@ -2487,6 +2552,19 @@ func get_xp_for_level(target_level: int) -> int:
 	if target_level < 1 or target_level > MAX_HERO_LEVEL:
 		return 0
 	return XP_THRESHOLDS[target_level - 1]
+
+## Get XP award for a combat encounter, scaled by current region.
+## encounter_type: "combat_normal", "combat_elite", or "combat_boss"
+func get_combat_xp(encounter_type: String) -> int:
+	var region: int = get_current_region()
+	var base: int = REGION_XP_BASE.get(region, 15)
+	match encounter_type:
+		"combat_elite":
+			return int(base * 1.5)
+		"combat_boss":
+			return int(base * 2.5)
+		_:
+			return base
 
 ## Get level from total XP.
 func get_level_from_xp(total_xp: int) -> int:

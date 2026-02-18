@@ -41,6 +41,8 @@ var _loot_panel: Control = null  # Loot routing panel (CanvasLayer overlay)
 var _loot_overlay: CanvasLayer = null  # CanvasLayer for loot popup
 var _loot_result = null  # CombatResult reference for loot panel
 var _defeat_panel: Control = null  # Defeat screen (shown when all heroes die)
+var _victory_panel: CanvasLayer = null  # Campaign victory overlay
+var _flee_dialog: CanvasLayer = null  # Flee from dungeon dialog
 
 # Region color palette (populated in _ready)
 var _region_palette: Dictionary = {}
@@ -1837,18 +1839,15 @@ func _on_combat_ended(_result) -> void:
 		str(GameContext.has_pending_acquisition())
 	])
 
-	# Award XP on victory (boss=120, elite=75, normal=50)
+	# Award XP on victory (region-scaled: normal/elite/boss)
 	if _result != null and _result.is_victory:
-		var xp_amount: int = 50  # Normal encounter
 		var source: String = "combat_normal"
-
 		if _result.is_boss_encounter:
-			xp_amount = 120
 			source = "combat_boss"
 		elif GameContext.is_current_room_elite():
-			xp_amount = 75
 			source = "combat_elite"
 
+		var xp_amount: int = GameContext.get_combat_xp(source)
 		GameContext.grant_party_xp(xp_amount, source)
 
 	# Show loot panel on ANY victory (even with zero item drops, to display gold earned)
@@ -2483,6 +2482,12 @@ func _on_loot_continue() -> void:
 		_loot_overlay.queue_free()
 		_loot_overlay = null
 		_loot_panel = null
+
+	# Campaign victory: show victory panel before transitioning
+	if _loot_result != null and _loot_result.is_campaign_victory:
+		_show_victory_panel()
+		return
+
 	_do_combat_transition()
 
 
@@ -2526,6 +2531,211 @@ func _loot_panel_input(event: InputEvent) -> void:
 		elif keycode == KEY_ESCAPE and _loot_swap_mode:
 			_on_swap_cancel()
 			get_viewport().set_input_as_handled()
+
+
+# ============================================================================
+# FLEE DIALOG — Offered when a hero dies in combat
+# ============================================================================
+
+func _show_flee_dialog(fallen_name: String) -> void:
+	if _flee_dialog != null:
+		return
+
+	_flee_dialog = CanvasLayer.new()
+	_flee_dialog.layer = 10
+
+	var backdrop = ColorRect.new()
+	backdrop.color = Color(0.1, 0.05, 0.05, 0.85)
+	backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_flee_dialog.add_child(backdrop)
+
+	var center = CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_flee_dialog.add_child(center)
+
+	var panel = PanelContainer.new()
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.15, 0.08, 0.08, 0.95)
+	style.border_color = Color(0.7, 0.3, 0.2)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(8)
+	style.set_content_margin_all(24)
+	panel.add_theme_stylebox_override("panel", style)
+	panel.custom_minimum_size = Vector2(450, 0)
+	center.add_child(panel)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 12)
+	panel.add_child(vbox)
+
+	# Title
+	var title = Label.new()
+	title.text = "%s has fallen!" % fallen_name
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 20)
+	title.add_theme_color_override("font_color", Color(1.0, 0.4, 0.3))
+	vbox.add_child(title)
+
+	# Description
+	var desc = Label.new()
+	desc.text = "Flee the dungeon to save your remaining heroes?"
+	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	desc.add_theme_font_size_override("font_size", 14)
+	desc.add_theme_color_override("font_color", Color(0.8, 0.7, 0.6))
+	vbox.add_child(desc)
+
+	# Consequences
+	var consequences = Label.new()
+	consequences.text = "If you flee:\n  - Surviving heroes lose ALL equipment and bag items\n  - Shopkeeper bag items are kept (insurance)\n  - Dungeon progress and unbanked loot are lost\n\nIf you continue:\n  - Fight on with remaining heroes\n  - Total party wipe = permadeath for all"
+	consequences.add_theme_font_size_override("font_size", 12)
+	consequences.add_theme_color_override("font_color", Color(0.65, 0.6, 0.55))
+	consequences.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	vbox.add_child(consequences)
+
+	# Buttons
+	var btn_row = HBoxContainer.new()
+	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	btn_row.add_theme_constant_override("separation", 20)
+	vbox.add_child(btn_row)
+
+	var flee_btn = Button.new()
+	flee_btn.text = "Flee"
+	flee_btn.custom_minimum_size = Vector2(140, 36)
+	flee_btn.pressed.connect(_on_flee_confirmed)
+	btn_row.add_child(flee_btn)
+
+	var fight_btn = Button.new()
+	fight_btn.text = "Continue Fighting"
+	fight_btn.custom_minimum_size = Vector2(180, 36)
+	fight_btn.pressed.connect(_on_flee_declined)
+	btn_row.add_child(fight_btn)
+
+	add_child(_flee_dialog)
+	print("[Flee] Dialog shown — %s has fallen" % fallen_name)
+
+
+func _on_flee_confirmed() -> void:
+	print("[Flee] Player chose to flee")
+
+	# Close dialog
+	if _flee_dialog != null:
+		_flee_dialog.queue_free()
+		_flee_dialog = null
+
+	# Strip gear from surviving heroes (shopkeeper bag preserved)
+	GameContext.strip_surviving_heroes_gear()
+
+	# Clear dungeon stash and pending acquisitions (loot lost)
+	GameContext.clear_pending_acquisitions()
+	GameContext.clear_dungeon_stash()
+
+	# Exit dungeon and return to town
+	GameContext.current_dungeon_id = ""
+	GameContext.current_floor = 0
+	GameContext.current_room_index = 0
+	GameContext.set_phase(GameContext.GamePhase.TOWN)
+
+	_do_combat_transition()
+
+
+func _on_flee_declined() -> void:
+	print("[Flee] Player chose to continue fighting")
+
+	if _flee_dialog != null:
+		_flee_dialog.queue_free()
+		_flee_dialog = null
+
+	# Resume combat — don't auto-start, let player click Step/Auto
+
+
+# ============================================================================
+# CAMPAIGN VICTORY PANEL — Show when R7 boss is defeated
+# ============================================================================
+
+func _show_victory_panel() -> void:
+	if _victory_panel != null:
+		return
+
+	_victory_panel = CanvasLayer.new()
+	_victory_panel.layer = 10
+
+	# Dark gold backdrop
+	var backdrop = ColorRect.new()
+	backdrop.color = Color(0.15, 0.12, 0.05, 0.9)
+	backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_victory_panel.add_child(backdrop)
+
+	var center = CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_victory_panel.add_child(center)
+
+	var panel = PanelContainer.new()
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.12, 0.10, 0.04, 0.95)
+	style.border_color = Color(0.8, 0.65, 0.2)
+	style.set_border_width_all(3)
+	style.set_corner_radius_all(8)
+	style.set_content_margin_all(30)
+	panel.add_theme_stylebox_override("panel", style)
+	panel.custom_minimum_size = Vector2(500, 300)
+	center.add_child(panel)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 16)
+	panel.add_child(vbox)
+
+	# Title
+	var title = Label.new()
+	title.text = "CAMPAIGN COMPLETE!"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 28)
+	title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.3))
+	vbox.add_child(title)
+
+	# Subtitle
+	var subtitle = Label.new()
+	subtitle.text = "You have defeated the Void Threshold and saved the realm!"
+	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	subtitle.add_theme_font_size_override("font_size", 14)
+	subtitle.add_theme_color_override("font_color", Color(0.8, 0.75, 0.5))
+	subtitle.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	vbox.add_child(subtitle)
+
+	# Stats summary
+	var stats_label = Label.new()
+	var regions_done: int = GameContext.get_completed_region_count()
+	var hero_count: int = GameContext.owned_heroes.size()
+	stats_label.text = "Regions Conquered: %d/7\nHeroes in Roster: %d" % [regions_done, hero_count]
+	stats_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	stats_label.add_theme_font_size_override("font_size", 13)
+	stats_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.6))
+	vbox.add_child(stats_label)
+
+	# Spacer
+	var spacer = Control.new()
+	spacer.custom_minimum_size = Vector2(0, 10)
+	vbox.add_child(spacer)
+
+	# Continue button
+	var btn_row = HBoxContainer.new()
+	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_child(btn_row)
+
+	var continue_btn = Button.new()
+	continue_btn.text = "Return to Town"
+	continue_btn.custom_minimum_size = Vector2(200, 40)
+	continue_btn.pressed.connect(_on_victory_continue)
+	btn_row.add_child(continue_btn)
+
+	add_child(_victory_panel)
+	print("[Victory] Campaign complete panel shown!")
+
+
+func _on_victory_continue() -> void:
+	if _victory_panel != null:
+		_victory_panel.queue_free()
+		_victory_panel = null
+	_do_combat_transition()
 
 
 # ============================================================================
@@ -3193,6 +3403,13 @@ func _on_action_performed(action: CombatAction) -> void:
 
 	# v1.3: Refresh stats window if open (shows updated buffs/HP)
 	_refresh_stats_window()
+
+	# Flee trigger: when a player hero dies, offer flee option
+	if action.action_type == CombatAction.ActionType.DEATH:
+		if action.actor_id in GameContext.selected_party and _flee_dialog == null:
+			# Pause auto-stepping
+			_auto_running = false
+			_show_flee_dialog(action.actor_name)
 
 
 ## v1.9A: Get display name for an ability from registry.
