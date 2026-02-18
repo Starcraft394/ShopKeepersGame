@@ -29,6 +29,164 @@
     "4": { "gold": 400, "items": [{ "item_id": "phoenix_ash", "qty": 2 }, { "item_id": "void_essence", "qty": 1 }] }
   },
 
+  "regional_upgrade_costs": {
+    "2": {
+      "2": {
+        "gold": 60,
+        "items": [
+          { "item_id": "spore_cluster", "qty": 3 },
+          { "item_id": "phoenix_ash", "qty": 2 }
+        ]
+      },
+      "3": {
+        "gold": 200,
+        "items": [
+          { "item_id": "spore_cluster", "qty": 6 },
+          { "item_id": "phoenix_ash", "qty": 5 }
+        ]
+      },
+      "4": {
+        "gold": 530,
+        "items": [
+          { "item_id": "spore_cluster", "qty": 12 },
+          { "item_id": "phoenix_ash", "qty": 10 }
+        ]
+      }
+    },
+    "3": {
+      "2": {
+        "gold": 75,
+        "items": [
+          { "item_id": "tidal_pearl", "qty": 3 },
+          { "item_id": "ss_brine_venom", "qty": 2 }
+        ]
+      },
+      "3": {
+        "gold": 250,
+        "items": [
+          { "item_id": "tidal_pearl", "qty": 7 },
+          { "item_id": "ss_brine_venom", "qty": 5 }
+        ]
+      },
+      "4": {
+        "gold": 660,
+        "items": [
+          { "item_id": "tidal_pearl", "qty": 14 },
+          { "item_id": "ss_brine_venom", "qty": 10 }
+        ]
+      }
+    },
+    "4": {
+      "2": {
+        "gold": 100,
+        "items": [
+          { "item_id": "volcanic_glass", "qty": 3 },
+          { "item_id": "ember_dust", "qty": 2 }
+        ]
+      },
+      "3": {
+        "gold": 330,
+        "items": [
+          { "item_id": "volcanic_glass", "qty": 6 },
+          { "item_id": "ember_dust", "qty": 5 },
+          { "item_id": "molten_core", "qty": 5 }
+        ]
+      },
+      "4": {
+        "gold": 880,
+        "items": [
+          { "item_id": "volcanic_glass", "qty": 12 },
+          { "item_id": "ember_dust", "qty": 10 },
+          { "item_id": "molten_core", "qty": 8 }
+        ]
+      }
+    },
+    "5": {
+      "2": {
+        "gold": 125,
+        "items": [
+          { "item_id": "wood_bundle", "qty": 4 },
+          { "item_id": "iron_scrap", "qty": 3 },
+          { "item_id": "prism_shard", "qty": 4 },
+          { "item_id": "starfall_dust", "qty": 4 },
+          { "item_id": "temporal_residue", "qty": 3 }
+        ]
+      },
+      "3": {
+        "gold": 415,
+        "items": [
+          { "item_id": "prism_shard", "qty": 8 },
+          { "item_id": "starfall_dust", "qty": 8 },
+          { "item_id": "temporal_residue", "qty": 6 }
+        ]
+      },
+      "4": {
+        "gold": 1100,
+        "items": [
+          { "item_id": "prism_shard", "qty": 16 },
+          { "item_id": "starfall_dust", "qty": 14 },
+          { "item_id": "temporal_residue", "qty": 12 }
+        ]
+      }
+    },
+    "6": {
+      "2": {
+        "gold": 150,
+        "items": [
+          { "item_id": "wood_bundle", "qty": 4 },
+          { "item_id": "iron_scrap", "qty": 3 },
+          { "item_id": "soul_ore", "qty": 5 },
+          { "item_id": "nc_grave_dust", "qty": 4 },
+          { "item_id": "deadmans_grass", "qty": 3 }
+        ]
+      },
+      "3": {
+        "gold": 495,
+        "items": [
+          { "item_id": "soul_ore", "qty": 10 },
+          { "item_id": "nc_grave_dust", "qty": 8 },
+          { "item_id": "deadmans_grass", "qty": 6 }
+        ]
+      },
+      "4": {
+        "gold": 1320,
+        "items": [
+          { "item_id": "soul_ore", "qty": 20 },
+          { "item_id": "nc_grave_dust", "qty": 16 },
+          { "item_id": "deadmans_grass", "qty": 12 }
+        ]
+      }
+    },
+    "7": {
+      "2": {
+        "gold": 200,
+        "items": [
+          { "item_id": "wood_bundle", "qty": 4 },
+          { "item_id": "iron_scrap", "qty": 3 },
+          { "item_id": "primordial_essence", "qty": 4 },
+          { "item_id": "fr_entropy_residue", "qty": 4 },
+          { "item_id": "fr_null_fragment", "qty": 3 }
+        ]
+      },
+      "3": {
+        "gold": 660,
+        "items": [
+          { "item_id": "primordial_essence", "qty": 10 },
+          { "item_id": "fr_entropy_residue", "qty": 8 },
+          { "item_id": "fr_null_fragment", "qty": 6 }
+        ]
+      },
+      "4": {
+        "gold": 1760,
+        "items": [
+          { "item_id": "primordial_essence", "qty": 20 },
+          { "item_id": "fr_entropy_residue", "qty": 16 },
+          { "item_id": "fr_null_fragment", "qty": 14 }
+        ]
+      }
+    }
+  },
+
   "services_per_tier": {
     "1": ["brew_healing_tonic", "brew_antidote"],
     "2": ["brew_advanced_potions", "brew_stat_elixirs"],

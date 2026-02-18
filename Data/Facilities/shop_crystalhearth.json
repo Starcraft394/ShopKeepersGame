@@ -19,24 +19,25 @@
   "slots_per_tier": {},
   "upgrade_costs": {
     "2": {
-      "gold": 175,
+      "gold": 190,
       "items": [
-        { "item_id": "starfall_dust", "qty": 4 }
+        { "item_id": "wood_bundle", "qty": 4 },
+        { "item_id": "prism_shard", "qty": 4 }
       ]
     },
     "3": {
       "gold": 500,
       "items": [
-        { "item_id": "starfall_dust", "qty": 8 },
-        { "item_id": "prism_shard", "qty": 4 }
+        { "item_id": "prism_shard", "qty": 8 },
+        { "item_id": "starfall_core_fragment", "qty": 4 }
       ]
     },
     "4": {
-      "gold": 1100,
+      "gold": 1250,
       "items": [
-        { "item_id": "starfall_dust", "qty": 12 },
-        { "item_id": "prism_shard", "qty": 8 },
-        { "item_id": "temporal_residue", "qty": 5 }
+        { "item_id": "prism_shard", "qty": 12 },
+        { "item_id": "starfall_core_fragment", "qty": 8 },
+        { "item_id": "se_crystal_chitin", "qty": 5 }
       ]
     }
   },

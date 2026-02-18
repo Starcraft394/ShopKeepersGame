@@ -3808,8 +3808,14 @@ func _build_training_books_view(facility, current_tier: int) -> void:
 				gated_count += 1
 				continue
 
-		# Check unlock group requirement
-		if not GameContext.has_unlocked_group(requires_group):
+		# Check facility tier requirement (Training Hall tier gating for books)
+		var required_fac_tier = shop_item.get("required_facility_tier", 1)
+		if required_fac_tier > current_tier:
+			gated_count += 1
+			continue
+
+		# Check unlock group requirement (skip if none required)
+		if requires_group != "" and not GameContext.has_unlocked_group(requires_group):
 			locked_count += 1
 			continue
 
@@ -4176,7 +4182,7 @@ func _populate_heroes_section() -> void:
 	# Party summary line
 	var summary_label = Label.new()
 	summary_label.text = "Party: %d / %d  |  Roster: %d" % [
-		party.size(), GameContext.MAX_PARTY_SIZE, roster_size
+		party.size(), GameContext.get_max_party_size(), roster_size
 	]
 	summary_label.modulate = Color(0.5, 1, 0.5, 1) if party.size() > 0 else Color(0.8, 0.8, 0.8, 1)
 	heroes_vbox.add_child(summary_label)
@@ -4755,7 +4761,7 @@ func _build_inn_recruit_view(facility, current_tier: int) -> void:
 	# Party status bar
 	var selected_party = GameContext.get_selected_party()
 	var party_label = Label.new()
-	party_label.text = "Party: %d / %d" % [selected_party.size(), GameContext.MAX_PARTY_SIZE]
+	party_label.text = "Party: %d / %d" % [selected_party.size(), GameContext.get_max_party_size()]
 	party_label.modulate = Color(0.5, 1, 0.5, 1) if selected_party.size() > 0 else Color(0.8, 0.8, 0.8, 1)
 	_facility_actions_container.add_child(party_label)
 
@@ -4826,7 +4832,7 @@ func _build_inn_roster_view(facility, current_tier: int) -> void:
 
 	# Party status bar
 	var party_label = Label.new()
-	party_label.text = "Party: %d / %d" % [selected_party.size(), GameContext.MAX_PARTY_SIZE]
+	party_label.text = "Party: %d / %d" % [selected_party.size(), GameContext.get_max_party_size()]
 	party_label.modulate = Color(0.5, 1, 0.5, 1) if selected_party.size() > 0 else Color(0.8, 0.8, 0.8, 1)
 	_facility_actions_container.add_child(party_label)
 
@@ -5234,7 +5240,7 @@ func _create_hero_row(hero: Dictionary, selected_party: Array) -> PanelContainer
 		party_btn.pressed.connect(_on_remove_from_party_pressed.bind(hero_id))
 	else:
 		party_btn.text = "Add to Party"
-		party_btn.disabled = selected_party.size() >= GameContext.MAX_PARTY_SIZE
+		party_btn.disabled = selected_party.size() >= GameContext.get_max_party_size()
 		party_btn.pressed.connect(_on_add_to_party_pressed.bind(hero_id))
 	btn_vbox.add_child(party_btn)
 

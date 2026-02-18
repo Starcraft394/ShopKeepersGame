@@ -7,10 +7,10 @@
   "region_id": "region_1",
   "tier": 1,
   "base_stats": {
-    "health": 32,
-    "attack": 7,
-    "defense": 3,
-    "speed": 9
+    "health": 58,
+    "attack": 14,
+    "defense": 4,
+    "speed": 13
   },
   "ability_ids": [
     "basic_attack"

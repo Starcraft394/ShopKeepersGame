@@ -4,7 +4,7 @@
   "description": "A nature guardian who channels the power of plants and fungi to heal allies and control the battlefield.",
   "icon_hint": "gnarled wooden staff crowned with blooming flowers and curling moss",
   "archetype": "healer",
-  "unlock_region": 1,
+  "unlock_region": 2,
   "base_stats": {
     "health": 90,
     "attack": 6,
@@ -12,9 +12,9 @@
     "speed": 8
   },
   "stat_growth": {
-    "health": 8,
+    "health": 6,
     "attack": 1,
-    "defense": 2,
+    "defense": 1,
     "speed": 2
   },
   "ability_a_id": "natures_embrace",

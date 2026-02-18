@@ -4,7 +4,7 @@
   "description": "A shadow priest who drains life from enemies to heal allies, walking the line between life and death.",
   "icon_hint": "dark purple tome radiating shadow tendrils entwined with faint healing light",
   "archetype": "healer",
-  "unlock_region": 1,
+  "unlock_region": 6,
   "base_stats": {
     "health": 85,
     "attack": 10,
@@ -12,9 +12,9 @@
     "speed": 9
   },
   "stat_growth": {
-    "health": 7,
-    "attack": 3,
-    "defense": 2,
+    "health": 5,
+    "attack": 2,
+    "defense": 1,
     "speed": 2
   },
   "ability_a_id": "life_drain",

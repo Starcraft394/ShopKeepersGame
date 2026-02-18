@@ -12,8 +12,8 @@
     "speed": 12
   },
   "stat_growth": {
-    "health": 8,
-    "attack": 4,
+    "health": 6,
+    "attack": 2,
     "defense": 1,
     "speed": 2
   },

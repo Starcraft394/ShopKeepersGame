@@ -1,0 +1,14 @@
+{
+  "id": "astral_fragment",
+  "display_name": "Astral Fragment",
+  "description": "A shard of crystallized starlight recovered from a meteorite crater. Hums with cosmic energy.",
+  "icon_hint": "translucent pale blue crystal fragment with tiny star-like sparkles embedded inside",
+  "item_type": "material",
+  "item_subtype": "mineral",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 26,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_5", "material", "mineral", "starfall_expanse"]
+}

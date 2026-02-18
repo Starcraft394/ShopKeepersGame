@@ -26,5 +26,5 @@
   "max_refinement": 10,
   "base_value": 20,
   "icon_path": "res://Assets/_ArtPacks/Rings/PNG/Transperent/Icon13.png",
-  "tags": ["region_1", "accessory", "tier_1"]
+  "tags": ["base", "accessory", "tier_1"]
 }

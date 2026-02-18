@@ -48,6 +48,162 @@
     }
   },
 
+  "regional_upgrade_costs": {
+    "2": {
+      "2": {
+        "gold": 90,
+        "items": [
+          { "item_id": "wood_bundle", "qty": 3 },
+          { "item_id": "iron_scrap", "qty": 2 },
+          { "item_id": "spore_cluster", "qty": 3 },
+          { "item_id": "mycelium_thread", "qty": 2 }
+        ]
+      },
+      "3": {
+        "gold": 265,
+        "items": [
+          { "item_id": "spore_cluster", "qty": 7 },
+          { "item_id": "mycelium_thread", "qty": 5 }
+        ]
+      },
+      "4": {
+        "gold": 660,
+        "items": [
+          { "item_id": "spore_cluster", "qty": 14 },
+          { "item_id": "mycelium_thread", "qty": 10 }
+        ]
+      }
+    },
+    "3": {
+      "2": {
+        "gold": 115,
+        "items": [
+          { "item_id": "wood_bundle", "qty": 3 },
+          { "item_id": "iron_scrap", "qty": 2 },
+          { "item_id": "driftwood", "qty": 3 },
+          { "item_id": "sea_salt_crystal", "qty": 2 }
+        ]
+      },
+      "3": {
+        "gold": 330,
+        "items": [
+          { "item_id": "driftwood", "qty": 7 },
+          { "item_id": "sea_salt_crystal", "qty": 5 }
+        ]
+      },
+      "4": {
+        "gold": 825,
+        "items": [
+          { "item_id": "driftwood", "qty": 14 },
+          { "item_id": "sea_salt_crystal", "qty": 10 }
+        ]
+      }
+    },
+    "4": {
+      "2": {
+        "gold": 150,
+        "items": [
+          { "item_id": "wood_bundle", "qty": 3 },
+          { "item_id": "iron_scrap", "qty": 2 },
+          { "item_id": "volcanic_glass", "qty": 3 },
+          { "item_id": "obsidian_shard", "qty": 2 }
+        ]
+      },
+      "3": {
+        "gold": 440,
+        "items": [
+          { "item_id": "volcanic_glass", "qty": 6 },
+          { "item_id": "obsidian_shard", "qty": 5 }
+        ]
+      },
+      "4": {
+        "gold": 1100,
+        "items": [
+          { "item_id": "volcanic_glass", "qty": 14 },
+          { "item_id": "obsidian_shard", "qty": 10 }
+        ]
+      }
+    },
+    "5": {
+      "2": {
+        "gold": 190,
+        "items": [
+          { "item_id": "wood_bundle", "qty": 5 },
+          { "item_id": "iron_scrap", "qty": 3 },
+          { "item_id": "prism_shard", "qty": 5 },
+          { "item_id": "starfall_core_fragment", "qty": 4 }
+        ]
+      },
+      "3": {
+        "gold": 550,
+        "items": [
+          { "item_id": "prism_shard", "qty": 10 },
+          { "item_id": "starfall_core_fragment", "qty": 8 }
+        ]
+      },
+      "4": {
+        "gold": 1375,
+        "items": [
+          { "item_id": "prism_shard", "qty": 20 },
+          { "item_id": "starfall_core_fragment", "qty": 15 }
+        ]
+      }
+    },
+    "6": {
+      "2": {
+        "gold": 225,
+        "items": [
+          { "item_id": "wood_bundle", "qty": 5 },
+          { "item_id": "iron_scrap", "qty": 3 },
+          { "item_id": "spectral_log", "qty": 5 },
+          { "item_id": "soul_ore", "qty": 4 }
+        ]
+      },
+      "3": {
+        "gold": 660,
+        "items": [
+          { "item_id": "spectral_log", "qty": 10 },
+          { "item_id": "soul_ore", "qty": 8 }
+        ]
+      },
+      "4": {
+        "gold": 1650,
+        "items": [
+          { "item_id": "spectral_log", "qty": 20 },
+          { "item_id": "soul_ore", "qty": 15 }
+        ]
+      }
+    },
+    "7": {
+      "2": {
+        "gold": 300,
+        "items": [
+          { "item_id": "wood_bundle", "qty": 5 },
+          { "item_id": "iron_scrap", "qty": 3 },
+          { "item_id": "primordial_essence", "qty": 4 },
+          { "item_id": "fractured_soulglass", "qty": 4 },
+          { "item_id": "void_crystal", "qty": 3 }
+        ]
+      },
+      "3": {
+        "gold": 880,
+        "items": [
+          { "item_id": "primordial_essence", "qty": 10 },
+          { "item_id": "fractured_soulglass", "qty": 8 },
+          { "item_id": "void_crystal", "qty": 6 }
+        ]
+      },
+      "4": {
+        "gold": 2200,
+        "items": [
+          { "item_id": "primordial_essence", "qty": 22 },
+          { "item_id": "fractured_soulglass", "qty": 16 },
+          { "item_id": "void_crystal", "qty": 14 }
+        ]
+      }
+    }
+  },
+
   "services_per_tier": {
     "1": ["train_hero", "assign_class"],
     "2": ["advanced_training"],
@@ -64,20 +220,17 @@
   "unlocks": [],
 
   "shop_items": [
-    { "item_id": "book_defender", "price_gold": 100, "requires_unlock_group": "books_t1" },
-    { "item_id": "book_striker", "price_gold": 100, "requires_unlock_group": "books_t1" },
-    { "item_id": "book_warden", "price_gold": 100, "requires_unlock_group": "books_t1" },
-    { "item_id": "book_druid", "price_gold": 150, "requires_unlock_group": "books_t1" },
-    { "item_id": "book_fungal_berserker", "price_gold": 150, "requires_unlock_group": "books_t1" },
-    { "item_id": "book_tidechaser", "price_gold": 150, "requires_unlock_group": "books_t1" },
-    { "item_id": "book_stormcaller", "price_gold": 150, "requires_unlock_group": "books_t1" },
-    { "item_id": "book_pyrewarden", "price_gold": 150, "requires_unlock_group": "books_t1" },
-    { "item_id": "book_ashblade", "price_gold": 150, "requires_unlock_group": "books_t1" },
-    { "item_id": "book_prism_sentinel", "price_gold": 150, "requires_unlock_group": "books_t1" },
-    { "item_id": "book_prism_lancer", "price_gold": 150, "requires_unlock_group": "books_t1" },
-    { "item_id": "book_dark_channeler", "price_gold": 150, "requires_unlock_group": "books_t1" },
-    { "item_id": "book_lich", "price_gold": 150, "requires_unlock_group": "books_t1" },
-    { "item_id": "book_voidwalker", "price_gold": 150, "requires_unlock_group": "books_t1" },
-    { "item_id": "book_void_herald", "price_gold": 150, "requires_unlock_group": "books_t1" }
+    { "item_id": "book_druid",            "price_gold": 150, "required_facility_tier": 2 },
+    { "item_id": "book_fungal_berserker",  "price_gold": 200, "required_facility_tier": 4 },
+    { "item_id": "book_tidechaser",        "price_gold": 175, "required_facility_tier": 2 },
+    { "item_id": "book_stormcaller",       "price_gold": 225, "required_facility_tier": 4 },
+    { "item_id": "book_pyrewarden",        "price_gold": 200, "required_facility_tier": 2 },
+    { "item_id": "book_ashblade",          "price_gold": 250, "required_facility_tier": 4 },
+    { "item_id": "book_prism_sentinel",    "price_gold": 225, "required_facility_tier": 2 },
+    { "item_id": "book_prism_lancer",      "price_gold": 275, "required_facility_tier": 4 },
+    { "item_id": "book_dark_channeler",    "price_gold": 250, "required_facility_tier": 2 },
+    { "item_id": "book_lich",              "price_gold": 300, "required_facility_tier": 4 },
+    { "item_id": "book_voidwalker",        "price_gold": 300, "required_facility_tier": 2 },
+    { "item_id": "book_void_herald",       "price_gold": 350, "required_facility_tier": 4 }
   ]
 }

@@ -4,7 +4,7 @@
   "description": "A swift assassin wreathed in smoke and cinders, striking from shadows with burning precision.",
   "icon_hint": "curved dagger trailing gray smoke and glowing ember sparks",
   "archetype": "dps",
-  "unlock_region": 1,
+  "unlock_region": 4,
   "base_stats": {
     "health": 80,
     "attack": 18,
@@ -12,8 +12,8 @@
     "speed": 14
   },
   "stat_growth": {
-    "health": 6,
-    "attack": 5,
+    "health": 5,
+    "attack": 3,
     "defense": 1,
     "speed": 3
   },

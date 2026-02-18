@@ -27,5 +27,5 @@
   "max_refinement": 10,
   "base_value": 22,
   "icon_path": "res://Assets/_ArtPacks/MagicArtifacts/PNG/Transperent/Icon12.png",
-  "tags": ["region_1", "offhand", "focus", "magic", "tier_1"]
+  "tags": ["base", "offhand", "focus", "magic", "tier_1"]
 }

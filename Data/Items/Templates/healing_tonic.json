@@ -15,6 +15,6 @@
   "stack_max": 20,
   "use_effect": "heal",
   "use_value": 20,
-  "tags": ["consumable", "healing", "potion", "region_1"],
+  "tags": ["consumable", "healing", "potion", "base"],
   "icon_path": "res://Assets/Icons/Items/icon_item_healing_tonic.png"
 }

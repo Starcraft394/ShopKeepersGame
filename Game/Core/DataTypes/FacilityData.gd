@@ -24,7 +24,11 @@ var input_resource_types: Array[String] = []
 var slots_per_tier: Dictionary = {}  # { "1": 2, "2": 3, "3": 4, "4": 5 }
 
 # Upgrade Costs per Tier
-var upgrade_costs: Dictionary = {}  # { "2": { "gold": 500, "wood": 10 }, ... }
+var upgrade_costs: Dictionary = {}  # { "2": { "gold": 500, "items": [...] }, ... }
+
+# Regional Override Costs: { "2": { "2": { "gold": ..., "items": [...] }, "3": {...} }, "3": {...} }
+# Keyed by region index string → tier string → cost dict. Falls back to upgrade_costs if absent.
+var regional_upgrade_costs: Dictionary = {}
 
 # Services Unlocked per Tier
 var services_per_tier: Dictionary = {}  # { "3": ["refinement"], "4": ["legendary_craft"] }
@@ -76,6 +80,8 @@ static func from_dict(data: Dictionary) -> FacilityData:
 	instance.slots_per_tier = slots_val if slots_val is Dictionary else {}
 	var costs_val = data.get("upgrade_costs", {})
 	instance.upgrade_costs = costs_val if costs_val is Dictionary else {}
+	var reg_costs_val = data.get("regional_upgrade_costs", {})
+	instance.regional_upgrade_costs = reg_costs_val if reg_costs_val is Dictionary else {}
 	var services_val = data.get("services_per_tier", {})
 	instance.services_per_tier = services_val if services_val is Dictionary else {}
 	instance.allows_hero_assignment = data.get("allows_hero_assignment", true)

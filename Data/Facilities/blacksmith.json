@@ -47,6 +47,166 @@
     }
   },
 
+  "regional_upgrade_costs": {
+    "2": {
+      "2": {
+        "gold": 60,
+        "items": [
+          { "item_id": "iron_scrap", "qty": 3 },
+          { "item_id": "wood_bundle", "qty": 2 },
+          { "item_id": "spore_cluster", "qty": 3 },
+          { "item_id": "fungal_fiber", "qty": 2 }
+        ]
+      },
+      "3": {
+        "gold": 200,
+        "items": [
+          { "item_id": "spore_cluster", "qty": 6 },
+          { "item_id": "fungal_fiber", "qty": 5 }
+        ]
+      },
+      "4": {
+        "gold": 530,
+        "items": [
+          { "item_id": "spore_cluster", "qty": 12 },
+          { "item_id": "fungal_fiber", "qty": 10 }
+        ]
+      }
+    },
+    "3": {
+      "2": {
+        "gold": 75,
+        "items": [
+          { "item_id": "iron_scrap", "qty": 3 },
+          { "item_id": "wood_bundle", "qty": 2 },
+          { "item_id": "sea_salt_crystal", "qty": 3 },
+          { "item_id": "stormglass_fragment", "qty": 2 }
+        ]
+      },
+      "3": {
+        "gold": 250,
+        "items": [
+          { "item_id": "sea_salt_crystal", "qty": 7 },
+          { "item_id": "stormglass_fragment", "qty": 5 }
+        ]
+      },
+      "4": {
+        "gold": 660,
+        "items": [
+          { "item_id": "sea_salt_crystal", "qty": 14 },
+          { "item_id": "stormglass_fragment", "qty": 10 }
+        ]
+      }
+    },
+    "4": {
+      "2": {
+        "gold": 100,
+        "items": [
+          { "item_id": "iron_scrap", "qty": 3 },
+          { "item_id": "wood_bundle", "qty": 2 },
+          { "item_id": "volcanic_glass", "qty": 3 },
+          { "item_id": "obsidian_shard", "qty": 2 }
+        ]
+      },
+      "3": {
+        "gold": 330,
+        "items": [
+          { "item_id": "volcanic_glass", "qty": 6 },
+          { "item_id": "obsidian_shard", "qty": 5 },
+          { "item_id": "ember_dust", "qty": 5 }
+        ]
+      },
+      "4": {
+        "gold": 880,
+        "items": [
+          { "item_id": "volcanic_glass", "qty": 12 },
+          { "item_id": "obsidian_shard", "qty": 10 },
+          { "item_id": "ember_dust", "qty": 8 }
+        ]
+      }
+    },
+    "5": {
+      "2": {
+        "gold": 125,
+        "items": [
+          { "item_id": "iron_scrap", "qty": 5 },
+          { "item_id": "wood_bundle", "qty": 3 },
+          { "item_id": "prism_shard", "qty": 4 },
+          { "item_id": "starfall_core_fragment", "qty": 3 }
+        ]
+      },
+      "3": {
+        "gold": 415,
+        "items": [
+          { "item_id": "prism_shard", "qty": 8 },
+          { "item_id": "starfall_core_fragment", "qty": 6 },
+          { "item_id": "se_crystal_chitin", "qty": 6 }
+        ]
+      },
+      "4": {
+        "gold": 1100,
+        "items": [
+          { "item_id": "prism_shard", "qty": 16 },
+          { "item_id": "starfall_core_fragment", "qty": 12 },
+          { "item_id": "se_crystal_chitin", "qty": 10 }
+        ]
+      }
+    },
+    "6": {
+      "2": {
+        "gold": 150,
+        "items": [
+          { "item_id": "iron_scrap", "qty": 5 },
+          { "item_id": "wood_bundle", "qty": 3 },
+          { "item_id": "soul_ore", "qty": 5 },
+          { "item_id": "spectral_log", "qty": 4 }
+        ]
+      },
+      "3": {
+        "gold": 495,
+        "items": [
+          { "item_id": "soul_ore", "qty": 10 },
+          { "item_id": "spectral_log", "qty": 8 }
+        ]
+      },
+      "4": {
+        "gold": 1320,
+        "items": [
+          { "item_id": "soul_ore", "qty": 20 },
+          { "item_id": "spectral_log", "qty": 15 }
+        ]
+      }
+    },
+    "7": {
+      "2": {
+        "gold": 200,
+        "items": [
+          { "item_id": "iron_scrap", "qty": 5 },
+          { "item_id": "wood_bundle", "qty": 3 },
+          { "item_id": "primordial_essence", "qty": 4 },
+          { "item_id": "void_crystal", "qty": 3 },
+          { "item_id": "fractured_soulglass", "qty": 3 }
+        ]
+      },
+      "3": {
+        "gold": 660,
+        "items": [
+          { "item_id": "primordial_essence", "qty": 8 },
+          { "item_id": "void_crystal", "qty": 6 },
+          { "item_id": "fractured_soulglass", "qty": 6 }
+        ]
+      },
+      "4": {
+        "gold": 1760,
+        "items": [
+          { "item_id": "primordial_essence", "qty": 18 },
+          { "item_id": "void_crystal", "qty": 14 },
+          { "item_id": "fractured_soulglass", "qty": 12 }
+        ]
+      }
+    }
+  },
+
   "services_per_tier": {
     "1": ["repair_basic", "craft_basic_weapon"],
     "2": ["repair_advanced", "craft_advanced_weapon"],

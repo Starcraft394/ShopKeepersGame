@@ -4,7 +4,7 @@
   "description": "A crystalline guardian who refracts damage and creates protective barriers of light.",
   "icon_hint": "faceted crystal tower shield radiating prismatic light barriers",
   "archetype": "vanguard",
-  "unlock_region": 1,
+  "unlock_region": 5,
   "base_stats": {
     "health": 120,
     "attack": 9,
@@ -12,9 +12,9 @@
     "speed": 4
   },
   "stat_growth": {
-    "health": 15,
-    "attack": 2,
-    "defense": 3,
+    "health": 11,
+    "attack": 1,
+    "defense": 2,
     "speed": 1
   },
   "ability_a_id": "prism_barrier",

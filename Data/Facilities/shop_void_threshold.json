@@ -19,23 +19,24 @@
   "slots_per_tier": {},
   "upgrade_costs": {
     "2": {
-      "gold": 250,
+      "gold": 300,
       "items": [
-        { "item_id": "fr_entropy_residue", "qty": 4 }
+        { "item_id": "wood_bundle", "qty": 4 },
+        { "item_id": "primordial_essence", "qty": 4 }
       ]
     },
     "3": {
-      "gold": 700,
+      "gold": 800,
       "items": [
-        { "item_id": "fr_entropy_residue", "qty": 8 },
-        { "item_id": "fr_null_fragment", "qty": 4 }
+        { "item_id": "primordial_essence", "qty": 8 },
+        { "item_id": "fractured_soulglass", "qty": 4 }
       ]
     },
     "4": {
-      "gold": 1500,
+      "gold": 2000,
       "items": [
-        { "item_id": "fr_entropy_residue", "qty": 12 },
-        { "item_id": "fr_null_fragment", "qty": 8 },
+        { "item_id": "primordial_essence", "qty": 12 },
+        { "item_id": "fractured_soulglass", "qty": 8 },
         { "item_id": "void_crystal", "qty": 5 }
       ]
     }

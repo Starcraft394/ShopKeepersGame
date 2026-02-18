@@ -11,5 +11,5 @@
   "allowed_socket_types": [],
   "gold_value": 5,
   "icon_path": "res://Assets/_ArtPacks/AlchemyItems/PNG/Transperent/Icon44.png",
-  "tags": ["region_1", "thornhaven", "forest", "material"]
+  "tags": ["base", "material"]
 }

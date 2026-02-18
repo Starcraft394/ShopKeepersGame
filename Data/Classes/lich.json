@@ -4,7 +4,7 @@
   "description": "A master of death magic who raises the fallen and unleashes necrotic devastation upon the living.",
   "icon_hint": "necrotic green skull wreathed in dark flame atop a bone staff",
   "archetype": "dps",
-  "unlock_region": 1,
+  "unlock_region": 6,
   "base_stats": {
     "health": 70,
     "attack": 16,
@@ -12,8 +12,8 @@
     "speed": 10
   },
   "stat_growth": {
-    "health": 5,
-    "attack": 4,
+    "health": 4,
+    "attack": 2,
     "defense": 1,
     "speed": 2
   },

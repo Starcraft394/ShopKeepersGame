@@ -12,9 +12,9 @@
     "speed": 6
   },
   "stat_growth": {
-    "health": 12,
-    "attack": 2,
-    "defense": 3,
+    "health": 9,
+    "attack": 1,
+    "defense": 2,
     "speed": 1
   },
   "ability_a_id": "guardian_challenge",

@@ -4,7 +4,7 @@
   "description": "A harbinger of entropy who tears holes in reality, dealing devastating damage through unstable portals.",
   "icon_hint": "jagged dimensional tear with unstable purple energy spilling outward",
   "archetype": "dps",
-  "unlock_region": 1,
+  "unlock_region": 7,
   "base_stats": {
     "health": 75,
     "attack": 18,
@@ -12,8 +12,8 @@
     "speed": 13
   },
   "stat_growth": {
-    "health": 6,
-    "attack": 5,
+    "health": 5,
+    "attack": 3,
     "defense": 1,
     "speed": 3
   },

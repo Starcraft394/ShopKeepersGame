@@ -3408,7 +3408,7 @@ func _on_action_performed(action: CombatAction) -> void:
 	if action.action_type == CombatAction.ActionType.DEATH:
 		if action.actor_id in GameContext.selected_party and _flee_dialog == null:
 			# Pause auto-stepping
-			_auto_running = false
+			_is_auto_running = false
 			_show_flee_dialog(action.actor_name)
 
 

@@ -1,0 +1,14 @@
+{
+  "id": "magma_core",
+  "display_name": "Magma Core",
+  "description": "A dense molten sphere pulled from the heart of a volcanic vent. Radiates intense heat.",
+  "icon_hint": "glowing orange-red spherical core with cracks of molten magma and heat shimmer",
+  "item_type": "material",
+  "item_subtype": "crafting",
+  "category": "material",
+  "base_stats": {},
+  "base_value": 18,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_4", "material", "crafting", "ashen_horizons"]
+}

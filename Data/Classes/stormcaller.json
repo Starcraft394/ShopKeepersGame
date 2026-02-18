@@ -4,7 +4,7 @@
   "description": "A tempest mage who commands lightning and wind to devastate enemies with elemental fury.",
   "icon_hint": "crackling electric blue storm cloud with lightning bolts arcing downward",
   "archetype": "dps",
-  "unlock_region": 1,
+  "unlock_region": 3,
   "base_stats": {
     "health": 85,
     "attack": 16,
@@ -12,8 +12,8 @@
     "speed": 11
   },
   "stat_growth": {
-    "health": 7,
-    "attack": 4,
+    "health": 5,
+    "attack": 2,
     "defense": 1,
     "speed": 3
   },

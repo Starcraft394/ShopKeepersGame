@@ -4,7 +4,7 @@
   "description": "A rage-fueled warrior enhanced by symbiotic fungi, trading defense for overwhelming offensive power.",
   "icon_hint": "spiked fist wreathed in purple mushroom caps and toxic green spores",
   "archetype": "dps",
-  "unlock_region": 1,
+  "unlock_region": 2,
   "base_stats": {
     "health": 100,
     "attack": 14,
@@ -12,8 +12,8 @@
     "speed": 9
   },
   "stat_growth": {
-    "health": 10,
-    "attack": 4,
+    "health": 7,
+    "attack": 2,
     "defense": 1,
     "speed": 2
   },

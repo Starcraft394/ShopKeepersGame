@@ -8,10 +8,10 @@
   "tier": 1,
   "ai_tier": 1,
   "base_stats": {
-    "health": 58,
-    "attack": 16,
-    "defense": 8,
-    "speed": 13
+    "health": 162,
+    "attack": 40,
+    "defense": 14,
+    "speed": 33
   },
   "ability_ids": [
     "basic_attack"

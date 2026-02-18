@@ -19,5 +19,5 @@
   "max_refinement": 0,
   "base_value": 5,
   "icon_path": "res://Assets/_ArtPacks/Loot_Goblin/PNG/Transperent/Icon33.png",
-  "tags": ["region_1", "tool"]
+  "tags": ["base", "tool"]
 }

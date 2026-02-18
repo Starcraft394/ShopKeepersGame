@@ -19,24 +19,25 @@
   "slots_per_tier": {},
   "upgrade_costs": {
     "2": {
-      "gold": 200,
+      "gold": 225,
       "items": [
+        { "item_id": "wood_bundle", "qty": 4 },
         { "item_id": "spectral_log", "qty": 4 }
       ]
     },
     "3": {
-      "gold": 575,
+      "gold": 600,
       "items": [
         { "item_id": "spectral_log", "qty": 8 },
-        { "item_id": "nc_grave_dust", "qty": 4 }
+        { "item_id": "soul_ore", "qty": 4 }
       ]
     },
     "4": {
-      "gold": 1250,
+      "gold": 1500,
       "items": [
         { "item_id": "spectral_log", "qty": 12 },
-        { "item_id": "nc_grave_dust", "qty": 8 },
-        { "item_id": "soul_ore", "qty": 5 }
+        { "item_id": "soul_ore", "qty": 8 },
+        { "item_id": "nc_bone_marrow", "qty": 5 }
       ]
     }
   },

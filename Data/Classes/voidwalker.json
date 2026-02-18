@@ -4,7 +4,7 @@
   "description": "A dimensional warrior who phases between planes to absorb attacks and confuse enemies.",
   "icon_hint": "heavy shield half-phased into a dark purple void rift",
   "archetype": "vanguard",
-  "unlock_region": 1,
+  "unlock_region": 7,
   "base_stats": {
     "health": 125,
     "attack": 11,
@@ -12,9 +12,9 @@
     "speed": 8
   },
   "stat_growth": {
-    "health": 13,
-    "attack": 3,
-    "defense": 3,
+    "health": 10,
+    "attack": 2,
+    "defense": 2,
     "speed": 2
   },
   "ability_a_id": "void_anchor",

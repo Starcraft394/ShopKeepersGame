@@ -11,6 +11,6 @@
   "allowed_affixes": [],
   "allowed_socket_types": [],
   "gold_value": 8,
-  "tags": ["region_1", "thornhaven", "forest", "consumable"],
+  "tags": ["base", "consumable"],
   "icon_path": "res://Assets/Icons/Items/icon_item_minor_healing_tonic.png"
 }

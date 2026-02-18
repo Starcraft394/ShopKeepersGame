@@ -284,16 +284,27 @@ static func create_monster(monster_id: String, unit_index: int) -> CombatUnit:
 # COMBAT ACTIONS
 # ============================================================================
 
+## Apply defense soft-cap: full value up to 20, half from 21-40, 20% above 40.
+## Prevents high-DEF units from becoming immune to physical damage.
+static func get_soft_capped_defense(raw_def: int) -> int:
+	if raw_def <= 20:
+		return raw_def
+	elif raw_def <= 40:
+		return 20 + int((raw_def - 20) * 0.5)
+	else:
+		return 30 + int((raw_def - 40) * 0.2)
+
+
 ## Take damage. Returns actual damage dealt.
-## Uses effective defense (base + buff bonuses) for damage reduction.
+## Uses effective defense (base + buff bonuses) with soft-cap for damage reduction.
 func take_damage(raw_damage: int, damage_type: String = "physical") -> int:
 	if not is_alive:
 		return 0
 
-	# Apply defense reduction for physical damage (uses effective defense)
+	# Apply defense reduction for physical damage (soft-capped effective defense)
 	var actual_damage = raw_damage
 	if damage_type == "physical":
-		var eff_def = get_effective_defense()
+		var eff_def = get_soft_capped_defense(get_effective_defense())
 		actual_damage = maxi(1, raw_damage - eff_def)
 
 	current_health -= actual_damage

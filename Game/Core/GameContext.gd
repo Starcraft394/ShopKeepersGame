@@ -155,7 +155,7 @@ var loot_pref: Dictionary = {}
 var unlocked_groups: Dictionary = {}
 
 # Default unlock groups given on fresh save (so shop isn't empty)
-const DEFAULT_UNLOCK_GROUPS: Array[String] = ["consumables_t1", "weapons_t1", "books_t1", "materials_t1"]
+const DEFAULT_UNLOCK_GROUPS: Array[String] = ["consumables_t1", "weapons_t1", "materials_t1"]
 
 # Migration map: old item_id unlocks -> new group unlocks
 const ITEM_TO_GROUP_MAP: Dictionary = {
@@ -277,8 +277,8 @@ var owned_heroes: Array = []
 # Selected party for dungeon runs: Array of hero_id strings (max 2 for MVP)
 var selected_party: Array = []
 
-# Max party size for dungeons
-const MAX_PARTY_SIZE: int = 2
+# Party size per Inn tier: T1=2, T2=3, T3=4, T4=5
+const PARTY_SIZE_BY_INN_TIER: Dictionary = {1: 2, 2: 3, 3: 4, 4: 5}
 
 # ============================================================================
 # HERO ROW ASSIGNMENTS (3-Row Formation v1)
@@ -579,6 +579,12 @@ func get_current_town_id() -> String:
 	return _current_town_id
 
 
+## Get max party size based on current town's Inn tier.
+func get_max_party_size() -> int:
+	var inn_tier = get_facility_tier(_current_town_id, "inn")
+	return PARTY_SIZE_BY_INN_TIER.get(inn_tier, 2)
+
+
 func set_location(region_id: String, town_id: String) -> bool:
 	# Validate region if DataRegistry has region data
 	if region_id != "" and DataRegistry.get_region(region_id) == null:
@@ -644,9 +650,10 @@ func add_hero_to_party(hero_id: String) -> bool:
 		push_warning("[GameContext] Hero '%s' already in party" % hero_id)
 		return false
 
-	# MVP party size limit
-	if _party_hero_ids.size() >= MAX_PARTY_SIZE:
-		push_warning("[GameContext] Party full (max %d heroes)" % MAX_PARTY_SIZE)
+	# Party size limit based on Inn tier
+	var max_size = get_max_party_size()
+	if _party_hero_ids.size() >= max_size:
+		push_warning("[GameContext] Party full (max %d heroes)" % max_size)
 		return false
 
 	_party_hero_ids.append(hero_id)
@@ -2402,7 +2409,7 @@ func set_selected_party(hero_ids: Array) -> bool:
 	for hero_id in hero_ids:
 		if is_hero_owned(hero_id) and hero_id not in valid_ids:
 			valid_ids.append(hero_id)
-		if valid_ids.size() >= MAX_PARTY_SIZE:
+		if valid_ids.size() >= get_max_party_size():
 			break
 
 	selected_party = valid_ids
@@ -2420,7 +2427,7 @@ func add_to_party(hero_id: String) -> bool:
 	if hero_id in selected_party:
 		print("[Inn] add_to_party failed hero=%s reason=already_in_party" % hero_id)
 		return false
-	if selected_party.size() >= MAX_PARTY_SIZE:
+	if selected_party.size() >= get_max_party_size():
 		print("[Inn] add_to_party failed hero=%s reason=party_full" % hero_id)
 		return false
 
@@ -2632,26 +2639,18 @@ func grant_party_xp(xp_amount: int, source: String = "unknown") -> Dictionary:
 		if hero.is_empty():
 			continue
 
-		var hero_name = hero.get("name", hero_id)
-		var race_id = hero.get("race_id", "human")
-		var race_data = DataRegistry.get_race(race_id)
-
-		# Apply race xp_modifier
-		var xp_mod: float = 1.0
-		if race_data != null:
-			xp_mod = race_data.xp_modifier
-
-		var modified_xp = int(xp_amount * xp_mod)
-		var levels = grant_hero_xp(hero_id, modified_xp)
+		# Pass raw xp_amount — grant_hero_xp applies race modifier internally
+		var levels = grant_hero_xp(hero_id, xp_amount)
 		result[hero_id] = levels
 
 		# Get updated hero data for logging
 		var updated_hero = get_hero(hero_id)
 		var total_xp = updated_hero.get("xp", 0)
 		var level = updated_hero.get("level", 1)
+		var hero_name = hero.get("name", hero_id)
 
-		print("[XP] hero=%s name=%s race=%s mod=%.2f gained=%d total=%d level=%d" % [
-			hero_id, hero_name, race_id, xp_mod, modified_xp, total_xp, level
+		print("[XP] hero=%s name=%s gained_base=%d total=%d level=%d" % [
+			hero_id, hero_name, xp_amount, total_xp, level
 		])
 
 	return result
@@ -3851,19 +3850,29 @@ func can_upgrade_facility(town_id: String, facility_id: String) -> bool:
 
 
 ## Get upgrade cost for a facility to reach a target tier.
+## Checks regional_upgrade_costs for current region first, falls back to base upgrade_costs.
 ## Returns { "gold": int, "items": [{"item_id": str, "qty": int}, ...] }
 func get_facility_upgrade_cost(facility_id: String, target_tier: int) -> Dictionary:
 	var facility = DataRegistry.get_facility(facility_id)
 	if facility == null:
 		return { "gold": 0, "items": [] }
 
-	# upgrade_costs is Dictionary with tier string keys: { "2": { "gold": 50, "items": [...] } }
 	var tier_key = str(target_tier)
-	var upgrade_costs = facility.upgrade_costs
-	if not upgrade_costs.has(tier_key):
-		return { "gold": 0, "items": [] }
+	var region_key = str(current_region)
 
-	var cost_entry = upgrade_costs[tier_key]
+	# Check regional override first
+	var cost_entry = null
+	if facility.regional_upgrade_costs.has(region_key):
+		var region_costs = facility.regional_upgrade_costs[region_key]
+		if region_costs is Dictionary and region_costs.has(tier_key):
+			cost_entry = region_costs[tier_key]
+
+	# Fall back to base upgrade_costs
+	if cost_entry == null:
+		var base_costs = facility.upgrade_costs
+		if base_costs.has(tier_key):
+			cost_entry = base_costs[tier_key]
+
 	if cost_entry is Dictionary:
 		return {
 			"gold": cost_entry.get("gold", 0),

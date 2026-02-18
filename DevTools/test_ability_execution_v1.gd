@@ -7096,13 +7096,13 @@ static func _test_region2_monsters() -> Dictionary:
 	else:
 		print("[FAIL] Only %d/16 Region 2 monsters found" % found_count)
 
-	# Test 4: Stats are in reasonable range (bog wisp health > 30 = ~10% above R1)
+	# Test 4: Stats are in reasonable range (R2 normals rebalanced for campaign scaling)
 	var bat_hp: int = bat.base_stats.get("health", 0)
-	var pass_4: bool = bat_hp >= 30 and bat_hp <= 40
+	var pass_4: bool = bat_hp >= 50 and bat_hp <= 80
 	if pass_4:
-		print("[PASS] Bog Wisp HP=%d (scaled range 30-40)" % bat_hp)
+		print("[PASS] Bog Wisp HP=%d (scaled range 50-80)" % bat_hp)
 	else:
-		print("[FAIL] Bog Wisp HP=%d (expected 30-40)" % bat_hp)
+		print("[FAIL] Bog Wisp HP=%d (expected 50-80)" % bat_hp)
 
 	return {"name": "Region 2 monsters", "passed": pass_1 and pass_2 and pass_3 and pass_4}
 

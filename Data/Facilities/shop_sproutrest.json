@@ -19,20 +19,21 @@
   "slots_per_tier": {},
   "upgrade_costs": {
     "2": {
-      "gold": 100,
+      "gold": 90,
       "items": [
+        { "item_id": "wood_bundle", "qty": 4 },
         { "item_id": "fungal_fiber", "qty": 4 }
       ]
     },
     "3": {
-      "gold": 275,
+      "gold": 240,
       "items": [
         { "item_id": "fungal_fiber", "qty": 8 },
         { "item_id": "mycelium_thread", "qty": 4 }
       ]
     },
     "4": {
-      "gold": 650,
+      "gold": 600,
       "items": [
         { "item_id": "fungal_fiber", "qty": 12 },
         { "item_id": "mycelium_thread", "qty": 8 },

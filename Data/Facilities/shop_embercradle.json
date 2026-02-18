@@ -21,22 +21,23 @@
     "2": {
       "gold": 150,
       "items": [
+        { "item_id": "wood_bundle", "qty": 4 },
         { "item_id": "volcanic_glass", "qty": 4 }
       ]
     },
     "3": {
-      "gold": 425,
+      "gold": 400,
       "items": [
         { "item_id": "volcanic_glass", "qty": 8 },
-        { "item_id": "ember_dust", "qty": 4 }
+        { "item_id": "obsidian_shard", "qty": 4 }
       ]
     },
     "4": {
-      "gold": 950,
+      "gold": 1000,
       "items": [
         { "item_id": "volcanic_glass", "qty": 12 },
-        { "item_id": "ember_dust", "qty": 8 },
-        { "item_id": "obsidian_shard", "qty": 5 }
+        { "item_id": "obsidian_shard", "qty": 8 },
+        { "item_id": "ember_dust", "qty": 5 }
       ]
     }
   },

@@ -19,24 +19,25 @@
   "slots_per_tier": {},
   "upgrade_costs": {
     "2": {
-      "gold": 125,
+      "gold": 115,
       "items": [
+        { "item_id": "wood_bundle", "qty": 4 },
         { "item_id": "driftwood", "qty": 4 }
       ]
     },
     "3": {
-      "gold": 350,
+      "gold": 300,
       "items": [
         { "item_id": "driftwood", "qty": 8 },
         { "item_id": "sea_salt_crystal", "qty": 4 }
       ]
     },
     "4": {
-      "gold": 800,
+      "gold": 750,
       "items": [
         { "item_id": "driftwood", "qty": 12 },
         { "item_id": "sea_salt_crystal", "qty": 8 },
-        { "item_id": "tidal_pearl", "qty": 5 }
+        { "item_id": "stormglass_fragment", "qty": 5 }
       ]
     }
   },

@@ -12,9 +12,9 @@
     "speed": 8
   },
   "stat_growth": {
-    "health": 10,
+    "health": 7,
     "attack": 1,
-    "defense": 2,
+    "defense": 1,
     "speed": 2
   },
   "ability_a_id": "natures_grace",
