@@ -1,0 +1,18 @@
+{
+  "id": "tutorial_facilities_overview",
+  "steps": [
+    {
+      "speaker": "Mira",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
+      "title": "Welcome Back",
+      "body": "You made it back in one piece — and with loot to show for it! See the buildings around town? Each one is a facility run by a specialist who can put your haul to good use.\n\nClick any building on the map or use the nav buttons on the left to open a facility."
+    },
+    {
+      "speaker": "Mira",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
+      "title": "Put Your Loot to Work",
+      "body": "The Blacksmith, Huntsman, and Enchanter unlock new equipment recipes for the Shop — bring them materials and they'll expand what's available to buy.\n\nThe Training Hall teaches your heroes new classes as you unlock regions. And the Alchemist and Chef let you mix ingredients into potions and food.",
+      "button_text": "Time to explore!"
+    }
+  ]
+}

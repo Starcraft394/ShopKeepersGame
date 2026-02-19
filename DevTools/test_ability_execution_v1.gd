@@ -1008,6 +1008,22 @@ static func run_tests() -> Dictionary:
 	else:
 		results["failed"] += 1
 
+	# Test 125: Tutorial flag tracking
+	var t125 = _test_tutorial_flag_tracking()
+	results["tests"].append(t125)
+	if t125["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 126: Tutorial reset clears all flags
+	var t126 = _test_tutorial_reset()
+	results["tests"].append(t126)
+	if t126["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
 	print("")
 	print("=" .repeat(60))
 	print("  TEST RESULTS: %d passed, %d failed" % [results["passed"], results["failed"]])
@@ -7222,3 +7238,43 @@ static func _test_all_regions_count() -> Dictionary:
 		print("[FAIL] Region indices not sequential: %s" % str(indices))
 
 	return {"name": "All regions count", "passed": pass_1 and pass_2 and pass_3}
+
+
+static func _test_tutorial_flag_tracking() -> Dictionary:
+	print("--- TEST 125: Tutorial flag tracking ---")
+	var saved = GameContext.completed_tutorials.duplicate()
+	GameContext.completed_tutorials = {}
+
+	var before: bool = GameContext.has_completed_tutorial("test_tut_1")
+	GameContext.completed_tutorials["test_tut_1"] = true
+	var after: bool = GameContext.has_completed_tutorial("test_tut_1")
+	GameContext.completed_tutorials["test_tut_1"] = true
+	var count: int = GameContext.completed_tutorials.size()
+
+	GameContext.completed_tutorials = saved
+	var passed: bool = (before == false) and (after == true) and (count == 1)
+	if passed:
+		print("[PASS] Tutorial flag: before=%s after=%s count=%d" % [before, after, count])
+	else:
+		print("[FAIL] Tutorial flag: before=%s after=%s count=%d" % [before, after, count])
+	return {"name": "Tutorial flag tracking", "passed": passed}
+
+
+static func _test_tutorial_reset() -> Dictionary:
+	print("--- TEST 126: Tutorial reset ---")
+	var saved = GameContext.completed_tutorials.duplicate()
+	GameContext.completed_tutorials = {}
+
+	GameContext.completed_tutorials["test_1"] = true
+	GameContext.completed_tutorials["test_2"] = true
+	var before_count: int = GameContext.completed_tutorials.size()
+	GameContext.completed_tutorials = {}
+	var after_count: int = GameContext.completed_tutorials.size()
+
+	GameContext.completed_tutorials = saved
+	var passed: bool = (before_count == 2) and (after_count == 0)
+	if passed:
+		print("[PASS] Tutorial reset: before=%d after=%d" % [before_count, after_count])
+	else:
+		print("[FAIL] Tutorial reset: before=%d after=%d" % [before_count, after_count])
+	return {"name": "Tutorial reset", "passed": passed}

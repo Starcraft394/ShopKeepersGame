@@ -1,0 +1,18 @@
+{
+  "id": "tutorial_production",
+  "steps": [
+    {
+      "speaker": "Vex",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon22.png",
+      "title": "The Mixing Table",
+      "body": "Unlike the equipment crafters, we work hands-on here. Drop ingredients into the slots and mix them — the result depends on the combination.\n\nExperiment to discover new recipes. The Chef works the same way with food, if you'd rather start in his kitchen."
+    },
+    {
+      "speaker": "Vex",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon22.png",
+      "title": "A Word of Caution",
+      "body": "You'll want to think before you toss things in the crucible, friend. Old Merta — brilliant woman, steady hands — once mixed three things she swore would make a healing draught.\n\nTook us two days to air out the shop and a week to find all of Merta.",
+      "button_text": "Noted..."
+    }
+  ]
+}

@@ -76,6 +76,9 @@ func _ready() -> void:
 		GameContext.get_rooms_per_floor()
 	])
 
+	# Tutorial on first camp visit (non-blocking overlay)
+	TutorialOverlay.try_show(self, "tutorial_first_camp")
+
 
 # ============================================================================
 # ROOM CHOICE GENERATION
@@ -262,6 +265,10 @@ func _on_choice_b_pressed() -> void:
 
 
 func _on_extract_pressed() -> void:
+	# Tutorial on first extraction
+	var overlay = TutorialOverlay.try_show(self, "tutorial_first_extraction")
+	if overlay != null:
+		await overlay.tutorial_finished
 	_do_extract()
 
 

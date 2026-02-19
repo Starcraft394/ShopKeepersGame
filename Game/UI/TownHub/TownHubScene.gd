@@ -70,6 +70,7 @@ func _ready() -> void:
 	_build_town_map()
 	GameContext.location_changed.connect(_on_location_changed)
 	_check_first_launch_guidance()
+	_check_facilities_overview()
 	_check_region_unlock_notification()
 
 
@@ -264,6 +265,10 @@ func _build_nav_rail() -> void:
 func _check_first_launch_guidance() -> void:
 	if GameContext.get_party_size() > 0:
 		return
+	# Show welcome tutorial before auto-navigating to Inn
+	var overlay = TutorialOverlay.try_show(self, "tutorial_welcome")
+	if overlay != null:
+		await overlay.tutorial_finished
 	# No heroes — nudge player to the Inn
 	var town_id = GameContext.get_current_town_id()
 	var town = DataRegistry.get_town(town_id) if DataRegistry.has_method("get_town") else null
@@ -279,6 +284,15 @@ func _check_first_launch_guidance() -> void:
 		# Small delay so TownScene finishes initialization before we navigate
 		call_deferred("_on_facility_clicked", inn_id)
 		print("[TownHub] First launch — auto-opening Inn for hero recruitment")
+
+
+## Show facilities overview tutorial after first dungeon extraction.
+func _check_facilities_overview() -> void:
+	if not GameContext.has_completed_tutorial("tutorial_first_extraction"):
+		return
+	var overlay = TutorialOverlay.try_show(self, "tutorial_facilities_overview")
+	if overlay != null:
+		await overlay.tutorial_finished
 
 
 ## Show a region-unlocked banner if a new region was just unlocked.

@@ -60,7 +60,7 @@ var _run_counter: int = 0  # Incremented each run for unique IDs
 var _initialized: bool = false
 
 # Run stash (rewards collected during run - banked/permanent)
-var run_gold: int = 0
+var run_gold: int = 400  # Starting gold (town council investment)
 var run_items: Array = []  # Array of ItemInstance
 
 # Dungeon stash (provisional rewards - lost on flee, committed on extract)
@@ -97,7 +97,7 @@ var _last_room_was_event: bool = false
 # PLAYER INVENTORY (persistent between runs, used in town)
 # ============================================================================
 
-var player_gold: int = 100  # Starting gold for testing
+var player_gold: int = 400  # Starting gold
 var player_items: Dictionary = {}  # item_id -> qty
 
 # ============================================================================
@@ -156,6 +156,10 @@ var loot_pref: Dictionary = {}
 # Tracks which unlock_groups have been unlocked for purchase in shops
 # { "group_id": true, ... }
 var unlocked_groups: Dictionary = {}
+
+# Tracks which tutorials have been shown to the player
+# { "tutorial_id": true, ... }
+var completed_tutorials: Dictionary = {}
 
 # Default unlock groups given on fresh save (so shop isn't empty)
 const DEFAULT_UNLOCK_GROUPS: Array[String] = ["consumables_t1", "weapons_t1", "materials_t1"]
@@ -1912,6 +1916,26 @@ func get_unlocked_groups() -> Array:
 		if unlocked_groups[g] and g not in result:
 			result.append(g)
 	return result
+
+
+# ============================================================================
+# PUBLIC API - TUTORIAL TRACKING
+# ============================================================================
+
+func has_completed_tutorial(tutorial_id: String) -> bool:
+	return completed_tutorials.get(tutorial_id, false)
+
+func complete_tutorial(tutorial_id: String) -> void:
+	if has_completed_tutorial(tutorial_id):
+		return
+	completed_tutorials[tutorial_id] = true
+	print("[Tutorial] Completed: %s" % tutorial_id)
+	save_game()
+
+func reset_tutorials() -> void:
+	completed_tutorials = {}
+	print("[Tutorial] All tutorials reset")
+	save_game()
 
 
 # ============================================================================
@@ -4243,6 +4267,7 @@ func save_game() -> void:
 		"loot_pref": loot_pref,
 		# Region progression
 		"current_region": current_region,
+		"completed_tutorials": completed_tutorials,
 		"completed_regions": completed_regions,
 		"region_id": _current_region_id,
 		"town_id": _current_town_id,
@@ -4289,7 +4314,7 @@ func reset_save_game() -> void:
 	print("[Dev] Reinitializing GameContext defaults")
 
 	# Player inventory
-	player_gold = 100  # Starting gold
+	player_gold = 400  # Starting gold
 	player_items = {}
 
 	# Training buffs
@@ -4326,6 +4351,9 @@ func reset_save_game() -> void:
 	unlocked_groups = {}
 	unlocked_item_ids = {}
 	unlocked_recipes = {}
+
+	# Tutorials
+	completed_tutorials = {}
 
 	# Mixing system
 	discovered_mixes = {}
@@ -4365,7 +4393,7 @@ func reset_save_game() -> void:
 	shop_slot_allocations = {}
 
 	# Run stash
-	run_gold = 0
+	run_gold = 400  # Starting gold (town council investment)
 	run_items = []
 
 	# Dungeon stash
@@ -4481,6 +4509,9 @@ func load_game() -> void:
 		# Load recipe unlocks (shop item generation)
 		if save_data.has("unlocked_recipes") and save_data.unlocked_recipes is Dictionary:
 			unlocked_recipes = save_data.unlocked_recipes
+		# Tutorials
+		if save_data.has("completed_tutorials") and save_data.completed_tutorials is Dictionary:
+			completed_tutorials = save_data.completed_tutorials
 		# Mixing system
 		var discovered_val = save_data.get("discovered_mixes", {})
 		discovered_mixes = discovered_val if discovered_val is Dictionary else {}

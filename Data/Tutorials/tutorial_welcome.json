@@ -1,0 +1,24 @@
+{
+  "id": "tutorial_welcome",
+  "steps": [
+    {
+      "speaker": "Mira",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
+      "title": "Welcome to Thornhaven!",
+      "body": "Well met, ShopKeeper! I'm Mira, innkeeper of the Wanderer's Rest. This little town has seen better days, but with someone like you running the supply lines, we might just pull through.\n\nThe wilds beyond our walls are crawling with corrupted beasts. We need brave souls to venture out there — and someone sharp enough to keep them equipped."
+    },
+    {
+      "speaker": "Mira",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
+      "title": "Recruit Your First Heroes",
+      "body": "First things first — you'll need a party. The town council has put up 400 gold as an investment in your venture. Use it to recruit heroes at the Inn — each one has a race and class that shape how they fight.\n\nPick at least two to start. A Defender to soak hits and a Striker to deal damage is a solid foundation."
+    },
+    {
+      "speaker": "Mira",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
+      "title": "The Loop",
+      "body": "Here's how it works: recruit heroes, equip them from your Manage Roster tab here at the Inn, then send them into the dungeons. Whatever they bring back, you use to craft better gear and unlock new recipes.\n\nBut be warned — heroes who fall in the dungeon don't come back. Choose your battles wisely.",
+      "button_text": "Let's get started!"
+    }
+  ]
+}

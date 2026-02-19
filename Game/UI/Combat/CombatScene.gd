@@ -368,6 +368,9 @@ func _ready() -> void:
 	_monster_buff_btn.pressed.connect(_on_monster_buff_pressed)
 	$BottomPanel/ButtonRow.add_child(_monster_buff_btn)
 
+	# Tutorial on first combat (non-blocking — overlay sits on top)
+	TutorialOverlay.try_show(self, "tutorial_first_combat")
+
 	# Start initial encounter
 	_start_encounter()
 

@@ -1,0 +1,18 @@
+{
+  "id": "tutorial_first_combat",
+  "steps": [
+    {
+      "speaker": "Thalric",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
+      "title": "Combat Basics",
+      "body": "Combat is turn-based. The fastest units act first, determined by their Speed stat. Each hero has two abilities — a primary attack they use often, and a special skill on a longer cooldown.\n\nWhen both abilities are recharging, heroes fall back to a basic attack."
+    },
+    {
+      "speaker": "Thalric",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
+      "title": "Watch and Learn",
+      "body": "Each turn, you'll pick an action for your heroes — Basic Attack, Ability A, or Ability B. Hit Auto to let them fight on their own if you prefer.\n\nAfter victory, loot drops from defeated enemies. You'll route each piece into your hero bags or shopkeeper bag before moving on.",
+      "button_text": "To battle!"
+    }
+  ]
+}

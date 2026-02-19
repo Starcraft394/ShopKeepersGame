@@ -1,0 +1,18 @@
+{
+  "id": "tutorial_equipment_facilities",
+  "steps": [
+    {
+      "speaker": "Garrick",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon3.png",
+      "title": "The Forge",
+      "body": "I don't sell gear directly — I unlock recipes. Bring me materials from the dungeon and I'll add new items to the Shop's inventory.\n\nThe more recipes you unlock, the better gear available for purchase."
+    },
+    {
+      "speaker": "Garrick",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon3.png",
+      "title": "Tiers and Specialties",
+      "body": "Upgrade my facility with gold and materials to unlock higher-tier recipes. The Huntsman handles bows, leather, and backpacks. The Enchanter handles staves, focuses, and rings.\n\nEach of us has our specialty — check in after every run to see what's new.",
+      "button_text": "Let's see what you've got"
+    }
+  ]
+}

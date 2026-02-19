@@ -878,6 +878,11 @@ func _on_enter_dungeon_pressed() -> void:
 		progress_label.modulate = Color(1, 0.5, 0.5, 1)
 		return
 
+	# Tutorial before first dungeon run
+	var overlay = TutorialOverlay.try_show(self, "tutorial_first_dungeon")
+	if overlay != null:
+		await overlay.tutorial_finished
+
 	# Enter dungeon
 	GameContext.enter_dungeon(town.dungeon_id)
 	GameContext.set_phase(GameContext.GamePhase.COMBAT)
@@ -1170,6 +1175,15 @@ func _create_facility_actions(facility) -> void:
 	# Add type-specific UI
 	if facility == null:
 		return
+
+	# Show facility-group tutorials on first visit
+	match facility.facility_type:
+		"equipment":
+			TutorialOverlay.try_show(self, "tutorial_equipment_facilities")
+		"training_hall":
+			TutorialOverlay.try_show(self, "tutorial_training_hall")
+		"production":
+			TutorialOverlay.try_show(self, "tutorial_production")
 
 	match facility.facility_type:
 		"dungeon":

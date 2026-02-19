@@ -1,0 +1,18 @@
+{
+  "id": "tutorial_first_dungeon",
+  "steps": [
+    {
+      "speaker": "Thalric",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
+      "title": "Into the Wilds",
+      "body": "Your party is heading into the dungeon. Each floor has several rooms — some are combat encounters, others are events where you'll face choices.\n\nAt camp between rooms, you'll pick your path: one option is always a fight, the other might be an event or an elite encounter with better rewards."
+    },
+    {
+      "speaker": "Thalric",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
+      "title": "Loot and Risk",
+      "body": "Everything you collect during a run is provisional until you extract. If you flee or your party is wiped out, that loot is gone.\n\nAfter clearing the last room on a floor, the Extract option appears at camp — use it to bank your rewards safely back to town. Don't get greedy — a dead party carries nothing home.",
+      "button_text": "Understood"
+    }
+  ]
+}

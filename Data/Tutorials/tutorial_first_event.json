@@ -1,0 +1,12 @@
+{
+  "id": "tutorial_first_event",
+  "steps": [
+    {
+      "speaker": "Mira",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
+      "title": "A Crossroads",
+      "body": "You've stumbled into an event — a moment of choice rather than combat. Read the description carefully, then pick from the options below.\n\nSome choices are safe, others carry risk. A bold choice might reward you handsomely or cost you dearly. There are no wrong answers, only consequences.",
+      "button_text": "Choose wisely"
+    }
+  ]
+}

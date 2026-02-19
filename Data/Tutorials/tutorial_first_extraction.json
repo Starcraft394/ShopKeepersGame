@@ -1,0 +1,18 @@
+{
+  "id": "tutorial_first_extraction",
+  "steps": [
+    {
+      "speaker": "Pemberton",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon12.png",
+      "title": "Banking Your Loot",
+      "body": "Good thinking — extraction moves everything from your dungeon stash to your permanent town storage. Gold gets banked, items get stored, and nothing can be lost.\n\nIf you'd stayed and fallen, all of that would have been left in the dungeon."
+    },
+    {
+      "speaker": "Pemberton",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon12.png",
+      "title": "Back to Town",
+      "body": "Once you're back, visit the facilities to put your haul to work. The Blacksmith can forge weapons from raw materials. The Training Hall lets you unlock new classes with books.\n\nEvery successful run makes your next one easier. That's the ShopKeeper's edge.",
+      "button_text": "Head home"
+    }
+  ]
+}

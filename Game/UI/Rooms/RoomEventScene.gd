@@ -42,6 +42,9 @@ func _ready() -> void:
 	# Load and display event
 	_load_and_display_event()
 
+	# Tutorial on first event room (non-blocking overlay)
+	TutorialOverlay.try_show(self, "tutorial_first_event")
+
 	var payload = GameContext.current_room_payload
 	print("[RoomEvent] type=%s dungeon=%s floor=%d room=%d" % [
 		payload.get("type", "unknown"),
