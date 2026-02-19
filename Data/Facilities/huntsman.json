@@ -622,8 +622,14 @@
       "is_craft": true,
       "region": "region_1",
       "craft_inputs": [
-        { "item_id": "hunting_bow", "qty": 1 },
-        { "item_id": "iron_scrap", "qty": 2 }
+        {
+          "item_id": "hunting_bow",
+          "qty": 1
+        },
+        {
+          "item_id": "iron_scrap",
+          "qty": 2
+        }
       ]
     },
     {
@@ -635,10 +641,22 @@
       "is_craft": true,
       "region": "region_1",
       "craft_inputs": [
-        { "item_id": "hunting_bow", "qty": 1 },
-        { "item_id": "iron_scrap", "qty": 2 },
-        { "item_id": "wood_bundle", "qty": 1 },
-        { "item_id": "cursed_dust", "qty": 1 }
+        {
+          "item_id": "hunting_bow",
+          "qty": 1
+        },
+        {
+          "item_id": "iron_scrap",
+          "qty": 2
+        },
+        {
+          "item_id": "wood_bundle",
+          "qty": 1
+        },
+        {
+          "item_id": "cursed_dust",
+          "qty": 1
+        }
       ]
     },
     {
@@ -650,9 +668,18 @@
       "is_craft": true,
       "region": "region_1",
       "craft_inputs": [
-        { "item_id": "gw_longbow", "qty": 1 },
-        { "item_id": "cursed_dust", "qty": 2 },
-        { "item_id": "boss_trophy_greenwood", "qty": 1 }
+        {
+          "item_id": "gw_longbow",
+          "qty": 1
+        },
+        {
+          "item_id": "cursed_dust",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_greenwood",
+          "qty": 1
+        }
       ]
     },
     {
@@ -664,8 +691,14 @@
       "is_craft": true,
       "region": "region_1",
       "craft_inputs": [
-        { "item_id": "leather_vest", "qty": 1 },
-        { "item_id": "iron_scrap", "qty": 2 }
+        {
+          "item_id": "leather_vest",
+          "qty": 1
+        },
+        {
+          "item_id": "iron_scrap",
+          "qty": 2
+        }
       ]
     },
     {
@@ -677,10 +710,22 @@
       "is_craft": true,
       "region": "region_1",
       "craft_inputs": [
-        { "item_id": "leather_vest", "qty": 1 },
-        { "item_id": "iron_scrap", "qty": 2 },
-        { "item_id": "wood_bundle", "qty": 1 },
-        { "item_id": "cursed_dust", "qty": 1 }
+        {
+          "item_id": "leather_vest",
+          "qty": 1
+        },
+        {
+          "item_id": "iron_scrap",
+          "qty": 2
+        },
+        {
+          "item_id": "wood_bundle",
+          "qty": 1
+        },
+        {
+          "item_id": "cursed_dust",
+          "qty": 1
+        }
       ]
     },
     {
@@ -692,9 +737,18 @@
       "is_craft": true,
       "region": "region_1",
       "craft_inputs": [
-        { "item_id": "gw_living_vest", "qty": 1 },
-        { "item_id": "cursed_dust", "qty": 2 },
-        { "item_id": "boss_trophy_greenwood", "qty": 1 }
+        {
+          "item_id": "gw_living_vest",
+          "qty": 1
+        },
+        {
+          "item_id": "cursed_dust",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_greenwood",
+          "qty": 1
+        }
       ]
     },
     {
@@ -706,8 +760,14 @@
       "is_craft": true,
       "region": "region_1",
       "craft_inputs": [
-        { "item_id": "small_backpack", "qty": 1 },
-        { "item_id": "iron_scrap", "qty": 2 }
+        {
+          "item_id": "small_backpack",
+          "qty": 1
+        },
+        {
+          "item_id": "iron_scrap",
+          "qty": 2
+        }
       ]
     },
     {
@@ -719,10 +779,22 @@
       "is_craft": true,
       "region": "region_1",
       "craft_inputs": [
-        { "item_id": "small_backpack", "qty": 1 },
-        { "item_id": "iron_scrap", "qty": 2 },
-        { "item_id": "wood_bundle", "qty": 1 },
-        { "item_id": "cursed_dust", "qty": 1 }
+        {
+          "item_id": "small_backpack",
+          "qty": 1
+        },
+        {
+          "item_id": "iron_scrap",
+          "qty": 2
+        },
+        {
+          "item_id": "wood_bundle",
+          "qty": 1
+        },
+        {
+          "item_id": "cursed_dust",
+          "qty": 1
+        }
       ]
     },
     {
@@ -734,9 +806,18 @@
       "is_craft": true,
       "region": "region_1",
       "craft_inputs": [
-        { "item_id": "gw_ranger_pack", "qty": 1 },
-        { "item_id": "cursed_dust", "qty": 2 },
-        { "item_id": "boss_trophy_greenwood", "qty": 1 }
+        {
+          "item_id": "gw_ranger_pack",
+          "qty": 1
+        },
+        {
+          "item_id": "cursed_dust",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_greenwood",
+          "qty": 1
+        }
       ]
     },
     {
@@ -748,8 +829,14 @@
       "is_craft": true,
       "region": "region_2",
       "craft_inputs": [
-        { "item_id": "hunting_bow", "qty": 1 },
-        { "item_id": "fungal_fiber", "qty": 2 }
+        {
+          "item_id": "hunting_bow",
+          "qty": 1
+        },
+        {
+          "item_id": "fungal_fiber",
+          "qty": 2
+        }
       ]
     },
     {
@@ -761,10 +848,22 @@
       "is_craft": true,
       "region": "region_2",
       "craft_inputs": [
-        { "item_id": "hunting_bow", "qty": 1 },
-        { "item_id": "fungal_fiber", "qty": 2 },
-        { "item_id": "mycelium_thread", "qty": 1 },
-        { "item_id": "spore_cluster", "qty": 1 }
+        {
+          "item_id": "hunting_bow",
+          "qty": 1
+        },
+        {
+          "item_id": "fungal_fiber",
+          "qty": 2
+        },
+        {
+          "item_id": "mycelium_thread",
+          "qty": 1
+        },
+        {
+          "item_id": "spore_cluster",
+          "qty": 1
+        }
       ]
     },
     {
@@ -776,8 +875,14 @@
       "is_craft": true,
       "region": "region_2",
       "craft_inputs": [
-        { "item_id": "leather_vest", "qty": 1 },
-        { "item_id": "fungal_fiber", "qty": 2 }
+        {
+          "item_id": "leather_vest",
+          "qty": 1
+        },
+        {
+          "item_id": "fungal_fiber",
+          "qty": 2
+        }
       ]
     },
     {
@@ -789,10 +894,22 @@
       "is_craft": true,
       "region": "region_2",
       "craft_inputs": [
-        { "item_id": "leather_vest", "qty": 1 },
-        { "item_id": "fungal_fiber", "qty": 2 },
-        { "item_id": "mycelium_thread", "qty": 1 },
-        { "item_id": "spore_cluster", "qty": 1 }
+        {
+          "item_id": "leather_vest",
+          "qty": 1
+        },
+        {
+          "item_id": "fungal_fiber",
+          "qty": 2
+        },
+        {
+          "item_id": "mycelium_thread",
+          "qty": 1
+        },
+        {
+          "item_id": "spore_cluster",
+          "qty": 1
+        }
       ]
     },
     {
@@ -804,8 +921,14 @@
       "is_craft": true,
       "region": "region_2",
       "craft_inputs": [
-        { "item_id": "small_backpack", "qty": 1 },
-        { "item_id": "fungal_fiber", "qty": 2 }
+        {
+          "item_id": "small_backpack",
+          "qty": 1
+        },
+        {
+          "item_id": "fungal_fiber",
+          "qty": 2
+        }
       ]
     },
     {
@@ -817,10 +940,22 @@
       "is_craft": true,
       "region": "region_2",
       "craft_inputs": [
-        { "item_id": "small_backpack", "qty": 1 },
-        { "item_id": "fungal_fiber", "qty": 2 },
-        { "item_id": "mycelium_thread", "qty": 1 },
-        { "item_id": "spore_cluster", "qty": 1 }
+        {
+          "item_id": "small_backpack",
+          "qty": 1
+        },
+        {
+          "item_id": "fungal_fiber",
+          "qty": 2
+        },
+        {
+          "item_id": "mycelium_thread",
+          "qty": 1
+        },
+        {
+          "item_id": "spore_cluster",
+          "qty": 1
+        }
       ]
     },
     {
@@ -832,9 +967,18 @@
       "is_craft": true,
       "region": "region_2",
       "craft_inputs": [
-        { "item_id": "fm_mycelium_pack", "qty": 1 },
-        { "item_id": "spore_cluster", "qty": 2 },
-        { "item_id": "boss_trophy_fungalmire", "qty": 1 }
+        {
+          "item_id": "fm_mycelium_pack",
+          "qty": 1
+        },
+        {
+          "item_id": "spore_cluster",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_fungalmire",
+          "qty": 1
+        }
       ]
     },
     {
@@ -846,8 +990,14 @@
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "hunting_bow", "qty": 1 },
-        { "item_id": "ss_kelp_sinew", "qty": 2 }
+        {
+          "item_id": "hunting_bow",
+          "qty": 1
+        },
+        {
+          "item_id": "ss_kelp_sinew",
+          "qty": 2
+        }
       ]
     },
     {
@@ -859,10 +1009,22 @@
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "hunting_bow", "qty": 1 },
-        { "item_id": "ss_kelp_sinew", "qty": 2 },
-        { "item_id": "sea_salt_crystal", "qty": 1 },
-        { "item_id": "tidal_pearl", "qty": 1 }
+        {
+          "item_id": "hunting_bow",
+          "qty": 1
+        },
+        {
+          "item_id": "ss_kelp_sinew",
+          "qty": 2
+        },
+        {
+          "item_id": "sea_salt_crystal",
+          "qty": 1
+        },
+        {
+          "item_id": "tidal_pearl",
+          "qty": 1
+        }
       ]
     },
     {
@@ -874,9 +1036,18 @@
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "ss_tidestriker_bow", "qty": 1 },
-        { "item_id": "tidal_pearl", "qty": 2 },
-        { "item_id": "boss_trophy_sunken_strand", "qty": 1 }
+        {
+          "item_id": "ss_tidestriker_bow",
+          "qty": 1
+        },
+        {
+          "item_id": "tidal_pearl",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_sunken_strand",
+          "qty": 1
+        }
       ]
     },
     {
@@ -888,8 +1059,14 @@
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "leather_vest", "qty": 1 },
-        { "item_id": "ss_kelp_sinew", "qty": 2 }
+        {
+          "item_id": "leather_vest",
+          "qty": 1
+        },
+        {
+          "item_id": "ss_kelp_sinew",
+          "qty": 2
+        }
       ]
     },
     {
@@ -901,10 +1078,22 @@
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "leather_vest", "qty": 1 },
-        { "item_id": "ss_kelp_sinew", "qty": 2 },
-        { "item_id": "sea_salt_crystal", "qty": 1 },
-        { "item_id": "tidal_pearl", "qty": 1 }
+        {
+          "item_id": "leather_vest",
+          "qty": 1
+        },
+        {
+          "item_id": "ss_kelp_sinew",
+          "qty": 2
+        },
+        {
+          "item_id": "sea_salt_crystal",
+          "qty": 1
+        },
+        {
+          "item_id": "tidal_pearl",
+          "qty": 1
+        }
       ]
     },
     {
@@ -916,9 +1105,18 @@
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "ss_kelp_vest", "qty": 1 },
-        { "item_id": "tidal_pearl", "qty": 2 },
-        { "item_id": "boss_trophy_sunken_strand", "qty": 1 }
+        {
+          "item_id": "ss_kelp_vest",
+          "qty": 1
+        },
+        {
+          "item_id": "tidal_pearl",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_sunken_strand",
+          "qty": 1
+        }
       ]
     },
     {
@@ -930,8 +1128,14 @@
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "small_backpack", "qty": 1 },
-        { "item_id": "ss_kelp_sinew", "qty": 2 }
+        {
+          "item_id": "small_backpack",
+          "qty": 1
+        },
+        {
+          "item_id": "ss_kelp_sinew",
+          "qty": 2
+        }
       ]
     },
     {
@@ -943,10 +1147,22 @@
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "small_backpack", "qty": 1 },
-        { "item_id": "ss_kelp_sinew", "qty": 2 },
-        { "item_id": "sea_salt_crystal", "qty": 1 },
-        { "item_id": "tidal_pearl", "qty": 1 }
+        {
+          "item_id": "small_backpack",
+          "qty": 1
+        },
+        {
+          "item_id": "ss_kelp_sinew",
+          "qty": 2
+        },
+        {
+          "item_id": "sea_salt_crystal",
+          "qty": 1
+        },
+        {
+          "item_id": "tidal_pearl",
+          "qty": 1
+        }
       ]
     },
     {
@@ -958,9 +1174,18 @@
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "ss_shell_pack", "qty": 1 },
-        { "item_id": "tidal_pearl", "qty": 2 },
-        { "item_id": "boss_trophy_sunken_strand", "qty": 1 }
+        {
+          "item_id": "ss_shell_pack",
+          "qty": 1
+        },
+        {
+          "item_id": "tidal_pearl",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_sunken_strand",
+          "qty": 1
+        }
       ]
     },
     {
@@ -972,8 +1197,14 @@
       "is_craft": true,
       "region": "region_4",
       "craft_inputs": [
-        { "item_id": "hunting_bow", "qty": 1 },
-        { "item_id": "volcanic_glass", "qty": 2 }
+        {
+          "item_id": "hunting_bow",
+          "qty": 1
+        },
+        {
+          "item_id": "volcanic_glass",
+          "qty": 2
+        }
       ]
     },
     {
@@ -985,10 +1216,22 @@
       "is_craft": true,
       "region": "region_4",
       "craft_inputs": [
-        { "item_id": "hunting_bow", "qty": 1 },
-        { "item_id": "volcanic_glass", "qty": 2 },
-        { "item_id": "obsidian_shard", "qty": 1 },
-        { "item_id": "ah_drake_scale", "qty": 1 }
+        {
+          "item_id": "hunting_bow",
+          "qty": 1
+        },
+        {
+          "item_id": "volcanic_glass",
+          "qty": 2
+        },
+        {
+          "item_id": "obsidian_shard",
+          "qty": 1
+        },
+        {
+          "item_id": "ah_drake_scale",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1000,8 +1243,14 @@
       "is_craft": true,
       "region": "region_4",
       "craft_inputs": [
-        { "item_id": "leather_vest", "qty": 1 },
-        { "item_id": "volcanic_glass", "qty": 2 }
+        {
+          "item_id": "leather_vest",
+          "qty": 1
+        },
+        {
+          "item_id": "volcanic_glass",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1013,10 +1262,22 @@
       "is_craft": true,
       "region": "region_4",
       "craft_inputs": [
-        { "item_id": "leather_vest", "qty": 1 },
-        { "item_id": "volcanic_glass", "qty": 2 },
-        { "item_id": "obsidian_shard", "qty": 1 },
-        { "item_id": "ah_drake_scale", "qty": 1 }
+        {
+          "item_id": "leather_vest",
+          "qty": 1
+        },
+        {
+          "item_id": "volcanic_glass",
+          "qty": 2
+        },
+        {
+          "item_id": "obsidian_shard",
+          "qty": 1
+        },
+        {
+          "item_id": "ah_drake_scale",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1028,8 +1289,14 @@
       "is_craft": true,
       "region": "region_4",
       "craft_inputs": [
-        { "item_id": "small_backpack", "qty": 1 },
-        { "item_id": "volcanic_glass", "qty": 2 }
+        {
+          "item_id": "small_backpack",
+          "qty": 1
+        },
+        {
+          "item_id": "volcanic_glass",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1041,10 +1308,22 @@
       "is_craft": true,
       "region": "region_4",
       "craft_inputs": [
-        { "item_id": "small_backpack", "qty": 1 },
-        { "item_id": "volcanic_glass", "qty": 2 },
-        { "item_id": "obsidian_shard", "qty": 1 },
-        { "item_id": "ah_drake_scale", "qty": 1 }
+        {
+          "item_id": "small_backpack",
+          "qty": 1
+        },
+        {
+          "item_id": "volcanic_glass",
+          "qty": 2
+        },
+        {
+          "item_id": "obsidian_shard",
+          "qty": 1
+        },
+        {
+          "item_id": "ah_drake_scale",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1056,8 +1335,14 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "hunting_bow", "qty": 1 },
-        { "item_id": "prism_shard", "qty": 2 }
+        {
+          "item_id": "hunting_bow",
+          "qty": 1
+        },
+        {
+          "item_id": "prism_shard",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1069,10 +1354,22 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "hunting_bow", "qty": 1 },
-        { "item_id": "prism_shard", "qty": 2 },
-        { "item_id": "starfall_dust", "qty": 1 },
-        { "item_id": "astral_fragment", "qty": 1 }
+        {
+          "item_id": "hunting_bow",
+          "qty": 1
+        },
+        {
+          "item_id": "prism_shard",
+          "qty": 2
+        },
+        {
+          "item_id": "starfall_dust",
+          "qty": 1
+        },
+        {
+          "item_id": "astral_fragment",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1084,9 +1381,18 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "se_starfall_shortbow", "qty": 1 },
-        { "item_id": "astral_fragment", "qty": 2 },
-        { "item_id": "boss_trophy_starfall_expanse", "qty": 1 }
+        {
+          "item_id": "se_starfall_shortbow",
+          "qty": 1
+        },
+        {
+          "item_id": "astral_fragment",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_starfall_expanse",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1098,8 +1404,14 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "leather_vest", "qty": 1 },
-        { "item_id": "prism_shard", "qty": 2 }
+        {
+          "item_id": "leather_vest",
+          "qty": 1
+        },
+        {
+          "item_id": "prism_shard",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1111,10 +1423,22 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "leather_vest", "qty": 1 },
-        { "item_id": "prism_shard", "qty": 2 },
-        { "item_id": "starfall_dust", "qty": 1 },
-        { "item_id": "astral_fragment", "qty": 1 }
+        {
+          "item_id": "leather_vest",
+          "qty": 1
+        },
+        {
+          "item_id": "prism_shard",
+          "qty": 2
+        },
+        {
+          "item_id": "starfall_dust",
+          "qty": 1
+        },
+        {
+          "item_id": "astral_fragment",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1126,9 +1450,18 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "se_crystal_robe", "qty": 1 },
-        { "item_id": "astral_fragment", "qty": 2 },
-        { "item_id": "boss_trophy_starfall_expanse", "qty": 1 }
+        {
+          "item_id": "se_crystal_robe",
+          "qty": 1
+        },
+        {
+          "item_id": "astral_fragment",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_starfall_expanse",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1140,8 +1473,14 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "small_backpack", "qty": 1 },
-        { "item_id": "prism_shard", "qty": 2 }
+        {
+          "item_id": "small_backpack",
+          "qty": 1
+        },
+        {
+          "item_id": "prism_shard",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1153,10 +1492,22 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "small_backpack", "qty": 1 },
-        { "item_id": "prism_shard", "qty": 2 },
-        { "item_id": "starfall_dust", "qty": 1 },
-        { "item_id": "astral_fragment", "qty": 1 }
+        {
+          "item_id": "small_backpack",
+          "qty": 1
+        },
+        {
+          "item_id": "prism_shard",
+          "qty": 2
+        },
+        {
+          "item_id": "starfall_dust",
+          "qty": 1
+        },
+        {
+          "item_id": "astral_fragment",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1168,8 +1519,14 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "hunting_bow", "qty": 1 },
-        { "item_id": "soul_ore", "qty": 2 }
+        {
+          "item_id": "hunting_bow",
+          "qty": 1
+        },
+        {
+          "item_id": "soul_ore",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1181,10 +1538,22 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "hunting_bow", "qty": 1 },
-        { "item_id": "soul_ore", "qty": 2 },
-        { "item_id": "spectral_log", "qty": 1 },
-        { "item_id": "nc_wraith_thread", "qty": 1 }
+        {
+          "item_id": "hunting_bow",
+          "qty": 1
+        },
+        {
+          "item_id": "soul_ore",
+          "qty": 2
+        },
+        {
+          "item_id": "spectral_log",
+          "qty": 1
+        },
+        {
+          "item_id": "nc_wraith_thread",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1196,9 +1565,18 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "nc_wraith_shortbow", "qty": 1 },
-        { "item_id": "nc_wraith_thread", "qty": 2 },
-        { "item_id": "boss_trophy_necropolis", "qty": 1 }
+        {
+          "item_id": "nc_wraith_shortbow",
+          "qty": 1
+        },
+        {
+          "item_id": "nc_wraith_thread",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_necropolis",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1210,8 +1588,14 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "leather_vest", "qty": 1 },
-        { "item_id": "soul_ore", "qty": 2 }
+        {
+          "item_id": "leather_vest",
+          "qty": 1
+        },
+        {
+          "item_id": "soul_ore",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1223,10 +1607,22 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "leather_vest", "qty": 1 },
-        { "item_id": "soul_ore", "qty": 2 },
-        { "item_id": "spectral_log", "qty": 1 },
-        { "item_id": "nc_wraith_thread", "qty": 1 }
+        {
+          "item_id": "leather_vest",
+          "qty": 1
+        },
+        {
+          "item_id": "soul_ore",
+          "qty": 2
+        },
+        {
+          "item_id": "spectral_log",
+          "qty": 1
+        },
+        {
+          "item_id": "nc_wraith_thread",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1238,9 +1634,18 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "nc_wraith_tunic", "qty": 1 },
-        { "item_id": "nc_wraith_thread", "qty": 2 },
-        { "item_id": "boss_trophy_necropolis", "qty": 1 }
+        {
+          "item_id": "nc_wraith_tunic",
+          "qty": 1
+        },
+        {
+          "item_id": "nc_wraith_thread",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_necropolis",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1252,8 +1657,14 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "small_backpack", "qty": 1 },
-        { "item_id": "soul_ore", "qty": 2 }
+        {
+          "item_id": "small_backpack",
+          "qty": 1
+        },
+        {
+          "item_id": "soul_ore",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1265,10 +1676,22 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "small_backpack", "qty": 1 },
-        { "item_id": "soul_ore", "qty": 2 },
-        { "item_id": "spectral_log", "qty": 1 },
-        { "item_id": "nc_wraith_thread", "qty": 1 }
+        {
+          "item_id": "small_backpack",
+          "qty": 1
+        },
+        {
+          "item_id": "soul_ore",
+          "qty": 2
+        },
+        {
+          "item_id": "spectral_log",
+          "qty": 1
+        },
+        {
+          "item_id": "nc_wraith_thread",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1280,8 +1703,14 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "hunting_bow", "qty": 1 },
-        { "item_id": "fr_entropy_residue", "qty": 2 }
+        {
+          "item_id": "hunting_bow",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_entropy_residue",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1293,10 +1722,22 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "hunting_bow", "qty": 1 },
-        { "item_id": "fr_entropy_residue", "qty": 2 },
-        { "item_id": "fr_null_fragment", "qty": 1 },
-        { "item_id": "fr_dimensional_essence", "qty": 1 }
+        {
+          "item_id": "hunting_bow",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_entropy_residue",
+          "qty": 2
+        },
+        {
+          "item_id": "fr_null_fragment",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_dimensional_essence",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1308,9 +1749,18 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "fr_null_bow", "qty": 1 },
-        { "item_id": "fr_dimensional_essence", "qty": 2 },
-        { "item_id": "boss_trophy_fractured_realm", "qty": 1 }
+        {
+          "item_id": "fr_null_bow",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_dimensional_essence",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_fractured_realm",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1322,8 +1772,14 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "leather_vest", "qty": 1 },
-        { "item_id": "fr_entropy_residue", "qty": 2 }
+        {
+          "item_id": "leather_vest",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_entropy_residue",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1335,10 +1791,22 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "leather_vest", "qty": 1 },
-        { "item_id": "fr_entropy_residue", "qty": 2 },
-        { "item_id": "fr_null_fragment", "qty": 1 },
-        { "item_id": "fr_dimensional_essence", "qty": 1 }
+        {
+          "item_id": "leather_vest",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_entropy_residue",
+          "qty": 2
+        },
+        {
+          "item_id": "fr_null_fragment",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_dimensional_essence",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1350,9 +1818,18 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "fr_null_shroud", "qty": 1 },
-        { "item_id": "fr_dimensional_essence", "qty": 2 },
-        { "item_id": "boss_trophy_fractured_realm", "qty": 1 }
+        {
+          "item_id": "fr_null_shroud",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_dimensional_essence",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_fractured_realm",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1364,8 +1841,14 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "small_backpack", "qty": 1 },
-        { "item_id": "fr_entropy_residue", "qty": 2 }
+        {
+          "item_id": "small_backpack",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_entropy_residue",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1377,10 +1860,22 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "small_backpack", "qty": 1 },
-        { "item_id": "fr_entropy_residue", "qty": 2 },
-        { "item_id": "fr_null_fragment", "qty": 1 },
-        { "item_id": "fr_dimensional_essence", "qty": 1 }
+        {
+          "item_id": "small_backpack",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_entropy_residue",
+          "qty": 2
+        },
+        {
+          "item_id": "fr_null_fragment",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_dimensional_essence",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1392,9 +1887,35 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "fr_null_pack", "qty": 1 },
-        { "item_id": "fr_dimensional_essence", "qty": 2 },
-        { "item_id": "boss_trophy_fractured_realm", "qty": 1 }
+        {
+          "item_id": "fr_null_pack",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_dimensional_essence",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_fractured_realm",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "output_id": "cloth_robe",
+      "output_qty": 1,
+      "required_tier": 1,
+      "upgrade_tier": 1,
+      "equipment_type": "light_armor",
+      "unlock_cost": [
+        {
+          "item_id": "wolf_pelt",
+          "qty": 1
+        },
+        {
+          "item_id": "spider_silk",
+          "qty": 1
+        }
       ]
     }
   ]

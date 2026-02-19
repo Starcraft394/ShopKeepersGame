@@ -16,6 +16,12 @@
       "output_id": "fr_dimensional_flux",
       "output_qty": 1,
       "required_tier": 3
+    },
+    {
+      "output_id": "fr_entropy_charge",
+      "input_a": "fr_entropy_residue",
+      "input_b": "fr_null_fragment",
+      "input_c": "fr_corruption_ichor"
     }
   ]
 }

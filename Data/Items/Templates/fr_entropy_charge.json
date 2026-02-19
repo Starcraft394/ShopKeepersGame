@@ -6,7 +6,7 @@
   "item_type": "consumable",
   "item_subtype": "thrown",
   "category": "consumable",
-  "tier": 5,
+  "tier": 4,
   "use_effect": "debuff_accuracy",
   "debuff_stat": "accuracy",
   "debuff_amount": 8,
@@ -19,7 +19,7 @@
     "thrown",
     "debuff",
     "final_realm",
-    "tier_5"
+    "tier_4"
   ],
   "stack_max": 10
 }

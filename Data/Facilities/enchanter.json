@@ -632,7 +632,6 @@
         }
       ]
     },
-
     {
       "output_id": "arcane_staff",
       "output_qty": 1,
@@ -642,8 +641,14 @@
       "is_craft": true,
       "region": "region_1",
       "craft_inputs": [
-        { "item_id": "oak_staff", "qty": 1 },
-        { "item_id": "iron_scrap", "qty": 2 }
+        {
+          "item_id": "oak_staff",
+          "qty": 1
+        },
+        {
+          "item_id": "iron_scrap",
+          "qty": 2
+        }
       ]
     },
     {
@@ -655,10 +660,22 @@
       "is_craft": true,
       "region": "region_1",
       "craft_inputs": [
-        { "item_id": "oak_staff", "qty": 1 },
-        { "item_id": "iron_scrap", "qty": 2 },
-        { "item_id": "wood_bundle", "qty": 1 },
-        { "item_id": "cursed_dust", "qty": 1 }
+        {
+          "item_id": "oak_staff",
+          "qty": 1
+        },
+        {
+          "item_id": "iron_scrap",
+          "qty": 2
+        },
+        {
+          "item_id": "wood_bundle",
+          "qty": 1
+        },
+        {
+          "item_id": "cursed_dust",
+          "qty": 1
+        }
       ]
     },
     {
@@ -670,9 +687,18 @@
       "is_craft": true,
       "region": "region_1",
       "craft_inputs": [
-        { "item_id": "gw_living_staff", "qty": 1 },
-        { "item_id": "cursed_dust", "qty": 2 },
-        { "item_id": "boss_trophy_greenwood", "qty": 1 }
+        {
+          "item_id": "gw_living_staff",
+          "qty": 1
+        },
+        {
+          "item_id": "cursed_dust",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_greenwood",
+          "qty": 1
+        }
       ]
     },
     {
@@ -684,8 +710,14 @@
       "is_craft": true,
       "region": "region_1",
       "craft_inputs": [
-        { "item_id": "apprentice_focus", "qty": 1 },
-        { "item_id": "iron_scrap", "qty": 2 }
+        {
+          "item_id": "apprentice_focus",
+          "qty": 1
+        },
+        {
+          "item_id": "iron_scrap",
+          "qty": 2
+        }
       ]
     },
     {
@@ -697,10 +729,22 @@
       "is_craft": true,
       "region": "region_1",
       "craft_inputs": [
-        { "item_id": "apprentice_focus", "qty": 1 },
-        { "item_id": "iron_scrap", "qty": 2 },
-        { "item_id": "wood_bundle", "qty": 1 },
-        { "item_id": "cursed_dust", "qty": 1 }
+        {
+          "item_id": "apprentice_focus",
+          "qty": 1
+        },
+        {
+          "item_id": "iron_scrap",
+          "qty": 2
+        },
+        {
+          "item_id": "wood_bundle",
+          "qty": 1
+        },
+        {
+          "item_id": "cursed_dust",
+          "qty": 1
+        }
       ]
     },
     {
@@ -712,8 +756,14 @@
       "is_craft": true,
       "region": "region_1",
       "craft_inputs": [
-        { "item_id": "simple_ring", "qty": 1 },
-        { "item_id": "iron_scrap", "qty": 2 }
+        {
+          "item_id": "simple_ring",
+          "qty": 1
+        },
+        {
+          "item_id": "iron_scrap",
+          "qty": 2
+        }
       ]
     },
     {
@@ -725,10 +775,22 @@
       "is_craft": true,
       "region": "region_1",
       "craft_inputs": [
-        { "item_id": "simple_ring", "qty": 1 },
-        { "item_id": "iron_scrap", "qty": 2 },
-        { "item_id": "wood_bundle", "qty": 1 },
-        { "item_id": "cursed_dust", "qty": 1 }
+        {
+          "item_id": "simple_ring",
+          "qty": 1
+        },
+        {
+          "item_id": "iron_scrap",
+          "qty": 2
+        },
+        {
+          "item_id": "wood_bundle",
+          "qty": 1
+        },
+        {
+          "item_id": "cursed_dust",
+          "qty": 1
+        }
       ]
     },
     {
@@ -740,9 +802,18 @@
       "is_craft": true,
       "region": "region_1",
       "craft_inputs": [
-        { "item_id": "gw_emerald_ring", "qty": 1 },
-        { "item_id": "cursed_dust", "qty": 2 },
-        { "item_id": "boss_trophy_greenwood", "qty": 1 }
+        {
+          "item_id": "gw_emerald_ring",
+          "qty": 1
+        },
+        {
+          "item_id": "cursed_dust",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_greenwood",
+          "qty": 1
+        }
       ]
     },
     {
@@ -754,8 +825,14 @@
       "is_craft": true,
       "region": "region_1",
       "craft_inputs": [
-        { "item_id": "lucky_charm", "qty": 1 },
-        { "item_id": "iron_scrap", "qty": 2 }
+        {
+          "item_id": "lucky_charm",
+          "qty": 1
+        },
+        {
+          "item_id": "iron_scrap",
+          "qty": 2
+        }
       ]
     },
     {
@@ -767,13 +844,24 @@
       "is_craft": true,
       "region": "region_1",
       "craft_inputs": [
-        { "item_id": "lucky_charm", "qty": 1 },
-        { "item_id": "iron_scrap", "qty": 2 },
-        { "item_id": "wood_bundle", "qty": 1 },
-        { "item_id": "cursed_dust", "qty": 1 }
+        {
+          "item_id": "lucky_charm",
+          "qty": 1
+        },
+        {
+          "item_id": "iron_scrap",
+          "qty": 2
+        },
+        {
+          "item_id": "wood_bundle",
+          "qty": 1
+        },
+        {
+          "item_id": "cursed_dust",
+          "qty": 1
+        }
       ]
     },
-
     {
       "output_id": "fm_spore_staff",
       "output_qty": 1,
@@ -783,8 +871,14 @@
       "is_craft": true,
       "region": "region_2",
       "craft_inputs": [
-        { "item_id": "oak_staff", "qty": 1 },
-        { "item_id": "fungal_fiber", "qty": 2 }
+        {
+          "item_id": "oak_staff",
+          "qty": 1
+        },
+        {
+          "item_id": "fungal_fiber",
+          "qty": 2
+        }
       ]
     },
     {
@@ -796,10 +890,22 @@
       "is_craft": true,
       "region": "region_2",
       "craft_inputs": [
-        { "item_id": "oak_staff", "qty": 1 },
-        { "item_id": "fungal_fiber", "qty": 2 },
-        { "item_id": "mycelium_thread", "qty": 1 },
-        { "item_id": "spore_cluster", "qty": 1 }
+        {
+          "item_id": "oak_staff",
+          "qty": 1
+        },
+        {
+          "item_id": "fungal_fiber",
+          "qty": 2
+        },
+        {
+          "item_id": "mycelium_thread",
+          "qty": 1
+        },
+        {
+          "item_id": "spore_cluster",
+          "qty": 1
+        }
       ]
     },
     {
@@ -811,9 +917,18 @@
       "is_craft": true,
       "region": "region_2",
       "craft_inputs": [
-        { "item_id": "fm_fungal_staff", "qty": 1 },
-        { "item_id": "spore_cluster", "qty": 2 },
-        { "item_id": "boss_trophy_fungalmire", "qty": 1 }
+        {
+          "item_id": "fm_fungal_staff",
+          "qty": 1
+        },
+        {
+          "item_id": "spore_cluster",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_fungalmire",
+          "qty": 1
+        }
       ]
     },
     {
@@ -825,8 +940,14 @@
       "is_craft": true,
       "region": "region_2",
       "craft_inputs": [
-        { "item_id": "apprentice_focus", "qty": 1 },
-        { "item_id": "fungal_fiber", "qty": 2 }
+        {
+          "item_id": "apprentice_focus",
+          "qty": 1
+        },
+        {
+          "item_id": "fungal_fiber",
+          "qty": 2
+        }
       ]
     },
     {
@@ -838,10 +959,22 @@
       "is_craft": true,
       "region": "region_2",
       "craft_inputs": [
-        { "item_id": "apprentice_focus", "qty": 1 },
-        { "item_id": "fungal_fiber", "qty": 2 },
-        { "item_id": "mycelium_thread", "qty": 1 },
-        { "item_id": "spore_cluster", "qty": 1 }
+        {
+          "item_id": "apprentice_focus",
+          "qty": 1
+        },
+        {
+          "item_id": "fungal_fiber",
+          "qty": 2
+        },
+        {
+          "item_id": "mycelium_thread",
+          "qty": 1
+        },
+        {
+          "item_id": "spore_cluster",
+          "qty": 1
+        }
       ]
     },
     {
@@ -853,9 +986,18 @@
       "is_craft": true,
       "region": "region_2",
       "craft_inputs": [
-        { "item_id": "fm_mycelium_focus", "qty": 1 },
-        { "item_id": "spore_cluster", "qty": 2 },
-        { "item_id": "boss_trophy_fungalmire", "qty": 1 }
+        {
+          "item_id": "fm_mycelium_focus",
+          "qty": 1
+        },
+        {
+          "item_id": "spore_cluster",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_fungalmire",
+          "qty": 1
+        }
       ]
     },
     {
@@ -867,8 +1009,14 @@
       "is_craft": true,
       "region": "region_2",
       "craft_inputs": [
-        { "item_id": "simple_ring", "qty": 1 },
-        { "item_id": "fungal_fiber", "qty": 2 }
+        {
+          "item_id": "simple_ring",
+          "qty": 1
+        },
+        {
+          "item_id": "fungal_fiber",
+          "qty": 2
+        }
       ]
     },
     {
@@ -880,10 +1028,22 @@
       "is_craft": true,
       "region": "region_2",
       "craft_inputs": [
-        { "item_id": "simple_ring", "qty": 1 },
-        { "item_id": "fungal_fiber", "qty": 2 },
-        { "item_id": "mycelium_thread", "qty": 1 },
-        { "item_id": "spore_cluster", "qty": 1 }
+        {
+          "item_id": "simple_ring",
+          "qty": 1
+        },
+        {
+          "item_id": "fungal_fiber",
+          "qty": 2
+        },
+        {
+          "item_id": "mycelium_thread",
+          "qty": 1
+        },
+        {
+          "item_id": "spore_cluster",
+          "qty": 1
+        }
       ]
     },
     {
@@ -895,8 +1055,14 @@
       "is_craft": true,
       "region": "region_2",
       "craft_inputs": [
-        { "item_id": "lucky_charm", "qty": 1 },
-        { "item_id": "fungal_fiber", "qty": 2 }
+        {
+          "item_id": "lucky_charm",
+          "qty": 1
+        },
+        {
+          "item_id": "fungal_fiber",
+          "qty": 2
+        }
       ]
     },
     {
@@ -908,10 +1074,22 @@
       "is_craft": true,
       "region": "region_2",
       "craft_inputs": [
-        { "item_id": "lucky_charm", "qty": 1 },
-        { "item_id": "fungal_fiber", "qty": 2 },
-        { "item_id": "mycelium_thread", "qty": 1 },
-        { "item_id": "spore_cluster", "qty": 1 }
+        {
+          "item_id": "lucky_charm",
+          "qty": 1
+        },
+        {
+          "item_id": "fungal_fiber",
+          "qty": 2
+        },
+        {
+          "item_id": "mycelium_thread",
+          "qty": 1
+        },
+        {
+          "item_id": "spore_cluster",
+          "qty": 1
+        }
       ]
     },
     {
@@ -923,12 +1101,20 @@
       "is_craft": true,
       "region": "region_2",
       "craft_inputs": [
-        { "item_id": "fm_sporeguard_pendant", "qty": 1 },
-        { "item_id": "spore_cluster", "qty": 2 },
-        { "item_id": "boss_trophy_fungalmire", "qty": 1 }
+        {
+          "item_id": "fm_sporeguard_pendant",
+          "qty": 1
+        },
+        {
+          "item_id": "spore_cluster",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_fungalmire",
+          "qty": 1
+        }
       ]
     },
-
     {
       "output_id": "ss_driftwood_staff",
       "output_qty": 1,
@@ -938,8 +1124,14 @@
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "oak_staff", "qty": 1 },
-        { "item_id": "ss_kelp_sinew", "qty": 2 }
+        {
+          "item_id": "oak_staff",
+          "qty": 1
+        },
+        {
+          "item_id": "ss_kelp_sinew",
+          "qty": 2
+        }
       ]
     },
     {
@@ -951,10 +1143,22 @@
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "oak_staff", "qty": 1 },
-        { "item_id": "ss_kelp_sinew", "qty": 2 },
-        { "item_id": "sea_salt_crystal", "qty": 1 },
-        { "item_id": "tidal_pearl", "qty": 1 }
+        {
+          "item_id": "oak_staff",
+          "qty": 1
+        },
+        {
+          "item_id": "ss_kelp_sinew",
+          "qty": 2
+        },
+        {
+          "item_id": "sea_salt_crystal",
+          "qty": 1
+        },
+        {
+          "item_id": "tidal_pearl",
+          "qty": 1
+        }
       ]
     },
     {
@@ -966,9 +1170,18 @@
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "ss_coral_staff", "qty": 1 },
-        { "item_id": "tidal_pearl", "qty": 2 },
-        { "item_id": "boss_trophy_sunken_strand", "qty": 1 }
+        {
+          "item_id": "ss_coral_staff",
+          "qty": 1
+        },
+        {
+          "item_id": "tidal_pearl",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_sunken_strand",
+          "qty": 1
+        }
       ]
     },
     {
@@ -980,8 +1193,14 @@
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "apprentice_focus", "qty": 1 },
-        { "item_id": "ss_kelp_sinew", "qty": 2 }
+        {
+          "item_id": "apprentice_focus",
+          "qty": 1
+        },
+        {
+          "item_id": "ss_kelp_sinew",
+          "qty": 2
+        }
       ]
     },
     {
@@ -993,10 +1212,22 @@
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "apprentice_focus", "qty": 1 },
-        { "item_id": "ss_kelp_sinew", "qty": 2 },
-        { "item_id": "sea_salt_crystal", "qty": 1 },
-        { "item_id": "tidal_pearl", "qty": 1 }
+        {
+          "item_id": "apprentice_focus",
+          "qty": 1
+        },
+        {
+          "item_id": "ss_kelp_sinew",
+          "qty": 2
+        },
+        {
+          "item_id": "sea_salt_crystal",
+          "qty": 1
+        },
+        {
+          "item_id": "tidal_pearl",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1008,9 +1239,18 @@
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "ss_sea_glass_focus", "qty": 1 },
-        { "item_id": "tidal_pearl", "qty": 2 },
-        { "item_id": "boss_trophy_sunken_strand", "qty": 1 }
+        {
+          "item_id": "ss_sea_glass_focus",
+          "qty": 1
+        },
+        {
+          "item_id": "tidal_pearl",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_sunken_strand",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1022,8 +1262,14 @@
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "simple_ring", "qty": 1 },
-        { "item_id": "ss_kelp_sinew", "qty": 2 }
+        {
+          "item_id": "simple_ring",
+          "qty": 1
+        },
+        {
+          "item_id": "ss_kelp_sinew",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1035,10 +1281,22 @@
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "simple_ring", "qty": 1 },
-        { "item_id": "ss_kelp_sinew", "qty": 2 },
-        { "item_id": "sea_salt_crystal", "qty": 1 },
-        { "item_id": "tidal_pearl", "qty": 1 }
+        {
+          "item_id": "simple_ring",
+          "qty": 1
+        },
+        {
+          "item_id": "ss_kelp_sinew",
+          "qty": 2
+        },
+        {
+          "item_id": "sea_salt_crystal",
+          "qty": 1
+        },
+        {
+          "item_id": "tidal_pearl",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1050,9 +1308,18 @@
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "ss_tidecaller_ring", "qty": 1 },
-        { "item_id": "tidal_pearl", "qty": 2 },
-        { "item_id": "boss_trophy_sunken_strand", "qty": 1 }
+        {
+          "item_id": "ss_tidecaller_ring",
+          "qty": 1
+        },
+        {
+          "item_id": "tidal_pearl",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_sunken_strand",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1064,8 +1331,14 @@
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "lucky_charm", "qty": 1 },
-        { "item_id": "ss_kelp_sinew", "qty": 2 }
+        {
+          "item_id": "lucky_charm",
+          "qty": 1
+        },
+        {
+          "item_id": "ss_kelp_sinew",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1077,13 +1350,24 @@
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "lucky_charm", "qty": 1 },
-        { "item_id": "ss_kelp_sinew", "qty": 2 },
-        { "item_id": "sea_salt_crystal", "qty": 1 },
-        { "item_id": "tidal_pearl", "qty": 1 }
+        {
+          "item_id": "lucky_charm",
+          "qty": 1
+        },
+        {
+          "item_id": "ss_kelp_sinew",
+          "qty": 2
+        },
+        {
+          "item_id": "sea_salt_crystal",
+          "qty": 1
+        },
+        {
+          "item_id": "tidal_pearl",
+          "qty": 1
+        }
       ]
     },
-
     {
       "output_id": "ah_cinder_staff",
       "output_qty": 1,
@@ -1093,8 +1377,14 @@
       "is_craft": true,
       "region": "region_4",
       "craft_inputs": [
-        { "item_id": "oak_staff", "qty": 1 },
-        { "item_id": "volcanic_glass", "qty": 2 }
+        {
+          "item_id": "oak_staff",
+          "qty": 1
+        },
+        {
+          "item_id": "volcanic_glass",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1106,10 +1396,22 @@
       "is_craft": true,
       "region": "region_4",
       "craft_inputs": [
-        { "item_id": "oak_staff", "qty": 1 },
-        { "item_id": "volcanic_glass", "qty": 2 },
-        { "item_id": "obsidian_shard", "qty": 1 },
-        { "item_id": "ah_drake_scale", "qty": 1 }
+        {
+          "item_id": "oak_staff",
+          "qty": 1
+        },
+        {
+          "item_id": "volcanic_glass",
+          "qty": 2
+        },
+        {
+          "item_id": "obsidian_shard",
+          "qty": 1
+        },
+        {
+          "item_id": "ah_drake_scale",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1121,8 +1423,14 @@
       "is_craft": true,
       "region": "region_4",
       "craft_inputs": [
-        { "item_id": "apprentice_focus", "qty": 1 },
-        { "item_id": "volcanic_glass", "qty": 2 }
+        {
+          "item_id": "apprentice_focus",
+          "qty": 1
+        },
+        {
+          "item_id": "volcanic_glass",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1134,10 +1442,22 @@
       "is_craft": true,
       "region": "region_4",
       "craft_inputs": [
-        { "item_id": "apprentice_focus", "qty": 1 },
-        { "item_id": "volcanic_glass", "qty": 2 },
-        { "item_id": "obsidian_shard", "qty": 1 },
-        { "item_id": "ah_drake_scale", "qty": 1 }
+        {
+          "item_id": "apprentice_focus",
+          "qty": 1
+        },
+        {
+          "item_id": "volcanic_glass",
+          "qty": 2
+        },
+        {
+          "item_id": "obsidian_shard",
+          "qty": 1
+        },
+        {
+          "item_id": "ah_drake_scale",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1149,8 +1469,14 @@
       "is_craft": true,
       "region": "region_4",
       "craft_inputs": [
-        { "item_id": "simple_ring", "qty": 1 },
-        { "item_id": "volcanic_glass", "qty": 2 }
+        {
+          "item_id": "simple_ring",
+          "qty": 1
+        },
+        {
+          "item_id": "volcanic_glass",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1162,10 +1488,22 @@
       "is_craft": true,
       "region": "region_4",
       "craft_inputs": [
-        { "item_id": "simple_ring", "qty": 1 },
-        { "item_id": "volcanic_glass", "qty": 2 },
-        { "item_id": "obsidian_shard", "qty": 1 },
-        { "item_id": "ah_drake_scale", "qty": 1 }
+        {
+          "item_id": "simple_ring",
+          "qty": 1
+        },
+        {
+          "item_id": "volcanic_glass",
+          "qty": 2
+        },
+        {
+          "item_id": "obsidian_shard",
+          "qty": 1
+        },
+        {
+          "item_id": "ah_drake_scale",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1177,8 +1515,14 @@
       "is_craft": true,
       "region": "region_4",
       "craft_inputs": [
-        { "item_id": "lucky_charm", "qty": 1 },
-        { "item_id": "volcanic_glass", "qty": 2 }
+        {
+          "item_id": "lucky_charm",
+          "qty": 1
+        },
+        {
+          "item_id": "volcanic_glass",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1190,10 +1534,22 @@
       "is_craft": true,
       "region": "region_4",
       "craft_inputs": [
-        { "item_id": "lucky_charm", "qty": 1 },
-        { "item_id": "volcanic_glass", "qty": 2 },
-        { "item_id": "obsidian_shard", "qty": 1 },
-        { "item_id": "ah_drake_scale", "qty": 1 }
+        {
+          "item_id": "lucky_charm",
+          "qty": 1
+        },
+        {
+          "item_id": "volcanic_glass",
+          "qty": 2
+        },
+        {
+          "item_id": "obsidian_shard",
+          "qty": 1
+        },
+        {
+          "item_id": "ah_drake_scale",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1205,12 +1561,20 @@
       "is_craft": true,
       "region": "region_4",
       "craft_inputs": [
-        { "item_id": "ah_cinder_amulet", "qty": 1 },
-        { "item_id": "ah_drake_scale", "qty": 2 },
-        { "item_id": "boss_trophy_ashen_horizons", "qty": 1 }
+        {
+          "item_id": "ah_cinder_amulet",
+          "qty": 1
+        },
+        {
+          "item_id": "ah_drake_scale",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_ashen_horizons",
+          "qty": 1
+        }
       ]
     },
-
     {
       "output_id": "se_crystal_staff",
       "output_qty": 1,
@@ -1220,8 +1584,14 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "oak_staff", "qty": 1 },
-        { "item_id": "prism_shard", "qty": 2 }
+        {
+          "item_id": "oak_staff",
+          "qty": 1
+        },
+        {
+          "item_id": "prism_shard",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1233,10 +1603,22 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "oak_staff", "qty": 1 },
-        { "item_id": "prism_shard", "qty": 2 },
-        { "item_id": "starfall_dust", "qty": 1 },
-        { "item_id": "astral_fragment", "qty": 1 }
+        {
+          "item_id": "oak_staff",
+          "qty": 1
+        },
+        {
+          "item_id": "prism_shard",
+          "qty": 2
+        },
+        {
+          "item_id": "starfall_dust",
+          "qty": 1
+        },
+        {
+          "item_id": "astral_fragment",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1248,9 +1630,18 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "se_astral_staff", "qty": 1 },
-        { "item_id": "astral_fragment", "qty": 2 },
-        { "item_id": "boss_trophy_starfall_expanse", "qty": 1 }
+        {
+          "item_id": "se_astral_staff",
+          "qty": 1
+        },
+        {
+          "item_id": "astral_fragment",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_starfall_expanse",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1262,8 +1653,14 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "apprentice_focus", "qty": 1 },
-        { "item_id": "prism_shard", "qty": 2 }
+        {
+          "item_id": "apprentice_focus",
+          "qty": 1
+        },
+        {
+          "item_id": "prism_shard",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1275,10 +1672,22 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "apprentice_focus", "qty": 1 },
-        { "item_id": "prism_shard", "qty": 2 },
-        { "item_id": "starfall_dust", "qty": 1 },
-        { "item_id": "astral_fragment", "qty": 1 }
+        {
+          "item_id": "apprentice_focus",
+          "qty": 1
+        },
+        {
+          "item_id": "prism_shard",
+          "qty": 2
+        },
+        {
+          "item_id": "starfall_dust",
+          "qty": 1
+        },
+        {
+          "item_id": "astral_fragment",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1290,9 +1699,18 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "se_prism_focus", "qty": 1 },
-        { "item_id": "astral_fragment", "qty": 2 },
-        { "item_id": "boss_trophy_starfall_expanse", "qty": 1 }
+        {
+          "item_id": "se_prism_focus",
+          "qty": 1
+        },
+        {
+          "item_id": "astral_fragment",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_starfall_expanse",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1304,8 +1722,14 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "simple_ring", "qty": 1 },
-        { "item_id": "prism_shard", "qty": 2 }
+        {
+          "item_id": "simple_ring",
+          "qty": 1
+        },
+        {
+          "item_id": "prism_shard",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1317,10 +1741,22 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "simple_ring", "qty": 1 },
-        { "item_id": "prism_shard", "qty": 2 },
-        { "item_id": "starfall_dust", "qty": 1 },
-        { "item_id": "astral_fragment", "qty": 1 }
+        {
+          "item_id": "simple_ring",
+          "qty": 1
+        },
+        {
+          "item_id": "prism_shard",
+          "qty": 2
+        },
+        {
+          "item_id": "starfall_dust",
+          "qty": 1
+        },
+        {
+          "item_id": "astral_fragment",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1332,9 +1768,18 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "se_astral_ring", "qty": 1 },
-        { "item_id": "astral_fragment", "qty": 2 },
-        { "item_id": "boss_trophy_starfall_expanse", "qty": 1 }
+        {
+          "item_id": "se_astral_ring",
+          "qty": 1
+        },
+        {
+          "item_id": "astral_fragment",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_starfall_expanse",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1346,8 +1791,14 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "lucky_charm", "qty": 1 },
-        { "item_id": "prism_shard", "qty": 2 }
+        {
+          "item_id": "lucky_charm",
+          "qty": 1
+        },
+        {
+          "item_id": "prism_shard",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1359,10 +1810,22 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "lucky_charm", "qty": 1 },
-        { "item_id": "prism_shard", "qty": 2 },
-        { "item_id": "starfall_dust", "qty": 1 },
-        { "item_id": "astral_fragment", "qty": 1 }
+        {
+          "item_id": "lucky_charm",
+          "qty": 1
+        },
+        {
+          "item_id": "prism_shard",
+          "qty": 2
+        },
+        {
+          "item_id": "starfall_dust",
+          "qty": 1
+        },
+        {
+          "item_id": "astral_fragment",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1374,12 +1837,20 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "se_astral_pendant", "qty": 1 },
-        { "item_id": "astral_fragment", "qty": 2 },
-        { "item_id": "boss_trophy_starfall_expanse", "qty": 1 }
+        {
+          "item_id": "se_astral_pendant",
+          "qty": 1
+        },
+        {
+          "item_id": "astral_fragment",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_starfall_expanse",
+          "qty": 1
+        }
       ]
     },
-
     {
       "output_id": "nc_grave_staff",
       "output_qty": 1,
@@ -1389,8 +1860,14 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "oak_staff", "qty": 1 },
-        { "item_id": "soul_ore", "qty": 2 }
+        {
+          "item_id": "oak_staff",
+          "qty": 1
+        },
+        {
+          "item_id": "soul_ore",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1402,10 +1879,22 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "oak_staff", "qty": 1 },
-        { "item_id": "soul_ore", "qty": 2 },
-        { "item_id": "spectral_log", "qty": 1 },
-        { "item_id": "nc_wraith_thread", "qty": 1 }
+        {
+          "item_id": "oak_staff",
+          "qty": 1
+        },
+        {
+          "item_id": "soul_ore",
+          "qty": 2
+        },
+        {
+          "item_id": "spectral_log",
+          "qty": 1
+        },
+        {
+          "item_id": "nc_wraith_thread",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1417,9 +1906,18 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "nc_soul_staff", "qty": 1 },
-        { "item_id": "nc_wraith_thread", "qty": 2 },
-        { "item_id": "boss_trophy_necropolis", "qty": 1 }
+        {
+          "item_id": "nc_soul_staff",
+          "qty": 1
+        },
+        {
+          "item_id": "nc_wraith_thread",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_necropolis",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1431,8 +1929,14 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "apprentice_focus", "qty": 1 },
-        { "item_id": "soul_ore", "qty": 2 }
+        {
+          "item_id": "apprentice_focus",
+          "qty": 1
+        },
+        {
+          "item_id": "soul_ore",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1444,10 +1948,22 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "apprentice_focus", "qty": 1 },
-        { "item_id": "soul_ore", "qty": 2 },
-        { "item_id": "spectral_log", "qty": 1 },
-        { "item_id": "nc_wraith_thread", "qty": 1 }
+        {
+          "item_id": "apprentice_focus",
+          "qty": 1
+        },
+        {
+          "item_id": "soul_ore",
+          "qty": 2
+        },
+        {
+          "item_id": "spectral_log",
+          "qty": 1
+        },
+        {
+          "item_id": "nc_wraith_thread",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1459,9 +1975,18 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "nc_soul_focus", "qty": 1 },
-        { "item_id": "nc_wraith_thread", "qty": 2 },
-        { "item_id": "boss_trophy_necropolis", "qty": 1 }
+        {
+          "item_id": "nc_soul_focus",
+          "qty": 1
+        },
+        {
+          "item_id": "nc_wraith_thread",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_necropolis",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1473,8 +1998,14 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "simple_ring", "qty": 1 },
-        { "item_id": "soul_ore", "qty": 2 }
+        {
+          "item_id": "simple_ring",
+          "qty": 1
+        },
+        {
+          "item_id": "soul_ore",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1486,10 +2017,22 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "simple_ring", "qty": 1 },
-        { "item_id": "soul_ore", "qty": 2 },
-        { "item_id": "spectral_log", "qty": 1 },
-        { "item_id": "nc_wraith_thread", "qty": 1 }
+        {
+          "item_id": "simple_ring",
+          "qty": 1
+        },
+        {
+          "item_id": "soul_ore",
+          "qty": 2
+        },
+        {
+          "item_id": "spectral_log",
+          "qty": 1
+        },
+        {
+          "item_id": "nc_wraith_thread",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1501,9 +2044,18 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "nc_deathward_band", "qty": 1 },
-        { "item_id": "nc_wraith_thread", "qty": 2 },
-        { "item_id": "boss_trophy_necropolis", "qty": 1 }
+        {
+          "item_id": "nc_deathward_band",
+          "qty": 1
+        },
+        {
+          "item_id": "nc_wraith_thread",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_necropolis",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1515,8 +2067,14 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "lucky_charm", "qty": 1 },
-        { "item_id": "soul_ore", "qty": 2 }
+        {
+          "item_id": "lucky_charm",
+          "qty": 1
+        },
+        {
+          "item_id": "soul_ore",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1528,10 +2086,22 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "lucky_charm", "qty": 1 },
-        { "item_id": "soul_ore", "qty": 2 },
-        { "item_id": "spectral_log", "qty": 1 },
-        { "item_id": "nc_wraith_thread", "qty": 1 }
+        {
+          "item_id": "lucky_charm",
+          "qty": 1
+        },
+        {
+          "item_id": "soul_ore",
+          "qty": 2
+        },
+        {
+          "item_id": "spectral_log",
+          "qty": 1
+        },
+        {
+          "item_id": "nc_wraith_thread",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1543,12 +2113,20 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "nc_ossuary_pendant", "qty": 1 },
-        { "item_id": "nc_wraith_thread", "qty": 2 },
-        { "item_id": "boss_trophy_necropolis", "qty": 1 }
+        {
+          "item_id": "nc_ossuary_pendant",
+          "qty": 1
+        },
+        {
+          "item_id": "nc_wraith_thread",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_necropolis",
+          "qty": 1
+        }
       ]
     },
-
     {
       "output_id": "fr_rift_wand",
       "output_qty": 1,
@@ -1558,8 +2136,14 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "oak_staff", "qty": 1 },
-        { "item_id": "fr_entropy_residue", "qty": 2 }
+        {
+          "item_id": "oak_staff",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_entropy_residue",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1571,10 +2155,22 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "oak_staff", "qty": 1 },
-        { "item_id": "fr_entropy_residue", "qty": 2 },
-        { "item_id": "fr_null_fragment", "qty": 1 },
-        { "item_id": "fr_dimensional_essence", "qty": 1 }
+        {
+          "item_id": "oak_staff",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_entropy_residue",
+          "qty": 2
+        },
+        {
+          "item_id": "fr_null_fragment",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_dimensional_essence",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1586,9 +2182,18 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "fr_null_staff", "qty": 1 },
-        { "item_id": "fr_dimensional_essence", "qty": 2 },
-        { "item_id": "boss_trophy_fractured_realm", "qty": 1 }
+        {
+          "item_id": "fr_null_staff",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_dimensional_essence",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_fractured_realm",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1600,8 +2205,14 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "apprentice_focus", "qty": 1 },
-        { "item_id": "fr_entropy_residue", "qty": 2 }
+        {
+          "item_id": "apprentice_focus",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_entropy_residue",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1613,10 +2224,22 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "apprentice_focus", "qty": 1 },
-        { "item_id": "fr_entropy_residue", "qty": 2 },
-        { "item_id": "fr_null_fragment", "qty": 1 },
-        { "item_id": "fr_dimensional_essence", "qty": 1 }
+        {
+          "item_id": "apprentice_focus",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_entropy_residue",
+          "qty": 2
+        },
+        {
+          "item_id": "fr_null_fragment",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_dimensional_essence",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1628,9 +2251,18 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "fr_null_focus_t3", "qty": 1 },
-        { "item_id": "fr_dimensional_essence", "qty": 2 },
-        { "item_id": "boss_trophy_fractured_realm", "qty": 1 }
+        {
+          "item_id": "fr_null_focus_t3",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_dimensional_essence",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_fractured_realm",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1642,8 +2274,14 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "simple_ring", "qty": 1 },
-        { "item_id": "fr_entropy_residue", "qty": 2 }
+        {
+          "item_id": "simple_ring",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_entropy_residue",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1655,10 +2293,22 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "simple_ring", "qty": 1 },
-        { "item_id": "fr_entropy_residue", "qty": 2 },
-        { "item_id": "fr_null_fragment", "qty": 1 },
-        { "item_id": "fr_dimensional_essence", "qty": 1 }
+        {
+          "item_id": "simple_ring",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_entropy_residue",
+          "qty": 2
+        },
+        {
+          "item_id": "fr_null_fragment",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_dimensional_essence",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1670,9 +2320,18 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "fr_null_ring", "qty": 1 },
-        { "item_id": "fr_dimensional_essence", "qty": 2 },
-        { "item_id": "boss_trophy_fractured_realm", "qty": 1 }
+        {
+          "item_id": "fr_null_ring",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_dimensional_essence",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_fractured_realm",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1684,8 +2343,14 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "lucky_charm", "qty": 1 },
-        { "item_id": "fr_entropy_residue", "qty": 2 }
+        {
+          "item_id": "lucky_charm",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_entropy_residue",
+          "qty": 2
+        }
       ]
     },
     {
@@ -1697,10 +2362,22 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "lucky_charm", "qty": 1 },
-        { "item_id": "fr_entropy_residue", "qty": 2 },
-        { "item_id": "fr_null_fragment", "qty": 1 },
-        { "item_id": "fr_dimensional_essence", "qty": 1 }
+        {
+          "item_id": "lucky_charm",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_entropy_residue",
+          "qty": 2
+        },
+        {
+          "item_id": "fr_null_fragment",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_dimensional_essence",
+          "qty": 1
+        }
       ]
     },
     {
@@ -1712,9 +2389,48 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "fr_null_pendant", "qty": 1 },
-        { "item_id": "fr_dimensional_essence", "qty": 2 },
-        { "item_id": "boss_trophy_fractured_realm", "qty": 1 }
+        {
+          "item_id": "fr_null_pendant",
+          "qty": 1
+        },
+        {
+          "item_id": "fr_dimensional_essence",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_fractured_realm",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "output_id": "copper_band",
+      "output_qty": 1,
+      "required_tier": 1,
+      "upgrade_tier": 1,
+      "equipment_type": "accessory",
+      "unlock_cost": [
+        {
+          "item_id": "iron_scrap",
+          "qty": 1
+        },
+        {
+          "item_id": "herb_sprig",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "output_id": "bone_charm",
+      "output_qty": 1,
+      "required_tier": 1,
+      "upgrade_tier": 1,
+      "equipment_type": "accessory",
+      "unlock_cost": [
+        {
+          "item_id": "bone_fragment",
+          "qty": 2
+        }
       ]
     }
   ]
