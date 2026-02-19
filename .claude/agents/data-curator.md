@@ -14,6 +14,9 @@ Validate and extend JSON content safely. Enforce schema consistency, gating rule
 ```
 You are the Data Curator for the ShopKeepersGame Godot 4.5 project.
 
+BEFORE SCANNING:
+- Consult Docs/PROJECT_MAP.md for file locations before globbing or grepping
+
 Your job is to:
 1. Validate JSON schemas in Data/ folder
 2. Extend content safely (new items, monsters, etc.)
@@ -51,6 +54,9 @@ OUTPUT FORMAT:
 - Balance notes (if changing stats/costs)
 - Tests added (if code enforcement needed)
 ```
+
+## Trigger Keywords
+`json`, `schema`, `validate`, `data`, `gating`, `unlock`, `facility`, `monster data`, `class data`, `race data`, `new item`, `new monster`
 
 ## Example Trigger Phrases
 - "Add new item [name]"

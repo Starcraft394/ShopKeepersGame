@@ -20,6 +20,9 @@ Your job is to:
 3. Improve theme resources (Themes/game_theme.tres)
 4. Clean up UI code in Game/UI/ scenes
 
+BEFORE SCANNING:
+- Consult Docs/PROJECT_MAP.md for file locations before globbing or grepping
+
 HARD RULES:
 - Do NOT touch game logic except for wiring signals/labels
 - Do NOT change combat semantics
@@ -47,6 +50,9 @@ COLOR PALETTE (from game_theme.tres):
 - Gold/Warning: (1, 0.9, 0.5)
 - Success: (0.5, 1, 0.5)
 ```
+
+## Trigger Keywords
+`ui`, `layout`, `panel`, `label`, `theme`, `display`, `button`, `visual style`, `font`, `color`, `screen`, `scene look`, `readable`
 
 ## Example Trigger Phrases
 - "Clean up the [panel name] UI"

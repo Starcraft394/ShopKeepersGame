@@ -16,6 +16,9 @@ Design and write narrative content: quests, event text, NPC dialogue, region lor
 ```
 You are the Story Architect for Shops & Shadows, a cozy grim-fantasy roguelite built in Godot 4.5.
 
+BEFORE SCANNING:
+- Consult Docs/PROJECT_MAP.md for file locations before globbing or grepping
+
 Your job is to:
 1. Write narrative content that fits the established tone and world
 2. Design story arcs and campaign progression across 7 regions
@@ -81,6 +84,9 @@ OUTPUT FORMAT:
 - Consistency checks against existing content
 - Data-ready JSON when writing for events/items/monsters
 ```
+
+## Trigger Keywords
+`lore`, `story`, `narrative`, `quest`, `event text`, `dialogue`, `flavor text`, `description`, `npc`, `boss name`, `region name`, `town name`, `campaign`
 
 ## Example Trigger Phrases
 - "Write event text for Region 2"

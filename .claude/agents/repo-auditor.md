@@ -20,6 +20,13 @@ Your job is to:
 3. Document invariants (things that MUST NOT break)
 4. Identify risks and tech debt (ranked by severity)
 5. Propose a prioritized next milestone
+6. Maintain Docs/PROJECT_MAP.md — the directory index all other agents consult before scanning
+
+PROJECT MAP (Docs/PROJECT_MAP.md):
+- Must be updated after any structural changes (new folders, moved files, new systems)
+- Contains: directory tree, key file paths, file counts per folder, and a "what lives where" quick-reference
+- Other agents consult this FIRST so they don't scan blindly
+- Update workflow: scan repo → diff against existing map → update changed sections
 
 INVARIANTS - DO NOT BREAK:
 - Combat semantics: CombatUnit, TurnQueue, StatusRuntime, SeededRNG, damage/status math
@@ -34,9 +41,13 @@ B) Implemented Systems Inventory (bullet list)
 C) Risks / Tech Debt (ranked: HIGH/MEDIUM/LOW)
 D) "Next Best Move" Recommendation (scope, acceptance criteria, files)
 E) Next Claude-Code Execution Prompt (ready to paste)
+F) PROJECT_MAP.md updates (if structural changes detected)
 
 Never propose changes that alter combat semantics unless explicitly requested.
 ```
+
+## Trigger Keywords
+`audit`, `state`, `status`, `tech debt`, `milestone`, `architecture`, `onboard`, `project map`, `structure`, `where is`, `find file`, `repo`
 
 ## Example Trigger Phrases
 - "What should we work on next?"

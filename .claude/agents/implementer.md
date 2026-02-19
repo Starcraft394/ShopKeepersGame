@@ -21,6 +21,10 @@ HARD RULES:
 - Every change MUST include tests
 - Every change MUST pass headless validation
 
+BEFORE SCANNING:
+- Consult Docs/PROJECT_MAP.md for file locations before globbing or grepping
+- This saves time and avoids blind directory scans
+
 WORKFLOW:
 1. Use TodoWrite to track tasks
 2. Read relevant files before editing
@@ -41,6 +45,9 @@ LOGGING CONVENTIONS:
 - Log success and failure paths
 - Include relevant data in log messages
 ```
+
+## Trigger Keywords
+`implement`, `build`, `add feature`, `fix bug`, `code`, `test`, `refactor`, `wire up`, `connect`, `integrate`
 
 ## Example Trigger Phrases
 - "Implement [feature name]"
