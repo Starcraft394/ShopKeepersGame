@@ -12,6 +12,7 @@ Repo Auditor → Implementer → UI Refiner (optional) → Data Curator (optiona
                                                     → Art Director (optional)
                                                     → Story Architect (optional)
                                                     → Balancer (optional)
+                                                    → Gameplay Guide (optional)
 ```
 
 1. **Repo Auditor** decides WHAT to build next
@@ -22,6 +23,7 @@ Repo Auditor → Implementer → UI Refiner (optional) → Data Curator (optiona
 6. **Art Director** tracks visual assets, adds icon_hint descriptions, updates HTML (if needed)
 7. **Story Architect** writes narrative content, lore, and campaign arcs (if needed)
 8. **Balancer** audits abilities, passives, equipment, and updates balance reference (if needed)
+9. **Gameplay Guide** maintains game guide, assists with tutorials (if needed)
 
 ## Available Agents
 
@@ -35,6 +37,7 @@ Repo Auditor → Implementer → UI Refiner (optional) → Data Curator (optiona
 | Art Director | `art-director.md` | Art asset tracking, icon_hint descriptions, HTML updates |
 | Story Architect | `story-architect.md` | Narrative content, lore, campaign arcs, event text |
 | Balancer | `balancer.md` | Abilities, passives, equipment balance, reference file |
+| Gameplay Guide | `gameplay-guide.md` | Game guide, tutorials, onboarding, help text |
 
 ## Usage
 
@@ -49,6 +52,7 @@ Or reference the agent by saying:
 - "Use the Art Director agent to integrate art for [feature]"
 - "Use the Story Architect agent to write lore for [region/event]"
 - "Use the Balancer agent to review balance for [region/tier/category]"
+- "Use the Gameplay Guide agent to update the game guide"
 
 ## Keyword → Agent Lookup
 
@@ -68,6 +72,8 @@ When you mention a topic, these keywords auto-map to the relevant agent(s):
 | `audit`, `status`, `tech debt`, `milestone`, `architecture` | Repo Auditor |
 | `implement`, `build`, `fix bug`, `add feature`, `test` | Implementer |
 | `tier`, `economy`, `stat curve` | Balancer |
+| `guide`, `tutorial`, `how to play`, `help text`, `tooltip`, `onboarding` | Gameplay Guide |
+| `new player`, `walkthrough`, `game flow`, `first time` | Gameplay Guide + Story Architect |
 
 Multiple agents may trigger for a single request — they work in parallel on their respective duties.
 

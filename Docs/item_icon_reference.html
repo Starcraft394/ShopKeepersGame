@@ -100,6 +100,19 @@
   .tab-content { display: none; }
   .tab-content.active { display: block; }
 
+  /* ===== ITEM SUB-TABS ===== */
+  .sub-tab-bar {
+    display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;
+    justify-content: center; padding: 8px 0;
+  }
+  .sub-tab-btn {
+    background: #16213e; border: 1px solid #444; color: #ccc;
+    padding: 8px 18px; border-radius: 20px; cursor: pointer;
+    font-size: 14px; font-weight: bold; transition: all 0.2s;
+  }
+  .sub-tab-btn:hover { background: #1f2b4d; }
+  .sub-tab-btn.active { background: #f0c040; color: #1a1a2e; border-color: #f0c040; }
+
   /* ===== ART PACK GALLERY ===== */
   .pack-section {
     margin-bottom: 24px; background: #16213e; border: 1px solid #333;
@@ -205,6 +218,8 @@
   <div class="legend-item"><div class="legend-swatch" style="background:#4caf50"></div> Has icon assigned</div>
   <div class="legend-item"><div class="legend-swatch" style="background:#f44336"></div> Needs icon</div>
 </div>
+
+<div class="sub-tab-bar" id="item-sub-tabs"></div>
 
 <div class="filter-bar" id="item-filter-bar"></div>
 
@@ -690,14 +705,51 @@ const PACK_DESCRIPTIONS = {
 // RENDER ITEMS
 // ============================================================================
 
+const ITEM_SUBTABS = [
+  {key:'all', label:'All', cats:null},
+  {key:'equipment', label:'Equipment', cats:['equipment','backpack','tool']},
+  {key:'consumable', label:'Consumables', cats:['consumable']},
+  {key:'material', label:'Materials', cats:['material']},
+  {key:'book', label:'Class Books', cats:['book']},
+];
+let currentItemCat = 'all';
+
+function getFilteredItems(catKey) {
+  if (catKey === 'all') return ALL_ITEMS;
+  const tab = ITEM_SUBTABS.find(t => t.key === catKey);
+  if (!tab || !tab.cats) return ALL_ITEMS;
+  return ALL_ITEMS.filter(it => tab.cats.includes(it.cat));
+}
+
+function buildItemSubTabs() {
+  const bar = document.getElementById('item-sub-tabs');
+  let html = '';
+  for (const tab of ITEM_SUBTABS) {
+    const count = getFilteredItems(tab.key).length;
+    if (count === 0 && tab.key !== 'all') continue;
+    const active = tab.key === currentItemCat ? ' active' : '';
+    html += `<button class="sub-tab-btn${active}" onclick="showItemSubTab('${tab.key}',this)">${tab.label} (${count})</button>`;
+  }
+  bar.innerHTML = html;
+}
+
+function showItemSubTab(catKey, btn) {
+  currentItemCat = catKey;
+  document.querySelectorAll('#item-sub-tabs .sub-tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('items-container').innerHTML = '';
+  renderAllItems();
+}
+
 function renderAllItems() {
   const container = document.getElementById('items-container');
   const filterBar = document.getElementById('item-filter-bar');
+  const filteredItems = getFilteredItems(currentItemCat);
 
-  // Build filter buttons
+  // Build filter buttons (region counts based on filtered items)
   const regionCounts = {};
-  ALL_ITEMS.forEach(it => { regionCounts[it.region] = (regionCounts[it.region] || 0) + 1; });
-  let filterHtml = `<button class="filter-btn active" onclick="filterAllItems('all',this)">All (${ALL_ITEMS.length})</button>`;
+  filteredItems.forEach(it => { regionCounts[it.region] = (regionCounts[it.region] || 0) + 1; });
+  let filterHtml = `<button class="filter-btn active" onclick="filterAllItems('all',this)">All (${filteredItems.length})</button>`;
   ITEM_REGIONS.forEach(r => {
     const c = regionCounts[r.key] || 0;
     if (c > 0) filterHtml += `<button class="filter-btn" onclick="filterAllItems('${r.key}',this)">${r.label} (${c})</button>`;
@@ -705,8 +757,10 @@ function renderAllItems() {
   filterBar.innerHTML = filterHtml;
 
   // Render region sections
+  const catOrder = ['consumable','equipment','material','book','tool','backpack'];
+
   for (const region of ITEM_REGIONS) {
-    const regionItems = ALL_ITEMS.filter(it => it.region === region.key);
+    const regionItems = filteredItems.filter(it => it.region === region.key);
     if (regionItems.length === 0) continue;
 
     const section = document.createElement('div');
@@ -714,7 +768,6 @@ function renderAllItems() {
     section.setAttribute('data-region', region.key);
 
     // Group by category
-    const catOrder = ['consumable','equipment','material','book','tool','backpack'];
     const grouped = {};
     regionItems.forEach(it => {
       if (!grouped[it.cat]) grouped[it.cat] = [];
@@ -726,7 +779,9 @@ function renderAllItems() {
       const items = grouped[cat];
       if (!items) continue;
       const catLabel = CAT_LABELS[cat] || cat;
-      bodyHtml += `<div class="pack-items-label">${catLabel} (${items.length})</div>`;
+      if (currentItemCat === 'all') {
+        bodyHtml += `<div class="pack-items-label">${catLabel} (${items.length})</div>`;
+      }
       bodyHtml += `<div class="item-grid">`;
       for (const item of items) {
         const hasIcon = !!item.icon;
@@ -1310,6 +1365,7 @@ function filterMonsters(filter, btn) {
 // ============================================================================
 // INIT
 // ============================================================================
+buildItemSubTabs();
 renderAllItems();
 renderNpcs();
 renderRaces();
