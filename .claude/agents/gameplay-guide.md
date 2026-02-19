@@ -32,13 +32,14 @@ COMPLETE GAME FLOW (Start to Finish):
 PHASE 1 — FIRST BOOT:
 - Game boots via game_boot.gd → validates autoloads (DataRegistry, GameContext, SeededRNG)
 - Routes to TownHubScene (GamePhase.TOWN_HUB)
-- First time: party is empty → Inn auto-opens for hero recruitment
-- Player recruits 1-3 heroes at the Inn (choose race/class combos)
+- First time: party is empty, starting gold is 400 → Inn auto-opens for hero recruitment
+- Player recruits up to 4 heroes at the Inn (party size is 4 at all Inn tiers)
+- 11 contextual tutorials guide new players through each system on first encounter
 
 PHASE 2 — TOWN HUB:
 - Central hub with facility buttons: Inn, Storage, Equipment, Training Hall, Blacksmith, Huntsman, Enchanter, Alchemist, Chef
-- Inn: recruit/dismiss heroes, view party
-- Storage: manage shopkeeper's stash (items bank here after dungeon runs)
+- Inn: recruit/dismiss heroes, view party, Manage Gear popup (equipment + bag inventory with remove/add from stash)
+- Storage: manage shopkeeper's stash (items bank here after dungeon runs); consumables have "To Bag" button to send directly to a hero's bag via hero chooser
 - Equipment: equip weapons, armor, offhand, helmet, legs, accessories, backpacks to heroes
 - Training Hall: buy class books to unlock new classes (region-gated, tier-gated)
 - Crafting Facilities (Blacksmith, Huntsman, Enchanter, Alchemist, Chef): craft items from materials
@@ -57,8 +58,9 @@ PHASE 4 — DUNGEON EXPLORATION:
 - Combat rooms: auto-battle with turn-based combat (TurnQueue, CombatUnit)
 - Event rooms: choice-based encounters with 4 options (cautious/bold/clever/avoidant)
   - Events can give items, gold, traps (damage), healing, or nothing
-- Camp rooms: heal party, manage bags, prepare for next rooms
+- Camp rooms: heal party, manage bags, prepare for next rooms (NO flee option from camp)
 - Boss rooms: fight region boss (must defeat to unlock next region)
+- Flee only triggers mid-combat when a hero dies; survivors drop ALL equipment and bag items
 
 PHASE 5 — COMBAT:
 - Turn-based auto-combat using speed-based TurnQueue
@@ -69,10 +71,11 @@ PHASE 5 — COMBAT:
 - Heroes can die in combat (permanent death)
 
 PHASE 6 — EXTRACTION:
-- After clearing rooms or choosing to retreat, party extracts
+- After clearing rooms, party can extract at the next camp
 - Items in hero bags transfer to town stash (stash stacks, bags don't)
 - Gold earned during run is banked
 - Dead heroes are lost permanently
+- Flee (mid-combat only): survivors drop ALL equipment and bag items; all unbanked loot and gold is lost
 
 PHASE 7 — PROGRESSION:
 - Defeating region bosses unlocks the next region (R1 → R7)
@@ -96,9 +99,18 @@ KEY GAME SYSTEMS:
 - Deterministic RNG (SeededRNG) — same seed = same run
 - Manual loot routing (no auto-sort)
 - Item stacking only in stash, not in hero bags
+- Party size: 4 at all Inn tiers (PARTY_SIZE_BY_INN_TIER = {1:4, 2:4, 3:4, 4:4})
+- Starting gold: 400
+- Manage Gear popup: equipment + bag management (view contents, remove items, add from stash)
+- Storage "To Bag": consumables can be sent directly to hero bags via hero chooser
+- No camp flee; flee only mid-combat on hero death (survivors drop all gear and bag items)
+- 11 contextual tutorials via TutorialOverlay component
 
-TUTORIAL GUIDELINES:
-- Tutorials should be contextual (trigger when player first encounters a system)
+TUTORIAL SYSTEM (11 tutorials implemented):
+- TutorialOverlay component: dims background, presents guidance text
+- Tutorials: welcome, dungeon_dangers, combat, camp, events, extraction, facilities_overview, equipment_facilities, training_hall, production, manage_roster
+- Each triggers on first encounter with the relevant system (contextual)
+- Tutorials shown once per save, tracked in save data
 - Use short, punchy text — not walls of explanation
 - Show, don't tell — let the player discover through doing
 - Consult Art Director for dialogue portraits and visual cues

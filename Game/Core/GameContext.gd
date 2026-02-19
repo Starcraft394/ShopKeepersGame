@@ -144,6 +144,7 @@ const DEFAULT_HERO_BAG_CAPACITY: int = 1  # v1.2: base=1, backpack adds bonus
 # Array of { "item_id": String, "qty": int, "quality_tier": int }
 var shopkeeper_bag: Array = []
 const SHOPKEEPER_BAG_CAPACITY_DEFAULT: int = 6  # Max stacks
+const SHOPKEEPER_SAFE_SLOTS: int = 3  # First N slots are insured (survive flee/wipe)
 
 # DEPRECATED (v1.2): Loot routing preference - kept for save compatibility only, not used.
 # Manual-only routing now; no auto-assign or remember preference.
@@ -286,8 +287,8 @@ var owned_heroes: Array = []
 # Selected party for dungeon runs: Array of hero_id strings (max 2 for MVP)
 var selected_party: Array = []
 
-# Party size per Inn tier: T1=2, T2=3, T3=4, T4=5
-const PARTY_SIZE_BY_INN_TIER: Dictionary = {1: 2, 2: 3, 3: 4, 4: 5}
+# Party size per Inn tier (base 4 for all tiers — no scaling for now)
+const PARTY_SIZE_BY_INN_TIER: Dictionary = {1: 4, 2: 4, 3: 4, 4: 4}
 
 # ============================================================================
 # HERO ROW ASSIGNMENTS (3-Row Formation v1)
@@ -1936,6 +1937,19 @@ func reset_tutorials() -> void:
 	completed_tutorials = {}
 	print("[Tutorial] All tutorials reset")
 	save_game()
+
+
+## Check if the player has completed their first dungeon floor ever.
+func has_completed_first_floor() -> bool:
+	return completed_tutorials.get("first_floor_completed", false)
+
+
+## Mark first floor as completed (called on first extract after floor completion).
+func mark_first_floor_completed() -> void:
+	if not has_completed_first_floor():
+		completed_tutorials["first_floor_completed"] = true
+		print("[GameContext] First floor completion marked")
+		save_game()
 
 
 # ============================================================================
@@ -3627,6 +3641,8 @@ func consume_stash_item(item_id: String, source: String, hero_id: String = "") -
 		return _consume_from_dungeon_stash(item_id)
 	elif source == "run":
 		return _consume_from_run_stash(item_id)
+	elif source == "shopkeeper_bag":
+		return _consume_from_shopkeeper_bag(item_id)
 	return false
 
 ## Consume from dungeon stash.
@@ -3663,6 +3679,17 @@ func _consume_from_run_stash(item_id: String) -> bool:
 			return true
 	return false
 
+## Consume from shopkeeper bag.
+func _consume_from_shopkeeper_bag(item_id: String) -> bool:
+	for i in range(shopkeeper_bag.size()):
+		var entry = shopkeeper_bag[i]
+		var entry_id: String = entry.get("item_id", "")
+		if entry_id == item_id:
+			shopkeeper_bag.remove_at(i)
+			print("[Consumable] removed item=%s source=shopkeeper_bag remaining=%d" % [item_id, shopkeeper_bag.size()])
+			return true
+	return false
+
 
 # ============================================================================
 # CONSUMABLES v2 - Camp Use (Manual Use in Dungeon Camp)
@@ -3670,7 +3697,9 @@ func _consume_from_run_stash(item_id: String) -> bool:
 
 ## Use a consumable on a hero in camp. Data-driven by template use_effect/use_value.
 ## Returns { "success": bool, "effect": String, "detail": String } for UI feedback.
-func use_consumable_on_hero(item_id: String, hero_id: String, source: String = "dungeon") -> Dictionary:
+## source_hero_id: when source="hero_bag", specifies which hero's bag to consume from.
+##   If empty, defaults to hero_id (target hero = source hero, backward compatible).
+func use_consumable_on_hero(item_id: String, hero_id: String, source: String = "dungeon", source_hero_id: String = "") -> Dictionary:
 	# Get template for effect data
 	var template = DataRegistry.get_item_template(item_id)
 	if template == null:
@@ -3678,6 +3707,9 @@ func use_consumable_on_hero(item_id: String, hero_id: String, source: String = "
 
 	var use_effect = template.use_effect
 	var use_value = template.use_value
+
+	# Determine which hero's bag to consume from (for hero_bag source)
+	var consume_hero: String = source_hero_id if source_hero_id != "" else hero_id
 
 	# Get qty before consuming
 	var qty_before = _count_item_in_stash(item_id, source)
@@ -3699,16 +3731,16 @@ func use_consumable_on_hero(item_id: String, hero_id: String, source: String = "
 	if not result.get("success", false):
 		return result
 
-	# Consume the item
-	var consumed = consume_stash_item(item_id, source)
+	# Consume the item from the appropriate source
+	var consumed = consume_stash_item(item_id, source, consume_hero)
 	if not consumed:
 		return { "success": false, "effect": use_effect, "detail": "Failed to consume item" }
 
 	var qty_after = _count_item_in_stash(item_id, source)
 
 	# Log the use
-	print("[Consumable] use hero=%s item=%s effect=%s qty_before=%d qty_after=%d" % [
-		hero_id, item_id, use_effect, qty_before, qty_after])
+	print("[Consumable] use hero=%s item=%s effect=%s source=%s qty_before=%d qty_after=%d" % [
+		hero_id, item_id, use_effect, source, qty_before, qty_after])
 
 	result["qty_before"] = qty_before
 	result["qty_after"] = qty_after
@@ -3763,6 +3795,12 @@ func _apply_camp_cleanse(hero_id: String, status_ids: Array) -> Dictionary:
 
 ## Count items in stash by item_id.
 func _count_item_in_stash(item_id: String, source: String) -> int:
+	if source == "shopkeeper_bag":
+		var count = 0
+		for entry in shopkeeper_bag:
+			if entry.get("item_id", "") == item_id:
+				count += int(entry.get("qty", 1))
+		return count
 	var stash = dungeon_items if source == "dungeon" else run_items
 	var count = 0
 	for item in stash:
@@ -4723,6 +4761,74 @@ func bank_shopkeeper_bag_to_stash() -> void:
 	print("[Extract] bank_shop_bag moved_stacks=%d moved_qty=%d to_stash=true" % [moved_stacks, moved_qty])
 
 
+## v2.0: Bank only the safe (insured) slots of the shopkeeper bag.
+## Called on flee or full party wipe — only first SHOPKEEPER_SAFE_SLOTS survive.
+func bank_safe_shopkeeper_slots_only() -> void:
+	if shopkeeper_bag.is_empty():
+		return
+	var safe_count: int = mini(SHOPKEEPER_SAFE_SLOTS, shopkeeper_bag.size())
+	var saved: int = 0
+	var lost: int = shopkeeper_bag.size() - safe_count
+	for i in range(safe_count):
+		var entry: Dictionary = shopkeeper_bag[i]
+		var item_id: String = entry.get("item_id", "")
+		var qty: int = int(entry.get("qty", 1))
+		var quality: int = int(entry.get("quality_tier", 0))
+		run_items.append({"item_id": item_id, "qty": qty, "quality_tier": quality})
+		saved += 1
+	shopkeeper_bag.clear()
+	print("[Insurance] Saved %d safe items, lost %d unsafe items" % [saved, lost])
+
+
+## Swap two items in the shopkeeper bag by index.
+func swap_shopkeeper_bag_items(idx_a: int, idx_b: int) -> bool:
+	if idx_a < 0 or idx_a >= shopkeeper_bag.size():
+		return false
+	if idx_b < 0 or idx_b >= shopkeeper_bag.size():
+		return false
+	if idx_a == idx_b:
+		return false
+	var temp: Dictionary = shopkeeper_bag[idx_a]
+	shopkeeper_bag[idx_a] = shopkeeper_bag[idx_b]
+	shopkeeper_bag[idx_b] = temp
+	print("[ShopBag] Swapped slot %d <-> %d" % [idx_a, idx_b])
+	return true
+
+
+## Move an item from hero bag to shopkeeper bag.
+func move_item_hero_to_shopkeeper(hero_id: String, hero_bag_idx: int) -> bool:
+	if not hero_bags.has(hero_id):
+		return false
+	var bag: Array = hero_bags[hero_id]
+	if hero_bag_idx < 0 or hero_bag_idx >= bag.size():
+		return false
+	if shopkeeper_bag.size() >= SHOPKEEPER_BAG_CAPACITY_DEFAULT:
+		return false
+	var entry: Dictionary = bag[hero_bag_idx]
+	shopkeeper_bag.append(entry.duplicate())
+	bag.remove_at(hero_bag_idx)
+	print("[ShopBag] Moved item from hero=%s idx=%d to shopkeeper bag" % [hero_id, hero_bag_idx])
+	return true
+
+
+## Move an item from shopkeeper bag to hero bag.
+func move_item_shopkeeper_to_hero(shop_idx: int, hero_id: String) -> bool:
+	if shop_idx < 0 or shop_idx >= shopkeeper_bag.size():
+		return false
+	if not hero_bags.has(hero_id):
+		hero_bags[hero_id] = []
+	var bag: Array = hero_bags[hero_id]
+	var hero_data: Dictionary = get_hero(hero_id)
+	var capacity: int = get_hero_bag_capacity(hero_id) if has_method("get_hero_bag_capacity") else DEFAULT_HERO_BAG_CAPACITY
+	if bag.size() >= capacity:
+		return false
+	var entry: Dictionary = shopkeeper_bag[shop_idx]
+	bag.append(entry.duplicate())
+	shopkeeper_bag.remove_at(shop_idx)
+	print("[ShopBag] Moved item from shopkeeper idx=%d to hero=%s" % [shop_idx, hero_id])
+	return true
+
+
 ## v1.3: Bank non-consumable items from hero bags to run stash on town return.
 ## Only consumables should stay in hero bags between dungeon runs.
 func bank_hero_materials_to_stash() -> void:
@@ -4976,6 +5082,10 @@ func flee_to_town() -> void:
 		run_gold, lost_gold, lost_items
 	])
 	clear_dungeon_stash()
+
+	# Insurance: bank only safe slots before exit clears the rest
+	bank_safe_shopkeeper_slots_only()
+
 	print("[GameContext] Fleeing from dungeon '%s' floor %d" % [current_dungeon_id, current_floor])
 
 	# Note: exit_to_town() will call apply_town_entry_reset()

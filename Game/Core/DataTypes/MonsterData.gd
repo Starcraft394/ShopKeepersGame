@@ -19,6 +19,7 @@ var base_stats: Dictionary = {}
 
 # AI Configuration (per GDD Section 38.2)
 var ai_tier: int = 0  # 0=Feral, 1=Basic, 2=Tactical, 3=Strategic
+var attack_type: String = "melee"  # "melee" or "ranged" — affects targeting row priority
 
 # Abilities (IDs)
 var ability_ids: Array[String] = []
@@ -53,6 +54,7 @@ static func from_dict(data: Dictionary) -> MonsterData:
 	var base_stats_val = data.get("base_stats", {})
 	instance.base_stats = base_stats_val if base_stats_val is Dictionary else {}
 	instance.ai_tier = data.get("ai_tier", 0)
+	instance.attack_type = data.get("attack_type", "melee")
 	instance.loot_table_id = data.get("loot_table_id", "")
 	instance.gold_drop_min = data.get("gold_drop_min", 0)
 	instance.gold_drop_max = data.get("gold_drop_max", 0)

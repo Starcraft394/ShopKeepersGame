@@ -10,7 +10,7 @@
 # Run tests
 DevTools\run_headless.bat
 
-# Current test count: 87 tests
+# Current test count: 148+ tests
 # All tests must pass before committing
 ```
 
@@ -86,9 +86,21 @@ See `.claude/skills/godot-gamedev/SKILL.md` for the full skill definition.
 - Shopkeeper bag (town storage)
 - Loot recipient routing (manual)
 - Facility unlock purchases
-- 87 passing headless tests
+- Party size: base 4 at all Inn tiers (`PARTY_SIZE_BY_INN_TIER = {1:4, 2:4, 3:4, 4:4}`)
+- Starting gold: 400 (`run_gold`)
+- Manage Gear popup with bag inventory, remove buttons, and "Add Item to Bag" stash selector
+- Storage "To Bag" button for consumables with hero chooser and capacity indicators
+- Camp flee removed (flee only mid-combat on hero death; survivors drop all equipment and bag items)
+- Tutorial system: 11 tutorials with TutorialOverlay (welcome, dungeon, combat, camp, events, extraction, facilities, equipment facilities, training hall, production, manage roster)
+- 148+ passing headless tests
 
 ### Recent Changes
+- Tutorial system v1 (11 contextual tutorials with TutorialOverlay component)
+- Party size locked to 4 at all tiers
+- Starting gold raised to 400
+- Manage Gear popup expanded with bag management (view, remove, add from stash)
+- Storage "To Bag" transfers for consumables
+- Camp flee removed; flee only mid-combat with full equipment/bag drop penalty
 - Facility Unlock UI v1 (leatherworker backpack unlocks)
 - Loot Recipient v1.3 (all items in bags, no stacking)
 - Hero Recruit v2.1 (combat identity, Inn UI)

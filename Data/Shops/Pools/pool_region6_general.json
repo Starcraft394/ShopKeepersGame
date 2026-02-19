@@ -34,6 +34,7 @@
       "weight": 12,
       "price_gold": 60,
       "tier": 2,
+      "requires_unlock_group": "",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
     },
@@ -42,6 +43,7 @@
       "weight": 10,
       "price_gold": 65,
       "tier": 2,
+      "requires_unlock_group": "",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
     },
@@ -50,6 +52,7 @@
       "weight": 10,
       "price_gold": 55,
       "tier": 2,
+      "requires_unlock_group": "",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
     }
@@ -70,6 +73,7 @@
       "weight": 12,
       "price_gold": 135,
       "tier": 2,
+      "requires_unlock_group": "",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
     },
@@ -78,8 +82,45 @@
       "weight": 10,
       "price_gold": 130,
       "tier": 2,
+      "requires_unlock_group": "",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "nc_soul_reaver",
+      "weight": 10,
+      "price_gold": 140,
+      "tier": 3,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 3
+    },
+    {
+      "item_id": "nc_bone_staff",
+      "weight": 8,
+      "price_gold": 145,
+      "tier": 3,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 3
+    },
+    {
+      "item_id": "nc_wraith_bow",
+      "weight": 8,
+      "price_gold": 130,
+      "tier": 3,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 3
+    },
+    {
+      "item_id": "nc_grave_dagger",
+      "weight": 8,
+      "price_gold": 125,
+      "tier": 3,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 3
     }
   ],
 
@@ -89,6 +130,7 @@
       "weight": 12,
       "price_gold": 130,
       "tier": 2,
+      "requires_unlock_group": "",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
     },
@@ -97,8 +139,93 @@
       "weight": 10,
       "price_gold": 125,
       "tier": 2,
+      "requires_unlock_group": "",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "nc_spectral_aegis",
+      "weight": 8,
+      "price_gold": 130,
+      "tier": 3,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 3
+    },
+    {
+      "item_id": "nc_soulfire_focus",
+      "weight": 8,
+      "price_gold": 135,
+      "tier": 3,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 3
+    }
+  ],
+
+  "armor": [
+    {
+      "item_id": "nc_wraith_robe",
+      "weight": 8,
+      "price_gold": 150,
+      "tier": 3,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 3
+    },
+    {
+      "item_id": "nc_ossuary_plate",
+      "weight": 4,
+      "price_gold": 200,
+      "tier": 4,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 4
+    }
+  ],
+
+  "helmets": [
+    {
+      "item_id": "nc_bone_crown",
+      "weight": 8,
+      "price_gold": 110,
+      "tier": 3,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 3
+    }
+  ],
+
+  "legs": [
+    {
+      "item_id": "nc_wraith_leggings",
+      "weight": 8,
+      "price_gold": 110,
+      "tier": 3,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 3
+    }
+  ],
+
+  "accessories": [
+    {
+      "item_id": "nc_deathward_ring",
+      "weight": 8,
+      "price_gold": 100,
+      "tier": 3,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 3
+    },
+    {
+      "item_id": "nc_bonecaller_amulet",
+      "weight": 8,
+      "price_gold": 105,
+      "tier": 3,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 3
     }
   ]
 }

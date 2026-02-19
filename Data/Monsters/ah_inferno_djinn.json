@@ -7,6 +7,7 @@
   "region_id": "region_4",
   "tier": 2,
   "ai_tier": 2,
+  "attack_type": "ranged",
   "base_stats": {
     "health": 188,
     "attack": 51,

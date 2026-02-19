@@ -61,6 +61,10 @@
     "consumables": 2,
     "weapons": 2,
     "offhands": 1,
+    "armor": 1,
+    "helmets": 1,
+    "legs": 1,
+    "accessories": 1,
     "books": 1
   },
 
@@ -70,12 +74,20 @@
       "consumables": 1.0,
       "weapons": 1.2,
       "offhands": 1.0,
+      "armor": 1.0,
+      "helmets": 1.0,
+      "legs": 1.0,
+      "accessories": 1.0,
       "books": 0.8
     },
     "rolls_override": {
       "consumables": 2,
       "weapons": 2,
       "offhands": 1,
+      "armor": 1,
+      "helmets": 1,
+      "legs": 1,
+      "accessories": 1,
       "books": 1
     }
   },

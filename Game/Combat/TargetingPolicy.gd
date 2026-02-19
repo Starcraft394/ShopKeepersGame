@@ -206,16 +206,20 @@ static func get_back_row_units(enemies: Array) -> Array:
 	return back
 
 
-## Determine attacker's range category based on weapon.
-## Temporary logic: "sword" in ability ID = MELEE, else RANGED.
+## Determine attacker's range category based on attack_type or weapon.
+## Checks explicit attack_type first (monsters + heroes), falls back to weapon heuristic.
 static func get_attacker_range(attacker: CombatUnit) -> RangeCategory:
-	var weapon_id = attacker.weapon_ability_id.to_lower()
-
-	# Temporary rule: sword = melee
-	if weapon_id.contains("sword"):
+	# Explicit attack_type takes priority
+	if attacker.attack_type == "ranged":
+		return RangeCategory.RANGED
+	if attacker.attack_type == "melee":
 		return RangeCategory.MELEE
 
-	# Default to ranged for now
+	# Fallback: weapon-based heuristic for heroes without explicit attack_type
+	var weapon_id = attacker.weapon_ability_id.to_lower()
+	if weapon_id.contains("sword") or weapon_id.contains("mace") or weapon_id.contains("axe"):
+		return RangeCategory.MELEE
+
 	return RangeCategory.RANGED
 
 

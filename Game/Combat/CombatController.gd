@@ -52,6 +52,7 @@ var _targeting_policy: TargetingPolicy = null
 var _is_combat_active: bool = false
 var _current_round: int = 0
 var _current_turn: int = 0
+var last_expired_statuses: Dictionary = {}  # Status UI v2: unit_id -> Array of expired status IDs
 var _pending_actions: Array = []  # Actions from last step
 
 # Encounter snapshot (frozen at combat start, used for rewards)
@@ -819,10 +820,14 @@ func _tick_all_buffs() -> void:
 
 ## Tick status effects on all units (called at round start, after buffs).
 ## Status Hooks v1.2.1 - lifecycle ticking with DOT damage handled internally.
+## Status UI v2: Collects expired statuses into last_expired_statuses for pop-text.
 func _tick_all_statuses() -> void:
+	last_expired_statuses.clear()
 	for unit in _all_units:
 		if unit.active_statuses.size() > 0:
-			var _expired = unit.tick_statuses()  # Returns Array of expired status IDs
+			var expired = unit.tick_statuses()  # Returns Array of expired status IDs
+			if expired.size() > 0:
+				last_expired_statuses[unit.unit_id] = expired
 	all_statuses_ticked.emit()  # Status UI v1.6: Notify UI to refresh all badges
 
 
@@ -1047,7 +1052,7 @@ func get_unit_combat_stats(lookup_id: String) -> Dictionary:
 ## Returns empty Array if unit not found. Used by CombatScene for efficient badge refresh.
 func get_unit_status_snapshot_sorted(unit_id: String) -> Array:
 	var unit = _find_unit_by_id(unit_id)
-	if unit == null:
+	if unit == null or not unit.is_alive:
 		return []
 	return unit.get_status_snapshot_sorted()
 
@@ -1056,7 +1061,7 @@ func get_unit_status_snapshot_sorted(unit_id: String) -> Array:
 ## Returns empty Array if unit not found. Used by CombatScene for buff badge refresh.
 func get_unit_buff_snapshot_sorted(unit_id: String) -> Array:
 	var unit = _find_unit_by_id(unit_id)
-	if unit == null:
+	if unit == null or not unit.is_alive:
 		return []
 	return unit.get_buff_snapshot_sorted()
 
@@ -1273,6 +1278,7 @@ func _execute_unit_action(unit: CombatUnit) -> void:
 		_apply_ability_status(target, ability, unit)
 
 	if not target.is_alive:
+		status_changed.emit(target.unit_id)  # Clear status badges on death
 		var death_action = CombatAction.create_death(target)
 		_result.add_action(death_action)
 		action_performed.emit(death_action)
@@ -1593,6 +1599,7 @@ func _execute_damage_ability(unit: CombatUnit, ability: AbilityData, ability_typ
 
 	# Handle death
 	if not target.is_alive:
+		status_changed.emit(target.unit_id)  # Clear status badges on death
 		var death_action = CombatAction.create_death(target)
 		_pending_actions.append(death_action)
 		_result.add_action(death_action)
@@ -1650,6 +1657,7 @@ func _execute_aoe_damage_ability(unit: CombatUnit, ability: AbilityData, ability
 	# Check for deaths
 	for enemy in alive_enemies:
 		if not enemy.is_alive:
+			status_changed.emit(enemy.unit_id)  # Clear status badges on death
 			var death_action = CombatAction.create_death(enemy)
 			_pending_actions.append(death_action)
 			_result.add_action(death_action)
@@ -2148,6 +2156,7 @@ func _execute_basic_attack_fallback(unit: CombatUnit) -> void:
 		unit.display_name, target.display_name, actual_damage])
 
 	if not target.is_alive:
+		status_changed.emit(target.unit_id)  # Clear status badges on death
 		var death_action = CombatAction.create_death(target)
 		_pending_actions.append(death_action)
 		_result.add_action(death_action)
@@ -2833,6 +2842,21 @@ func submit_player_target(target_id: String) -> void:
 		_continue_to_next_turn()
 
 
+## Convenience: submit a basic attack on a specific target in one step.
+## Returns true if the action was submitted, false if invalid.
+func submit_basic_attack_on_target(target_id: String) -> bool:
+	if not _awaiting_player_input or _input_unit == null:
+		return false
+	var targets: Array = _get_valid_targets(_input_unit, "basic", null)
+	for t in targets:
+		if t["unit_id"] == target_id:
+			_selected_action_type = "basic"
+			_selected_ability = null
+			submit_player_target(target_id)
+			return true
+	return false
+
+
 ## Execute a player-chosen action.
 func _execute_player_action(unit: CombatUnit, action_type: String, target: CombatUnit, ability: AbilityData) -> void:
 	if action_type.begins_with("equip_ability_"):
@@ -2867,6 +2891,7 @@ func _execute_basic_attack_player(unit: CombatUnit, target: CombatUnit) -> void:
 	print("[Combat] %s attacks %s for %d damage" % [unit.display_name, target.display_name, actual_damage])
 
 	if not target.is_alive:
+		status_changed.emit(target.unit_id)  # Clear status badges on death
 		var death_action = CombatAction.create_death(target)
 		_pending_actions.append(death_action)
 		_result.add_action(death_action)
@@ -2892,24 +2917,33 @@ func _execute_equipment_ability_step(unit: CombatUnit, ability: AbilityData, equ
 
 
 ## Called by UI when player uses a consumable from hero bag.
-func submit_consumable_use(item_id: String, hero_id: String) -> void:
+## source_hero_id: the hero whose bag the item is consumed from (defaults to hero_id).
+func submit_consumable_use(item_id: String, hero_id: String, free_action: bool = false, source_hero_id: String = "") -> void:
 	if not _awaiting_player_input:
 		return
 
-	var result = GameContext.use_consumable_on_hero(item_id, hero_id, "hero_bag")
+	# Determine which hero's bag to consume from
+	var bag_owner: String = source_hero_id if source_hero_id != "" else hero_id
+	var result = GameContext.use_consumable_on_hero(item_id, hero_id, "hero_bag", bag_owner)
 	if result.get("success", false):
-		print("[Combat] Consumable used: %s on %s - %s" % [item_id, hero_id, result.get("detail", "")])
-		GameContext.mark_consumable_used(hero_id)
+		print("[Combat] Consumable used: %s on %s from %s's bag - %s (free=%s)" % [item_id, hero_id, bag_owner, result.get("detail", ""), str(free_action)])
+		# Mark the bag owner (acting hero) as having used their consumable this combat
+		GameContext.mark_consumable_used(bag_owner)
 
-		# Finish the action
-		_finish_unit_action(_input_unit)
+		if free_action:
+			# Free action: hero keeps their turn — re-emit input prompt
+			if _input_unit != null:
+				var available = _get_available_actions(_input_unit)
+				player_input_required.emit(_input_unit, available)
+		else:
+			# Normal action: consumes the turn
+			_finish_unit_action(_input_unit)
 
-		_awaiting_player_input = false
-		_input_unit = null
+			_awaiting_player_input = false
+			_input_unit = null
 
-		if not _check_combat_end():
-			# Auto-continue: execute enemies, then prompt next player
-			_continue_to_next_turn()
+			if not _check_combat_end():
+				_continue_to_next_turn()
 	else:
 		_check_combat_end()
 

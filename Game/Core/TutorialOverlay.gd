@@ -61,6 +61,7 @@ class _TutorialPanel extends CanvasLayer:
 	var _body_label: RichTextLabel
 	var _portrait_rect: TextureRect
 	var _step_label: Label
+	var _back_btn: Button
 	var _continue_btn: Button
 
 	func _init(tutorial_id: String, steps: Array) -> void:
@@ -174,6 +175,16 @@ class _TutorialPanel extends CanvasLayer:
 		_step_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn_row.add_child(_step_label)
 
+		# Back button
+		_back_btn = Button.new()
+		_back_btn.text = "Back"
+		_back_btn.flat = true
+		_back_btn.add_theme_font_size_override("font_size", 12)
+		_back_btn.add_theme_color_override("font_color", SKIP_COLOR)
+		_back_btn.add_theme_color_override("font_hover_color", Color(0.7, 0.7, 0.7, 1.0))
+		_back_btn.pressed.connect(_on_back_pressed)
+		btn_row.add_child(_back_btn)
+
 		# Skip button
 		var skip_btn := Button.new()
 		skip_btn.text = "Skip"
@@ -198,11 +209,14 @@ class _TutorialPanel extends CanvasLayer:
 		_title_label.text = step.get("title", "")
 		_body_label.text = step.get("body", "")
 
-		# Step counter
+		# Step counter and back button visibility
 		if _steps.size() > 1:
 			_step_label.text = "%d / %d" % [index + 1, _steps.size()]
+			_back_btn.visible = true
+			_back_btn.disabled = (index == 0)
 		else:
 			_step_label.text = ""
+			_back_btn.visible = false
 
 		# Button text
 		var is_last: bool = (index == _steps.size() - 1)
@@ -230,6 +244,10 @@ class _TutorialPanel extends CanvasLayer:
 		else:
 			_close()
 
+	func _on_back_pressed() -> void:
+		if _current_step > 0:
+			_display_step(_current_step - 1)
+
 	func _on_skip_pressed() -> void:
 		_close()
 
@@ -242,6 +260,9 @@ class _TutorialPanel extends CanvasLayer:
 		if event is InputEventKey and event.pressed:
 			if event.keycode == KEY_ENTER or event.keycode == KEY_SPACE:
 				_on_continue_pressed()
+				get_viewport().set_input_as_handled()
+			elif event.keycode == KEY_LEFT or event.keycode == KEY_BACKSPACE:
+				_on_back_pressed()
 				get_viewport().set_input_as_handled()
 			elif event.keycode == KEY_ESCAPE:
 				_on_skip_pressed()

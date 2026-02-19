@@ -8,11 +8,11 @@ Welcome to **Shops & Shadows**, a cozy grim-fantasy roguelite where you play as 
 
 When you first launch the game, it boots into the **Town Hub** -- a bird's-eye view of your starting town, Thornhaven, nestled in the Forest Haven region. The screen is split into a **navigation rail** on the left, a **building grid** in the center, and a **party bar** at the bottom.
 
-On your very first launch you will have no heroes. The game automatically opens the **Inn** to get you started.
+On your very first launch you will have no heroes and **400 gold** to spend. The game automatically opens the **Inn** to get you started.
 
 ### Your First Steps
 
-1. **Recruit heroes at the Inn.** The Inn shows a roster of available recruits. Each candidate has a race, class, and stat block. Pick two heroes to form your starting party.
+1. **Recruit heroes at the Inn.** The Inn shows a roster of available recruits. Each candidate has a race, class, and stat block. Recruit up to 4 heroes to form your starting party.
 2. **Equip your heroes.** Visit the General Store or a crafting facility (Blacksmith, Huntsman, Enchanter) to buy or craft starter gear. Equip weapons, armor, and a backpack to each hero.
 3. **Enter a dungeon.** Open the Dungeon Board to select a dungeon floor and send your party in.
 
@@ -28,9 +28,9 @@ The Town Hub is your home base. Every town has a set of facilities you can visit
 
 | Facility | What It Does |
 |----------|-------------|
-| **Inn** | Recruit new heroes, manage your roster, dismiss heroes, and upgrade party size. |
+| **Inn** | Recruit new heroes, manage your roster, dismiss heroes, and manage hero gear and bags via the Manage Gear popup. |
 | **General Store** | Buy and sell items. Stock is based on recipes you have unlocked at crafting facilities. |
-| **Storage** | View and manage your material stash. Filter by category (materials, consumables, equipment, books). |
+| **Storage** | View and manage your material stash. Filter by category (materials, consumables, equipment, books). Consumables have a "To Bag" button to send them directly to a hero's bag. |
 | **Training Hall** | Use Class Books to learn new classes. Assign learned classes to heroes. Train heroes for a stat boost on their next dungeon run. |
 | **Dungeon Board** | Select a dungeon floor and launch a run with your current party. |
 | **Blacksmith** | Craft and upgrade melee weapons, shields, and heavy armor. Unlock new recipes by spending materials. |
@@ -123,16 +123,23 @@ Each hero can equip items in 8 slots:
 | Amulet | Pendants and charms |
 | Backpack | Increases personal bag capacity |
 
+### Manage Gear Popup
+
+From the Inn, click **Manage Gear** on a hero card to open a popup that shows:
+
+- All 8 equipment slots with equipped items and Unequip buttons
+- The hero's **bag inventory** -- each bag slot shows its contents with a Remove button, and empty slots are displayed
+- An **"Add Item to Bag"** button that opens a stash item selector so you can load consumables, materials, or other items directly into the hero's bag from town storage
+
+This is the central place to prepare heroes for dungeon runs.
+
+### Storage "To Bag" Transfers
+
+In the **Storage** screen, consumable items display a **"To Bag"** button. Clicking it opens a hero chooser popup that shows each hero's name and bag capacity (e.g., "3/5 slots used"). Select a hero to send the consumable directly into their bag without navigating to the Inn.
+
 ### Party Size
 
-Your party size starts at 2 heroes. Upgrading the Inn increases your party cap:
-
-| Inn Tier | Party Size |
-|----------|-----------|
-| T1 | 2 heroes |
-| T2 | 3 heroes |
-| T3 | 4 heroes |
-| T4 | 5 heroes |
+Your party size is **4 heroes** at all Inn tiers. You can recruit and deploy up to 4 heroes from the start of the game.
 
 ---
 
@@ -197,6 +204,8 @@ A dungeon run progresses room by room through a floor. At each **camp** (rest st
 - **Choice A** -- Always a combat encounter
 - **Choice B** -- Either an event encounter or an elite combat encounter
 
+There is no option to flee from the camp screen. Once you enter a dungeon, you must fight forward or extract after completing a floor.
+
 After completing all rooms on a floor, you can **descend** to the next floor or **extract** with your loot.
 
 ### Room Types
@@ -217,7 +226,7 @@ This is important -- pay attention to how loot works:
 - Loot collected during a run goes into a **dungeon stash** (provisional).
 - At camp, you manually route loot into individual **hero bags** (no auto-sort, no stacking in bags).
 - When you **extract** (successfully leave the dungeon), your dungeon stash transfers permanently to your town stash, and gold is banked.
-- If you **flee**, you lose all unbanked dungeon loot and gold.
+- **Fleeing** only happens mid-combat when a hero dies. If you flee combat, surviving heroes drop ALL equipment and bag items. You lose all unbanked dungeon loot and gold.
 - If your entire party is wiped out, those heroes are gone permanently and you lose dungeon loot.
 
 ### Extraction
@@ -360,9 +369,31 @@ Towns remain functional after a tier-down -- they just lose access to higher-tie
 
 ---
 
+## Tutorials
+
+The game includes 11 contextual tutorials that appear as overlay popups when you first encounter each system. Tutorials are shown once and can be reviewed later. They cover:
+
+| # | Tutorial | When It Triggers |
+|---|----------|-----------------|
+| 1 | Welcome | First boot / new game |
+| 2 | Dungeon Dangers | First dungeon entry |
+| 3 | Combat | First combat encounter |
+| 4 | Camp | First camp arrival |
+| 5 | Events | First event encounter |
+| 6 | Extraction | First extraction opportunity |
+| 7 | Facilities Overview | First visit to Town Hub facilities |
+| 8 | Equipment Facilities | First visit to Blacksmith, Huntsman, or Enchanter |
+| 9 | Training Hall | First visit to Training Hall |
+| 10 | Production | First visit to Alchemist or Chef |
+| 11 | Manage Roster | First visit to Inn roster management |
+
+Tutorials use a TutorialOverlay component that dims the background and presents short, punchy guidance text.
+
+---
+
 ## Tips for New Players
 
-1. **Recruit at least 2 heroes before your first dungeon run.** A solo hero will struggle against most encounters. A Vanguard + DPS or Vanguard + Healer duo is a solid starting composition.
+1. **Recruit a full party of 4 heroes before your first dungeon run.** A solo hero will struggle against most encounters. A Vanguard + DPS + Healer trio (or quad with a second DPS) is a solid starting composition.
 
 2. **Equip backpacks.** Backpacks increase a hero's personal bag capacity, letting them carry more loot out of the dungeon. Even the basic Small Backpack helps.
 

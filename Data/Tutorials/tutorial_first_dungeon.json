@@ -4,15 +4,15 @@
     {
       "speaker": "Thalric",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
-      "title": "Into the Wilds",
-      "body": "Your party is heading into the dungeon. Each floor has several rooms — some are combat encounters, others are events where you'll face choices.\n\nAt camp between rooms, you'll pick your path: one option is always a fight, the other might be an event or an elite encounter with better rewards."
+      "title": "Dangers of the Deep",
+      "body": "A lad named Brannick once told me dungeons were 'basically caves with loot.' We found his shield on floor two. We did not find Brannick.\n\nHeroes who fall in combat are gone. Permanently. No resurrection, no refunds.\n\nIf someone goes down mid-fight, you can flee — but survivors drop ALL their equipment and bag items in the panic. Every sword, every potion, gone. Sometimes retreat costs more than the fight."
     },
     {
       "speaker": "Thalric",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
-      "title": "Loot and Risk",
-      "body": "Everything you collect during a run is provisional until you extract. If you flee or your party is wiped out, that loot is gone.\n\nAfter clearing the last room on a floor, the Extract option appears at camp — use it to bank your rewards safely back to town. Don't get greedy — a dead party carries nothing home.",
-      "button_text": "Understood"
+      "title": "The Shopkeeper's Edge",
+      "body": "Your shopkeeper bag is the one thing the dungeon can't take. Flee, wipe, total catastrophe — whatever's in that bag comes home.\n\nStash anything valuable there as you go. After the last room on a floor, you can Extract to bank everything safely back to town.\n\nBrannick didn't have a shopkeeper. You do. Use that advantage.",
+      "button_text": "I'll be careful"
     }
   ]
 }

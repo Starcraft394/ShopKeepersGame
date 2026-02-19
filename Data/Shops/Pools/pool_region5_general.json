@@ -34,6 +34,7 @@
       "weight": 12,
       "price_gold": 50,
       "tier": 2,
+      "requires_unlock_group": "",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
     },
@@ -42,6 +43,7 @@
       "weight": 10,
       "price_gold": 55,
       "tier": 2,
+      "requires_unlock_group": "",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
     },
@@ -50,6 +52,7 @@
       "weight": 10,
       "price_gold": 45,
       "tier": 2,
+      "requires_unlock_group": "",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
     }
@@ -70,6 +73,7 @@
       "weight": 12,
       "price_gold": 120,
       "tier": 2,
+      "requires_unlock_group": "",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
     },
@@ -78,8 +82,45 @@
       "weight": 10,
       "price_gold": 115,
       "tier": 2,
+      "requires_unlock_group": "",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "se_prism_blade",
+      "weight": 10,
+      "price_gold": 120,
+      "tier": 3,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 3
+    },
+    {
+      "item_id": "se_prism_staff",
+      "weight": 8,
+      "price_gold": 125,
+      "tier": 3,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 3
+    },
+    {
+      "item_id": "se_starfall_bow",
+      "weight": 8,
+      "price_gold": 115,
+      "tier": 3,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 3
+    },
+    {
+      "item_id": "se_chrono_cleaver",
+      "weight": 6,
+      "price_gold": 140,
+      "tier": 3,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 3
     }
   ],
 
@@ -89,6 +130,7 @@
       "weight": 12,
       "price_gold": 115,
       "tier": 2,
+      "requires_unlock_group": "",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
     },
@@ -97,8 +139,93 @@
       "weight": 10,
       "price_gold": 110,
       "tier": 2,
+      "requires_unlock_group": "",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "se_crystal_ward",
+      "weight": 8,
+      "price_gold": 110,
+      "tier": 3,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 3
+    },
+    {
+      "item_id": "se_echo_shield",
+      "weight": 8,
+      "price_gold": 105,
+      "tier": 3,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 3
+    },
+    {
+      "item_id": "se_starlight_focus",
+      "weight": 8,
+      "price_gold": 115,
+      "tier": 3,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 3
+    }
+  ],
+
+  "armor": [
+    {
+      "item_id": "se_astral_robe",
+      "weight": 8,
+      "price_gold": 130,
+      "tier": 3,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 3
+    }
+  ],
+
+  "helmets": [
+    {
+      "item_id": "se_prism_helm",
+      "weight": 8,
+      "price_gold": 100,
+      "tier": 3,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 3
+    }
+  ],
+
+  "legs": [
+    {
+      "item_id": "se_astral_leggings",
+      "weight": 8,
+      "price_gold": 100,
+      "tier": 3,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 3
+    }
+  ],
+
+  "accessories": [
+    {
+      "item_id": "se_temporal_band",
+      "weight": 8,
+      "price_gold": 90,
+      "tier": 3,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 3
+    },
+    {
+      "item_id": "se_echo_amulet",
+      "weight": 8,
+      "price_gold": 95,
+      "tier": 3,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 3
     }
   ]
 }

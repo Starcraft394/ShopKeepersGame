@@ -44,6 +44,15 @@ var _defeat_panel: Control = null  # Defeat screen (shown when all heroes die)
 var _victory_panel: CanvasLayer = null  # Campaign victory overlay
 var _flee_dialog: CanvasLayer = null  # Flee from dungeon dialog
 
+# Shopkeeper Bag Display (Feature J)
+var _shopkeeper_bag_panel: PanelContainer = null
+var _shopkeeper_bag_row: HBoxContainer = null
+var _shopkeeper_bag_label: Label = null
+
+# Swap system (Feature K: Insurance UI)
+var _swap_source: Dictionary = {}  # {type: "shopkeeper", index: int}
+var _swap_highlight_btn: Button = null  # Currently highlighted slot for swap
+
 # Region color palette (populated in _ready)
 var _region_palette: Dictionary = {}
 
@@ -63,6 +72,11 @@ var _unit_badge_rows: Dictionary = {}
 
 # Status UI v1.6.4: Icon cache to avoid repeated ResourceLoader lookups
 var _status_icon_cache: Dictionary = {}  # ui_icon_path (String) -> Texture2D|null
+
+# Hero Card Improvements: HP label overlay, turn counter, stat labels
+var _unit_hp_labels: Dictionary = {}  # unit_id -> Label (HP numbers inside ProgressBar)
+var _unit_turn_labels: Dictionary = {}  # unit_id -> Label (turn counter for player units)
+var _unit_stat_labels: Dictionary = {}  # unit_id -> { stat_key: Label } (ATK/DEF/SPD row)
 
 # ============================================================================
 # STATUS UI v1.8: Badge Pooling + Sanity Tracking
@@ -113,7 +127,8 @@ const POP_TEXT_COLORS: Dictionary = {
 	"status_stack": Color.GOLD,
 	"buff_apply": Color.CYAN,
 	"miss": Color.GRAY,
-	"crit": Color.HOT_PINK
+	"crit": Color.HOT_PINK,
+	"status_expire": Color(0.6, 0.6, 0.6, 1.0)  # Muted gray for expired statuses
 }
 
 # Cast callout styling
@@ -170,6 +185,11 @@ var _target_selection_active: bool = false
 var _valid_target_ids: Array = []
 var _target_highlights: Dictionary = {}  # unit_id -> ColorRect
 
+var _btn_use_item: Button = null
+var _item_select_overlay: CanvasLayer = null  # Consumable selection popup for Use Item
+var _combat_consumable_picker: CanvasLayer = null  # Hero picker after selecting consumable
+var _pending_combat_consumable_id: String = ""  # Item ID pending hero picker choice
+var _pending_combat_consumable_hero_id: String = ""  # Source hero ID for pending consumable
 var _consumable_popup: PopupMenu = null
 var _stats_window: Window = null  # Floating stats window
 var _stats_window_hero_id: String = ""  # Hero ID for stats window refresh
@@ -454,6 +474,9 @@ func _start_encounter() -> void:
 
 	# Player Actions v1: Create action panel
 	_create_action_panel()
+
+	# Feature J: Shopkeeper bag display (above action panel)
+	_create_shopkeeper_bag_display()
 
 	# Hide Step button - using player action buttons instead
 	step_button.visible = false
@@ -755,6 +778,9 @@ func _refresh_all_panels() -> void:
 	_unit_displays.clear()  # Status UI v1.6: Clear display references
 	_unit_badge_rows.clear()  # Status UI v1.7: Clear badge row references (both status and buff)
 	_status_icon_cache.clear()  # Status UI v1.6.4: Reset icon cache
+	_unit_hp_labels.clear()  # Hero Card: Clear HP label references
+	_unit_turn_labels.clear()  # Hero Card: Clear turn counter references
+	_unit_stat_labels.clear()  # Hero Card: Clear stat label references
 
 	# Status UI v1.8: Clear badge pools on full panel refresh (free all pooled nodes)
 	_clear_badge_pools()
@@ -929,6 +955,41 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 		class_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7, 0.8))
 		info_vbox.add_child(class_label)
 
+	# D2: Turn counter (player units only)
+	if unit_data["team"] == "player":
+		var turn_label = Label.new()
+		turn_label.name = "TurnCounter"
+		turn_label.text = ""
+		turn_label.add_theme_font_size_override("font_size", 9)
+		turn_label.add_theme_color_override("font_color", Color(0.8, 0.8, 0.6, 0.7))
+		turn_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		info_vbox.add_child(turn_label)
+		_unit_turn_labels[unit_data["id"]] = turn_label
+
+	# D3: Basic stats row (player units only) - ATK/DEF/SPD with tooltips
+	if unit_data["team"] == "player":
+		var stats_hbox = HBoxContainer.new()
+		stats_hbox.name = "StatsRow"
+		stats_hbox.add_theme_constant_override("separation", 8)
+		var stat_defs: Array = [
+			{"key": "attack", "label": "ATK", "color": Color(0.9, 0.6, 0.3)},
+			{"key": "defense", "label": "DEF", "color": Color(0.4, 0.7, 0.9)},
+			{"key": "speed", "label": "SPD", "color": Color(0.7, 0.9, 0.5)}
+		]
+		var hero_stat_labels: Dictionary = {}
+		for stat_def in stat_defs:
+			var stat_label = Label.new()
+			var val: int = int(unit_data.get(stat_def.key, 0))
+			stat_label.text = "%s:%d" % [stat_def.label, val]
+			stat_label.add_theme_font_size_override("font_size", 9)
+			stat_label.add_theme_color_override("font_color", stat_def.color)
+			stat_label.mouse_filter = Control.MOUSE_FILTER_STOP
+			stat_label.tooltip_text = _build_combat_card_stat_tooltip(stat_def.key, stat_def.label, unit_data)
+			stats_hbox.add_child(stat_label)
+			hero_stat_labels[stat_def.key] = stat_label
+		info_vbox.add_child(stats_hbox)
+		_unit_stat_labels[unit_data["id"]] = hero_stat_labels
+
 	# HP bar (colored by health %)
 	var hp_bar = ProgressBar.new()
 	hp_bar.custom_minimum_size = Vector2(0, 10)
@@ -937,6 +998,19 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 	hp_bar.value = unit_data["hp"]
 	hp_bar.show_percentage = false
 	info_vbox.add_child(hp_bar)
+
+	# D1: HP numbers label inside HP bar
+	var hp_label = Label.new()
+	hp_label.name = "HPLabel"
+	hp_label.text = "%d/%d" % [int(unit_data["hp"]), int(unit_data["max_hp"])]
+	hp_label.add_theme_font_size_override("font_size", 9)
+	hp_label.add_theme_color_override("font_color", Color.WHITE)
+	hp_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hp_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	hp_label.set_anchors_preset(Control.PRESET_FULL_RECT)
+	hp_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hp_bar.add_child(hp_label)
+	_unit_hp_labels[unit_data["id"]] = hp_label
 
 	# Status badge row (pooled)
 	var unit_id = unit_data["id"]
@@ -973,8 +1047,8 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 	click_panel.name = "ClickPanel"
 	click_panel.color = Color(0, 0, 0, 0)
 	click_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
-	click_panel.mouse_filter = Control.MOUSE_FILTER_STOP
-	click_panel.gui_input.connect(_on_unit_right_clicked.bind(unit_data["id"]))
+	click_panel.mouse_filter = Control.MOUSE_FILTER_PASS
+	click_panel.gui_input.connect(_on_unit_display_input.bind(unit_data["id"]))
 	wrapper.add_child(click_panel)
 
 	return wrapper
@@ -1066,6 +1140,29 @@ func _build_unit_card_tooltip(unit_data: Dictionary) -> String:
 
 	if not unit_data["is_alive"]:
 		lines.append("[DEAD]")
+
+	return "\n".join(lines)
+
+
+## Build a tooltip for a single combat stat (ATK/DEF/SPD) on the hero card stats row.
+func _build_combat_card_stat_tooltip(stat_key: String, stat_display: String, unit_data: Dictionary) -> String:
+	var descriptions: Dictionary = {
+		"attack": "ATK (Attack Power)\nDetermines physical damage dealt.\nDamage = max(1, ATK - target DEF)",
+		"defense": "DEF (Defense)\nReduces incoming physical damage.\nDamage = max(1, attacker ATK - DEF)",
+		"speed": "SPD (Speed)\nDetermines turn order each round.\nHigher speed acts first.\n10+ = 2 actions, 20+ = 3 actions"
+	}
+	var lines: Array = []
+	lines.append(descriptions.get(stat_key, stat_display))
+	lines.append("")
+
+	var eff_val: int = int(unit_data.get(stat_key, 0))
+	var base_val: int = int(unit_data.get("base_" + stat_key, 0))
+	var bonus: int = eff_val - base_val
+
+	lines.append("Base: %d" % base_val)
+	if bonus != 0:
+		lines.append("Bonuses: %+d" % bonus)
+	lines.append("Total: %d" % eff_val)
 
 	return "\n".join(lines)
 
@@ -1834,6 +1931,12 @@ func _on_combat_ended(_result) -> void:
 	# v1.9A: Clear active unit highlight
 	_set_active_unit("")
 
+	# D2: Clear turn counter labels on combat end
+	for uid in _unit_turn_labels.keys():
+		var lbl = _unit_turn_labels[uid]
+		if lbl != null and is_instance_valid(lbl):
+			lbl.text = ""
+
 	# v1.8: Emit sanity report at encounter end
 	_emit_sanity_report_if_needed()
 
@@ -2053,8 +2156,11 @@ func _show_loot_panel() -> void:
 		else:
 			shop_grid.add_child(_create_empty_bag_slot(32))
 
-	# ── Hero Bag visual grids ──
+	# ── Hero Bag visual grids (skip dead heroes) ──
 	for hero_id in GameContext.selected_party:
+		var hp_check = GameContext.get_hero_hp(hero_id)
+		if not hp_check.is_empty() and int(hp_check.get("current", 1)) <= 0:
+			continue
 		var hero = GameContext.get_hero(hero_id)
 		var hero_name: String = hero.get("name", hero_id) if not hero.is_empty() else hero_id
 		var bag = GameContext.get_hero_bag(hero_id)
@@ -2364,8 +2470,11 @@ func _update_routing_bar() -> void:
 		shop_btn.pressed.connect(_on_loot_to_shop_bag.bind(_loot_selected_index))
 	_loot_routing_bar.add_child(shop_btn)
 
-	# Hero buttons
+	# Hero buttons (skip dead heroes)
 	for hero_id in GameContext.selected_party:
+		var hp_data = GameContext.get_hero_hp(hero_id)
+		if not hp_data.is_empty() and int(hp_data.get("current", 1)) <= 0:
+			continue
 		var hero = GameContext.get_hero(hero_id)
 		var hero_name: String = hero.get("name", hero_id) if not hero.is_empty() else hero_id
 		if hero_name.length() > 10:
@@ -2405,6 +2514,7 @@ func _on_loot_to_shop_bag(acq_index: int) -> void:
 	GameContext.resolve_acquisition_at(acq_index, "shop_bag")
 	_loot_selected_index = -1
 	_refresh_loot_panel()
+	_refresh_shopkeeper_bag_display()
 
 
 ## Route a pending acquisition to a hero's bag.
@@ -2483,6 +2593,7 @@ func _on_loot_all_to_shop() -> void:
 	print("[LootPanel] All to Shop Bag: routed %d items" % routed)
 	_loot_selected_index = -1
 	_refresh_loot_panel()
+	_refresh_shopkeeper_bag_display()
 
 
 ## Continue after loot routing — only allowed when no pending items remain.
@@ -3004,12 +3115,11 @@ func _on_defeat_continue() -> void:
 	# Clear dungeon stash (provisional rewards lost)
 	GameContext.clear_dungeon_stash()
 
-	# Exit dungeon and return to town (defeat = lose dungeon progress)
-	# Clear dungeon state so _do_combat_transition goes to TOWN not DUNGEON_CAMP
-	GameContext.current_dungeon_id = ""
-	GameContext.current_floor = 0
-	GameContext.current_room_index = 0
-	GameContext.set_phase(GameContext.GamePhase.TOWN)
+	# Insurance: bank only safe shopkeeper bag slots before exit
+	GameContext.bank_safe_shopkeeper_slots_only()
+
+	# Proper town exit: processes dead heroes, banks bags, heals survivors, saves
+	GameContext.exit_to_town()
 
 	_do_combat_transition()
 
@@ -3074,6 +3184,12 @@ func run_smoke_test_ui() -> bool:
 # ============================================================================
 
 func _unhandled_input(event: InputEvent) -> void:
+	# Cancel shopkeeper bag swap on Escape
+	if not _swap_source.is_empty() and event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+		_clear_swap_highlight()
+		get_viewport().set_input_as_handled()
+		return
+
 	# Close stat inspection on Escape
 	if _inspect_overlay != null and event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 		_close_stat_inspection()
@@ -3131,7 +3247,17 @@ func _on_status_changed(unit_id: String) -> void:
 
 ## Handle all statuses ticked at round start.
 ## v1.8: Uses unified badge pipeline with pooling.
+## Status UI v2: Shows pop-text for expired statuses.
 func _on_all_statuses_ticked() -> void:
+	# Show expiry pop-text for statuses that just expired
+	for unit_id in _combat_controller.last_expired_statuses:
+		var expired_ids: Array = _combat_controller.last_expired_statuses[unit_id]
+		for status_id in expired_ids:
+			var status_data = DataRegistry.get_status_effect(status_id)
+			var dname: String = status_id.capitalize()
+			if status_data:
+				dname = status_data.ui_name if status_data.ui_name != "" else status_data.display_name
+			_show_pop_text(unit_id, dname + " expired", "status_expire")
 	refresh_all_status_badges()
 	refresh_all_buff_badges()  # Also refresh buffs (tick at round start too)
 
@@ -3905,6 +4031,13 @@ func _create_action_panel() -> void:
 	_btn_ability_b.pressed.connect(_on_ability_b_pressed)
 	hbox.add_child(_btn_ability_b)
 
+	_btn_use_item = Button.new()
+	_btn_use_item.text = "Use Item"
+	_btn_use_item.custom_minimum_size = Vector2(100, 34)
+	_btn_use_item.pressed.connect(_on_use_item_pressed)
+	_btn_use_item.visible = false
+	hbox.add_child(_btn_use_item)
+
 	_btn_pass = Button.new()
 	_btn_pass.text = "Pass"
 	_btn_pass.custom_minimum_size = Vector2(80, 34)
@@ -3975,9 +4108,25 @@ func _on_player_input_required(unit: CombatUnit, available_actions: Array) -> vo
 	_btn_ability_a.visible = false
 	_btn_ability_b.visible = false
 	_btn_pass.visible = false
+	_btn_use_item.visible = false
 	_equip_row.visible = false
 	_btn_equip_0.visible = false
 	_btn_equip_1.visible = false
+
+	# Use Item button: show if hero has consumables in bag
+	var active_hero_id: String = unit.source_id
+	var hero_bag: Array = GameContext.get_hero_bag(active_hero_id)
+	var has_consumables: bool = false
+	for bag_entry in hero_bag:
+		var tmpl = DataRegistry.get_item_template(bag_entry.get("item_id", ""))
+		if tmpl != null and tmpl.item_type == "consumable":
+			has_consumables = true
+			break
+	if has_consumables:
+		var can_use: bool = GameContext.can_hero_use_consumable(active_hero_id)
+		_btn_use_item.visible = true
+		_btn_use_item.disabled = not can_use
+		_btn_use_item.tooltip_text = "Use a consumable from bag (free action)" if can_use else "Already used an item this combat"
 
 	# Update button states from available actions
 	for action_info in available_actions:
@@ -4438,11 +4587,17 @@ func _on_target_selection_required(unit: CombatUnit, valid_targets: Array, actio
 	_log("[color=yellow]Click on a %s to target[/color]" % target_type)
 
 
-## Handle multi_action_update signal - update action label.
+## Handle multi_action_update signal - update action label and hero card turn counter.
 func _on_multi_action_update(unit: CombatUnit, remaining: int, total: int) -> void:
 	if _action_label != null:
 		var action_num = total - remaining + 1
 		_action_label.text = "Action %d/%d:" % [action_num, total]
+
+	# D2: Update hero card turn counter
+	var turn_lbl = _unit_turn_labels.get(unit.unit_id)
+	if turn_lbl != null and is_instance_valid(turn_lbl):
+		var action_num_tc: int = total - remaining + 1
+		turn_lbl.text = "Turn %d/%d" % [action_num_tc, total]
 
 
 ## Enter target selection mode - highlight valid targets with hover effects.
@@ -4661,10 +4816,41 @@ func _auto_select_target() -> void:
 
 
 # ============================================================================
+# UNIT DISPLAY INPUT — Unified Click Handler
+# ============================================================================
+
+## Unified input handler for unit display cards (replaces _on_unit_right_clicked).
+## Right-click: stat inspection. Left-click: quick basic attack on enemies.
+func _on_unit_display_input(event: InputEvent, unit_id: String) -> void:
+	if not (event is InputEventMouseButton and event.pressed):
+		return
+	if event.button_index == MOUSE_BUTTON_RIGHT:
+		_show_stat_inspection(unit_id)
+	elif event.button_index == MOUSE_BUTTON_LEFT:
+		_on_unit_left_clicked(unit_id)
+
+
+## Handle left-click on a unit display: quick basic attack on enemies.
+func _on_unit_left_clicked(unit_id: String) -> void:
+	# If in target selection mode, let the existing system handle it
+	if _target_selection_active:
+		return
+	# Quick basic attack: only on enemies while awaiting player input
+	if _combat_controller == null:
+		return
+	if not unit_id.begins_with("enemy_"):
+		return
+	if _combat_controller.submit_basic_attack_on_target(unit_id):
+		if _action_panel != null:
+			_action_panel.visible = false
+		print("[UI] Quick basic attack on %s" % unit_id)
+
+
+# ============================================================================
 # STAT INSPECTION — Right-Click Popup (CanvasLayer overlay)
 # ============================================================================
 
-## Handle right-click on any unit display to show stat inspection.
+## Legacy handler: right-click on unit display to show stat inspection.
 func _on_unit_right_clicked(event: InputEvent, unit_id: String) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
 		_show_stat_inspection(unit_id)
@@ -4842,9 +5028,15 @@ func _build_stat_inspection_content(vbox: VBoxContainer, unit_data: Dictionary) 
 		_add_inspect_separator(vbox)
 		_add_inspect_section_label(vbox, "Status Effects")
 		for s in statuses:
-			var s_name: String = s.get("id", "?").capitalize()
-			var s_dur: int = s.get("duration", 0)
-			_add_inspect_status_line(vbox, s_name, "%d turns" % s_dur, Color(0.9, 0.5, 0.5))
+			var s_name: String = s.get("ui_name", s.get("id", "?").capitalize())
+			if s_name == "":
+				s_name = s.get("id", "?").capitalize()
+			var s_dur: int = s.get("remaining_rounds", 0)
+			var s_stacks: int = s.get("stacks", 1)
+			var dur_text: String = "%d turns" % s_dur
+			if s_stacks > 1:
+				dur_text += " (x%d)" % s_stacks
+			_add_inspect_status_line(vbox, s_name, dur_text, Color(0.9, 0.5, 0.5))
 
 	# --- Active Buffs ---
 	var buffs: Array = unit_data.get("active_buffs_v1", [])
@@ -4852,9 +5044,19 @@ func _build_stat_inspection_content(vbox: VBoxContainer, unit_data: Dictionary) 
 		_add_inspect_separator(vbox)
 		_add_inspect_section_label(vbox, "Buffs")
 		for b in buffs:
-			var b_name: String = b.get("id", "?").capitalize()
-			var b_dur: int = b.get("duration", 0)
-			_add_inspect_status_line(vbox, b_name, "%d turns" % b_dur, Color(0.5, 0.8, 0.5))
+			var b_name: String = b.get("ui_name", b.get("source", "?").capitalize())
+			if b_name == "":
+				b_name = b.get("source", "?").capitalize()
+			var b_dur: int = b.get("remaining_rounds", 0)
+			var b_stats: Dictionary = b.get("stats", {})
+			var stat_parts: Array = []
+			for stat_key in b_stats.keys():
+				stat_parts.append("%+d %s" % [int(b_stats[stat_key]), stat_key.to_upper().substr(0, 3)])
+			var detail: String = ", ".join(stat_parts)
+			var dur_text: String = "%d turns" % b_dur
+			if detail != "":
+				dur_text = "%s | %s" % [detail, dur_text]
+			_add_inspect_status_line(vbox, b_name, dur_text, Color(0.5, 0.8, 0.5))
 
 	# --- Close hint ---
 	_add_inspect_separator(vbox)
@@ -4984,6 +5186,251 @@ func _close_stat_inspection() -> void:
 func _on_inspect_backdrop_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed:
 		_close_stat_inspection()
+
+
+# ============================================================================
+# PLAYER ACTIONS v1.5: Use Item Button (Free Action)
+# ============================================================================
+
+## Handle "Use Item" button press — show consumable selection overlay.
+func _on_use_item_pressed() -> void:
+	if _current_input_unit == null:
+		return
+	var hero_id: String = _current_input_unit.source_id
+	var bag: Array = GameContext.get_hero_bag(hero_id)
+	if bag.is_empty():
+		return
+
+	# Gather consumables
+	var consumables: Array = []
+	for i in range(bag.size()):
+		var entry = bag[i]
+		var item_id: String = entry.get("item_id", "")
+		var tmpl = DataRegistry.get_item_template(item_id)
+		if tmpl != null and tmpl.item_type == "consumable":
+			consumables.append({"index": i, "item_id": item_id, "template": tmpl})
+
+	if consumables.is_empty():
+		_log("[color=gray]No consumables in bag[/color]")
+		return
+
+	_show_item_select_overlay(hero_id, consumables)
+
+
+## Show item selection overlay as CanvasLayer popup.
+func _show_item_select_overlay(hero_id: String, consumables: Array) -> void:
+	# Clean up existing
+	if _item_select_overlay != null and is_instance_valid(_item_select_overlay):
+		_item_select_overlay.queue_free()
+		_item_select_overlay = null
+
+	_item_select_overlay = CanvasLayer.new()
+	_item_select_overlay.layer = 11
+	add_child(_item_select_overlay)
+
+	# Backdrop
+	var backdrop = ColorRect.new()
+	backdrop.color = Color(0, 0, 0, 0.4)
+	backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
+	backdrop.set_offsets_preset(Control.PRESET_FULL_RECT)
+	backdrop.gui_input.connect(_on_item_select_backdrop_input)
+	_item_select_overlay.add_child(backdrop)
+
+	# Center
+	var center = CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.set_offsets_preset(Control.PRESET_FULL_RECT)
+	_item_select_overlay.add_child(center)
+
+	# Panel
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(320, 0)
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.1, 0.1, 0.15, 0.97)
+	style.border_color = Color(0.4, 0.7, 0.3, 0.8)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(6)
+	style.content_margin_left = 12
+	style.content_margin_right = 12
+	style.content_margin_top = 10
+	style.content_margin_bottom = 10
+	panel.add_theme_stylebox_override("panel", style)
+	center.add_child(panel)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 8)
+	panel.add_child(vbox)
+
+	# Header
+	var header = Label.new()
+	header.text = "Use Item (Free Action)"
+	header.add_theme_font_size_override("font_size", 16)
+	header.add_theme_color_override("font_color", Color(0.4, 0.9, 0.4))
+	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(header)
+
+	var sep = HSeparator.new()
+	vbox.add_child(sep)
+
+	# Item buttons
+	for entry in consumables:
+		var item_btn = Button.new()
+		item_btn.text = entry.template.display_name if entry.template else entry.item_id
+		item_btn.custom_minimum_size = Vector2(0, 32)
+		item_btn.pressed.connect(_on_item_select_chosen.bind(entry.item_id, hero_id))
+		vbox.add_child(item_btn)
+
+	# Cancel button
+	var cancel_btn = Button.new()
+	cancel_btn.text = "Cancel"
+	cancel_btn.custom_minimum_size = Vector2(0, 28)
+	cancel_btn.flat = true
+	cancel_btn.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+	cancel_btn.pressed.connect(_close_item_select_overlay)
+	vbox.add_child(cancel_btn)
+
+
+## Handle selecting a consumable from the Use Item overlay.
+## Instead of immediately submitting, show a hero picker to choose the target.
+func _on_item_select_chosen(item_id: String, hero_id: String) -> void:
+	_close_item_select_overlay()
+	_pending_combat_consumable_id = item_id
+	_pending_combat_consumable_hero_id = hero_id
+	_show_combat_consumable_hero_picker(item_id, hero_id)
+
+
+## Close the item selection overlay.
+func _close_item_select_overlay() -> void:
+	if _item_select_overlay != null and is_instance_valid(_item_select_overlay):
+		_item_select_overlay.queue_free()
+		_item_select_overlay = null
+
+
+## Handle click on backdrop to close item selection.
+func _on_item_select_backdrop_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed:
+		_close_item_select_overlay()
+
+
+# ============================================================================
+# COMBAT CONSUMABLE HERO PICKER
+# ============================================================================
+
+## Show hero picker overlay for choosing which hero receives the consumable effect.
+func _show_combat_consumable_hero_picker(item_id: String, source_hero_id: String) -> void:
+	_close_combat_consumable_picker()
+
+	var template = DataRegistry.get_item_template(item_id)
+	var item_name: String = template.display_name if template else item_id
+
+	_combat_consumable_picker = CanvasLayer.new()
+	_combat_consumable_picker.layer = 11
+	add_child(_combat_consumable_picker)
+
+	# Root control for input blocking
+	var root = Control.new()
+	root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root.mouse_filter = Control.MOUSE_FILTER_STOP
+	_combat_consumable_picker.add_child(root)
+
+	# Dark backdrop
+	var backdrop = ColorRect.new()
+	backdrop.color = Color(0, 0, 0, 0.5)
+	backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
+	backdrop.set_offsets_preset(Control.PRESET_FULL_RECT)
+	backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
+	backdrop.gui_input.connect(_on_combat_consumable_picker_backdrop)
+	root.add_child(backdrop)
+
+	# Centered panel
+	var center = CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.set_offsets_preset(Control.PRESET_FULL_RECT)
+	root.add_child(center)
+
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(300, 0)
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.1, 0.1, 0.15, 0.97)
+	style.border_color = Color(0.3, 0.7, 0.3, 0.8)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(6)
+	style.content_margin_left = 12
+	style.content_margin_right = 12
+	style.content_margin_top = 10
+	style.content_margin_bottom = 10
+	panel.add_theme_stylebox_override("panel", style)
+	center.add_child(panel)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 6)
+	panel.add_child(vbox)
+
+	# Title
+	var title = Label.new()
+	title.text = "Use %s on:" % item_name
+	title.add_theme_font_size_override("font_size", 15)
+	title.add_theme_color_override("font_color", Color(0.4, 0.9, 0.4))
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+
+	vbox.add_child(HSeparator.new())
+
+	# Hero buttons - show all alive party heroes with HP
+	var party: Array = GameContext.get_selected_party()
+	for pid in party:
+		var hero: Dictionary = GameContext.get_hero(pid)
+		if hero.is_empty():
+			continue
+		var hp_data: Dictionary = GameContext.get_hero_hp(pid)
+		var current_hp: int = int(hp_data.get("current", 1))
+		var max_hp: int = int(hp_data.get("max", 1))
+		if current_hp <= 0:
+			continue  # Skip dead heroes
+
+		var hero_name: String = hero.get("name", pid)
+		var btn = Button.new()
+		btn.text = "%s  (%d/%d HP)" % [hero_name, current_hp, max_hp]
+		btn.custom_minimum_size = Vector2(0, 34)
+		btn.pressed.connect(_on_combat_consumable_hero_chosen.bind(item_id, pid, source_hero_id))
+		vbox.add_child(btn)
+
+	# Cancel button
+	vbox.add_child(HSeparator.new())
+	var cancel_btn = Button.new()
+	cancel_btn.text = "Cancel"
+	cancel_btn.custom_minimum_size = Vector2(0, 28)
+	cancel_btn.flat = true
+	cancel_btn.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+	cancel_btn.pressed.connect(_on_combat_consumable_picker_cancel)
+	vbox.add_child(cancel_btn)
+
+
+## Handle hero selection from the combat consumable picker.
+func _on_combat_consumable_hero_chosen(item_id: String, target_hero_id: String, source_hero_id: String) -> void:
+	_close_combat_consumable_picker()
+	_combat_controller.submit_consumable_use(item_id, target_hero_id, true, source_hero_id)  # true = free action
+
+
+## Cancel the combat consumable hero picker and re-show the action panel.
+func _on_combat_consumable_picker_cancel() -> void:
+	_close_combat_consumable_picker()
+	# Re-show action panel so the player can choose another action
+	if _action_panel != null and _combat_controller != null and _combat_controller.is_awaiting_player_input():
+		_action_panel.visible = true
+
+
+## Close the combat consumable hero picker overlay.
+func _close_combat_consumable_picker() -> void:
+	if _combat_consumable_picker != null and is_instance_valid(_combat_consumable_picker):
+		_combat_consumable_picker.queue_free()
+		_combat_consumable_picker = null
+
+
+## Handle backdrop click to dismiss the combat consumable hero picker.
+func _on_combat_consumable_picker_backdrop(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed:
+		_on_combat_consumable_picker_cancel()
 
 
 # ============================================================================
@@ -5508,3 +5955,167 @@ func _on_stats_window_closed() -> void:
 		_stats_window.queue_free()
 		_stats_window = null
 	print("[UI] Stats window closed")
+
+
+# ============================================================================
+# FEATURE J: SHOPKEEPER BAG DISPLAY IN COMBAT
+# ============================================================================
+
+## Create the shopkeeper bag display panel and insert it above the action panel
+## in the BottomPanel.
+func _create_shopkeeper_bag_display() -> void:
+	if _shopkeeper_bag_panel != null:
+		_shopkeeper_bag_panel.queue_free()
+
+	_shopkeeper_bag_panel = PanelContainer.new()
+	_shopkeeper_bag_panel.name = "ShopkeeperBagPanel"
+
+	# Warm brown styling
+	var bag_style = StyleBoxFlat.new()
+	bag_style.bg_color = Color(0.2, 0.15, 0.08, 0.9)
+	bag_style.border_color = Color(0.5, 0.35, 0.15, 0.6)
+	bag_style.set_border_width_all(1)
+	bag_style.set_corner_radius_all(3)
+	bag_style.content_margin_left = 6
+	bag_style.content_margin_right = 6
+	bag_style.content_margin_top = 3
+	bag_style.content_margin_bottom = 3
+	_shopkeeper_bag_panel.add_theme_stylebox_override("panel", bag_style)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 2)
+	_shopkeeper_bag_panel.add_child(vbox)
+
+	# Header label
+	_shopkeeper_bag_label = Label.new()
+	_shopkeeper_bag_label.text = "Shopkeeper Bag (0/6)"
+	_shopkeeper_bag_label.add_theme_font_size_override("font_size", 11)
+	_shopkeeper_bag_label.add_theme_color_override("font_color", Color(0.85, 0.75, 0.55, 0.9))
+	vbox.add_child(_shopkeeper_bag_label)
+
+	# Slot row
+	_shopkeeper_bag_row = HBoxContainer.new()
+	_shopkeeper_bag_row.add_theme_constant_override("separation", 4)
+	vbox.add_child(_shopkeeper_bag_row)
+
+	# Insert into BottomPanel above action panel
+	if _action_panel != null:
+		var parent_node = _action_panel.get_parent()
+		if parent_node != null:
+			parent_node.add_child(_shopkeeper_bag_panel)
+			parent_node.move_child(_shopkeeper_bag_panel, _action_panel.get_index())
+	else:
+		$BottomPanel.add_child(_shopkeeper_bag_panel)
+		var button_row = $BottomPanel/ButtonRow
+		$BottomPanel.move_child(_shopkeeper_bag_panel, button_row.get_index())
+
+	# Initial population
+	_refresh_shopkeeper_bag_display()
+	print("[UI] Shopkeeper bag display created")
+
+
+## Refresh the shopkeeper bag slot buttons to reflect current state.
+func _refresh_shopkeeper_bag_display() -> void:
+	if _shopkeeper_bag_row == null:
+		return
+	for child in _shopkeeper_bag_row.get_children():
+		child.queue_free()
+
+	var bag: Array = GameContext.get_shopkeeper_bag()
+	var cap: int = GameContext.SHOPKEEPER_BAG_CAPACITY_DEFAULT
+	var safe: int = GameContext.SHOPKEEPER_SAFE_SLOTS
+	_shopkeeper_bag_label.text = "Shopkeeper Bag (%d/%d)" % [bag.size(), cap]
+
+	for i in range(cap):
+		var btn = Button.new()
+		btn.custom_minimum_size = Vector2(32, 32)
+		var is_safe: bool = i < safe
+
+		if i < bag.size():
+			var entry: Dictionary = bag[i]
+			var item_id: String = entry.get("item_id", "")
+			var qty: int = int(entry.get("qty", 1))
+			var template = DataRegistry.get_item_template(item_id)
+			if template:
+				var icon_tex = template.get_icon_texture()
+				if icon_tex != null:
+					btn.icon = icon_tex
+					btn.expand_icon = true
+				else:
+					btn.text = item_id.substr(0, 3)
+				var safe_label: String = "[SAFE] " if is_safe else ""
+				btn.tooltip_text = "%s%s" % [safe_label, template.display_name]
+				if qty > 1:
+					btn.tooltip_text += " x%d" % qty
+			else:
+				btn.text = "?"
+
+			# Connect swap click for filled slots only
+			btn.pressed.connect(_on_shopkeeper_bag_swap_click.bind(i, btn))
+		else:
+			btn.disabled = true
+			btn.text = ""
+			if is_safe:
+				btn.tooltip_text = "Safe Slot (empty)"
+			else:
+				btn.tooltip_text = "Unsafe Slot (empty)"
+
+		# Apply safe/unsafe styling
+		if is_safe:
+			var safe_style = StyleBoxFlat.new()
+			safe_style.bg_color = Color(0.1, 0.25, 0.1, 0.9)
+			safe_style.border_color = Color(0.3, 0.7, 0.3, 0.6)
+			safe_style.set_border_width_all(1)
+			safe_style.set_corner_radius_all(2)
+			btn.add_theme_stylebox_override("normal", safe_style)
+			# Also style disabled state for empty safe slots
+			var safe_disabled = safe_style.duplicate()
+			safe_disabled.bg_color = Color(0.08, 0.15, 0.08, 0.5)
+			safe_disabled.border_color = Color(0.2, 0.5, 0.2, 0.3)
+			btn.add_theme_stylebox_override("disabled", safe_disabled)
+
+		_shopkeeper_bag_row.add_child(btn)
+
+
+# ============================================================================
+# FEATURE K: SWAP SYSTEM (Combat — Shopkeeper Bag Internal Swaps)
+# ============================================================================
+
+## Handle click on a shopkeeper bag slot for swap.
+func _on_shopkeeper_bag_swap_click(index: int, btn: Button) -> void:
+	if _swap_source.is_empty():
+		# Start swap
+		_swap_source = {"type": "shopkeeper", "index": index}
+		_highlight_swap_slot(btn)
+	elif _swap_source.get("type") == "shopkeeper" and _swap_source.get("index") == index:
+		# Cancel: clicked same slot
+		_clear_swap_highlight()
+	else:
+		# Perform swap
+		var src = _swap_source
+		_clear_swap_highlight()
+		if src.get("type") == "shopkeeper":
+			GameContext.swap_shopkeeper_bag_items(src.index, index)
+			_refresh_shopkeeper_bag_display()
+			print("[UI] Swapped shopkeeper bag slots %d <-> %d" % [src.index, index])
+
+
+## Highlight a slot button as selected for swap.
+func _highlight_swap_slot(btn: Button) -> void:
+	if _swap_highlight_btn != null and is_instance_valid(_swap_highlight_btn):
+		_clear_swap_highlight()
+	_swap_highlight_btn = btn
+	var highlight_style = StyleBoxFlat.new()
+	highlight_style.bg_color = Color(0.3, 0.3, 0.1, 0.8)
+	highlight_style.border_color = Color(1.0, 0.85, 0.0, 0.9)
+	highlight_style.set_border_width_all(2)
+	highlight_style.set_corner_radius_all(3)
+	btn.add_theme_stylebox_override("normal", highlight_style)
+
+
+## Clear swap selection and remove highlight.
+func _clear_swap_highlight() -> void:
+	_swap_source = {}
+	if _swap_highlight_btn != null and is_instance_valid(_swap_highlight_btn):
+		_swap_highlight_btn.remove_theme_stylebox_override("normal")
+	_swap_highlight_btn = null

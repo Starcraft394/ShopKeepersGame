@@ -1,6 +1,6 @@
 # ShopKeepers Game - Development Status
 
-**Last Updated:** 2026-02-10
+**Last Updated:** 2026-02-19
 
 ---
 
@@ -23,31 +23,47 @@
 |--------------|-------|--------|
 | Classes | 15 | ✅ All implemented |
 | Races | 9 | ✅ All implemented |
-| Abilities | 36 | ✅ No stubs |
+| Abilities | 37 | ✅ No stubs |
 | Passives | 43 | ✅ No stubs |
-| Monsters | 46 | ✅ Full variety |
-| Dungeons | 2 | Greenroot + Timberfall |
-| Item Templates | 80 | Consumables, gear, books, materials |
-| Facilities | 20 | 10 types × 2 towns |
+| Monsters | 112 | ✅ 7 regions, all with attack_type |
+| Dungeons | 7 | All regions implemented |
+| Item Templates | 241 | Consumables, gear, books, materials |
+| Facilities | 22 | All types with upgrades |
+| Regions | 7 | Greenroot → Fractured Realm |
+| Events | 57 | Region-themed encounters |
+| Tutorials | 11 | Full onboarding sequence |
 
 ---
 
 ## Combat System Features (All Implemented)
 
-- [x] Player action selection (Basic Attack, Ability A, Ability B, Pass)
+- [x] Player action selection (Basic Attack, Ability A, Ability B, Pass, Use Item)
 - [x] Target selection with validation (single/AoE/self)
 - [x] Speed-based multi-actions (Speed 10+ = 2 actions, 20+ = 3)
-- [x] Consumable usage (1 per hero per combat)
+- [x] Consumable usage as free action (hero keeps their attack turn)
 - [x] Turn queue with speed ordering
-- [x] Status effects (burn, stun, poison, etc.)
-- [x] Buff/debuff system
+- [x] Status effects (burn, stun, poison, bleed, etc.)
+- [x] Buff/debuff system with per-unit status independence
 - [x] Cooldown management
 - [x] Per-room RNG seeding for enemy variety
+- [x] Front/back row targeting (melee vs ranged attack_type)
+- [x] Dead hero filtering in loot routing
+- [x] Full party wipe cleanup via exit_to_town()
 
 ---
 
-## Recent Session Fixes (2026-02-10)
+## Recent Session Fixes (2026-02-19)
 
+### Playtest Fixes
+- [x] Tutorial back button — navigate backwards with Back btn / LEFT arrow / Backspace
+- [x] Enemy AI front-row targeting — 112 monsters classified as melee/ranged via attack_type field
+- [x] Status effect bleed bug — dead units now return empty snapshots, status_changed emitted on death
+- [x] Combat "Use Item" button — free action, hero keeps attack turn after using consumable
+- [x] Combat loot dead hero filter — dead heroes excluded from loot routing panel
+- [x] Full party wipe cleanup — defeat handler now uses GameContext.exit_to_town()
+- [x] Dungeon camp UI overhaul — region-themed panels, hero cards with portraits + HP bars, CanvasLayer overlay
+
+### Previous Session (2026-02-10)
 - [x] Stale item references cleaned (18 items, 8 files)
 - [x] Facility upgrade bug fixed (set_facility_tier → upgrade_facility)
 - [x] Production facility upgrade UI added (Chef/Alchemist)
@@ -93,9 +109,16 @@
 
 ---
 
+## Test Status
+
+- **148 tests total** — all passing
+- Headless validation: PASSED
+- Test runner: `DevTools\run_headless.bat`
+
+---
+
 ## Deferred Features (Not MVP)
 
-- [ ] Regions 2-7
 - [ ] Town Defense mechanics
 - [ ] Blueprint crafting
 - [ ] Socketing system

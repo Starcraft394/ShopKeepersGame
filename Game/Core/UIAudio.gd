@@ -1,6 +1,7 @@
 ## UIAudio.gd
 ## Lightweight autoload that adds click/hover sounds to all Button nodes,
-## manages background music playback, and provides a global pause/options menu.
+## manages background music playback with region-specific tracks,
+## and provides a global pause/options menu with jukebox.
 ## Uses SceneTree.node_added to attach sounds automatically.
 extends Node
 
@@ -11,9 +12,9 @@ var _player: AudioStreamPlayer = null
 
 # Background Music
 var _bgm_player: AudioStreamPlayer = null
-var _bgm_tracks: Array[AudioStream] = []
-var _bgm_index: int = 0
-var _bgm_shuffle_order: Array[int] = []
+var _bgm_tracks: Dictionary = {}  # filename -> AudioStream
+var _bgm_track_files: Array[String] = []  # ordered list of filenames
+var _current_track_file: String = ""  # currently playing track filename
 
 # Pause/Options Menu
 var _pause_overlay: CanvasLayer = null
@@ -25,6 +26,28 @@ var _sfx_value_label: Label = null
 const BGM_DIR = "res://Assets/Audio/BGM/"
 const BGM_DEFAULT_VOLUME_DB = -20.0  # ~25% perceived loudness (10% linear amplitude)
 const SFX_DEFAULT_VOLUME_DB = -6.0
+
+# Region-to-track mapping
+const REGION_BGM: Dictionary = {
+	"region_1": "Deep smooth.mp3",
+	"region_2": "hmmmmm mayybeee.mp3",
+	"region_3": "Broken Memories.mp3",
+	"region_4": "AHHHH SHIT.mp3",
+	"region_5": "Galaxy Party.mp3",
+	"region_6": "The Xperience.mp3",
+	"region_7": "Fuck if i know.mp3",
+}
+
+# Display names for jukebox (thematic per region)
+const BGM_DISPLAY_NAMES: Dictionary = {
+	"Deep smooth.mp3": "Forest Haven Theme",
+	"hmmmmm mayybeee.mp3": "Fungalmire Theme",
+	"Broken Memories.mp3": "Sunken Strand Theme",
+	"AHHHH SHIT.mp3": "Ashen Horizons Theme",
+	"Galaxy Party.mp3": "Starfall Expanse Theme",
+	"The Xperience.mp3": "Necropolis Theme",
+	"Fuck if i know.mp3": "Final Realm Theme",
+}
 
 
 func _ready() -> void:
@@ -50,9 +73,14 @@ func _ready() -> void:
 	add_child(_bgm_player)
 
 	_load_bgm_tracks()
+	# Play region-appropriate track on startup
 	if _bgm_tracks.size() > 0:
-		_shuffle_bgm()
-		_play_next_bgm()
+		var region_id: String = ""
+		if Engine.has_singleton("GameContext"):
+			region_id = GameContext.get_current_region_id()
+		if region_id == "":
+			region_id = "region_1"
+		play_region_bgm(region_id)
 
 
 func _load_audio(path: String) -> AudioStream:
@@ -87,12 +115,12 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 # ============================================================================
-# BACKGROUND MUSIC
+# BACKGROUND MUSIC — Region-Based
 # ============================================================================
 
 func _load_bgm_tracks() -> void:
 	# Hardcoded track list for export reliability (DirAccess won't list res:// in .pck)
-	var track_files: Array[String] = [
+	_bgm_track_files = [
 		"AHHHH SHIT.mp3",
 		"Broken Memories.mp3",
 		"Deep smooth.mp3",
@@ -102,36 +130,51 @@ func _load_bgm_tracks() -> void:
 		"The Xperience.mp3",
 	]
 
-	for file_name in track_files:
+	for file_name in _bgm_track_files:
 		var track = _load_audio(BGM_DIR + file_name)
 		if track != null:
-			_bgm_tracks.append(track)
+			_bgm_tracks[file_name] = track
 			print("[UIAudio] Loaded BGM: %s" % file_name)
 
 	print("[UIAudio] Loaded %d BGM tracks" % _bgm_tracks.size())
 
 
-func _shuffle_bgm() -> void:
-	_bgm_shuffle_order.clear()
-	for i in range(_bgm_tracks.size()):
-		_bgm_shuffle_order.append(i)
-	_bgm_shuffle_order.shuffle()
-	_bgm_index = 0
-
-
-func _play_next_bgm() -> void:
-	if _bgm_tracks.is_empty():
+## Play the BGM track assigned to a region. Loops the track.
+## If the same track is already playing, does nothing.
+func play_region_bgm(region_id: String) -> void:
+	var track_file: String = REGION_BGM.get(region_id, "")
+	if track_file == "":
+		# Fallback to region_1 track
+		track_file = REGION_BGM.get("region_1", "")
+	if track_file == "" or not _bgm_tracks.has(track_file):
 		return
-	if _bgm_index >= _bgm_shuffle_order.size():
-		_shuffle_bgm()
-	var track_idx: int = _bgm_shuffle_order[_bgm_index]
-	_bgm_player.stream = _bgm_tracks[track_idx]
+	if track_file == _current_track_file and _bgm_player.playing:
+		return  # Already playing this track
+
+	_play_track(track_file)
+	var dname: String = BGM_DISPLAY_NAMES.get(track_file, track_file)
+	print("[UIAudio] Playing region BGM: %s (%s)" % [region_id, dname])
+
+
+## Play a specific track by filename. Loops it.
+func _play_track(track_file: String) -> void:
+	if not _bgm_tracks.has(track_file):
+		return
+	_current_track_file = track_file
+	_bgm_player.stream = _bgm_tracks[track_file]
 	_bgm_player.play()
-	_bgm_index += 1
 
 
+## When a track finishes, replay it (looping behavior).
 func _on_bgm_finished() -> void:
-	_play_next_bgm()
+	if _current_track_file != "" and _bgm_tracks.has(_current_track_file):
+		_bgm_player.stream = _bgm_tracks[_current_track_file]
+		_bgm_player.play()
+
+
+## Get the display name of the currently playing track.
+func get_current_track_display_name() -> String:
+	return BGM_DISPLAY_NAMES.get(_current_track_file, _current_track_file)
 
 
 ## Set BGM volume (0.0 = silent, 1.0 = full volume).
@@ -286,6 +329,45 @@ func _open_pause_menu() -> void:
 	var sep2 = HSeparator.new()
 	vbox.add_child(sep2)
 
+	# --- Jukebox: Music Selection ---
+	var jukebox_label = Label.new()
+	jukebox_label.text = "Music Selection"
+	jukebox_label.add_theme_font_size_override("font_size", 13)
+	jukebox_label.add_theme_color_override("font_color", Color(0.8, 0.75, 0.6))
+	vbox.add_child(jukebox_label)
+
+	var now_playing = Label.new()
+	now_playing.text = "Now Playing: %s" % get_current_track_display_name()
+	now_playing.add_theme_font_size_override("font_size", 11)
+	now_playing.add_theme_color_override("font_color", Color(0.5, 0.9, 0.7, 1))
+	now_playing.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(now_playing)
+
+	# Track buttons in region order
+	for region_idx in range(1, 8):
+		var region_key: String = "region_%d" % region_idx
+		var track_file: String = REGION_BGM.get(region_key, "")
+		if track_file == "" or not _bgm_tracks.has(track_file):
+			continue
+
+		var dname: String = BGM_DISPLAY_NAMES.get(track_file, track_file)
+		var track_btn = Button.new()
+		track_btn.text = dname
+		track_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		track_btn.custom_minimum_size = Vector2(0, 26)
+		track_btn.add_theme_font_size_override("font_size", 11)
+
+		if track_file == _current_track_file:
+			track_btn.disabled = true
+			track_btn.modulate = Color(0.5, 1.0, 0.8, 1)
+		else:
+			track_btn.pressed.connect(_on_jukebox_track_pressed.bind(track_file))
+
+		vbox.add_child(track_btn)
+
+	var sep3 = HSeparator.new()
+	vbox.add_child(sep3)
+
 	# --- Buttons ---
 	var btn_resume = Button.new()
 	btn_resume.text = "Resume"
@@ -333,6 +415,16 @@ func _on_sfx_slider_changed(value: float) -> void:
 	set_sfx_volume(value)
 	if _sfx_value_label:
 		_sfx_value_label.text = "%d%%" % roundi(value * 100)
+
+
+## Handle jukebox track selection from pause menu.
+func _on_jukebox_track_pressed(track_file: String) -> void:
+	_play_track(track_file)
+	# Rebuild the pause menu to update button states
+	var was_paused = get_tree().paused
+	_close_pause_menu()
+	get_tree().paused = was_paused
+	_open_pause_menu()
 
 
 func _on_pause_save_quit() -> void:

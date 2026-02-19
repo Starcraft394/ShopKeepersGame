@@ -7,6 +7,7 @@
   "region_id": "region_5",
   "tier": 2,
   "ai_tier": 2,
+  "attack_type": "melee",
   "base_stats": {
     "health": 258,
     "attack": 55,

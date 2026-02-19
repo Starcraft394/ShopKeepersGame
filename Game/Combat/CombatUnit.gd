@@ -38,6 +38,9 @@ var speed: int = 10
 var is_alive: bool = true
 var statuses: StatusRuntime = null
 
+# Attack range type ("melee" or "ranged") — used by TargetingPolicy for row targeting
+var attack_type: String = "melee"
+
 # Weapon ability
 var weapon_ability_id: String = ""
 var weapon_ability_cooldown: int = 0
@@ -263,6 +266,7 @@ static func create_monster(monster_id: String, unit_index: int) -> CombatUnit:
 		unit.attack = monster_data.base_stats.get("attack", 6)
 		unit.defense = monster_data.base_stats.get("defense", 2)
 		unit.speed = monster_data.base_stats.get("speed", 10)
+		unit.attack_type = monster_data.attack_type
 	else:
 		# Placeholder stats if monster not found
 		unit.display_name = "Monster %d" % unit_index

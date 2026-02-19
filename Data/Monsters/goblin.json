@@ -6,6 +6,7 @@
   "family": "humanoid",
   "region_id": "region_1",
   "tier": 1,
+  "attack_type": "melee",
   "base_stats": {
     "health": 54,
     "attack": 12,
