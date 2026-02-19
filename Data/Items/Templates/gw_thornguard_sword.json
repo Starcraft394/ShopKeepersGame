@@ -1,0 +1,35 @@
+{
+  "id": "gw_thornguard_sword",
+  "display_name": "Thornguard Sword",
+  "description": "A blade of living thornwood, its guard coiled with creeping vines that tighten around the wielder's grip in battle. Cuts leave splinters that fester in the wound.",
+  "icon_hint": "dark green living-wood sword with thorny vines spiraling around the crossguard, the blade has a rough bark-like texture with sharp thorn protrusions along the edge",
+  "item_type": "weapon",
+  "item_subtype": "sword",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 12
+  },
+  "stat_bonuses": {
+    "attack": 12,
+    "speed": 1,
+    "health": 4
+  },
+  "ability_id": "gw_thornlash",
+  "combat_tag": "regenerating",
+  "combat_tag_effect": {"trigger": "round_start", "effect": "heal", "value": 2},
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 100,
+  "icon_path": "",
+  "tags": ["region_1", "weapon", "sword", "greenwood", "tier_4"]
+}

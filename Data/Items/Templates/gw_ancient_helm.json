@@ -1,0 +1,34 @@
+{
+  "id": "gw_ancient_helm",
+  "display_name": "Ancient Helm",
+  "description": "A helm carved from the petrified bark of a fallen elder tree, crowned with a circlet of living leaves that never wilt. It smells of deep forest and old rain.",
+  "icon_hint": "helmet carved from dark petrified bark with a crown of small vibrant green leaves, knothole eye slits, and faint green rune markings etched into the brow",
+  "item_type": "armor",
+  "item_subtype": "heavy_head",
+  "category": "equipment",
+  "slot": "head",
+  "equip_slot": "helmet",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 6
+  },
+  "stat_bonuses": {
+    "defense": 6,
+    "health": 10
+  },
+  "passive_id": "gw_passive_crit",
+  "combat_tag": "regenerating",
+  "combat_tag_effect": {"trigger": "round_start", "effect": "heal", "value": 2},
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 65,
+  "icon_path": "",
+  "tags": ["region_1", "armor", "greenwood", "tier_4"]
+}

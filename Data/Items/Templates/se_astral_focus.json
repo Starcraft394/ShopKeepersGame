@@ -1,0 +1,32 @@
+{
+  "id": "se_astral_focus",
+  "display_name": "Astral Focus",
+  "description": "A crystalline focus that captures starlight within its facets. Constellations shift across its surface.",
+  "icon_hint": "translucent white-blue crystalline orb with tiny star-like points of light inside and faint purple cosmic trails on its surface",
+  "item_type": "weapon",
+  "item_subtype": "focus",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 3
+  },
+  "stat_bonuses": {
+    "attack": 3,
+    "speed": 2,
+    "health": 6
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 60,
+  "icon_path": "",
+  "tags": ["region_5", "offhand", "focus", "starfall_expanse", "tier_2"]
+}

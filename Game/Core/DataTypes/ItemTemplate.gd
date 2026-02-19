@@ -62,6 +62,17 @@ var bag_capacity_bonus: int = 0
 # T4 Equipment ability: grants this ability when equipped
 var ability_id: String = ""
 
+# T4 Equipment passive: grants this passive when equipped
+var passive_id: String = ""
+
+# T4 Combat tag: regional set bonus tag applied to all T4 items from a region
+var combat_tag: String = ""
+var combat_tag_effect: Dictionary = {}
+
+# T4 Consumable: refillable items persist after use, with a cooldown between uses
+var is_refillable: bool = false
+var use_cooldown: int = 0
+
 # Quality tier multipliers: Q0=1.0, Q1=1.1, Q2=1.2, Q3=1.35
 const QUALITY_MULTIPLIERS := [1.0, 1.1, 1.2, 1.35]
 
@@ -216,6 +227,14 @@ static func from_dict(data: Dictionary) -> ItemTemplate:
 
 	# v6: T4 Equipment ability grant
 	instance.ability_id = data.get("ability_id", "")
+
+	# v7: T4 Equipment passive, combat tag, refillable consumables
+	instance.passive_id = data.get("passive_id", "")
+	instance.combat_tag = data.get("combat_tag", "")
+	var combat_tag_effect_val = data.get("combat_tag_effect", {})
+	instance.combat_tag_effect = combat_tag_effect_val if combat_tag_effect_val is Dictionary else {}
+	instance.is_refillable = data.get("is_refillable", false)
+	instance.use_cooldown = int(data.get("use_cooldown", 0))
 
 	# Convert typed arrays (clear + append pattern for safety)
 	instance.allowed_affixes.clear()

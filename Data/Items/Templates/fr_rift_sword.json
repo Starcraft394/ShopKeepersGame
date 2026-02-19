@@ -1,0 +1,32 @@
+{
+  "id": "fr_rift_sword",
+  "display_name": "Rift Sword",
+  "description": "The blade phases between dimensions, its edge cutting through reality itself with each swing.",
+  "icon_hint": "dark purple-black sword with dimensional cracks revealing void energy along the blade and a warped metal crossguard",
+  "item_type": "weapon",
+  "item_subtype": "sword",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 8
+  },
+  "stat_bonuses": {
+    "attack": 8,
+    "speed": 2,
+    "health": 2
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 68,
+  "icon_path": "",
+  "tags": ["region_7", "weapon", "sword", "fractured_realm", "tier_2"]
+}

@@ -1,0 +1,32 @@
+{
+  "id": "gw_living_focus",
+  "display_name": "Living Focus",
+  "description": "A seed-shaped focus that pulses with the Greenwood's life force. Tiny roots reach toward its wielder.",
+  "icon_hint": "glowing green seed-shaped orb with tiny living roots and leaf sprouts extending outward, emanating soft green light",
+  "item_type": "weapon",
+  "item_subtype": "focus",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 3
+  },
+  "stat_bonuses": {
+    "attack": 3,
+    "speed": 1,
+    "health": 7
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 65,
+  "icon_path": "",
+  "tags": ["region_1", "offhand", "focus", "greenwood", "tier_3"]
+}

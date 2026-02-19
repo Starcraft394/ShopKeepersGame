@@ -1,0 +1,14 @@
+{
+  "id": "ss_passive_speed",
+  "display_name": "Tidal Swiftness",
+  "description": "At combat start, gain +2 SPD. Tidewoven silk flows like water.",
+  "icon_hint": "flowing teal water currents weaving through shimmering silk fabric with white seafoam accents",
+  "passive_type": "level_scaled_stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "speed",
+    "bonus": 2
+  },
+  "source_class_id": "",
+  "category": "equipment"
+}

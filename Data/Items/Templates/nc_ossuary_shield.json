@@ -1,0 +1,31 @@
+{
+  "id": "nc_ossuary_shield",
+  "display_name": "Ossuary Shield",
+  "description": "A massive shield forged from ossuary remains, radiating an aura of dread. Attackers hesitate at its sight.",
+  "icon_hint": "large tower shield of layered skulls and ribcages with intense green spectral flames licking the edges and dark runes carved into bone",
+  "item_type": "armor",
+  "item_subtype": "shield",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 11
+  },
+  "stat_bonuses": {
+    "defense": 11,
+    "health": 20
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 108,
+  "icon_path": "",
+  "tags": ["region_6", "offhand", "shield", "necropolis", "tier_3"]
+}

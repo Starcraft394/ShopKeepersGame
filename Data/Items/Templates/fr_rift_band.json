@@ -8,16 +8,21 @@
   "category": "equipment",
   "slot": "accessory_1",
   "equip_slot": "ring",
-  "tier": 5,
+  "tier": 4,
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "health": 24
+    "health": 22,
+    "attack": 2
   },
   "stat_bonuses": {
-    "health": 24,
+    "attack": 2,
+    "health": 22,
     "speed": 4
   },
+  "passive_id": "fr_passive_void_burst",
+  "combat_tag": "dimensional_rift",
+  "combat_tag_effect": {"trigger": "on_kill", "effect": "damage_random_enemy", "damage": 8, "damage_type": "void", "chance": 0.25},
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -27,5 +32,5 @@
   "max_refinement": 10,
   "base_value": 135,
   "icon_path": "",
-  "tags": ["region_7", "accessory", "ring", "final_realm", "tier_5"]
+  "tags": ["region_7", "accessory", "ring", "final_realm", "tier_4"]
 }

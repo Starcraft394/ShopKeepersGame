@@ -8,17 +8,20 @@
   "category": "equipment",
   "slot": "weapon_offhand",
   "equip_slot": "offhand",
-  "tier": 5,
+  "tier": 4,
   "base_stats": {
-    "defense": 16
+    "defense": 18
   },
   "stat_bonuses": {
-    "defense": 16,
-    "health": 30
+    "defense": 18,
+    "health": 36
   },
+  "ability_id": "fr_null_ward",
+  "combat_tag": "dimensional_rift",
+  "combat_tag_effect": {"trigger": "on_kill", "effect": "damage_random_enemy", "damage": 8, "damage_type": "void", "chance": 0.25},
   "base_value": 145,
   "buy_value": 0,
   "can_refine": true,
   "icon_path": "",
-  "tags": ["region_7", "offhand", "shield", "final_realm", "tier_5"]
+  "tags": ["region_7", "offhand", "shield", "final_realm", "tier_4"]
 }

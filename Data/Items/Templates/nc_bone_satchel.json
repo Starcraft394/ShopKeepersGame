@@ -1,0 +1,20 @@
+{
+  "id": "nc_bone_satchel",
+  "display_name": "Bone Satchel",
+  "description": "A satchel reinforced with bone plates and sealed with spectral sinew, cold to the touch.",
+  "icon_hint": "off-white bone-plated satchel with green spectral glow at the seams and skull clasp",
+  "item_type": "backpack",
+  "item_subtype": "backpack",
+  "category": "equipment",
+  "slot": "backpack",
+  "equip_slot": "bag",
+  "tier": 2,
+  "base_stats": {},
+  "stat_bonuses": {},
+  "bag_capacity_bonus": 4,
+  "base_value": 92,
+  "buy_value": 0,
+  "can_refine": false,
+  "icon_path": "",
+  "tags": ["region_6", "backpack", "necropolis", "tier_2"]
+}

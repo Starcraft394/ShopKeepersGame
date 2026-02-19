@@ -1,0 +1,32 @@
+{
+  "id": "nc_ossuary_maul",
+  "display_name": "Ossuary Maul",
+  "description": "A titanic hammer assembled from the bones of fallen warriors. Each strike echoes with the screams of the dead.",
+  "icon_hint": "enormous maul head made of layered skulls and bones held together by green spectral energy on a ribcage-wrapped haft",
+  "item_type": "weapon",
+  "item_subtype": "mace",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 16
+  },
+  "stat_bonuses": {
+    "attack": 16,
+    "speed": -2,
+    "health": 5
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 108,
+  "icon_path": "",
+  "tags": ["region_6", "weapon", "mace", "necropolis", "tier_3"]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "fm_spore_staff",
+  "display_name": "Spore Staff",
+  "description": "A gnarled staff topped with a pale fungal cap that releases faint bioluminescent spores.",
+  "icon_hint": "twisted pale wood staff crowned with a glowing mushroom cap emitting soft green-purple spore particles",
+  "item_type": "weapon",
+  "item_subtype": "staff",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 5
+  },
+  "stat_bonuses": {
+    "attack": 5,
+    "health": 8
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 48,
+  "icon_path": "",
+  "tags": ["region_2", "weapon", "staff", "fungalmire", "tier_2"]
+}

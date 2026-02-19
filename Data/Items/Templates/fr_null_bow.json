@@ -1,0 +1,32 @@
+{
+  "id": "fr_null_bow",
+  "display_name": "Null Bow",
+  "description": "Crafted from void-touched wood, this bow fires arrows that erase the space they pass through.",
+  "icon_hint": "matte black longbow that warps light around it with purple-black void tendrils wrapping the limbs and an anti-light bowstring",
+  "item_type": "weapon",
+  "item_subtype": "bow",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 14
+  },
+  "stat_bonuses": {
+    "attack": 14,
+    "speed": 4,
+    "health": 2
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 110,
+  "icon_path": "",
+  "tags": ["region_7", "weapon", "bow", "fractured_realm", "tier_3"]
+}

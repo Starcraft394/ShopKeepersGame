@@ -1,0 +1,23 @@
+{
+  "id": "se_phase_strike",
+  "display_name": "Phase Strike",
+  "description": "Phase through defenses to strike, then accelerate out of danger.",
+  "icon_hint": "translucent dagger phasing through a shimmering dimensional rift with silver speed trails and starlight motes",
+  "ability_type": "equipment",
+  "source_class_id": "",
+  "category": "equipment",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 8,
+  "damage_type": "magical",
+  "attack_scaling": 0.9,
+  "cooldown": 3,
+  "armor_piercing": true,
+  "applies_status_id": "",
+  "status_stacks": 0,
+  "self_buff": {
+    "stat": "speed",
+    "value": 2,
+    "duration": 2
+  }
+}

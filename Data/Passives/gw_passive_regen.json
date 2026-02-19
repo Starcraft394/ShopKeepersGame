@@ -1,0 +1,14 @@
+{
+  "id": "gw_passive_regen",
+  "display_name": "Sylvan Vitality",
+  "description": "At the start of each round, heal 3 HP. Living thornhide mends the wearer.",
+  "icon_hint": "emerald green thorny vines wrapping around a glowing heart-shaped leaf with soft golden healing light",
+  "passive_type": "round_start_heal",
+  "trigger": "round_start",
+  "effect": {
+    "stat": "health",
+    "bonus": 3
+  },
+  "source_class_id": "",
+  "category": "equipment"
+}

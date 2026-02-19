@@ -5,9 +5,7 @@
 
   "weight_by_tier": {
     "1": 10,
-    "2": 6,
-    "3": 3,
-    "4": 1
+    "2": 6
   },
 
   "consumables": [
@@ -87,40 +85,49 @@
       "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "ah_ember_blade",
+      "item_id": "ah_ember_sword",
       "weight": 10,
-      "price_gold": 100,
-      "tier": 3,
+      "price_gold": 121,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
+      "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "ah_volcanic_maul",
-      "weight": 8,
+      "item_id": "ah_cinder_bow",
+      "weight": 10,
+      "price_gold": 114,
+      "tier": 2,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "ah_obsidian_mace",
+      "weight": 10,
+      "price_gold": 128,
+      "tier": 2,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "ah_cinder_staff",
+      "weight": 10,
+      "price_gold": 121,
+      "tier": 2,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "ah_ember_knife",
+      "weight": 10,
       "price_gold": 110,
-      "tier": 3,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
-    },
-    {
-      "item_id": "ah_scorched_longbow",
-      "weight": 8,
-      "price_gold": 95,
-      "tier": 3,
-      "requires_unlock_group": "",
-      "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
-    },
-    {
-      "item_id": "ah_obsidian_staff",
-      "weight": 8,
-      "price_gold": 105,
-      "tier": 3,
-      "requires_unlock_group": "",
-      "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
+      "required_dungeon_floor_unlocked": 2
     }
   ],
 
@@ -144,79 +151,88 @@
       "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "ah_ember_focus",
-      "weight": 8,
-      "price_gold": 100,
-      "tier": 3,
+      "item_id": "ah_obsidian_shield",
+      "weight": 10,
+      "price_gold": 121,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
+      "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "ah_drake_buckler",
-      "weight": 8,
-      "price_gold": 95,
-      "tier": 3,
+      "item_id": "ah_cinder_focus",
+      "weight": 10,
+      "price_gold": 121,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
+      "required_dungeon_floor_unlocked": 2
     }
   ],
 
   "armor": [
     {
-      "item_id": "ah_drake_jerkin",
-      "weight": 8,
-      "price_gold": 110,
-      "tier": 3,
+      "item_id": "ah_cinder_tunic",
+      "weight": 10,
+      "price_gold": 114,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
+      "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "ah_magma_plate",
-      "weight": 6,
-      "price_gold": 140,
-      "tier": 3,
+      "item_id": "ah_obsidian_vest",
+      "weight": 10,
+      "price_gold": 128,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
+      "required_dungeon_floor_unlocked": 2
     }
   ],
 
   "helmets": [
     {
-      "item_id": "ah_volcanic_helm",
-      "weight": 8,
-      "price_gold": 85,
-      "tier": 3,
+      "item_id": "ah_cinder_helm",
+      "weight": 10,
+      "price_gold": 70,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
+      "required_dungeon_floor_unlocked": 2
     }
   ],
 
   "legs": [
     {
-      "item_id": "ah_drake_greaves",
-      "weight": 8,
-      "price_gold": 85,
-      "tier": 3,
+      "item_id": "ah_cinder_greaves",
+      "weight": 10,
+      "price_gold": 70,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
+      "required_dungeon_floor_unlocked": 2
     }
   ],
 
   "accessories": [
     {
-      "item_id": "ah_cinder_amulet",
-      "weight": 8,
-      "price_gold": 80,
-      "tier": 3,
+      "item_id": "ah_obsidian_ring",
+      "weight": 10,
+      "price_gold": 106,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
+      "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "ah_cinder_pendant",
+      "weight": 10,
+      "price_gold": 110,
+      "tier": 2,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
     }
   ]
 }

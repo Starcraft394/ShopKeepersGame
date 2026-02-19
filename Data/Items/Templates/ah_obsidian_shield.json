@@ -1,0 +1,31 @@
+{
+  "id": "ah_obsidian_shield",
+  "display_name": "Obsidian Shield",
+  "description": "A shield hewn from a single slab of volcanic obsidian. Heat still radiates from its glassy surface.",
+  "icon_hint": "angular shield of smooth black obsidian with glowing orange cracks and smoldering ember edges on a dark iron frame",
+  "item_type": "armor",
+  "item_subtype": "shield",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 6
+  },
+  "stat_bonuses": {
+    "defense": 6,
+    "health": 10
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 55,
+  "icon_path": "",
+  "tags": ["region_4", "offhand", "shield", "ashen_horizons", "tier_2"]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "se_echo_amplify",
+  "display_name": "Echo Amplify",
+  "description": "Amplify an ally's power with cosmic echoes, boosting their attacks.",
+  "icon_hint": "concentric rings of golden cosmic energy expanding outward around a glowing figure with amplified aura",
+  "ability_type": "equipment",
+  "source_class_id": "",
+  "category": "equipment",
+  "target_type": "single_ally",
+  "effect_type": "buff",
+  "base_damage": 0,
+  "damage_type": "magical",
+  "attack_scaling": 0.0,
+  "cooldown": 4,
+  "applies_status_id": "",
+  "status_stacks": 0,
+  "ally_buff": {
+    "stat": "attack",
+    "value": 6,
+    "duration": 2
+  },
+  "target_team": "ally",
+  "target_rule": "highest_attack",
+  "allow_self_target": false
+}

@@ -1,0 +1,31 @@
+{
+  "id": "nc_bone_helm",
+  "display_name": "Bone Helm",
+  "description": "A helmet assembled from fused skull fragments, whispering faintly with trapped souls.",
+  "icon_hint": "off-white bone helmet shaped from fused skull pieces with hollow eye sockets and faint green soul glow",
+  "item_type": "armor",
+  "item_subtype": "helmet",
+  "category": "equipment",
+  "slot": "head",
+  "equip_slot": "helmet",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 4
+  },
+  "stat_bonuses": {
+    "defense": 4,
+    "health": 8
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 42,
+  "icon_path": "",
+  "tags": ["region_6", "armor", "helmet", "necropolis", "tier_2"]
+}

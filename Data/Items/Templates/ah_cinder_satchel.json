@@ -1,0 +1,20 @@
+{
+  "id": "ah_cinder_satchel",
+  "display_name": "Cinder Satchel",
+  "description": "A heat-resistant satchel lined with drake hide, built to endure the ashen wastes.",
+  "icon_hint": "dark red and black drake-hide satchel with glowing ember stitching and iron clasps",
+  "item_type": "backpack",
+  "item_subtype": "backpack",
+  "category": "equipment",
+  "slot": "backpack",
+  "equip_slot": "bag",
+  "tier": 2,
+  "base_stats": {},
+  "stat_bonuses": {},
+  "bag_capacity_bonus": 4,
+  "base_value": 82,
+  "buy_value": 0,
+  "can_refine": false,
+  "icon_path": "",
+  "tags": ["region_4", "backpack", "ashen_horizons", "tier_2"]
+}

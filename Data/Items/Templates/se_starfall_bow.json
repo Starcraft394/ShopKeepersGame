@@ -18,6 +18,9 @@
     "attack": 15,
     "speed": 4
   },
+  "ability_id": "se_starfall_rain",
+  "combat_tag": "temporal_echo",
+  "combat_tag_effect": {"trigger": "on_ability_use", "effect": "reduce_cooldown", "value": 1, "chance": 0.20},
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,

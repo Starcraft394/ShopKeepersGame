@@ -1,0 +1,20 @@
+{
+  "id": "nc_wraith_pack",
+  "display_name": "Wraith Pack",
+  "description": "A pack sewn from wraith-cloth and bone, it seems to swallow items into a dark interior.",
+  "icon_hint": "grey wraith-cloth pack with bone frame and eerie green soul-light emanating from within",
+  "item_type": "backpack",
+  "item_subtype": "backpack",
+  "category": "equipment",
+  "slot": "backpack",
+  "equip_slot": "bag",
+  "tier": 3,
+  "base_stats": {},
+  "stat_bonuses": {},
+  "bag_capacity_bonus": 6,
+  "base_value": 140,
+  "buy_value": 0,
+  "can_refine": false,
+  "icon_path": "",
+  "tags": ["region_6", "backpack", "necropolis", "tier_3"]
+}

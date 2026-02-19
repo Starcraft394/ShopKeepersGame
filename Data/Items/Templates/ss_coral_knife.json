@@ -1,0 +1,31 @@
+{
+  "id": "ss_coral_knife",
+  "display_name": "Coral Knife",
+  "description": "A razor-sharp blade of polished coral, light and fast as a darting fish.",
+  "icon_hint": "short teal-blue coral blade with a sea-glass inlaid handle and small shell ornaments at the pommel",
+  "item_type": "weapon",
+  "item_subtype": "dagger",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 4
+  },
+  "stat_bonuses": {
+    "attack": 4,
+    "speed": 3
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 45,
+  "icon_path": "",
+  "tags": ["region_3", "weapon", "dagger", "sunken_strand", "tier_2"]
+}

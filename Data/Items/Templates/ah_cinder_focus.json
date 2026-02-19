@@ -1,0 +1,32 @@
+{
+  "id": "ah_cinder_focus",
+  "display_name": "Cinder Focus",
+  "description": "A smoldering sphere of volcanic glass that radiates intense heat. Embers orbit it slowly.",
+  "icon_hint": "dark obsidian sphere with glowing orange ember cracks and tiny floating cinder particles orbiting around it",
+  "item_type": "weapon",
+  "item_subtype": "focus",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 3
+  },
+  "stat_bonuses": {
+    "attack": 3,
+    "speed": 1,
+    "health": 6
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 55,
+  "icon_path": "",
+  "tags": ["region_4", "offhand", "focus", "ashen_horizons", "tier_2"]
+}

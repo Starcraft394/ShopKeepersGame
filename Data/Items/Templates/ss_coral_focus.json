@@ -1,0 +1,32 @@
+{
+  "id": "ss_coral_focus",
+  "display_name": "Coral Focus",
+  "description": "A focus carved from living coral, still warm with tidal magic. Sea water beads on its surface.",
+  "icon_hint": "small round coral orb with branching blue-teal coral formations and tiny shells embedded in its surface, faintly glowing",
+  "item_type": "weapon",
+  "item_subtype": "focus",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 2
+  },
+  "stat_bonuses": {
+    "attack": 2,
+    "speed": 2,
+    "health": 5
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 50,
+  "icon_path": "",
+  "tags": ["region_3", "offhand", "focus", "sunken_strand", "tier_2"]
+}

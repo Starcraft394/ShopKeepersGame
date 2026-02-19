@@ -6282,18 +6282,18 @@ static func _test_stat_scaling_region_bonus() -> Dictionary:
 	else:
 		print("[FAIL] Q3, 2 regions: attack = %d, expected 4" % atk_q3_2r)
 
-	# Test 5: Use a higher-stat item for clearer scaling — iron_sword (attack:6)
+	# Test 5: Use a higher-stat item for clearer scaling — iron_sword (attack:5)
 	var iron_tpl = DataRegistry.get_item_template("iron_sword")
 	var pass_5 = true
 	if iron_tpl != null:
-		# Q0, 3 regions (0.3) = 6 * 1.0 * 1.3 = 7.8 -> int = 7
+		# Q0, 3 regions (0.3) = 5 * 1.0 * 1.3 = 6.5 -> int = 6
 		var iron_stats = iron_tpl.get_stat_bonuses_with_quality(0, 0.3)
 		var iron_atk = iron_stats.get("attack", 0)
-		pass_5 = iron_atk == 7
+		pass_5 = iron_atk == 6
 		if pass_5:
-			print("[PASS] iron_sword Q0, 3 regions: attack = 7 (6 * 1.3 = 7.8 -> 7)")
+			print("[PASS] iron_sword Q0, 3 regions: attack = 6 (5 * 1.3 = 6.5 -> 6)")
 		else:
-			print("[FAIL] iron_sword Q0, 3 regions: attack = %d, expected 7" % iron_atk)
+			print("[FAIL] iron_sword Q0, 3 regions: attack = %d, expected 6" % iron_atk)
 	else:
 		print("[SKIP] iron_sword not found, skipping")
 

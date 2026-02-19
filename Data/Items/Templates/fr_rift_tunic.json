@@ -1,0 +1,32 @@
+{
+  "id": "fr_rift_tunic",
+  "display_name": "Rift Tunic",
+  "description": "Fabric torn from the space between dimensions, impossibly light and resistant to physical force.",
+  "icon_hint": "dark purple tunic with black void-touched patches and faint dimensional crack lines glowing violet",
+  "item_type": "armor",
+  "item_subtype": "light_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 5
+  },
+  "stat_bonuses": {
+    "defense": 5,
+    "speed": 2,
+    "health": 6
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 68,
+  "icon_path": "",
+  "tags": ["region_7", "armor", "light", "fractured_realm", "tier_2"]
+}

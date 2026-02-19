@@ -1,0 +1,16 @@
+{
+  "id": "fr_passive_void_burst",
+  "display_name": "Void Burst",
+  "description": "On killing an enemy, 25% chance to deal 8 void damage to a random foe.",
+  "icon_hint": "explosive dark purple void detonation erupting from a defeated foe with crackling black lightning arcing to nearby targets",
+  "passive_type": "on_kill_damage",
+  "trigger": "on_kill",
+  "effect": {
+    "damage": 8,
+    "damage_type": "void",
+    "chance_percent": 25,
+    "target": "random_enemy"
+  },
+  "source_class_id": "",
+  "category": "equipment"
+}

@@ -1,0 +1,22 @@
+{
+  "id": "ss_leviathan_pack",
+  "display_name": "Leviathan Pack",
+  "description": "A waterproof pack made from leviathan hide, sealed against the depths. Its compartments never seem to fill.",
+  "icon_hint": "large blue-green waterproof pack of leviathan hide with shell buckles and sealed compartments with barnacle accents",
+  "item_type": "backpack",
+  "item_subtype": "backpack",
+  "slot": "backpack",
+  "equip_slot": "bag",
+  "category": "equipment",
+  "tier": 4,
+  "base_stats": {},
+  "stat_bonuses": {},
+  "bag_capacity_bonus": 8,
+  "combat_tag": "swift_current",
+  "combat_tag_effect": {"trigger": "combat_start", "effect": "buff_stat", "stat": "speed", "value": 1},
+  "base_value": 172,
+  "buy_value": 0,
+  "can_refine": false,
+  "icon_path": "",
+  "tags": ["region_3", "backpack", "sunken_strand", "tier_4"]
+}

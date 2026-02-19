@@ -1,0 +1,32 @@
+{
+  "id": "fr_null_maul",
+  "display_name": "Null Maul",
+  "description": "A maul forged from condensed void matter. Its strikes erase what they touch from existence.",
+  "icon_hint": "massive maul head of pure black void material with purple cracks and particles being drawn into its surface on a warped dark haft",
+  "item_type": "weapon",
+  "item_subtype": "mace",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 19
+  },
+  "stat_bonuses": {
+    "attack": 19,
+    "speed": -2,
+    "health": 3
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 122,
+  "icon_path": "",
+  "tags": ["region_7", "weapon", "mace", "fractured_realm", "tier_3"]
+}

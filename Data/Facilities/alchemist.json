@@ -203,7 +203,99 @@
   "unlocks": [],
 
   "mixing_recipe_file": "mixing_alchemist",
-  "crafting_recipes": [],
+  "crafting_recipes": [
+    {
+      "output_id": "gw_elderwood_salve",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "consumable",
+      "is_craft": true,
+      "region": "region_1",
+      "craft_inputs": [
+        { "item_id": "cursed_dust", "qty": 2 },
+        { "item_id": "boss_trophy_greenwood", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "fm_spore_elixir",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "consumable",
+      "is_craft": true,
+      "region": "region_2",
+      "craft_inputs": [
+        { "item_id": "spore_cluster", "qty": 2 },
+        { "item_id": "boss_trophy_fungalmire", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "ss_tidecaller_flask",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "consumable",
+      "is_craft": true,
+      "region": "region_3",
+      "craft_inputs": [
+        { "item_id": "tidal_pearl", "qty": 2 },
+        { "item_id": "boss_trophy_sunken_strand", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "ah_drakeblood_vial",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "consumable",
+      "is_craft": true,
+      "region": "region_4",
+      "craft_inputs": [
+        { "item_id": "ah_drake_scale", "qty": 2 },
+        { "item_id": "boss_trophy_ashen_horizons", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "se_starlight_draught",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "consumable",
+      "is_craft": true,
+      "region": "region_5",
+      "craft_inputs": [
+        { "item_id": "astral_fragment", "qty": 2 },
+        { "item_id": "boss_trophy_starfall_expanse", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "nc_phylactery_tonic",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "consumable",
+      "is_craft": true,
+      "region": "region_6",
+      "craft_inputs": [
+        { "item_id": "nc_wraith_thread", "qty": 2 },
+        { "item_id": "boss_trophy_necropolis", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "fr_void_essence_flask",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "consumable",
+      "is_craft": true,
+      "region": "region_7",
+      "craft_inputs": [
+        { "item_id": "fr_dimensional_essence", "qty": 2 },
+        { "item_id": "boss_trophy_fractured_realm", "qty": 1 }
+      ]
+    }
+  ],
 
   "shop_items": []
 }

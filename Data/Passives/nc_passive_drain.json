@@ -1,0 +1,13 @@
+{
+  "id": "nc_passive_drain",
+  "display_name": "Soul Leech",
+  "description": "On hitting an enemy, heal 2 HP. Each strike drains a sliver of life force.",
+  "icon_hint": "spectral tendril reaching from a dark ring to drain glowing green life essence from a fading soul wisp",
+  "passive_type": "on_hit_heal",
+  "trigger": "on_hit",
+  "effect": {
+    "heal_amount": 2
+  },
+  "source_class_id": "",
+  "category": "equipment"
+}

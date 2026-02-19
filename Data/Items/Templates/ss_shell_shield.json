@@ -1,0 +1,31 @@
+{
+  "id": "ss_shell_shield",
+  "display_name": "Shell Shield",
+  "description": "A shield fashioned from a giant sea creature's shell. Its layered nacre deflects blows with ease.",
+  "icon_hint": "round shield made from a large iridescent seashell with blue-teal nacre layers and coral trim around the edge",
+  "item_type": "armor",
+  "item_subtype": "shield",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 5
+  },
+  "stat_bonuses": {
+    "defense": 5,
+    "health": 10
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 50,
+  "icon_path": "",
+  "tags": ["region_3", "offhand", "shield", "sunken_strand", "tier_2"]
+}

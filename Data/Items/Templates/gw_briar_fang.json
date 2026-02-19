@@ -1,0 +1,31 @@
+{
+  "id": "gw_briar_fang",
+  "display_name": "Briar Fang",
+  "description": "Grown from the heartwood of an ancient briar beast, this serrated dagger strikes with blinding speed.",
+  "icon_hint": "serrated green dagger with living vine-wrapped handle and thorn protrusions along the blade spine with a leaf-shaped guard",
+  "item_type": "weapon",
+  "item_subtype": "dagger",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 5
+  },
+  "stat_bonuses": {
+    "attack": 5,
+    "speed": 4
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 60,
+  "icon_path": "",
+  "tags": ["region_1", "weapon", "dagger", "greenwood", "tier_3"]
+}

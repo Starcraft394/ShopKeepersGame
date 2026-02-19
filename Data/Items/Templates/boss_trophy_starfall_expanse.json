@@ -5,6 +5,7 @@
   "icon_hint": "brilliant prismatic crystal core radiating white-blue temporal energy with floating shards orbiting it",
   "item_type": "material",
   "category": "material",
+  "tier": 4,
   "base_stats": {},
   "base_value": 130,
   "buy_value": 0,

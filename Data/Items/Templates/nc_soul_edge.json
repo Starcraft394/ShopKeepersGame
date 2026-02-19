@@ -1,0 +1,32 @@
+{
+  "id": "nc_soul_edge",
+  "display_name": "Soul Edge",
+  "description": "Bound with trapped spirits, this blade thrums with spectral hunger, draining vitality from those it strikes.",
+  "icon_hint": "grey steel blade with glowing green soul runes etched into the fuller and a dark bone crossguard wreathed in green mist",
+  "item_type": "weapon",
+  "item_subtype": "sword",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 13
+  },
+  "stat_bonuses": {
+    "attack": 13,
+    "speed": 1,
+    "health": 5
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 100,
+  "icon_path": "",
+  "tags": ["region_6", "weapon", "sword", "necropolis", "tier_3"]
+}

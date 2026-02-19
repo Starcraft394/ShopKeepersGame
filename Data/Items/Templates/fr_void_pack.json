@@ -1,0 +1,22 @@
+{
+  "id": "fr_void_pack",
+  "display_name": "Void Pack",
+  "description": "A pack that is larger on the inside than out, its depths connecting to a pocket dimension. Items placed within seem to float in darkness.",
+  "icon_hint": "dark purple-black backpack with a void portal visible inside the opening and dimensional rift energy crackling along the seams",
+  "item_type": "backpack",
+  "item_subtype": "backpack",
+  "slot": "backpack",
+  "equip_slot": "bag",
+  "category": "equipment",
+  "tier": 4,
+  "base_stats": {},
+  "stat_bonuses": {},
+  "bag_capacity_bonus": 8,
+  "combat_tag": "dimensional_rift",
+  "combat_tag_effect": {"trigger": "on_kill", "effect": "damage_random_enemy", "damage": 8, "damage_type": "void", "chance": 0.25},
+  "base_value": 210,
+  "buy_value": 0,
+  "can_refine": false,
+  "icon_path": "",
+  "tags": ["region_7", "backpack", "final_realm", "tier_4"]
+}

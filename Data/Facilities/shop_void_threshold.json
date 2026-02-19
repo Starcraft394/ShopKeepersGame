@@ -95,8 +95,8 @@
   "shop_items_legacy": [
     { "item_id": "fr_void_mend", "price_gold": 55, "requires_unlock_group": "consumables_t1" },
     { "item_id": "fr_dimensional_flux", "price_gold": 60, "requires_unlock_group": "consumables_t1" },
-    { "item_id": "fr_void_edge", "price_gold": 210, "requires_unlock_group": "weapons_t1" },
-    { "item_id": "fr_null_barrier", "price_gold": 220, "required_facility_tier": 2 },
+    { "item_id": "fr_rift_sword", "price_gold": 150, "requires_unlock_group": "weapons_t1" },
+    { "item_id": "fr_rift_shield", "price_gold": 158, "required_facility_tier": 2 },
     { "item_id": "sturdy_backpack", "price_gold": 120, "requires_unlock_group": "backpacks_t1" },
     { "item_id": "strong_healing_tonic", "price_gold": 40, "requires_unlock_group": "consumables_t1" }
   ],

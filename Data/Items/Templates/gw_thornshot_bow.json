@@ -1,0 +1,35 @@
+{
+  "id": "gw_thornshot_bow",
+  "display_name": "Thornshot Bow",
+  "description": "A recurve bow of living briarwood that grows its own thorned arrows from notches along the limbs. The string hums with the resonance of deep forest winds.",
+  "icon_hint": "curved briarwood bow with thorns along the limbs, living green vines serving as the bowstring, small thorn-tipped arrows sprouting from the grip",
+  "item_type": "weapon",
+  "item_subtype": "bow",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 10
+  },
+  "stat_bonuses": {
+    "attack": 10,
+    "speed": 3,
+    "health": 3
+  },
+  "ability_id": "gw_rootbound_shot",
+  "combat_tag": "regenerating",
+  "combat_tag_effect": {"trigger": "round_start", "effect": "heal", "value": 2},
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 98,
+  "icon_path": "",
+  "tags": ["region_1", "weapon", "bow", "greenwood", "tier_4"]
+}

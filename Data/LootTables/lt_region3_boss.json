@@ -5,7 +5,8 @@
   "min_drops": 3,
   "max_drops": 5,
   "entries": [
-    { "item_id": "ss_crustacean_shell", "weight": 15, "min_qty": 3, "max_qty": 5 },
+    { "item_id": "boss_trophy_sunken_strand", "weight": 20, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "ss_crustacean_shell", "weight": 13, "min_qty": 3, "max_qty": 5 },
     { "item_id": "tidal_pearl", "weight": 15, "min_qty": 1, "max_qty": 2 },
     { "item_id": "stormglass_fragment", "weight": 8, "min_qty": 1, "max_qty": 1 },
     { "item_id": "healing_tonic", "weight": 12, "min_qty": 2, "max_qty": 3 },

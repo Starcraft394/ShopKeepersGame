@@ -12,10 +12,10 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "attack": 10
+    "attack": 8
   },
   "stat_bonuses": {
-    "attack": 10,
+    "attack": 8,
     "speed": 3
   },
   "allowed_affixes": [],

@@ -1,0 +1,18 @@
+{
+  "id": "fr_null_crush",
+  "display_name": "Null Crush",
+  "description": "Crush with dimensional force that strips all protective buffs.",
+  "icon_hint": "massive mace wreathed in collapsing void energy slamming down with shattered prismatic buff fragments dispersing",
+  "ability_type": "equipment",
+  "source_class_id": "",
+  "category": "equipment",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 14,
+  "damage_type": "void",
+  "attack_scaling": 1.2,
+  "cooldown": 4,
+  "strips_buffs": true,
+  "applies_status_id": "",
+  "status_stacks": 0
+}

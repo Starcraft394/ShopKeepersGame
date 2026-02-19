@@ -1,0 +1,13 @@
+{
+  "id": "fr_passive_amplify",
+  "display_name": "Dimensional Amplifier",
+  "description": "All damage dealt is increased by 10%. Dimensional energy amplifies every strike.",
+  "icon_hint": "fractured reality lens with shattered mirror shards floating around a pulsing violet void core amplifying energy outward",
+  "passive_type": "damage_bonus",
+  "trigger": "passive",
+  "effect": {
+    "bonus_percent": 10
+  },
+  "source_class_id": "",
+  "category": "equipment"
+}

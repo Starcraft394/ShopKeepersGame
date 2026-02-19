@@ -1,0 +1,22 @@
+{
+  "id": "fm_fungal_heart_pack",
+  "display_name": "Fungal Heart Pack",
+  "description": "A satchel woven from reinforced mycelium fibers that expand when filled. The living material grows to accommodate its contents.",
+  "icon_hint": "large satchel of woven green mycelium fibers with bioluminescent stitching and mushroom cap closures",
+  "item_type": "backpack",
+  "item_subtype": "backpack",
+  "slot": "backpack",
+  "equip_slot": "bag",
+  "category": "equipment",
+  "tier": 4,
+  "base_stats": {},
+  "stat_bonuses": {},
+  "bag_capacity_bonus": 8,
+  "combat_tag": "spore_shield",
+  "combat_tag_effect": {"trigger": "on_melee_hit_received", "effect": "apply_status", "status": "poisoned", "chance": 0.15},
+  "base_value": 165,
+  "buy_value": 0,
+  "can_refine": false,
+  "icon_path": "",
+  "tags": ["region_2", "backpack", "fungalmire", "tier_4"]
+}

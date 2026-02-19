@@ -1,0 +1,35 @@
+{
+  "id": "ah_drake_maul",
+  "display_name": "Drake Maul",
+  "description": "A war hammer forged in volcanic vents, its head filled with molten rock that never cools. Each swing shakes the earth.",
+  "icon_hint": "massive obsidian war hammer with a head filled with visible molten lava glowing through cracks and ember particles rising from it",
+  "item_type": "weapon",
+  "item_subtype": "mace",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 21,
+    "speed": -2
+  },
+  "stat_bonuses": {
+    "attack": 21,
+    "speed": -2
+  },
+  "ability_id": "ah_magma_slam",
+  "combat_tag": "burning_edge",
+  "combat_tag_effect": {"trigger": "on_attack", "effect": "apply_status", "status": "burning", "chance": 0.10},
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 145,
+  "icon_path": "",
+  "tags": ["region_4", "weapon", "mace", "ashen_horizons", "tier_4"]
+}

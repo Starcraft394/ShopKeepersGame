@@ -1,0 +1,20 @@
+{
+  "id": "fr_rift_satchel",
+  "display_name": "Rift Satchel",
+  "description": "A satchel stitched from dimensional fabric, its edges flicker in and out of reality.",
+  "icon_hint": "dark purple dimensional fabric satchel with crackling void-energy edges and null-steel buckle",
+  "item_type": "backpack",
+  "item_subtype": "backpack",
+  "category": "equipment",
+  "slot": "backpack",
+  "equip_slot": "bag",
+  "tier": 2,
+  "base_stats": {},
+  "stat_bonuses": {},
+  "bag_capacity_bonus": 4,
+  "base_value": 98,
+  "buy_value": 0,
+  "can_refine": false,
+  "icon_path": "",
+  "tags": ["region_7", "backpack", "fractured_realm", "tier_2"]
+}

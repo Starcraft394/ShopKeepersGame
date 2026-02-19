@@ -1,0 +1,32 @@
+{
+  "id": "gw_living_vest",
+  "display_name": "Living Vest",
+  "description": "A vest woven from still-growing ironbark saplings that flex and mend themselves over time.",
+  "icon_hint": "light brown vest made of living wood fibers with green leaves sprouting along the seams",
+  "item_type": "armor",
+  "item_subtype": "light_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 4
+  },
+  "stat_bonuses": {
+    "defense": 4,
+    "speed": 1,
+    "health": 6
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 58,
+  "icon_path": "",
+  "tags": ["region_1", "armor", "light", "greenwood", "tier_3"]
+}

@@ -1,0 +1,35 @@
+{
+  "id": "gw_thornhide_vest",
+  "display_name": "Thornhide Vest",
+  "description": "Woven from the cured hide of thornback beasts, this vest is supple enough for quick movement yet bristles with tiny barbs that punish attackers who strike too close.",
+  "icon_hint": "fitted leather vest in mottled green-brown with small thorny barbs protruding from the shoulders and chest, vine-laced stitching along the seams, and a leaf-shaped clasp",
+  "item_type": "armor",
+  "item_subtype": "light_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 6
+  },
+  "stat_bonuses": {
+    "defense": 6,
+    "speed": 2,
+    "health": 8
+  },
+  "passive_id": "gw_passive_regen",
+  "combat_tag": "regenerating",
+  "combat_tag_effect": {"trigger": "round_start", "effect": "heal", "value": 2},
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 92,
+  "icon_path": "",
+  "tags": ["region_1", "armor", "light_chest", "greenwood", "tier_4"]
+}

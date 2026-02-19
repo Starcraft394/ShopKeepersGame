@@ -1,0 +1,35 @@
+{
+  "id": "ss_leviathan_ring",
+  "display_name": "Leviathan Ring",
+  "description": "A ring of polished coral set with a deep tidal pearl. Ocean currents seem to flow around the wearer's hand.",
+  "icon_hint": "polished blue coral ring with a deep tidal pearl set in the center surrounded by tiny carved wave patterns",
+  "item_type": "accessory",
+  "item_subtype": "ring",
+  "category": "equipment",
+  "slot": "accessory_1",
+  "equip_slot": "ring",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "health": 16
+  },
+  "stat_bonuses": {
+    "health": 16,
+    "attack": 1,
+    "speed": 2
+  },
+  "passive_id": "ss_passive_swiftness",
+  "combat_tag": "swift_current",
+  "combat_tag_effect": {"trigger": "combat_start", "effect": "buff_stat", "stat": "speed", "value": 1},
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 98,
+  "icon_path": "",
+  "tags": ["region_3", "accessory", "ring", "sunken_strand", "tier_4"]
+}

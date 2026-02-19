@@ -95,8 +95,8 @@
   "shop_items_legacy": [
     { "item_id": "nc_grave_elixir", "price_gold": 45, "requires_unlock_group": "consumables_t1" },
     { "item_id": "nc_spectral_draught", "price_gold": 50, "requires_unlock_group": "consumables_t1" },
-    { "item_id": "nc_soul_reaver", "price_gold": 170, "requires_unlock_group": "weapons_t1" },
-    { "item_id": "nc_spectral_aegis", "price_gold": 180, "required_facility_tier": 2 },
+    { "item_id": "nc_grave_sword", "price_gold": 136, "requires_unlock_group": "weapons_t1" },
+    { "item_id": "nc_bone_shield", "price_gold": 143, "required_facility_tier": 2 },
     { "item_id": "sturdy_backpack", "price_gold": 120, "requires_unlock_group": "backpacks_t1" },
     { "item_id": "strong_healing_tonic", "price_gold": 40, "requires_unlock_group": "consumables_t1" }
   ],

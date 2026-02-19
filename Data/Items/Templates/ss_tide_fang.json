@@ -1,0 +1,31 @@
+{
+  "id": "ss_tide_fang",
+  "display_name": "Tide Fang",
+  "description": "Shaped from the tooth of a deep-sea predator, this dagger moves through the air like water.",
+  "icon_hint": "curved blue-white dagger shaped like a sea creature's tooth with wave-pattern etchings and a sharkskin-wrapped grip",
+  "item_type": "weapon",
+  "item_subtype": "dagger",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 6
+  },
+  "stat_bonuses": {
+    "attack": 6,
+    "speed": 5
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 72,
+  "icon_path": "",
+  "tags": ["region_3", "weapon", "dagger", "sunken_strand", "tier_3"]
+}

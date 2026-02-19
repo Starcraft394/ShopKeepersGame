@@ -95,8 +95,8 @@
   "shop_items_legacy": [
     { "item_id": "ss_tidal_tonic", "price_gold": 30, "requires_unlock_group": "consumables_t1" },
     { "item_id": "ss_brine_salve", "price_gold": 35, "requires_unlock_group": "consumables_t1" },
-    { "item_id": "ss_coral_blade", "price_gold": 90, "requires_unlock_group": "weapons_t1" },
-    { "item_id": "ss_abalone_shield", "price_gold": 100, "required_facility_tier": 2 },
+    { "item_id": "ss_tide_sword", "price_gold": 110, "requires_unlock_group": "weapons_t1" },
+    { "item_id": "ss_shell_shield", "price_gold": 110, "required_facility_tier": 2 },
     { "item_id": "small_backpack", "price_gold": 70, "requires_unlock_group": "backpacks_t1" },
     { "item_id": "healing_tonic", "price_gold": 25, "requires_unlock_group": "consumables_t1" }
   ],

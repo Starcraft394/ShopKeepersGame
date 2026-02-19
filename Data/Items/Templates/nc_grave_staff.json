@@ -1,0 +1,31 @@
+{
+  "id": "nc_grave_staff",
+  "display_name": "Grave Staff",
+  "description": "A staff carved from tombstone marble, topped with a flickering soul flame. The dead whisper through it.",
+  "icon_hint": "pale bone-white marble staff with a green spectral flame burning at the top and dark rune carvings",
+  "item_type": "weapon",
+  "item_subtype": "staff",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 6
+  },
+  "stat_bonuses": {
+    "attack": 6,
+    "health": 12
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 62,
+  "icon_path": "",
+  "tags": ["region_6", "weapon", "staff", "necropolis", "tier_2"]
+}

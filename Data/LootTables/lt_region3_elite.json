@@ -9,7 +9,8 @@
     { "item_id": "ss_brine_venom", "weight": 18, "min_qty": 1, "max_qty": 2 },
     { "item_id": "ss_kelp_sinew", "weight": 18, "min_qty": 2, "max_qty": 3 },
     { "item_id": "tidal_pearl", "weight": 12, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "healing_tonic", "weight": 12, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "", "weight": 11, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "healing_tonic", "weight": 10, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "ancient_bone", "weight": 6, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 7, "min_qty": 0, "max_qty": 0 }
   ]
 }

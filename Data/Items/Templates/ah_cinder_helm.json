@@ -1,0 +1,31 @@
+{
+  "id": "ah_cinder_helm",
+  "display_name": "Cinder Helm",
+  "description": "Forged in volcanic heat, this helm retains a faint warmth and resists extreme temperatures.",
+  "icon_hint": "dark iron helmet with red-orange ember glow along the visor slit and ash-blackened surface",
+  "item_type": "armor",
+  "item_subtype": "helmet",
+  "category": "equipment",
+  "slot": "head",
+  "equip_slot": "helmet",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 3
+  },
+  "stat_bonuses": {
+    "defense": 3,
+    "health": 6
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 32,
+  "icon_path": "",
+  "tags": ["region_4", "armor", "helmet", "ashen_horizons", "tier_2"]
+}

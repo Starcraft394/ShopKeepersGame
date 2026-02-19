@@ -5,9 +5,7 @@
 
   "weight_by_tier": {
     "1": 10,
-    "2": 6,
-    "3": 3,
-    "4": 1
+    "2": 6
   },
 
   "consumables": [
@@ -87,49 +85,49 @@
       "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "fr_void_edge",
-      "weight": 8,
-      "price_gold": 180,
-      "tier": 4,
+      "item_id": "fr_rift_sword",
+      "weight": 10,
+      "price_gold": 150,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 4
+      "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "fr_void_fang",
-      "weight": 6,
-      "price_gold": 190,
-      "tier": 4,
+      "item_id": "fr_rift_bow",
+      "weight": 10,
+      "price_gold": 143,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 4
+      "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "fr_rift_staff",
-      "weight": 6,
-      "price_gold": 195,
-      "tier": 4,
+      "item_id": "fr_rift_mace",
+      "weight": 10,
+      "price_gold": 154,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 4
+      "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "fr_entropy_bow",
-      "weight": 6,
-      "price_gold": 175,
-      "tier": 4,
+      "item_id": "fr_rift_wand",
+      "weight": 10,
+      "price_gold": 150,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 4
+      "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "fr_entropy_maul",
-      "weight": 6,
-      "price_gold": 200,
-      "tier": 4,
+      "item_id": "fr_rift_knife",
+      "weight": 10,
+      "price_gold": 143,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 4
+      "required_dungeon_floor_unlocked": 2
     }
   ],
 
@@ -153,88 +151,88 @@
       "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "fr_null_barrier",
-      "weight": 6,
-      "price_gold": 170,
-      "tier": 4,
+      "item_id": "fr_rift_shield",
+      "weight": 10,
+      "price_gold": 158,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 4
+      "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "fr_null_focus",
-      "weight": 6,
-      "price_gold": 185,
-      "tier": 4,
+      "item_id": "fr_rift_focus",
+      "weight": 10,
+      "price_gold": 150,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 4
+      "required_dungeon_floor_unlocked": 2
     }
   ],
 
   "armor": [
     {
-      "item_id": "fr_void_shroud",
-      "weight": 6,
-      "price_gold": 190,
-      "tier": 4,
+      "item_id": "fr_rift_tunic",
+      "weight": 10,
+      "price_gold": 150,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 4
+      "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "fr_dimensional_plate",
-      "weight": 4,
-      "price_gold": 250,
-      "tier": 4,
+      "item_id": "fr_rift_vest",
+      "weight": 10,
+      "price_gold": 165,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 4
+      "required_dungeon_floor_unlocked": 2
     }
   ],
 
   "helmets": [
     {
-      "item_id": "fr_void_helm",
-      "weight": 6,
-      "price_gold": 150,
-      "tier": 4,
+      "item_id": "fr_rift_helm",
+      "weight": 10,
+      "price_gold": 106,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 4
+      "required_dungeon_floor_unlocked": 2
     }
   ],
 
   "legs": [
     {
-      "item_id": "fr_void_greaves",
-      "weight": 6,
-      "price_gold": 150,
-      "tier": 4,
+      "item_id": "fr_rift_greaves",
+      "weight": 10,
+      "price_gold": 106,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 4
+      "required_dungeon_floor_unlocked": 2
     }
   ],
 
   "accessories": [
     {
-      "item_id": "fr_rift_band",
-      "weight": 6,
-      "price_gold": 130,
-      "tier": 4,
+      "item_id": "fr_rift_ring",
+      "weight": 10,
+      "price_gold": 132,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 4
+      "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "fr_dimensional_locket",
-      "weight": 6,
-      "price_gold": 140,
-      "tier": 4,
+      "item_id": "fr_rift_pendant",
+      "weight": 10,
+      "price_gold": 143,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 4
+      "required_dungeon_floor_unlocked": 2
     }
   ]
 }

@@ -1,0 +1,32 @@
+{
+  "id": "gw_verdant_blade",
+  "display_name": "Verdant Blade",
+  "description": "A sword grown from living ironwood, its edge stays sharp as the blade slowly regenerates nicks and scratches.",
+  "icon_hint": "green-tinted blade with living vines spiraling along the fuller and small leaves sprouting from the crossguard",
+  "item_type": "weapon",
+  "item_subtype": "sword",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 8
+  },
+  "stat_bonuses": {
+    "attack": 8,
+    "speed": 1,
+    "health": 2
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 65,
+  "icon_path": "",
+  "tags": ["region_1", "weapon", "sword", "greenwood", "tier_3"]
+}

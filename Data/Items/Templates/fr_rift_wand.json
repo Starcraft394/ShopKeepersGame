@@ -1,0 +1,31 @@
+{
+  "id": "fr_rift_wand",
+  "display_name": "Rift Wand",
+  "description": "A slender wand that bends light around itself. Reality fractures where it points.",
+  "icon_hint": "sleek black-purple wand with reality distortion ripples around the tip and faint void sparks",
+  "item_type": "weapon",
+  "item_subtype": "staff",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 7
+  },
+  "stat_bonuses": {
+    "attack": 7,
+    "health": 13
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 68,
+  "icon_path": "",
+  "tags": ["region_7", "weapon", "staff", "fractured_realm", "tier_2"]
+}

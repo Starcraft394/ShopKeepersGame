@@ -1,0 +1,31 @@
+{
+  "id": "fm_fungal_crown",
+  "display_name": "Fungal Crown",
+  "description": "A crown of hardened fungal matter, its spore-laced rim dulls impacts and clouds attackers' vision.",
+  "icon_hint": "pale green mushroom cap crown with bioluminescent spots and thin mycelium tendrils hanging from the brim",
+  "item_type": "armor",
+  "item_subtype": "helmet",
+  "category": "equipment",
+  "slot": "head",
+  "equip_slot": "helmet",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 5
+  },
+  "stat_bonuses": {
+    "defense": 5,
+    "health": 8
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 48,
+  "icon_path": "",
+  "tags": ["region_2", "armor", "helmet", "fungalmire", "tier_3"]
+}

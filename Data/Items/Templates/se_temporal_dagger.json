@@ -1,0 +1,34 @@
+{
+  "id": "se_temporal_dagger",
+  "display_name": "Temporal Dagger",
+  "description": "A blade that exists slightly out of phase with time, striking between moments. Its edge is invisible to the naked eye.",
+  "icon_hint": "translucent prismatic dagger that phases in and out of visibility with temporal distortion effects and a crystal hilt",
+  "item_type": "weapon",
+  "item_subtype": "dagger",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 12
+  },
+  "stat_bonuses": {
+    "attack": 12,
+    "speed": 6
+  },
+  "ability_id": "se_phase_strike",
+  "combat_tag": "temporal_echo",
+  "combat_tag_effect": {"trigger": "on_ability_use", "effect": "reduce_cooldown", "value": 1, "chance": 0.20},
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 135,
+  "icon_path": "",
+  "tags": ["region_5", "weapon", "dagger", "starfall_expanse", "tier_4"]
+}

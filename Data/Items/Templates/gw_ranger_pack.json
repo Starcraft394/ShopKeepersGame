@@ -1,0 +1,20 @@
+{
+  "id": "gw_ranger_pack",
+  "display_name": "Ranger's Pack",
+  "description": "A sturdy pack crafted by Greenwood rangers from treated ironbark and woven vine straps.",
+  "icon_hint": "dark green leather and ironbark pack with vine shoulder straps and leaf buckles",
+  "item_type": "backpack",
+  "item_subtype": "backpack",
+  "category": "equipment",
+  "slot": "backpack",
+  "equip_slot": "bag",
+  "tier": 3,
+  "base_stats": {},
+  "stat_bonuses": {},
+  "bag_capacity_bonus": 6,
+  "base_value": 110,
+  "buy_value": 0,
+  "can_refine": false,
+  "icon_path": "",
+  "tags": ["region_1", "backpack", "greenwood", "tier_3"]
+}

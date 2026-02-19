@@ -1,0 +1,32 @@
+{
+  "id": "nc_bone_knife",
+  "display_name": "Bone Knife",
+  "description": "Sharpened from the rib of something ancient and massive, this knife hums with residual life force.",
+  "icon_hint": "yellowed bone dagger with green soul-energy runes carved into the blade and a dark leather-wrapped grip with skull pommel",
+  "item_type": "weapon",
+  "item_subtype": "dagger",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 5
+  },
+  "stat_bonuses": {
+    "attack": 5,
+    "speed": 3,
+    "health": 2
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 58,
+  "icon_path": "",
+  "tags": ["region_6", "weapon", "dagger", "necropolis", "tier_2"]
+}

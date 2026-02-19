@@ -1,0 +1,32 @@
+{
+  "id": "fm_fungal_crusher",
+  "display_name": "Fungal Crusher",
+  "description": "A massive hammer grown from petrified fungal matter. Mycelium tendrils reinforce its crushing head.",
+  "icon_hint": "enormous petrified mushroom head maul with pale green mycelium veins and faint bioluminescent glow on a gnarled haft",
+  "item_type": "weapon",
+  "item_subtype": "mace",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 12
+  },
+  "stat_bonuses": {
+    "attack": 12,
+    "speed": -1,
+    "health": 4
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 80,
+  "icon_path": "",
+  "tags": ["region_2", "weapon", "mace", "fungalmire", "tier_3"]
+}

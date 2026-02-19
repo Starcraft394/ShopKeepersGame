@@ -16,7 +16,7 @@
   },
   "stat_bonuses": {
     "defense": 3,
-    "health": 4
+    "health": 5
   },
   "allowed_affixes": [],
   "min_affixes": 0,

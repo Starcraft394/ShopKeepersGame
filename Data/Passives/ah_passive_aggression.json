@@ -1,0 +1,15 @@
+{
+  "id": "ah_passive_aggression",
+  "display_name": "Ember Fury",
+  "description": "While HP is above 75%, gain +3 ATK. Rage burns brightest in the healthy.",
+  "icon_hint": "clenched armored fist wreathed in roaring orange flames with bright ember particles rising upward",
+  "passive_type": "conditional_stat_bonus",
+  "trigger": "passive",
+  "effect": {
+    "stat": "attack",
+    "bonus": 3,
+    "condition": "hp_above_75"
+  },
+  "source_class_id": "",
+  "category": "equipment"
+}

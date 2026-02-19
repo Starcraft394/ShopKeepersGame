@@ -1,0 +1,34 @@
+{
+  "id": "gw_heartwood_ring",
+  "display_name": "Heartwood Ring",
+  "description": "A ring grown from a cutting of ancient heartwood, warm to the touch and faintly pulsing with life energy. Wounds close faster while it is worn.",
+  "icon_hint": "smooth ring of polished deep brown heartwood with a faint green inner glow, tiny living veins visible beneath the surface, a single small emerald bead set into the band",
+  "item_type": "accessory",
+  "item_subtype": "ring",
+  "category": "equipment",
+  "slot": "accessory_1",
+  "equip_slot": "ring",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "health": 16
+  },
+  "stat_bonuses": {
+    "health": 16,
+    "defense": 1
+  },
+  "passive_id": "gw_passive_heal",
+  "combat_tag": "regenerating",
+  "combat_tag_effect": {"trigger": "round_start", "effect": "heal", "value": 2},
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 85,
+  "icon_path": "",
+  "tags": ["region_1", "accessory", "ring", "greenwood", "tier_4"]
+}

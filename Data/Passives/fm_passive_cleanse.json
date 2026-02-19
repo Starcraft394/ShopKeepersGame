@@ -1,0 +1,14 @@
+{
+  "id": "fm_passive_cleanse",
+  "display_name": "Symbiotic Ward",
+  "description": "At combat start, gain +3 DEF. Symbiotic fungi bolster the body's defenses.",
+  "icon_hint": "translucent mycelium network forming a protective dome shield with faint green bioluminescent veins",
+  "passive_type": "level_scaled_stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "defense",
+    "bonus": 3
+  },
+  "source_class_id": "",
+  "category": "equipment"
+}

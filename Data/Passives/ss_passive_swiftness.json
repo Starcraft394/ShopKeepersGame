@@ -1,0 +1,14 @@
+{
+  "id": "ss_passive_swiftness",
+  "display_name": "Riptide Band",
+  "description": "At combat start, gain +3 SPD. Ocean currents quicken the wearer.",
+  "icon_hint": "swirling deep blue ocean ring with white riptide streaks and tiny silver fish darting through the current",
+  "passive_type": "level_scaled_stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "speed",
+    "bonus": 3
+  },
+  "source_class_id": "",
+  "category": "equipment"
+}

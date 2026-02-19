@@ -5,7 +5,8 @@
   "min_drops": 3,
   "max_drops": 5,
   "entries": [
-    { "item_id": "spore_cluster", "weight": 20, "min_qty": 3, "max_qty": 5 },
+    { "item_id": "boss_trophy_fungalmire", "weight": 20, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "spore_cluster", "weight": 18, "min_qty": 3, "max_qty": 5 },
     { "item_id": "fungal_fiber", "weight": 15, "min_qty": 3, "max_qty": 5 },
     { "item_id": "healing_tonic", "weight": 15, "min_qty": 2, "max_qty": 3 },
     { "item_id": "fm_spore_blade", "weight": 8, "min_qty": 1, "max_qty": 1 },
@@ -16,6 +17,7 @@
     { "item_id": "fm_mycelium_vest", "weight": 5, "min_qty": 1, "max_qty": 1 },
     { "item_id": "fm_bioluminescent_ring", "weight": 3, "min_qty": 1, "max_qty": 1 },
     { "item_id": "fm_mycelium_pendant", "weight": 3, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "", "weight": 5, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "rare_truffle", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 4, "min_qty": 0, "max_qty": 0 }
   ]
 }

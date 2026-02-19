@@ -1,0 +1,14 @@
+{
+  "id": "gw_passive_crit",
+  "display_name": "Verdant Precision",
+  "description": "At combat start, gain +5% critical strike chance. Ancient bark sharpens focus.",
+  "icon_hint": "ancient tree eye formed from bark rings with a sharp green pupil of concentrated nature energy",
+  "passive_type": "stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "crit_chance",
+    "bonus": 5
+  },
+  "source_class_id": "",
+  "category": "equipment"
+}

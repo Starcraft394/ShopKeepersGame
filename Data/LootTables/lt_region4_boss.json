@@ -5,7 +5,8 @@
   "min_drops": 3,
   "max_drops": 5,
   "entries": [
-    { "item_id": "ah_drake_scale", "weight": 15, "min_qty": 3, "max_qty": 5 },
+    { "item_id": "boss_trophy_ashen_horizons", "weight": 20, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "ah_drake_scale", "weight": 13, "min_qty": 3, "max_qty": 5 },
     { "item_id": "obsidian_shard", "weight": 12, "min_qty": 2, "max_qty": 3 },
     { "item_id": "molten_core", "weight": 8, "min_qty": 1, "max_qty": 1 },
     { "item_id": "strong_healing_tonic", "weight": 12, "min_qty": 1, "max_qty": 2 },

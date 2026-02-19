@@ -1,0 +1,18 @@
+{
+  "id": "gw_thornlash",
+  "display_name": "Thornlash",
+  "description": "Lash out with thorny vines, rending flesh and causing bleeding.",
+  "icon_hint": "barbed green thorny vine whipping forward with crimson blood droplets scattering on impact",
+  "ability_type": "equipment",
+  "source_class_id": "",
+  "category": "equipment",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 8,
+  "damage_type": "physical",
+  "attack_scaling": 1.0,
+  "cooldown": 3,
+  "applies_status_id": "bleeding",
+  "applies_status_duration": 2,
+  "status_stacks": 1
+}

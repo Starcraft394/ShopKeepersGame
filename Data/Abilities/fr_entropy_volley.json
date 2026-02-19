@@ -1,0 +1,18 @@
+{
+  "id": "fr_entropy_volley",
+  "display_name": "Entropy Volley",
+  "description": "Launch arrows of pure entropy that unravel the fabric of foes.",
+  "icon_hint": "volley of dark violet arrows dissolving into entropy particles with reality-warping distortion trails",
+  "ability_type": "equipment",
+  "source_class_id": "",
+  "category": "equipment",
+  "target_type": "all_enemies",
+  "effect_type": "damage",
+  "base_damage": 8,
+  "damage_type": "void",
+  "attack_scaling": 0.7,
+  "cooldown": 5,
+  "applies_status_id": "doom",
+  "applies_status_duration": 2,
+  "status_stacks": 1
+}

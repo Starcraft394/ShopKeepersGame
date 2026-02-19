@@ -1,0 +1,14 @@
+{
+  "id": "ah_passive_firecrit",
+  "display_name": "Dragon's Eye",
+  "description": "At combat start, gain +5% critical strike chance. See through the drake's eyes.",
+  "icon_hint": "fiery orange reptilian eye with a vertical slit pupil surrounded by smoldering dark red scales",
+  "passive_type": "stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "crit_chance",
+    "bonus": 5
+  },
+  "source_class_id": "",
+  "category": "equipment"
+}

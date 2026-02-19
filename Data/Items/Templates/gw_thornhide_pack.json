@@ -1,0 +1,22 @@
+{
+  "id": "gw_thornhide_pack",
+  "display_name": "Thornhide Pack",
+  "description": "A massive rucksack crafted from layered thornback hides, nearly impervious to slashing. The thorn-barbed exterior discourages pickpockets and curious wildlife alike.",
+  "icon_hint": "large rugged backpack of mottled green-brown thornhide leather with small barbs along the flap, thick vine shoulder straps, brass leaf-shaped buckles, and a roomy main compartment",
+  "item_type": "backpack",
+  "item_subtype": "thornhide",
+  "category": "equipment",
+  "slot": "backpack",
+  "equip_slot": "bag",
+  "tier": 4,
+  "base_stats": {},
+  "stat_bonuses": {},
+  "bag_capacity_bonus": 8,
+  "combat_tag": "regenerating",
+  "combat_tag_effect": {"trigger": "round_start", "effect": "heal", "value": 2},
+  "base_value": 155,
+  "buy_value": 0,
+  "can_refine": false,
+  "icon_path": "",
+  "tags": ["region_1", "backpack", "greenwood", "tier_4"]
+}

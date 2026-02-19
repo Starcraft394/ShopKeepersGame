@@ -1,0 +1,19 @@
+{
+  "id": "fm_fungal_slam",
+  "display_name": "Fungal Slam",
+  "description": "Slam with fungal fury, draining life force from the target.",
+  "icon_hint": "massive mushroom-encrusted mace crashing down with purple spore clouds and sickly green life-drain tendrils",
+  "ability_type": "equipment",
+  "source_class_id": "",
+  "category": "equipment",
+  "target_type": "single_enemy",
+  "effect_type": "damage_and_heal",
+  "base_damage": 10,
+  "base_heal": 8,
+  "damage_type": "physical",
+  "attack_scaling": 1.2,
+  "cooldown": 4,
+  "heal_target_rule": "self",
+  "applies_status_id": "",
+  "status_stacks": 0
+}

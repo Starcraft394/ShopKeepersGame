@@ -1,0 +1,14 @@
+{
+  "id": "nc_passive_shield",
+  "display_name": "Spectral Shroud",
+  "description": "At combat start, gain 15 temporary HP. Spectral energy cloaks the wearer.",
+  "icon_hint": "translucent ghostly white shroud billowing around a dark silhouette with faint purple soul wisps trailing off the edges",
+  "passive_type": "combat_start_shield",
+  "trigger": "combat_start",
+  "effect": {
+    "shield_value": 15,
+    "shield_duration": 99
+  },
+  "source_class_id": "",
+  "category": "equipment"
+}

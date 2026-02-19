@@ -1,0 +1,32 @@
+{
+  "id": "fm_fungal_fang",
+  "display_name": "Fungal Fang",
+  "description": "A curved blade of petrified mycelium, hard as steel but feather-light. Its edge glistens with toxic residue.",
+  "icon_hint": "curved pale green dagger with glowing purple mycelium veins running through the blade and a cork-like fungal handle",
+  "item_type": "weapon",
+  "item_subtype": "dagger",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 6
+  },
+  "stat_bonuses": {
+    "attack": 6,
+    "speed": 3,
+    "health": 3
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 65,
+  "icon_path": "",
+  "tags": ["region_2", "weapon", "dagger", "fungalmire", "tier_3"]
+}

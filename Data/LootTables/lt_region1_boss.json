@@ -12,6 +12,9 @@
     { "item_id": "oak_staff", "weight": 10, "min_qty": 1, "max_qty": 1 },
     { "item_id": "tanned_leather_hood", "weight": 10, "min_qty": 1, "max_qty": 1 },
     { "item_id": "simple_ring", "weight": 5, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "", "weight": 5, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "honey", "weight": 8, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "aged_cheese", "weight": 6, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "boss_trophy_greenwood", "weight": 20, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 4, "min_qty": 0, "max_qty": 0 }
   ]
 }

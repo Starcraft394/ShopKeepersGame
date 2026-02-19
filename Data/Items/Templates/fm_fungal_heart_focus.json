@@ -1,0 +1,35 @@
+{
+  "id": "fm_fungal_heart_focus",
+  "display_name": "Fungal Heart Focus",
+  "description": "A bioluminescent orb pulsing in sync with its wielder's heartbeat. Symbiotic fungal tendrils wrap around the hand when held.",
+  "icon_hint": "glowing green bioluminescent fungal orb with symbiotic tendrils extending from its surface and spore particles floating around it",
+  "item_type": "offhand",
+  "item_subtype": "focus",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 5
+  },
+  "stat_bonuses": {
+    "attack": 5,
+    "speed": 1,
+    "health": 14
+  },
+  "ability_id": "fm_symbiotic_link",
+  "combat_tag": "spore_shield",
+  "combat_tag_effect": {"trigger": "on_melee_hit_received", "effect": "apply_status", "status": "poisoned", "chance": 0.15},
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 112,
+  "icon_path": "",
+  "tags": ["region_2", "offhand", "focus", "fungalmire", "tier_4"]
+}

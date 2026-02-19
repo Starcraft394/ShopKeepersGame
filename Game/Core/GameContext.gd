@@ -1254,7 +1254,7 @@ func count_equipped_ability_items(hero_id: String) -> int:
 		var eid = slot_data.get("id", "")
 		if eid != "":
 			var template = DataRegistry.get_item_template(eid)
-			if template != null and template.ability_id != "":
+			if template != null and (template.ability_id != "" or template.passive_id != ""):
 				count += 1
 	return count
 
@@ -1289,23 +1289,23 @@ func equip_hero_item(hero_id: String, slot: String, item_id: String) -> bool:
 		print("[Equip] rejected hero=%s slot=%s item=%s item_slot=%s reason=%s" % [hero_id, slot, item_id, item_slot, rejection_reason])
 		return false
 
-	# T4 ability item limit: max 2 equipped items with ability_id per hero
+	# T4 special item limit: max 3 equipped items with ability_id or passive_id per hero
 	var new_template = DataRegistry.get_item_template(item_id)
-	if new_template != null and new_template.ability_id != "":
-		# Check if the item being replaced in this slot also has an ability (it won't count against limit)
+	if new_template != null and (new_template.ability_id != "" or new_template.passive_id != ""):
+		# Check if the item being replaced in this slot also has a special (it won't count against limit)
 		var current_slot_data = get_hero_equipment(hero_id).get(slot, {})
 		var current_item_id = current_slot_data.get("id", "")
-		var current_has_ability: bool = false
+		var current_has_special: bool = false
 		if current_item_id != "":
 			var current_tpl = DataRegistry.get_item_template(current_item_id)
-			if current_tpl != null and current_tpl.ability_id != "":
-				current_has_ability = true
+			if current_tpl != null and (current_tpl.ability_id != "" or current_tpl.passive_id != ""):
+				current_has_special = true
 		var ability_count: int = count_equipped_ability_items(hero_id)
-		# If current slot item has ability, it will be unequipped first, so it doesn't count
-		if current_has_ability:
+		# If current slot item has special, it will be unequipped first, so it doesn't count
+		if current_has_special:
 			ability_count -= 1
-		if ability_count >= 2:
-			print("[Equip] rejected hero=%s slot=%s item=%s reason=max_ability_items (count=%d)" % [hero_id, slot, item_id, ability_count])
+		if ability_count >= 3:
+			print("[Equip] rejected hero=%s slot=%s item=%s reason=max_t4_items (count=%d)" % [hero_id, slot, item_id, ability_count])
 			return false
 
 	# Unequip current item in slot first (returns it to stash)

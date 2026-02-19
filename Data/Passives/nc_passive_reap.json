@@ -1,0 +1,13 @@
+{
+  "id": "nc_passive_reap",
+  "display_name": "Death's Harvest",
+  "description": "On killing an enemy, heal 8 HP. Death sustains the reaper.",
+  "icon_hint": "dark scythe blade dripping with sickly green life essence being absorbed into shadowy armor",
+  "passive_type": "on_kill_heal",
+  "trigger": "on_kill",
+  "effect": {
+    "heal_amount": 8
+  },
+  "source_class_id": "",
+  "category": "equipment"
+}

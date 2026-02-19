@@ -12,10 +12,10 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "attack": 5
+    "attack": 4
   },
   "stat_bonuses": {
-    "attack": 5,
+    "attack": 4,
     "health": 6
   },
   "allowed_affixes": [],

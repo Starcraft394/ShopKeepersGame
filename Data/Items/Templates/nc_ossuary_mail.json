@@ -1,0 +1,32 @@
+{
+  "id": "nc_ossuary_mail",
+  "display_name": "Ossuary Mail",
+  "description": "Chains of interlocking bone links forged in the ossuary depths, heavy but nearly unbreakable.",
+  "icon_hint": "grey bone chainmail armor with skull shoulder guards and eerie green soul-light seeping through links",
+  "item_type": "armor",
+  "item_subtype": "heavy_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 11
+  },
+  "stat_bonuses": {
+    "defense": 11,
+    "speed": -2,
+    "health": 26
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 110,
+  "icon_path": "",
+  "tags": ["region_6", "armor", "heavy", "necropolis", "tier_3"]
+}

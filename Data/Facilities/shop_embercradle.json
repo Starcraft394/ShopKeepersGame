@@ -95,8 +95,8 @@
   "shop_items_legacy": [
     { "item_id": "ah_magma_tonic", "price_gold": 35, "requires_unlock_group": "consumables_t1" },
     { "item_id": "ah_dragonfire_oil", "price_gold": 40, "requires_unlock_group": "consumables_t1" },
-    { "item_id": "ah_ember_blade", "price_gold": 110, "requires_unlock_group": "weapons_t1" },
-    { "item_id": "ah_drake_buckler", "price_gold": 120, "required_facility_tier": 2 },
+    { "item_id": "ah_ember_sword", "price_gold": 121, "requires_unlock_group": "weapons_t1" },
+    { "item_id": "ah_obsidian_shield", "price_gold": 121, "required_facility_tier": 2 },
     { "item_id": "sturdy_backpack", "price_gold": 120, "requires_unlock_group": "backpacks_t1" },
     { "item_id": "healing_tonic", "price_gold": 25, "requires_unlock_group": "consumables_t1" }
   ],

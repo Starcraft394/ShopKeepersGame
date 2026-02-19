@@ -1,0 +1,35 @@
+{
+  "id": "ss_tidewoven_vest",
+  "display_name": "Tidewoven Vest",
+  "description": "A vest woven from enchanted kelp and sea silk, light as water yet tough as coral. It flows with the wearer's movements.",
+  "icon_hint": "flowing vest of woven blue-green sea silk and enchanted kelp strands with pearl button clasps and a faint aquatic shimmer",
+  "item_type": "armor",
+  "item_subtype": "light_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 7
+  },
+  "stat_bonuses": {
+    "defense": 7,
+    "speed": 2,
+    "health": 6
+  },
+  "passive_id": "ss_passive_speed",
+  "combat_tag": "swift_current",
+  "combat_tag_effect": {"trigger": "combat_start", "effect": "buff_stat", "stat": "speed", "value": 1},
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 108,
+  "icon_path": "",
+  "tags": ["region_3", "armor", "light_chest", "sunken_strand", "tier_4"]
+}

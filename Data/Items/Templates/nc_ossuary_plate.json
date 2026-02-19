@@ -12,14 +12,17 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "defense": 15,
+    "defense": 16,
     "speed": -2
   },
   "stat_bonuses": {
-    "defense": 15,
-    "health": 30,
+    "defense": 16,
+    "health": 36,
     "speed": -2
   },
+  "passive_id": "nc_passive_reap",
+  "combat_tag": "undying_will",
+  "combat_tag_effect": {"trigger": "on_low_hp", "effect": "buff_stat", "stat": "defense", "value": 3, "duration": 2, "threshold": 0.25, "once": true},
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,

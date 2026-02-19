@@ -1,0 +1,32 @@
+{
+  "id": "fm_mycelium_saber",
+  "display_name": "Mycelium Saber",
+  "description": "Woven from hardened fungal fibers, this curved blade pulses with a faint bioluminescent glow along its edge.",
+  "icon_hint": "curved pale saber with glowing purple mycelium veins running through the blade and a mushroom-cap pommel",
+  "item_type": "weapon",
+  "item_subtype": "sword",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 9
+  },
+  "stat_bonuses": {
+    "attack": 9,
+    "defense": 1,
+    "health": 4
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 72,
+  "icon_path": "",
+  "tags": ["region_2", "weapon", "sword", "fungalmire", "tier_3"]
+}

@@ -12,11 +12,11 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "health": 10
+    "health": 9
   },
   "stat_bonuses": {
-    "health": 10,
-    "speed": 1
+    "defense": 1,
+    "health": 9
   },
   "allowed_affixes": [],
   "min_affixes": 0,

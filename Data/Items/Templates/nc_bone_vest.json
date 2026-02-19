@@ -1,0 +1,32 @@
+{
+  "id": "nc_bone_vest",
+  "display_name": "Bone Vest",
+  "description": "Overlapping bone plates scavenged from the Necropolis, still faintly warm with residual soul energy.",
+  "icon_hint": "off-white bone plate vest with ribcage-like structure and faint green spectral glow between joints",
+  "item_type": "armor",
+  "item_subtype": "heavy_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 7
+  },
+  "stat_bonuses": {
+    "defense": 7,
+    "speed": -1,
+    "health": 16
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 68,
+  "icon_path": "",
+  "tags": ["region_6", "armor", "heavy", "necropolis", "tier_2"]
+}

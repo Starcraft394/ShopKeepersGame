@@ -1,0 +1,22 @@
+{
+  "id": "ss_cleansing_surge",
+  "display_name": "Cleansing Surge",
+  "description": "Summon a cleansing surge that heals all allies and washes away afflictions.",
+  "icon_hint": "cresting teal wave surging outward with sparkling white purification motes and ocean foam",
+  "ability_type": "equipment",
+  "source_class_id": "",
+  "category": "equipment",
+  "target_type": "all_allies",
+  "effect_type": "heal",
+  "base_damage": 0,
+  "base_heal": 10,
+  "damage_type": "magical",
+  "attack_scaling": 0.0,
+  "cooldown": 5,
+  "cleanses_debuffs": 1,
+  "applies_status_id": "",
+  "status_stacks": 0,
+  "target_team": "ally",
+  "can_overheal": false,
+  "allow_self_target": true
+}

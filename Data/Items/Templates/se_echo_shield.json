@@ -10,12 +10,14 @@
   "equip_slot": "offhand",
   "tier": 4,
   "base_stats": {
-    "defense": 11
+    "defense": 14
   },
   "stat_bonuses": {
-    "defense": 11,
-    "health": 20
+    "defense": 14,
+    "health": 26
   },
+  "combat_tag": "temporal_echo",
+  "combat_tag_effect": {"trigger": "on_ability_use", "effect": "reduce_cooldown", "value": 1, "chance": 0.20},
   "base_value": 100,
   "buy_value": 0,
   "can_refine": true,

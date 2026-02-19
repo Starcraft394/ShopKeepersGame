@@ -1,0 +1,18 @@
+{
+  "id": "ah_magma_slam",
+  "display_name": "Magma Slam",
+  "description": "Smash the ground, erupting magma that scorches all enemies.",
+  "icon_hint": "massive mace striking cracked ground with erupting magma geysers and molten rock splashing outward",
+  "ability_type": "equipment",
+  "source_class_id": "",
+  "category": "equipment",
+  "target_type": "all_enemies",
+  "effect_type": "damage",
+  "base_damage": 8,
+  "damage_type": "fire",
+  "attack_scaling": 0.8,
+  "cooldown": 5,
+  "applies_status_id": "burning",
+  "applies_status_duration": 2,
+  "status_stacks": 1
+}

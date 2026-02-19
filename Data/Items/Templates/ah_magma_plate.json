@@ -12,11 +12,11 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "defense": 10,
+    "defense": 9,
     "speed": -2
   },
   "stat_bonuses": {
-    "defense": 10,
+    "defense": 9,
     "health": 20,
     "speed": -2
   },

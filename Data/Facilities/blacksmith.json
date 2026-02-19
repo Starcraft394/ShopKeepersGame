@@ -464,6 +464,36 @@
       ]
     },
     {
+      "output_id": "bone_dagger",
+      "output_qty": 1,
+      "required_tier": 1,
+      "upgrade_tier": 1,
+      "equipment_type": "1h_weapon",
+      "unlock_cost": [
+        {
+          "item_id": "bone_fragment",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "output_id": "padded_mail",
+      "output_qty": 1,
+      "required_tier": 1,
+      "upgrade_tier": 1,
+      "equipment_type": "armor",
+      "unlock_cost": [
+        {
+          "item_id": "wolf_pelt",
+          "qty": 2
+        },
+        {
+          "item_id": "iron_scrap",
+          "qty": 1
+        }
+      ]
+    },
+    {
       "output_id": "rusty_sword",
       "output_qty": 1,
       "required_tier": 2,
@@ -606,150 +636,699 @@
         }
       ]
     },
+
     {
-      "output_id": "fm_sporeguard_helm",
+      "output_id": "iron_sword",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_1",
+      "craft_inputs": [
+        { "item_id": "rusty_sword", "qty": 1 },
+        { "item_id": "iron_scrap", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "gw_verdant_blade",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_1",
+      "craft_inputs": [
+        { "item_id": "rusty_sword", "qty": 1 },
+        { "item_id": "iron_scrap", "qty": 2 },
+        { "item_id": "wood_bundle", "qty": 1 },
+        { "item_id": "cursed_dust", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "gw_thornguard_sword",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_1",
+      "craft_inputs": [
+        { "item_id": "gw_verdant_blade", "qty": 1 },
+        { "item_id": "cursed_dust", "qty": 2 },
+        { "item_id": "boss_trophy_greenwood", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "gw_ironbark_maul",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_1",
+      "craft_inputs": [
+        { "item_id": "wooden_mace", "qty": 1 },
+        { "item_id": "iron_scrap", "qty": 2 },
+        { "item_id": "wood_bundle", "qty": 1 },
+        { "item_id": "cursed_dust", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "gw_thorn_dagger",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_1",
+      "craft_inputs": [
+        { "item_id": "bone_dagger", "qty": 1 },
+        { "item_id": "iron_scrap", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "gw_briar_fang",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_1",
+      "craft_inputs": [
+        { "item_id": "bone_dagger", "qty": 1 },
+        { "item_id": "iron_scrap", "qty": 2 },
+        { "item_id": "wood_bundle", "qty": 1 },
+        { "item_id": "cursed_dust", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "reinforced_shield",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "offhand",
+      "is_craft": true,
+      "region": "region_1",
+      "craft_inputs": [
+        { "item_id": "wooden_shield", "qty": 1 },
+        { "item_id": "iron_scrap", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "gw_ironbark_shield",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "offhand",
+      "is_craft": true,
+      "region": "region_1",
+      "craft_inputs": [
+        { "item_id": "wooden_shield", "qty": 1 },
+        { "item_id": "iron_scrap", "qty": 2 },
+        { "item_id": "wood_bundle", "qty": 1 },
+        { "item_id": "cursed_dust", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "gw_ancient_aegis",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "offhand",
+      "is_craft": true,
+      "region": "region_1",
+      "craft_inputs": [
+        { "item_id": "gw_ironbark_shield", "qty": 1 },
+        { "item_id": "cursed_dust", "qty": 2 },
+        { "item_id": "boss_trophy_greenwood", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "chainmail_vest",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "armor",
+      "is_craft": true,
+      "region": "region_1",
+      "craft_inputs": [
+        { "item_id": "padded_mail", "qty": 1 },
+        { "item_id": "iron_scrap", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "gw_ironbark_plate",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "armor",
+      "is_craft": true,
+      "region": "region_1",
+      "craft_inputs": [
+        { "item_id": "padded_mail", "qty": 1 },
+        { "item_id": "iron_scrap", "qty": 2 },
+        { "item_id": "wood_bundle", "qty": 1 },
+        { "item_id": "cursed_dust", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "iron_helmet",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "helmet",
+      "is_craft": true,
+      "region": "region_1",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_hood", "qty": 1 },
+        { "item_id": "iron_scrap", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "gw_ironbark_helm",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "helmet",
+      "is_craft": true,
+      "region": "region_1",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_hood", "qty": 1 },
+        { "item_id": "iron_scrap", "qty": 2 },
+        { "item_id": "wood_bundle", "qty": 1 },
+        { "item_id": "cursed_dust", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "gw_ancient_helm",
       "output_qty": 1,
       "required_tier": 4,
       "upgrade_tier": 4,
       "equipment_type": "helmet",
       "is_craft": true,
+      "region": "region_1",
+      "craft_inputs": [
+        { "item_id": "gw_ironbark_helm", "qty": 1 },
+        { "item_id": "cursed_dust", "qty": 2 },
+        { "item_id": "boss_trophy_greenwood", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "iron_greaves",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_1",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_greaves", "qty": 1 },
+        { "item_id": "iron_scrap", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "gw_ironbark_greaves",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_1",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_greaves", "qty": 1 },
+        { "item_id": "iron_scrap", "qty": 2 },
+        { "item_id": "wood_bundle", "qty": 1 },
+        { "item_id": "cursed_dust", "qty": 1 }
+      ]
+    },
+
+    {
+      "output_id": "fm_spore_blade",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
       "region": "region_2",
       "craft_inputs": [
-        { "item_id": "iron_helmet", "qty": 1 },
+        { "item_id": "rusty_sword", "qty": 1 },
+        { "item_id": "fungal_fiber", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "fm_mycelium_saber",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_2",
+      "craft_inputs": [
+        { "item_id": "rusty_sword", "qty": 1 },
+        { "item_id": "fungal_fiber", "qty": 2 },
+        { "item_id": "mycelium_thread", "qty": 1 },
+        { "item_id": "spore_cluster", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "fm_spore_mace",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_2",
+      "craft_inputs": [
+        { "item_id": "wooden_mace", "qty": 1 },
+        { "item_id": "fungal_fiber", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "fm_fungal_crusher",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_2",
+      "craft_inputs": [
+        { "item_id": "wooden_mace", "qty": 1 },
+        { "item_id": "fungal_fiber", "qty": 2 },
+        { "item_id": "mycelium_thread", "qty": 1 },
+        { "item_id": "spore_cluster", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "fm_mycelium_maul",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_2",
+      "craft_inputs": [
+        { "item_id": "fm_fungal_crusher", "qty": 1 },
         { "item_id": "spore_cluster", "qty": 2 },
         { "item_id": "boss_trophy_fungalmire", "qty": 1 }
       ]
     },
     {
-      "output_id": "fm_spore_blade",
+      "output_id": "fm_spore_knife",
       "output_qty": 1,
-      "required_tier": 4,
-      "upgrade_tier": 4,
+      "required_tier": 2,
+      "upgrade_tier": 2,
       "equipment_type": "1h_weapon",
       "is_craft": true,
       "region": "region_2",
       "craft_inputs": [
-        { "item_id": "iron_sword", "qty": 1 },
-        { "item_id": "spore_cluster", "qty": 3 },
-        { "item_id": "boss_trophy_fungalmire", "qty": 1 }
+        { "item_id": "bone_dagger", "qty": 1 },
+        { "item_id": "fungal_fiber", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "fm_fungal_fang",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_2",
+      "craft_inputs": [
+        { "item_id": "bone_dagger", "qty": 1 },
+        { "item_id": "fungal_fiber", "qty": 2 },
+        { "item_id": "mycelium_thread", "qty": 1 },
+        { "item_id": "spore_cluster", "qty": 1 }
       ]
     },
     {
       "output_id": "fm_sporecap_shield",
       "output_qty": 1,
-      "required_tier": 4,
-      "upgrade_tier": 4,
+      "required_tier": 2,
+      "upgrade_tier": 2,
       "equipment_type": "offhand",
       "is_craft": true,
       "region": "region_2",
       "craft_inputs": [
-        { "item_id": "reinforced_shield", "qty": 1 },
-        { "item_id": "fungal_fiber", "qty": 3 },
-        { "item_id": "boss_trophy_fungalmire", "qty": 1 }
+        { "item_id": "wooden_shield", "qty": 1 },
+        { "item_id": "fungal_fiber", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "fm_mycelium_bulwark",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "offhand",
+      "is_craft": true,
+      "region": "region_2",
+      "craft_inputs": [
+        { "item_id": "wooden_shield", "qty": 1 },
+        { "item_id": "fungal_fiber", "qty": 2 },
+        { "item_id": "mycelium_thread", "qty": 1 },
+        { "item_id": "spore_cluster", "qty": 1 }
       ]
     },
     {
       "output_id": "fm_mycelium_vest",
       "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "armor",
+      "is_craft": true,
+      "region": "region_2",
+      "craft_inputs": [
+        { "item_id": "padded_mail", "qty": 1 },
+        { "item_id": "fungal_fiber", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "fm_fungal_plate",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "armor",
+      "is_craft": true,
+      "region": "region_2",
+      "craft_inputs": [
+        { "item_id": "padded_mail", "qty": 1 },
+        { "item_id": "fungal_fiber", "qty": 2 },
+        { "item_id": "mycelium_thread", "qty": 1 },
+        { "item_id": "spore_cluster", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "fm_mycelium_ruin_plate",
+      "output_qty": 1,
       "required_tier": 4,
       "upgrade_tier": 4,
       "equipment_type": "armor",
       "is_craft": true,
       "region": "region_2",
       "craft_inputs": [
-        { "item_id": "chainmail_vest", "qty": 1 },
-        { "item_id": "spore_cluster", "qty": 3 },
-        { "item_id": "fungal_fiber", "qty": 2 },
+        { "item_id": "fm_fungal_plate", "qty": 1 },
+        { "item_id": "spore_cluster", "qty": 2 },
         { "item_id": "boss_trophy_fungalmire", "qty": 1 }
       ]
     },
     {
-      "output_id": "ss_tidecrest_helm",
+      "output_id": "fm_sporeguard_helm",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "helmet",
+      "is_craft": true,
+      "region": "region_2",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_hood", "qty": 1 },
+        { "item_id": "fungal_fiber", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "fm_fungal_crown",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "helmet",
+      "is_craft": true,
+      "region": "region_2",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_hood", "qty": 1 },
+        { "item_id": "fungal_fiber", "qty": 2 },
+        { "item_id": "mycelium_thread", "qty": 1 },
+        { "item_id": "spore_cluster", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "fm_mycelium_leggings",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_2",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_greaves", "qty": 1 },
+        { "item_id": "fungal_fiber", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "fm_fungal_greaves",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_2",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_greaves", "qty": 1 },
+        { "item_id": "fungal_fiber", "qty": 2 },
+        { "item_id": "mycelium_thread", "qty": 1 },
+        { "item_id": "spore_cluster", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "fm_mycelium_ruin_greaves",
       "output_qty": 1,
       "required_tier": 4,
       "upgrade_tier": 4,
-      "equipment_type": "helmet",
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_2",
+      "craft_inputs": [
+        { "item_id": "fm_fungal_greaves", "qty": 1 },
+        { "item_id": "spore_cluster", "qty": 2 },
+        { "item_id": "boss_trophy_fungalmire", "qty": 1 }
+      ]
+    },
+
+    {
+      "output_id": "ss_tide_sword",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "1h_weapon",
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "iron_helmet", "qty": 1 },
-        { "item_id": "sea_salt_crystal", "qty": 2 },
-        { "item_id": "boss_trophy_sunken_strand", "qty": 1 }
+        { "item_id": "rusty_sword", "qty": 1 },
+        { "item_id": "ss_kelp_sinew", "qty": 2 }
       ]
     },
     {
       "output_id": "ss_coral_blade",
       "output_qty": 1,
-      "required_tier": 4,
-      "upgrade_tier": 4,
+      "required_tier": 3,
+      "upgrade_tier": 3,
       "equipment_type": "1h_weapon",
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "iron_sword", "qty": 1 },
-        { "item_id": "sea_salt_crystal", "qty": 3 },
-        { "item_id": "boss_trophy_sunken_strand", "qty": 1 }
+        { "item_id": "rusty_sword", "qty": 1 },
+        { "item_id": "ss_kelp_sinew", "qty": 2 },
+        { "item_id": "sea_salt_crystal", "qty": 1 },
+        { "item_id": "tidal_pearl", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "ss_barnacle_mace",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_3",
+      "craft_inputs": [
+        { "item_id": "wooden_mace", "qty": 1 },
+        { "item_id": "ss_kelp_sinew", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "ss_coral_crusher",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_3",
+      "craft_inputs": [
+        { "item_id": "wooden_mace", "qty": 1 },
+        { "item_id": "ss_kelp_sinew", "qty": 2 },
+        { "item_id": "sea_salt_crystal", "qty": 1 },
+        { "item_id": "tidal_pearl", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "ss_coral_knife",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_3",
+      "craft_inputs": [
+        { "item_id": "bone_dagger", "qty": 1 },
+        { "item_id": "ss_kelp_sinew", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "ss_tide_fang",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_3",
+      "craft_inputs": [
+        { "item_id": "bone_dagger", "qty": 1 },
+        { "item_id": "ss_kelp_sinew", "qty": 2 },
+        { "item_id": "sea_salt_crystal", "qty": 1 },
+        { "item_id": "tidal_pearl", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "ss_shell_shield",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "offhand",
+      "is_craft": true,
+      "region": "region_3",
+      "craft_inputs": [
+        { "item_id": "wooden_shield", "qty": 1 },
+        { "item_id": "ss_kelp_sinew", "qty": 2 }
       ]
     },
     {
       "output_id": "ss_abalone_shield",
       "output_qty": 1,
-      "required_tier": 4,
-      "upgrade_tier": 4,
+      "required_tier": 3,
+      "upgrade_tier": 3,
       "equipment_type": "offhand",
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "reinforced_shield", "qty": 1 },
-        { "item_id": "stormglass_fragment", "qty": 3 },
-        { "item_id": "boss_trophy_sunken_strand", "qty": 1 }
+        { "item_id": "wooden_shield", "qty": 1 },
+        { "item_id": "ss_kelp_sinew", "qty": 2 },
+        { "item_id": "sea_salt_crystal", "qty": 1 },
+        { "item_id": "tidal_pearl", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "ss_shell_vest",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "armor",
+      "is_craft": true,
+      "region": "region_3",
+      "craft_inputs": [
+        { "item_id": "padded_mail", "qty": 1 },
+        { "item_id": "ss_kelp_sinew", "qty": 2 }
       ]
     },
     {
       "output_id": "ss_barnacle_plate",
       "output_qty": 1,
-      "required_tier": 4,
-      "upgrade_tier": 4,
+      "required_tier": 3,
+      "upgrade_tier": 3,
       "equipment_type": "armor",
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "chainmail_vest", "qty": 1 },
-        { "item_id": "sea_salt_crystal", "qty": 3 },
-        { "item_id": "stormglass_fragment", "qty": 2 },
-        { "item_id": "boss_trophy_sunken_strand", "qty": 1 }
+        { "item_id": "padded_mail", "qty": 1 },
+        { "item_id": "ss_kelp_sinew", "qty": 2 },
+        { "item_id": "sea_salt_crystal", "qty": 1 },
+        { "item_id": "tidal_pearl", "qty": 1 }
       ]
     },
     {
-      "output_id": "ah_volcanic_helm",
+      "output_id": "ss_shell_helm",
       "output_qty": 1,
-      "required_tier": 4,
-      "upgrade_tier": 4,
+      "required_tier": 2,
+      "upgrade_tier": 2,
       "equipment_type": "helmet",
+      "is_craft": true,
+      "region": "region_3",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_hood", "qty": 1 },
+        { "item_id": "ss_kelp_sinew", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "ss_tidecrest_helm",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "helmet",
+      "is_craft": true,
+      "region": "region_3",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_hood", "qty": 1 },
+        { "item_id": "ss_kelp_sinew", "qty": 2 },
+        { "item_id": "sea_salt_crystal", "qty": 1 },
+        { "item_id": "tidal_pearl", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "ss_kelp_leggings",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_3",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_greaves", "qty": 1 },
+        { "item_id": "ss_kelp_sinew", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "ss_kelp_greaves",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_3",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_greaves", "qty": 1 },
+        { "item_id": "ss_kelp_sinew", "qty": 2 },
+        { "item_id": "sea_salt_crystal", "qty": 1 },
+        { "item_id": "tidal_pearl", "qty": 1 }
+      ]
+    },
+
+    {
+      "output_id": "ah_ember_sword",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "1h_weapon",
       "is_craft": true,
       "region": "region_4",
       "craft_inputs": [
-        { "item_id": "iron_helmet", "qty": 1 },
-        { "item_id": "volcanic_glass", "qty": 2 },
-        { "item_id": "boss_trophy_ashen_horizons", "qty": 1 }
+        { "item_id": "rusty_sword", "qty": 1 },
+        { "item_id": "volcanic_glass", "qty": 2 }
       ]
     },
     {
       "output_id": "ah_ember_blade",
       "output_qty": 1,
-      "required_tier": 4,
-      "upgrade_tier": 4,
+      "required_tier": 3,
+      "upgrade_tier": 3,
       "equipment_type": "1h_weapon",
       "is_craft": true,
       "region": "region_4",
       "craft_inputs": [
-        { "item_id": "iron_sword", "qty": 1 },
-        { "item_id": "volcanic_glass", "qty": 3 },
-        { "item_id": "boss_trophy_ashen_horizons", "qty": 1 }
+        { "item_id": "rusty_sword", "qty": 1 },
+        { "item_id": "volcanic_glass", "qty": 2 },
+        { "item_id": "obsidian_shard", "qty": 1 },
+        { "item_id": "ah_drake_scale", "qty": 1 }
       ]
     },
     {
-      "output_id": "ah_volcanic_maul",
+      "output_id": "ah_drakefang_blade",
       "output_qty": 1,
       "required_tier": 4,
       "upgrade_tier": 4,
@@ -757,13 +1336,125 @@
       "is_craft": true,
       "region": "region_4",
       "craft_inputs": [
-        { "item_id": "iron_sword", "qty": 1 },
-        { "item_id": "volcanic_glass", "qty": 3 },
+        { "item_id": "ah_ember_blade", "qty": 1 },
+        { "item_id": "ah_drake_scale", "qty": 2 },
         { "item_id": "boss_trophy_ashen_horizons", "qty": 1 }
       ]
     },
     {
+      "output_id": "ah_obsidian_mace",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_4",
+      "craft_inputs": [
+        { "item_id": "wooden_mace", "qty": 1 },
+        { "item_id": "volcanic_glass", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "ah_volcanic_maul",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_4",
+      "craft_inputs": [
+        { "item_id": "wooden_mace", "qty": 1 },
+        { "item_id": "volcanic_glass", "qty": 2 },
+        { "item_id": "obsidian_shard", "qty": 1 },
+        { "item_id": "ah_drake_scale", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "ah_drake_maul",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_4",
+      "craft_inputs": [
+        { "item_id": "ah_volcanic_maul", "qty": 1 },
+        { "item_id": "ah_drake_scale", "qty": 2 },
+        { "item_id": "boss_trophy_ashen_horizons", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "ah_ember_knife",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_4",
+      "craft_inputs": [
+        { "item_id": "bone_dagger", "qty": 1 },
+        { "item_id": "volcanic_glass", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "ah_cinder_fang",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_4",
+      "craft_inputs": [
+        { "item_id": "bone_dagger", "qty": 1 },
+        { "item_id": "volcanic_glass", "qty": 2 },
+        { "item_id": "obsidian_shard", "qty": 1 },
+        { "item_id": "ah_drake_scale", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "ah_draketalon",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_4",
+      "craft_inputs": [
+        { "item_id": "ah_cinder_fang", "qty": 1 },
+        { "item_id": "ah_drake_scale", "qty": 2 },
+        { "item_id": "boss_trophy_ashen_horizons", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "ah_obsidian_shield",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "offhand",
+      "is_craft": true,
+      "region": "region_4",
+      "craft_inputs": [
+        { "item_id": "wooden_shield", "qty": 1 },
+        { "item_id": "volcanic_glass", "qty": 2 }
+      ]
+    },
+    {
       "output_id": "ah_drake_buckler",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "offhand",
+      "is_craft": true,
+      "region": "region_4",
+      "craft_inputs": [
+        { "item_id": "wooden_shield", "qty": 1 },
+        { "item_id": "volcanic_glass", "qty": 2 },
+        { "item_id": "obsidian_shard", "qty": 1 },
+        { "item_id": "ah_drake_scale", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "ah_drakescale_aegis",
       "output_qty": 1,
       "required_tier": 4,
       "upgrade_tier": 4,
@@ -771,13 +1462,41 @@
       "is_craft": true,
       "region": "region_4",
       "craft_inputs": [
-        { "item_id": "reinforced_shield", "qty": 1 },
-        { "item_id": "obsidian_shard", "qty": 3 },
+        { "item_id": "ah_drake_buckler", "qty": 1 },
+        { "item_id": "ah_drake_scale", "qty": 2 },
         { "item_id": "boss_trophy_ashen_horizons", "qty": 1 }
       ]
     },
     {
+      "output_id": "ah_obsidian_vest",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "armor",
+      "is_craft": true,
+      "region": "region_4",
+      "craft_inputs": [
+        { "item_id": "padded_mail", "qty": 1 },
+        { "item_id": "volcanic_glass", "qty": 2 }
+      ]
+    },
+    {
       "output_id": "ah_magma_plate",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "armor",
+      "is_craft": true,
+      "region": "region_4",
+      "craft_inputs": [
+        { "item_id": "padded_mail", "qty": 1 },
+        { "item_id": "volcanic_glass", "qty": 2 },
+        { "item_id": "obsidian_shard", "qty": 1 },
+        { "item_id": "ah_drake_scale", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "ah_drakescale_plate",
       "output_qty": 1,
       "required_tier": 4,
       "upgrade_tier": 4,
@@ -785,24 +1504,122 @@
       "is_craft": true,
       "region": "region_4",
       "craft_inputs": [
-        { "item_id": "chainmail_vest", "qty": 1 },
-        { "item_id": "volcanic_glass", "qty": 3 },
-        { "item_id": "obsidian_shard", "qty": 2 },
+        { "item_id": "ah_magma_plate", "qty": 1 },
+        { "item_id": "ah_drake_scale", "qty": 2 },
         { "item_id": "boss_trophy_ashen_horizons", "qty": 1 }
       ]
     },
     {
-      "output_id": "se_prism_helm",
+      "output_id": "ah_cinder_helm",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "helmet",
+      "is_craft": true,
+      "region": "region_4",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_hood", "qty": 1 },
+        { "item_id": "volcanic_glass", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "ah_volcanic_helm",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "helmet",
+      "is_craft": true,
+      "region": "region_4",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_hood", "qty": 1 },
+        { "item_id": "volcanic_glass", "qty": 2 },
+        { "item_id": "obsidian_shard", "qty": 1 },
+        { "item_id": "ah_drake_scale", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "ah_drakescale_helm",
       "output_qty": 1,
       "required_tier": 4,
       "upgrade_tier": 4,
       "equipment_type": "helmet",
       "is_craft": true,
+      "region": "region_4",
+      "craft_inputs": [
+        { "item_id": "ah_volcanic_helm", "qty": 1 },
+        { "item_id": "ah_drake_scale", "qty": 2 },
+        { "item_id": "boss_trophy_ashen_horizons", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "ah_cinder_greaves",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_4",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_greaves", "qty": 1 },
+        { "item_id": "volcanic_glass", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "ah_drake_greaves",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_4",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_greaves", "qty": 1 },
+        { "item_id": "volcanic_glass", "qty": 2 },
+        { "item_id": "obsidian_shard", "qty": 1 },
+        { "item_id": "ah_drake_scale", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "ah_drakescale_greaves",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_4",
+      "craft_inputs": [
+        { "item_id": "ah_drake_greaves", "qty": 1 },
+        { "item_id": "ah_drake_scale", "qty": 2 },
+        { "item_id": "boss_trophy_ashen_horizons", "qty": 1 }
+      ]
+    },
+
+    {
+      "output_id": "se_crystal_sword",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "iron_helmet", "qty": 1 },
+        { "item_id": "rusty_sword", "qty": 1 },
+        { "item_id": "prism_shard", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "se_prism_edge",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_5",
+      "craft_inputs": [
+        { "item_id": "rusty_sword", "qty": 1 },
         { "item_id": "prism_shard", "qty": 2 },
-        { "item_id": "boss_trophy_starfall_expanse", "qty": 1 }
+        { "item_id": "starfall_dust", "qty": 1 },
+        { "item_id": "astral_fragment", "qty": 1 }
       ]
     },
     {
@@ -814,23 +1631,107 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "iron_sword", "qty": 1 },
-        { "item_id": "prism_shard", "qty": 3 },
+        { "item_id": "se_prism_edge", "qty": 1 },
+        { "item_id": "astral_fragment", "qty": 2 },
         { "item_id": "boss_trophy_starfall_expanse", "qty": 1 }
       ]
     },
     {
-      "output_id": "se_chrono_cleaver",
+      "output_id": "se_crystal_mace",
       "output_qty": 1,
-      "required_tier": 4,
-      "upgrade_tier": 4,
-      "equipment_type": "2h_weapon",
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "1h_weapon",
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "iron_greataxe", "qty": 1 },
-        { "item_id": "prism_shard", "qty": 3 },
+        { "item_id": "wooden_mace", "qty": 1 },
+        { "item_id": "prism_shard", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "se_temporal_maul",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_5",
+      "craft_inputs": [
+        { "item_id": "wooden_mace", "qty": 1 },
+        { "item_id": "prism_shard", "qty": 2 },
+        { "item_id": "starfall_dust", "qty": 1 },
+        { "item_id": "astral_fragment", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "se_crystal_knife",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_5",
+      "craft_inputs": [
+        { "item_id": "bone_dagger", "qty": 1 },
+        { "item_id": "prism_shard", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "se_prism_fang",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_5",
+      "craft_inputs": [
+        { "item_id": "bone_dagger", "qty": 1 },
+        { "item_id": "prism_shard", "qty": 2 },
+        { "item_id": "starfall_dust", "qty": 1 },
+        { "item_id": "astral_fragment", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "se_temporal_dagger",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_5",
+      "craft_inputs": [
+        { "item_id": "se_prism_fang", "qty": 1 },
+        { "item_id": "astral_fragment", "qty": 2 },
         { "item_id": "boss_trophy_starfall_expanse", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "se_crystal_shield",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "offhand",
+      "is_craft": true,
+      "region": "region_5",
+      "craft_inputs": [
+        { "item_id": "wooden_shield", "qty": 1 },
+        { "item_id": "prism_shard", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "se_prism_shield",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "offhand",
+      "is_craft": true,
+      "region": "region_5",
+      "craft_inputs": [
+        { "item_id": "wooden_shield", "qty": 1 },
+        { "item_id": "prism_shard", "qty": 2 },
+        { "item_id": "starfall_dust", "qty": 1 },
+        { "item_id": "astral_fragment", "qty": 1 }
       ]
     },
     {
@@ -842,9 +1743,37 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "reinforced_shield", "qty": 1 },
-        { "item_id": "starfall_core_fragment", "qty": 3 },
+        { "item_id": "se_prism_shield", "qty": 1 },
+        { "item_id": "astral_fragment", "qty": 2 },
         { "item_id": "boss_trophy_starfall_expanse", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "se_crystal_vest",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "armor",
+      "is_craft": true,
+      "region": "region_5",
+      "craft_inputs": [
+        { "item_id": "padded_mail", "qty": 1 },
+        { "item_id": "prism_shard", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "se_astral_plate",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "armor",
+      "is_craft": true,
+      "region": "region_5",
+      "craft_inputs": [
+        { "item_id": "padded_mail", "qty": 1 },
+        { "item_id": "prism_shard", "qty": 2 },
+        { "item_id": "starfall_dust", "qty": 1 },
+        { "item_id": "astral_fragment", "qty": 1 }
       ]
     },
     {
@@ -856,24 +1785,122 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "chainmail_vest", "qty": 1 },
-        { "item_id": "prism_shard", "qty": 3 },
-        { "item_id": "starfall_core_fragment", "qty": 2 },
+        { "item_id": "se_astral_plate", "qty": 1 },
+        { "item_id": "astral_fragment", "qty": 2 },
         { "item_id": "boss_trophy_starfall_expanse", "qty": 1 }
       ]
     },
     {
-      "output_id": "nc_bone_crown",
+      "output_id": "se_crystal_helm",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "helmet",
+      "is_craft": true,
+      "region": "region_5",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_hood", "qty": 1 },
+        { "item_id": "prism_shard", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "se_astral_helm",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "helmet",
+      "is_craft": true,
+      "region": "region_5",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_hood", "qty": 1 },
+        { "item_id": "prism_shard", "qty": 2 },
+        { "item_id": "starfall_dust", "qty": 1 },
+        { "item_id": "astral_fragment", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "se_prism_helm",
       "output_qty": 1,
       "required_tier": 4,
       "upgrade_tier": 4,
       "equipment_type": "helmet",
       "is_craft": true,
+      "region": "region_5",
+      "craft_inputs": [
+        { "item_id": "se_astral_helm", "qty": 1 },
+        { "item_id": "astral_fragment", "qty": 2 },
+        { "item_id": "boss_trophy_starfall_expanse", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "se_astral_boots",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_5",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_greaves", "qty": 1 },
+        { "item_id": "prism_shard", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "se_crystal_leggings",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_5",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_greaves", "qty": 1 },
+        { "item_id": "prism_shard", "qty": 2 },
+        { "item_id": "starfall_dust", "qty": 1 },
+        { "item_id": "astral_fragment", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "se_astral_leggings",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_5",
+      "craft_inputs": [
+        { "item_id": "se_crystal_leggings", "qty": 1 },
+        { "item_id": "astral_fragment", "qty": 2 },
+        { "item_id": "boss_trophy_starfall_expanse", "qty": 1 }
+      ]
+    },
+
+    {
+      "output_id": "nc_grave_sword",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "iron_helmet", "qty": 1 },
+        { "item_id": "rusty_sword", "qty": 1 },
+        { "item_id": "soul_ore", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "nc_soul_edge",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_6",
+      "craft_inputs": [
+        { "item_id": "rusty_sword", "qty": 1 },
         { "item_id": "soul_ore", "qty": 2 },
-        { "item_id": "boss_trophy_necropolis", "qty": 1 }
+        { "item_id": "spectral_log", "qty": 1 },
+        { "item_id": "nc_wraith_thread", "qty": 1 }
       ]
     },
     {
@@ -885,9 +1912,65 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "iron_sword", "qty": 1 },
-        { "item_id": "soul_ore", "qty": 3 },
+        { "item_id": "nc_soul_edge", "qty": 1 },
+        { "item_id": "nc_wraith_thread", "qty": 2 },
         { "item_id": "boss_trophy_necropolis", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "nc_bone_mace",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_6",
+      "craft_inputs": [
+        { "item_id": "wooden_mace", "qty": 1 },
+        { "item_id": "soul_ore", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "nc_ossuary_maul",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_6",
+      "craft_inputs": [
+        { "item_id": "wooden_mace", "qty": 1 },
+        { "item_id": "soul_ore", "qty": 2 },
+        { "item_id": "spectral_log", "qty": 1 },
+        { "item_id": "nc_wraith_thread", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "nc_bone_knife",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_6",
+      "craft_inputs": [
+        { "item_id": "bone_dagger", "qty": 1 },
+        { "item_id": "soul_ore", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "nc_wraith_fang",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_6",
+      "craft_inputs": [
+        { "item_id": "bone_dagger", "qty": 1 },
+        { "item_id": "soul_ore", "qty": 2 },
+        { "item_id": "spectral_log", "qty": 1 },
+        { "item_id": "nc_wraith_thread", "qty": 1 }
       ]
     },
     {
@@ -899,9 +1982,37 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "iron_sword", "qty": 1 },
-        { "item_id": "soul_ore", "qty": 3 },
+        { "item_id": "nc_wraith_fang", "qty": 1 },
+        { "item_id": "nc_wraith_thread", "qty": 2 },
         { "item_id": "boss_trophy_necropolis", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "nc_bone_shield",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "offhand",
+      "is_craft": true,
+      "region": "region_6",
+      "craft_inputs": [
+        { "item_id": "wooden_shield", "qty": 1 },
+        { "item_id": "soul_ore", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "nc_ossuary_shield",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "offhand",
+      "is_craft": true,
+      "region": "region_6",
+      "craft_inputs": [
+        { "item_id": "wooden_shield", "qty": 1 },
+        { "item_id": "soul_ore", "qty": 2 },
+        { "item_id": "spectral_log", "qty": 1 },
+        { "item_id": "nc_wraith_thread", "qty": 1 }
       ]
     },
     {
@@ -913,9 +2024,37 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "reinforced_shield", "qty": 1 },
-        { "item_id": "spectral_log", "qty": 3 },
+        { "item_id": "nc_ossuary_shield", "qty": 1 },
+        { "item_id": "nc_wraith_thread", "qty": 2 },
         { "item_id": "boss_trophy_necropolis", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "nc_bone_vest",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "armor",
+      "is_craft": true,
+      "region": "region_6",
+      "craft_inputs": [
+        { "item_id": "padded_mail", "qty": 1 },
+        { "item_id": "soul_ore", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "nc_ossuary_mail",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "armor",
+      "is_craft": true,
+      "region": "region_6",
+      "craft_inputs": [
+        { "item_id": "padded_mail", "qty": 1 },
+        { "item_id": "soul_ore", "qty": 2 },
+        { "item_id": "spectral_log", "qty": 1 },
+        { "item_id": "nc_wraith_thread", "qty": 1 }
       ]
     },
     {
@@ -927,24 +2066,122 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "chainmail_vest", "qty": 1 },
-        { "item_id": "soul_ore", "qty": 3 },
-        { "item_id": "spectral_log", "qty": 2 },
+        { "item_id": "nc_ossuary_mail", "qty": 1 },
+        { "item_id": "nc_wraith_thread", "qty": 2 },
         { "item_id": "boss_trophy_necropolis", "qty": 1 }
       ]
     },
     {
-      "output_id": "fr_void_helm",
+      "output_id": "nc_bone_helm",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "helmet",
+      "is_craft": true,
+      "region": "region_6",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_hood", "qty": 1 },
+        { "item_id": "soul_ore", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "nc_ossuary_helm",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "helmet",
+      "is_craft": true,
+      "region": "region_6",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_hood", "qty": 1 },
+        { "item_id": "soul_ore", "qty": 2 },
+        { "item_id": "spectral_log", "qty": 1 },
+        { "item_id": "nc_wraith_thread", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "nc_bone_crown",
       "output_qty": 1,
       "required_tier": 4,
       "upgrade_tier": 4,
       "equipment_type": "helmet",
       "is_craft": true,
+      "region": "region_6",
+      "craft_inputs": [
+        { "item_id": "nc_ossuary_helm", "qty": 1 },
+        { "item_id": "nc_wraith_thread", "qty": 2 },
+        { "item_id": "boss_trophy_necropolis", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "nc_bone_greaves",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_6",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_greaves", "qty": 1 },
+        { "item_id": "soul_ore", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "nc_ossuary_greaves",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_6",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_greaves", "qty": 1 },
+        { "item_id": "soul_ore", "qty": 2 },
+        { "item_id": "spectral_log", "qty": 1 },
+        { "item_id": "nc_wraith_thread", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "nc_wraith_leggings",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_6",
+      "craft_inputs": [
+        { "item_id": "nc_ossuary_greaves", "qty": 1 },
+        { "item_id": "nc_wraith_thread", "qty": 2 },
+        { "item_id": "boss_trophy_necropolis", "qty": 1 }
+      ]
+    },
+
+    {
+      "output_id": "fr_rift_sword",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "iron_helmet", "qty": 1 },
-        { "item_id": "primordial_essence", "qty": 2 },
-        { "item_id": "boss_trophy_fractured_realm", "qty": 1 }
+        { "item_id": "rusty_sword", "qty": 1 },
+        { "item_id": "fr_entropy_residue", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "fr_null_blade",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_7",
+      "craft_inputs": [
+        { "item_id": "rusty_sword", "qty": 1 },
+        { "item_id": "fr_entropy_residue", "qty": 2 },
+        { "item_id": "fr_null_fragment", "qty": 1 },
+        { "item_id": "fr_dimensional_essence", "qty": 1 }
       ]
     },
     {
@@ -956,9 +2193,79 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "iron_sword", "qty": 1 },
-        { "item_id": "primordial_essence", "qty": 3 },
+        { "item_id": "fr_null_blade", "qty": 1 },
+        { "item_id": "fr_dimensional_essence", "qty": 2 },
         { "item_id": "boss_trophy_fractured_realm", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "fr_rift_mace",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_7",
+      "craft_inputs": [
+        { "item_id": "wooden_mace", "qty": 1 },
+        { "item_id": "fr_entropy_residue", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "fr_null_maul",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_7",
+      "craft_inputs": [
+        { "item_id": "wooden_mace", "qty": 1 },
+        { "item_id": "fr_entropy_residue", "qty": 2 },
+        { "item_id": "fr_null_fragment", "qty": 1 },
+        { "item_id": "fr_dimensional_essence", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "fr_entropy_maul",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_7",
+      "craft_inputs": [
+        { "item_id": "fr_null_maul", "qty": 1 },
+        { "item_id": "fr_dimensional_essence", "qty": 2 },
+        { "item_id": "boss_trophy_fractured_realm", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "fr_rift_knife",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_7",
+      "craft_inputs": [
+        { "item_id": "bone_dagger", "qty": 1 },
+        { "item_id": "fr_entropy_residue", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "fr_null_fang",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "1h_weapon",
+      "is_craft": true,
+      "region": "region_7",
+      "craft_inputs": [
+        { "item_id": "bone_dagger", "qty": 1 },
+        { "item_id": "fr_entropy_residue", "qty": 2 },
+        { "item_id": "fr_null_fragment", "qty": 1 },
+        { "item_id": "fr_dimensional_essence", "qty": 1 }
       ]
     },
     {
@@ -970,23 +2277,37 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "iron_sword", "qty": 1 },
-        { "item_id": "primordial_essence", "qty": 3 },
+        { "item_id": "fr_null_fang", "qty": 1 },
+        { "item_id": "fr_dimensional_essence", "qty": 2 },
         { "item_id": "boss_trophy_fractured_realm", "qty": 1 }
       ]
     },
     {
-      "output_id": "fr_entropy_maul",
+      "output_id": "fr_rift_shield",
       "output_qty": 1,
-      "required_tier": 4,
-      "upgrade_tier": 4,
-      "equipment_type": "2h_weapon",
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "offhand",
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "iron_greataxe", "qty": 1 },
-        { "item_id": "primordial_essence", "qty": 3 },
-        { "item_id": "boss_trophy_fractured_realm", "qty": 1 }
+        { "item_id": "wooden_shield", "qty": 1 },
+        { "item_id": "fr_entropy_residue", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "fr_null_shield",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "offhand",
+      "is_craft": true,
+      "region": "region_7",
+      "craft_inputs": [
+        { "item_id": "wooden_shield", "qty": 1 },
+        { "item_id": "fr_entropy_residue", "qty": 2 },
+        { "item_id": "fr_null_fragment", "qty": 1 },
+        { "item_id": "fr_dimensional_essence", "qty": 1 }
       ]
     },
     {
@@ -998,9 +2319,37 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "reinforced_shield", "qty": 1 },
-        { "item_id": "void_crystal", "qty": 3 },
+        { "item_id": "fr_null_shield", "qty": 1 },
+        { "item_id": "fr_dimensional_essence", "qty": 2 },
         { "item_id": "boss_trophy_fractured_realm", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "fr_rift_vest",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "armor",
+      "is_craft": true,
+      "region": "region_7",
+      "craft_inputs": [
+        { "item_id": "padded_mail", "qty": 1 },
+        { "item_id": "fr_entropy_residue", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "fr_null_plate",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "armor",
+      "is_craft": true,
+      "region": "region_7",
+      "craft_inputs": [
+        { "item_id": "padded_mail", "qty": 1 },
+        { "item_id": "fr_entropy_residue", "qty": 2 },
+        { "item_id": "fr_null_fragment", "qty": 1 },
+        { "item_id": "fr_dimensional_essence", "qty": 1 }
       ]
     },
     {
@@ -1012,9 +2361,92 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "chainmail_vest", "qty": 1 },
-        { "item_id": "primordial_essence", "qty": 3 },
-        { "item_id": "void_crystal", "qty": 2 },
+        { "item_id": "fr_null_plate", "qty": 1 },
+        { "item_id": "fr_dimensional_essence", "qty": 2 },
+        { "item_id": "boss_trophy_fractured_realm", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "fr_rift_helm",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "helmet",
+      "is_craft": true,
+      "region": "region_7",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_hood", "qty": 1 },
+        { "item_id": "fr_entropy_residue", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "fr_null_helm",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "helmet",
+      "is_craft": true,
+      "region": "region_7",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_hood", "qty": 1 },
+        { "item_id": "fr_entropy_residue", "qty": 2 },
+        { "item_id": "fr_null_fragment", "qty": 1 },
+        { "item_id": "fr_dimensional_essence", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "fr_void_helm",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "helmet",
+      "is_craft": true,
+      "region": "region_7",
+      "craft_inputs": [
+        { "item_id": "fr_null_helm", "qty": 1 },
+        { "item_id": "fr_dimensional_essence", "qty": 2 },
+        { "item_id": "boss_trophy_fractured_realm", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "fr_rift_greaves",
+      "output_qty": 1,
+      "required_tier": 2,
+      "upgrade_tier": 2,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_7",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_greaves", "qty": 1 },
+        { "item_id": "fr_entropy_residue", "qty": 2 }
+      ]
+    },
+    {
+      "output_id": "fr_null_greaves",
+      "output_qty": 1,
+      "required_tier": 3,
+      "upgrade_tier": 3,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_7",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_greaves", "qty": 1 },
+        { "item_id": "fr_entropy_residue", "qty": 2 },
+        { "item_id": "fr_null_fragment", "qty": 1 },
+        { "item_id": "fr_dimensional_essence", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "fr_void_greaves",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_7",
+      "craft_inputs": [
+        { "item_id": "fr_null_greaves", "qty": 1 },
+        { "item_id": "fr_dimensional_essence", "qty": 2 },
         { "item_id": "boss_trophy_fractured_realm", "qty": 1 }
       ]
     }

@@ -1,0 +1,31 @@
+{
+  "id": "ah_ember_sword",
+  "display_name": "Ember Sword",
+  "description": "Forged in volcanic heat, this blade retains a faint orange glow along its cutting edge.",
+  "icon_hint": "dark iron sword with glowing orange-red cracks along the blade edge and a blackened leather grip",
+  "item_type": "weapon",
+  "item_subtype": "sword",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 7
+  },
+  "stat_bonuses": {
+    "attack": 7,
+    "speed": 1
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 55,
+  "icon_path": "",
+  "tags": ["region_4", "weapon", "sword", "ashen_horizons", "tier_2"]
+}

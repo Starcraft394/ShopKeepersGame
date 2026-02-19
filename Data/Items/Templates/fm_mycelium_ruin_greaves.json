@@ -1,0 +1,34 @@
+{
+  "id": "fm_mycelium_ruin_greaves",
+  "display_name": "Mycelium Ruin Greaves",
+  "description": "Leg armor of living fungal matter. Spore tendrils grip the ground for stability, and the mycelium absorbs impacts.",
+  "icon_hint": "pale green leg armor of living mycelium with small spore tendrils extending from the joints and faint bioluminescent glow",
+  "item_type": "armor",
+  "item_subtype": "light_legs",
+  "slot": "legs",
+  "equip_slot": "legs",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "category": "equipment",
+  "base_stats": {
+    "defense": 6
+  },
+  "stat_bonuses": {
+    "defense": 6,
+    "health": 12
+  },
+  "passive_id": "fm_passive_potency",
+  "combat_tag": "spore_shield",
+  "combat_tag_effect": {"trigger": "on_melee_hit_received", "effect": "apply_status", "status": "poisoned", "chance": 0.15},
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 70,
+  "icon_path": "",
+  "tags": ["region_2", "armor", "light_legs", "fungalmire", "tier_4"]
+}

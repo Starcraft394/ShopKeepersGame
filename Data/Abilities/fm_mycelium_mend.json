@@ -1,0 +1,23 @@
+{
+  "id": "fm_mycelium_mend",
+  "display_name": "Mycelium Mend",
+  "description": "Weave mycelium threads to mend wounds and cleanse one debuff.",
+  "icon_hint": "intricate white mycelium network pulsing with soft teal healing light and purifying glow",
+  "ability_type": "equipment",
+  "source_class_id": "",
+  "category": "equipment",
+  "target_type": "single_ally",
+  "effect_type": "heal",
+  "base_damage": 0,
+  "base_heal": 18,
+  "damage_type": "magical",
+  "attack_scaling": 0.0,
+  "cooldown": 3,
+  "cleanses_debuffs": 1,
+  "applies_status_id": "",
+  "status_stacks": 0,
+  "target_team": "ally",
+  "target_rule": "lowest_hp_pct",
+  "can_overheal": false,
+  "allow_self_target": true
+}

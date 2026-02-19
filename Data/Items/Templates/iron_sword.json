@@ -12,10 +12,10 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "attack": 6
+    "attack": 5
   },
   "stat_bonuses": {
-    "attack": 6,
+    "attack": 5,
     "speed": 1
   },
   "allowed_affixes": [],
@@ -25,7 +25,7 @@
   "allowed_socket_types": [],
   "can_refine": true,
   "max_refinement": 10,
-  "base_value": 45,
+  "base_value": 40,
   "icon_path": "res://Assets/_ArtPacks/Swords/PNG/Transperent/Icon1.png",
   "tags": ["region_1", "weapon", "sword", "crafted", "tier_2"]
 }

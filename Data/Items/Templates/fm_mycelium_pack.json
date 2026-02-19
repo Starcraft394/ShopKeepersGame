@@ -1,0 +1,20 @@
+{
+  "id": "fm_mycelium_pack",
+  "display_name": "Mycelium Pack",
+  "description": "A living pack grown from interconnected mycelium networks, it reshapes itself to fit its contents.",
+  "icon_hint": "pale green living mycelium pack with bioluminescent veins and spore-dusted flap",
+  "item_type": "backpack",
+  "item_subtype": "backpack",
+  "category": "equipment",
+  "slot": "backpack",
+  "equip_slot": "bag",
+  "tier": 3,
+  "base_stats": {},
+  "stat_bonuses": {},
+  "bag_capacity_bonus": 6,
+  "base_value": 118,
+  "buy_value": 0,
+  "can_refine": false,
+  "icon_path": "",
+  "tags": ["region_2", "backpack", "fungalmire", "tier_3"]
+}

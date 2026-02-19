@@ -1,0 +1,34 @@
+{
+  "id": "ss_leviathan_bow",
+  "display_name": "Leviathan Bow",
+  "description": "A bow carved from a leviathan's rib, strung with sea serpent sinew. Arrows fly with the force of a tidal wave.",
+  "icon_hint": "massive curved bone bow carved from a sea creature rib with iridescent blue-green sinew string and barnacle accents",
+  "item_type": "weapon",
+  "item_subtype": "bow",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 12
+  },
+  "stat_bonuses": {
+    "attack": 12,
+    "speed": 4
+  },
+  "ability_id": "ss_tidal_volley",
+  "combat_tag": "swift_current",
+  "combat_tag_effect": {"trigger": "combat_start", "effect": "buff_stat", "stat": "speed", "value": 1},
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 118,
+  "icon_path": "",
+  "tags": ["region_3", "weapon", "bow", "sunken_strand", "tier_4"]
+}

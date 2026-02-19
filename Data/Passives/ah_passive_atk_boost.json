@@ -1,0 +1,14 @@
+{
+  "id": "ah_passive_atk_boost",
+  "display_name": "Volcanic Might",
+  "description": "At combat start, gain +4 ATK. Drakeblood surges with volcanic power.",
+  "icon_hint": "erupting volcanic core with molten lava veins pulsing through a dark obsidian gauntlet shape",
+  "passive_type": "level_scaled_stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "attack",
+    "bonus": 4
+  },
+  "source_class_id": "",
+  "category": "equipment"
+}

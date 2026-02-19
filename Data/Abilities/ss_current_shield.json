@@ -1,0 +1,27 @@
+{
+  "id": "ss_current_shield",
+  "display_name": "Current Shield",
+  "description": "Wrap an ally in swirling currents that shield and quicken them.",
+  "icon_hint": "spiraling blue water vortex forming a protective bubble with swift current streaks inside",
+  "ability_type": "equipment",
+  "source_class_id": "",
+  "category": "equipment",
+  "target_type": "single_ally",
+  "effect_type": "buff",
+  "base_damage": 0,
+  "damage_type": "magical",
+  "attack_scaling": 0.0,
+  "cooldown": 4,
+  "applies_status_id": "",
+  "status_stacks": 0,
+  "shield_value": 12,
+  "shield_duration": 2,
+  "ally_buff": {
+    "stat": "speed",
+    "value": 2,
+    "duration": 2
+  },
+  "target_team": "ally",
+  "target_rule": "lowest_hp_pct",
+  "allow_self_target": true
+}

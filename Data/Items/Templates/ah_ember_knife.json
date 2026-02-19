@@ -1,0 +1,31 @@
+{
+  "id": "ah_ember_knife",
+  "display_name": "Ember Knife",
+  "description": "A small blade of heat-treated obsidian that smolders with volcanic warmth.",
+  "icon_hint": "short obsidian dagger with glowing orange-red veins and a heat-resistant wrapped leather grip with ember sparks",
+  "item_type": "weapon",
+  "item_subtype": "dagger",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 5
+  },
+  "stat_bonuses": {
+    "attack": 5,
+    "speed": 3
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 50,
+  "icon_path": "",
+  "tags": ["region_4", "weapon", "dagger", "ashen_horizons", "tier_2"]
+}

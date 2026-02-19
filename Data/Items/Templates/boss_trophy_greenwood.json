@@ -1,0 +1,14 @@
+{
+  "id": "boss_trophy_greenwood",
+  "display_name": "Elderwood Heart",
+  "description": "The ancient heartwood of the Greenwood's guardian, thrumming with primal life energy.",
+  "icon_hint": "glowing green heartwood core wrapped in living vines with golden sap droplets",
+  "item_type": "material",
+  "category": "material",
+  "tier": 4,
+  "base_stats": {},
+  "base_value": 75,
+  "buy_value": 0,
+  "icon_path": "",
+  "tags": ["region_1", "greenwood", "material", "boss_trophy", "crafting"]
+}

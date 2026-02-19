@@ -1,0 +1,32 @@
+{
+  "id": "nc_wraith_fang",
+  "display_name": "Wraith Fang",
+  "description": "A spectral dagger that phases between material and ethereal, slipping past defenses with ghostly precision.",
+  "icon_hint": "semi-transparent grey-green dagger with flickering soul-fire along the edge and a wraith-bone handle trailing spectral wisps",
+  "item_type": "weapon",
+  "item_subtype": "dagger",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 9
+  },
+  "stat_bonuses": {
+    "attack": 9,
+    "speed": 4,
+    "health": 3
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 92,
+  "icon_path": "",
+  "tags": ["region_6", "weapon", "dagger", "necropolis", "tier_3"]
+}

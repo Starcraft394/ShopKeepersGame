@@ -5,9 +5,7 @@
 
   "weight_by_tier": {
     "1": 10,
-    "2": 6,
-    "3": 3,
-    "4": 1
+    "2": 6
   },
 
   "consumables": [
@@ -87,27 +85,45 @@
       "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "ss_coral_blade",
-      "weight": 12,
-      "price_gold": 80,
+      "item_id": "ss_tide_sword",
+      "weight": 10,
+      "price_gold": 110,
       "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "ss_coral_staff",
+      "item_id": "ss_driftwood_bow",
       "weight": 10,
-      "price_gold": 85,
+      "price_gold": 106,
       "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "ss_tidestriker_bow",
+      "item_id": "ss_barnacle_mace",
       "weight": 10,
-      "price_gold": 75,
+      "price_gold": 114,
+      "tier": 2,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "ss_driftwood_staff",
+      "weight": 10,
+      "price_gold": 110,
+      "tier": 2,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "ss_coral_knife",
+      "weight": 10,
+      "price_gold": 99,
       "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
@@ -135,18 +151,18 @@
       "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "ss_abalone_shield",
-      "weight": 12,
-      "price_gold": 70,
+      "item_id": "ss_shell_shield",
+      "weight": 10,
+      "price_gold": 110,
       "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "ss_sea_glass_focus",
+      "item_id": "ss_coral_focus",
       "weight": 10,
-      "price_gold": 80,
+      "price_gold": 110,
       "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
@@ -156,30 +172,30 @@
 
   "armor": [
     {
-      "item_id": "ss_kelp_vest",
-      "weight": 12,
-      "price_gold": 80,
+      "item_id": "ss_kelp_tunic",
+      "weight": 10,
+      "price_gold": 99,
       "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "ss_barnacle_plate",
-      "weight": 6,
-      "price_gold": 120,
-      "tier": 3,
+      "item_id": "ss_shell_vest",
+      "weight": 10,
+      "price_gold": 110,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
+      "required_dungeon_floor_unlocked": 2
     }
   ],
 
   "helmets": [
     {
-      "item_id": "ss_tidecrest_helm",
-      "weight": 12,
-      "price_gold": 65,
+      "item_id": "ss_shell_helm",
+      "weight": 10,
+      "price_gold": 66,
       "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
@@ -189,9 +205,9 @@
 
   "legs": [
     {
-      "item_id": "ss_kelp_greaves",
-      "weight": 12,
-      "price_gold": 65,
+      "item_id": "ss_kelp_leggings",
+      "weight": 10,
+      "price_gold": 66,
       "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
@@ -201,18 +217,18 @@
 
   "accessories": [
     {
-      "item_id": "ss_tidecaller_ring",
+      "item_id": "ss_pearl_ring",
       "weight": 10,
-      "price_gold": 60,
+      "price_gold": 92,
       "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "ss_pearl_amulet",
+      "item_id": "ss_pearl_pendant",
       "weight": 10,
-      "price_gold": 65,
+      "price_gold": 106,
       "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,

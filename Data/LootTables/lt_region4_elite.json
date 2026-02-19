@@ -8,7 +8,8 @@
     { "item_id": "ah_drake_scale", "weight": 26, "min_qty": 2, "max_qty": 3 },
     { "item_id": "ah_sulfite_gland", "weight": 19, "min_qty": 1, "max_qty": 2 },
     { "item_id": "obsidian_shard", "weight": 19, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "healing_tonic", "weight": 13, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "", "weight": 13, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "healing_tonic", "weight": 10, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "phoenix_ash", "weight": 6, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 10, "min_qty": 0, "max_qty": 0 }
   ]
 }

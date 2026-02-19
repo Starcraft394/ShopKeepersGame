@@ -1,0 +1,31 @@
+{
+  "id": "ss_driftwood_bow",
+  "display_name": "Driftwood Bow",
+  "description": "Shaped from salt-hardened driftwood, this bow is light and quick, perfect for coastal skirmishes.",
+  "icon_hint": "weathered pale driftwood bow with barnacle accents and a braided sea-grass bowstring with small shells tied to the tips",
+  "item_type": "weapon",
+  "item_subtype": "bow",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 5
+  },
+  "stat_bonuses": {
+    "attack": 5,
+    "speed": 2
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 48,
+  "icon_path": "",
+  "tags": ["region_3", "weapon", "bow", "sunken_strand", "tier_2"]
+}

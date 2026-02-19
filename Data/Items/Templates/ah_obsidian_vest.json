@@ -1,0 +1,32 @@
+{
+  "id": "ah_obsidian_vest",
+  "display_name": "Obsidian Vest",
+  "description": "Plates of razor-sharp volcanic glass fitted into a heat-resistant frame.",
+  "icon_hint": "glossy black obsidian plate vest with faint red ember glow between the joints",
+  "item_type": "armor",
+  "item_subtype": "heavy_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 6
+  },
+  "stat_bonuses": {
+    "defense": 6,
+    "speed": -1,
+    "health": 12
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 58,
+  "icon_path": "",
+  "tags": ["region_4", "armor", "heavy", "ashen_horizons", "tier_2"]
+}

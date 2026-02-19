@@ -8,7 +8,7 @@
   "category": "equipment",
   "slot": "weapon_main",
   "equip_slot": "weapon",
-  "tier": 5,
+  "tier": 4,
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
@@ -16,8 +16,10 @@
   },
   "stat_bonuses": {
     "attack": 20,
-    "health": 26
+    "health": 34
   },
+  "combat_tag": "dimensional_rift",
+  "combat_tag_effect": {"trigger": "on_kill", "effect": "damage_random_enemy", "damage": 8, "damage_type": "void", "chance": 0.25},
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -27,5 +29,5 @@
   "max_refinement": 10,
   "base_value": 155,
   "icon_path": "",
-  "tags": ["region_7", "weapon", "staff", "final_realm", "tier_5"]
+  "tags": ["region_7", "weapon", "staff", "final_realm", "tier_4"]
 }

@@ -1,0 +1,20 @@
+{
+  "id": "fr_null_pack",
+  "display_name": "Null Pack",
+  "description": "A pack forged from null-matter, its interior exists in a pocket dimension of absolute void.",
+  "icon_hint": "black null-matter pack with purple void runes and edges that seem to devour light",
+  "item_type": "backpack",
+  "item_subtype": "backpack",
+  "category": "equipment",
+  "slot": "backpack",
+  "equip_slot": "bag",
+  "tier": 3,
+  "base_stats": {},
+  "stat_bonuses": {},
+  "bag_capacity_bonus": 6,
+  "base_value": 148,
+  "buy_value": 0,
+  "can_refine": false,
+  "icon_path": "",
+  "tags": ["region_7", "backpack", "fractured_realm", "tier_3"]
+}

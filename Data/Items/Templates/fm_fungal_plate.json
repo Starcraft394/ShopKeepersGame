@@ -1,0 +1,32 @@
+{
+  "id": "fm_fungal_plate",
+  "display_name": "Fungal Plate",
+  "description": "Thick fungal growths layered and compressed into surprisingly rigid armor plating.",
+  "icon_hint": "bulky pale green plate armor covered in overlapping mushroom caps with dark mycelium veins",
+  "item_type": "armor",
+  "item_subtype": "heavy_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 7
+  },
+  "stat_bonuses": {
+    "defense": 7,
+    "speed": -1,
+    "health": 16
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 72,
+  "icon_path": "",
+  "tags": ["region_2", "armor", "heavy", "fungalmire", "tier_3"]
+}

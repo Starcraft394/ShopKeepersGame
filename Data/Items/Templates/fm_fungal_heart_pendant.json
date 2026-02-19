@@ -1,0 +1,34 @@
+{
+  "id": "fm_fungal_heart_pendant",
+  "display_name": "Fungal Heart Pendant",
+  "description": "A pendant containing a tiny beating fungal heart suspended in amber resin. It radiates a warm, healing pulse.",
+  "icon_hint": "amber resin pendant containing a small glowing green fungal heart with visible mycelium veins on a dark cord",
+  "item_type": "accessory",
+  "item_subtype": "amulet",
+  "category": "equipment",
+  "slot": "accessory_2",
+  "equip_slot": "amulet",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "health": 18
+  },
+  "stat_bonuses": {
+    "health": 18,
+    "defense": 4
+  },
+  "passive_id": "fm_passive_cleanse",
+  "combat_tag": "spore_shield",
+  "combat_tag_effect": {"trigger": "on_melee_hit_received", "effect": "apply_status", "status": "poisoned", "chance": 0.15},
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 95,
+  "icon_path": "",
+  "tags": ["region_2", "accessory", "amulet", "fungalmire", "tier_4"]
+}

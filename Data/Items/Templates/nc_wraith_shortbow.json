@@ -1,0 +1,32 @@
+{
+  "id": "nc_wraith_shortbow",
+  "display_name": "Wraith Shortbow",
+  "description": "Infused with wraith essence, arrows from this bow pass through armor as if it were mist.",
+  "icon_hint": "dark bone-and-sinew shortbow with green soul-fire flickering at the tips and spectral mist trailing from the string",
+  "item_type": "weapon",
+  "item_subtype": "bow",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 12
+  },
+  "stat_bonuses": {
+    "attack": 12,
+    "speed": 3,
+    "health": 3
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 98,
+  "icon_path": "",
+  "tags": ["region_6", "weapon", "bow", "necropolis", "tier_3"]
+}

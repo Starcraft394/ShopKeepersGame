@@ -1,0 +1,18 @@
+{
+  "id": "tutorial_manage_roster",
+  "steps": [
+    {
+      "speaker": "Mira",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
+      "title": "Your Roster",
+      "body": "Here's your full roster. Add heroes to your party, then assign them a formation row — Front, Middle, or Back.\n\nFront row heroes get targeted first by melee attacks, so put your toughest fighters there. Ranged and support heroes are safer in the Back."
+    },
+    {
+      "speaker": "Mira",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
+      "title": "Gear and Bags",
+      "body": "Use Manage Gear to equip weapons, armor, and accessories. You can also equip a backpack in the Bag slot to carry more items.\n\nBelow the equipment you'll see your hero's bag inventory — fill it with consumables like potions before heading into the dungeon. Preparation saves lives.",
+      "button_text": "Got it!"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "nc_death_wave",
+  "display_name": "Death Wave",
+  "description": "Release a wave of necrotic energy that dooms all enemies.",
+  "icon_hint": "expanding shockwave of dark purple necrotic energy with ghostly skull wisps and decaying particles",
+  "ability_type": "equipment",
+  "source_class_id": "",
+  "category": "equipment",
+  "target_type": "all_enemies",
+  "effect_type": "damage",
+  "base_damage": 9,
+  "damage_type": "dark",
+  "attack_scaling": 0.8,
+  "cooldown": 5,
+  "applies_status_id": "doom",
+  "applies_status_duration": 3,
+  "status_stacks": 2
+}

@@ -5,7 +5,8 @@
   "min_drops": 3,
   "max_drops": 6,
   "entries": [
-    { "item_id": "fr_rift_membrane", "weight": 12, "min_qty": 3, "max_qty": 5 },
+    { "item_id": "boss_trophy_fractured_realm", "weight": 20, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "fr_rift_membrane", "weight": 10, "min_qty": 3, "max_qty": 5 },
     { "item_id": "void_crystal", "weight": 10, "min_qty": 1, "max_qty": 2 },
     { "item_id": "fractured_soulglass", "weight": 8, "min_qty": 1, "max_qty": 1 },
     { "item_id": "primordial_essence", "weight": 5, "min_qty": 1, "max_qty": 1 },

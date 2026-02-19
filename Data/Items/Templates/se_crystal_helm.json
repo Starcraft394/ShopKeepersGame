@@ -1,0 +1,32 @@
+{
+  "id": "se_crystal_helm",
+  "display_name": "Crystal Helm",
+  "description": "A helmet formed from prismatic crystal shards, refracting light into dazzling patterns.",
+  "icon_hint": "translucent blue-white crystal helmet with prismatic facets and faint starlight glow from within",
+  "item_type": "armor",
+  "item_subtype": "helmet",
+  "category": "equipment",
+  "slot": "head",
+  "equip_slot": "helmet",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 4
+  },
+  "stat_bonuses": {
+    "defense": 4,
+    "speed": 1,
+    "health": 5
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 38,
+  "icon_path": "",
+  "tags": ["region_5", "armor", "helmet", "starfall_expanse", "tier_2"]
+}

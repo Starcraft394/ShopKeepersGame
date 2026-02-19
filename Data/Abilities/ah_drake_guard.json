@@ -1,0 +1,20 @@
+{
+  "id": "ah_drake_guard",
+  "display_name": "Drake Guard",
+  "description": "Raise the drakescale aegis, absorbing blows and reflecting fire.",
+  "icon_hint": "massive red-scaled dragon shield raised defensively with fire reflecting off its surface in radiant waves",
+  "ability_type": "equipment",
+  "source_class_id": "",
+  "category": "equipment",
+  "target_type": "self",
+  "effect_type": "buff",
+  "base_damage": 0,
+  "damage_type": "fire",
+  "attack_scaling": 0.0,
+  "cooldown": 5,
+  "applies_status_id": "",
+  "status_stacks": 0,
+  "shield_value": 25,
+  "shield_duration": 2,
+  "reflect_percent": 30
+}

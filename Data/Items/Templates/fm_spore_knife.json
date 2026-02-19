@@ -1,0 +1,32 @@
+{
+  "id": "fm_spore_knife",
+  "display_name": "Spore Knife",
+  "description": "A short blade grown from hardened fungal chitin, its edge releases a faint cloud of spores with each cut.",
+  "icon_hint": "pale off-white knife with purple spore clusters along the spine and a spongy mushroom-cap handle with bioluminescent spots",
+  "item_type": "weapon",
+  "item_subtype": "dagger",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 3
+  },
+  "stat_bonuses": {
+    "attack": 3,
+    "speed": 3,
+    "health": 2
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 42,
+  "icon_path": "",
+  "tags": ["region_2", "weapon", "dagger", "fungalmire", "tier_2"]
+}

@@ -1,0 +1,14 @@
+{
+  "id": "fm_passive_resist",
+  "display_name": "Fungal Fortitude",
+  "description": "At combat start, gain +2 DEF. Living mycelium hardens against poison.",
+  "icon_hint": "thick layered purple-grey fungal plating with toxic green spore particles deflecting off the surface",
+  "passive_type": "level_scaled_stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "defense",
+    "bonus": 2
+  },
+  "source_class_id": "",
+  "category": "equipment"
+}

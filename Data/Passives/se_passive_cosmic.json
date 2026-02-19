@@ -1,0 +1,16 @@
+{
+  "id": "se_passive_cosmic",
+  "display_name": "Cosmic Attunement",
+  "description": "At combat start, gain +2 ATK, +2 DEF, +2 SPD, and 5 shield HP. Cosmic energy suffuses every fiber.",
+  "icon_hint": "radiant nebula constellation pattern with four colored star nodes: red, blue, yellow, and green connected by silver starlight threads",
+  "passive_type": "multi_stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "attack": 2,
+    "defense": 2,
+    "speed": 2,
+    "health": 5
+  },
+  "source_class_id": "",
+  "category": "equipment"
+}

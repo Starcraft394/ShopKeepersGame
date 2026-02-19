@@ -8,7 +8,7 @@
   "category": "equipment",
   "slot": "weapon_main",
   "equip_slot": "weapon",
-  "tier": 2,
+  "tier": 3,
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
@@ -27,5 +27,5 @@
   "max_refinement": 10,
   "base_value": 55,
   "icon_path": "",
-  "tags": ["region_2", "weapon", "staff", "fungalmire", "tier_2"]
+  "tags": ["region_2", "weapon", "staff", "fungalmire", "tier_3"]
 }

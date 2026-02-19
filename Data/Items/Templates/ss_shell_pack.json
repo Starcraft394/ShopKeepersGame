@@ -1,0 +1,20 @@
+{
+  "id": "ss_shell_pack",
+  "display_name": "Shell Pack",
+  "description": "A rigid pack built from interlocking shells, reinforced with coral struts and kelp bindings.",
+  "icon_hint": "blue and teal shell-plated pack with coral frame and kelp shoulder straps",
+  "item_type": "backpack",
+  "item_subtype": "backpack",
+  "category": "equipment",
+  "slot": "backpack",
+  "equip_slot": "bag",
+  "tier": 3,
+  "base_stats": {},
+  "stat_bonuses": {},
+  "bag_capacity_bonus": 6,
+  "base_value": 122,
+  "buy_value": 0,
+  "can_refine": false,
+  "icon_path": "",
+  "tags": ["region_3", "backpack", "sunken_strand", "tier_3"]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "fr_rift_shield",
+  "display_name": "Rift Shield",
+  "description": "A shield that partially exists in another dimension. Attacks seem to pass through it into the void.",
+  "icon_hint": "dark angular shield with sections phasing into void-purple dimensional rifts and reality distortion waves across its surface",
+  "item_type": "armor",
+  "item_subtype": "shield",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 7
+  },
+  "stat_bonuses": {
+    "defense": 7,
+    "health": 15
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 72,
+  "icon_path": "",
+  "tags": ["region_7", "offhand", "shield", "fractured_realm", "tier_2"]
+}

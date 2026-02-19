@@ -8,17 +8,19 @@
   "category": "equipment",
   "slot": "chest",
   "equip_slot": "armor",
-  "tier": 5,
+  "tier": 4,
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "defense": 12
+    "defense": 13
   },
   "stat_bonuses": {
-    "defense": 12,
+    "defense": 13,
     "speed": 3,
-    "health": 14
+    "health": 16
   },
+  "combat_tag": "dimensional_rift",
+  "combat_tag_effect": {"trigger": "on_kill", "effect": "damage_random_enemy", "damage": 8, "damage_type": "void", "chance": 0.25},
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -28,5 +30,5 @@
   "max_refinement": 10,
   "base_value": 158,
   "icon_path": "",
-  "tags": ["region_7", "armor", "light_chest", "final_realm", "tier_5"]
+  "tags": ["region_7", "armor", "light_chest", "final_realm", "tier_4"]
 }

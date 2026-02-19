@@ -12,12 +12,16 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "attack": 18
+    "attack": 17,
+    "health": 3
   },
   "stat_bonuses": {
-    "attack": 18,
-    "speed": 4
+    "attack": 17,
+    "speed": 4,
+    "health": 3
   },
+  "combat_tag": "undying_will",
+  "combat_tag_effect": {"trigger": "on_low_hp", "effect": "buff_stat", "stat": "defense", "value": 3, "duration": 2, "threshold": 0.25, "once": true},
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,

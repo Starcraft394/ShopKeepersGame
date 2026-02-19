@@ -1,0 +1,31 @@
+{
+  "id": "gw_ironbark_shield",
+  "display_name": "Ironbark Shield",
+  "description": "A shield carved from ironbark wood, nearly as hard as steel. Vines still grow along its rim.",
+  "icon_hint": "round shield of dark ironbark wood with living green vines along the rim and a carved leaf emblem at center",
+  "item_type": "armor",
+  "item_subtype": "shield",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 7
+  },
+  "stat_bonuses": {
+    "defense": 7,
+    "health": 12
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 68,
+  "icon_path": "",
+  "tags": ["region_1", "offhand", "shield", "greenwood", "tier_3"]
+}

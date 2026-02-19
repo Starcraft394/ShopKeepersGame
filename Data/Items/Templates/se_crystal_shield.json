@@ -1,0 +1,31 @@
+{
+  "id": "se_crystal_shield",
+  "display_name": "Crystal Shield",
+  "description": "A shield formed from interlocking starfall crystals. Light refracts through it in dazzling patterns.",
+  "icon_hint": "round shield of interlocking translucent white-blue crystal facets with prismatic light refractions and a silver frame",
+  "item_type": "armor",
+  "item_subtype": "shield",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 6
+  },
+  "stat_bonuses": {
+    "defense": 6,
+    "health": 12
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 60,
+  "icon_path": "",
+  "tags": ["region_5", "offhand", "shield", "starfall_expanse", "tier_2"]
+}

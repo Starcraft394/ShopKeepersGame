@@ -1,0 +1,13 @@
+{
+  "id": "se_passive_cdr",
+  "display_name": "Temporal Flow",
+  "description": "At combat start, reduce all ability cooldowns by 1. Time bends around the wearer.",
+  "icon_hint": "swirling silver-blue hourglass with stardust sand flowing upward against gravity surrounded by clockwork gears",
+  "passive_type": "cooldown_reduction",
+  "trigger": "combat_start",
+  "effect": {
+    "reduce_all_cooldowns": 1
+  },
+  "source_class_id": "",
+  "category": "equipment"
+}

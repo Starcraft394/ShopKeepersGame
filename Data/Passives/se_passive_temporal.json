@@ -1,0 +1,13 @@
+{
+  "id": "se_passive_temporal",
+  "display_name": "Temporal Echo",
+  "description": "At combat start, reduce weapon ability cooldown by 1. Echoes of future actions ripple backward.",
+  "icon_hint": "ghostly silver afterimage of a blade strike echoing backward through concentric temporal rings",
+  "passive_type": "cooldown_reduction",
+  "trigger": "combat_start",
+  "effect": {
+    "reduce_weapon_cooldown": 1
+  },
+  "source_class_id": "",
+  "category": "equipment"
+}

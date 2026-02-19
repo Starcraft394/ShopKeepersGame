@@ -1,0 +1,32 @@
+{
+  "id": "fr_null_plate",
+  "display_name": "Null Plate",
+  "description": "Forged in the void between dimensions, this armor absorbs impacts into nothingness.",
+  "icon_hint": "heavy black plate armor with deep purple void-energy veins and floating rift fragments orbiting the shoulders",
+  "item_type": "armor",
+  "item_subtype": "heavy_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 14
+  },
+  "stat_bonuses": {
+    "defense": 14,
+    "speed": -2,
+    "health": 30
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 128,
+  "icon_path": "",
+  "tags": ["region_7", "armor", "heavy", "fractured_realm", "tier_3"]
+}

@@ -1,0 +1,32 @@
+{
+  "id": "nc_shroud_tunic",
+  "display_name": "Shroud Tunic",
+  "description": "Woven from spectral burial cloth, this tunic deadens blows and muffles the wearer's presence.",
+  "icon_hint": "tattered grey tunic with ghostly green spectral wisps drifting from the fabric edges",
+  "item_type": "armor",
+  "item_subtype": "light_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 4
+  },
+  "stat_bonuses": {
+    "defense": 4,
+    "speed": 1,
+    "health": 6
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 62,
+  "icon_path": "",
+  "tags": ["region_6", "armor", "light", "necropolis", "tier_2"]
+}

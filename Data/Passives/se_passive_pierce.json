@@ -1,0 +1,13 @@
+{
+  "id": "se_passive_pierce",
+  "display_name": "Starlight Pierce",
+  "description": "Attacks have a 15% chance to pierce armor. Prismatic focus reveals weaknesses.",
+  "icon_hint": "brilliant white starlight beam refracting through a prism into a sharp piercing needle of rainbow light",
+  "passive_type": "armor_piercing_chance",
+  "trigger": "on_attack",
+  "effect": {
+    "chance_percent": 15
+  },
+  "source_class_id": "",
+  "category": "equipment"
+}

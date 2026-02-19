@@ -1,0 +1,34 @@
+{
+  "id": "fm_mycelium_heart_staff",
+  "display_name": "Mycelium Heart Staff",
+  "description": "A living staff grown around a pulsating mycelium heart. Bioluminescent veins course along its length, channeling the swamp's vitality.",
+  "icon_hint": "tall twisted staff of living mycelium with a glowing green pulsating heart at the crown and bioluminescent veins along the shaft",
+  "item_type": "weapon",
+  "item_subtype": "staff",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 11
+  },
+  "stat_bonuses": {
+    "attack": 11,
+    "health": 18
+  },
+  "ability_id": "fm_mycelium_mend",
+  "combat_tag": "spore_shield",
+  "combat_tag_effect": {"trigger": "on_melee_hit_received", "effect": "apply_status", "status": "poisoned", "chance": 0.15},
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 115,
+  "icon_path": "",
+  "tags": ["region_2", "weapon", "staff", "fungalmire", "tier_4"]
+}

@@ -1,0 +1,36 @@
+{
+  "id": "fm_mycelium_ruin_plate",
+  "display_name": "Mycelium Ruin Plate",
+  "description": "Plate armor grown from the ruins of an ancient fungal colony. Living mycelium knits together, slowly regenerating damage.",
+  "icon_hint": "heavy plate armor of interlocking pale green mycelium segments with glowing bioluminescent veins and small mushroom growths on the pauldrons",
+  "item_type": "armor",
+  "item_subtype": "heavy_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 10,
+    "speed": -1
+  },
+  "stat_bonuses": {
+    "defense": 10,
+    "speed": -1,
+    "health": 24
+  },
+  "passive_id": "fm_passive_resist",
+  "combat_tag": "spore_shield",
+  "combat_tag_effect": {"trigger": "on_melee_hit_received", "effect": "apply_status", "status": "poisoned", "chance": 0.15},
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 115,
+  "icon_path": "",
+  "tags": ["region_2", "armor", "fungalmire", "tier_4"]
+}

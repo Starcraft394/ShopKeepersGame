@@ -9,7 +9,8 @@
     { "item_id": "se_void_silk", "weight": 18, "min_qty": 1, "max_qty": 2 },
     { "item_id": "temporal_residue", "weight": 14, "min_qty": 1, "max_qty": 1 },
     { "item_id": "se_echo_essence", "weight": 14, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "strong_healing_tonic", "weight": 12, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "", "weight": 12, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "strong_healing_tonic", "weight": 10, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "void_essence", "weight": 6, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 8, "min_qty": 0, "max_qty": 0 }
   ]
 }

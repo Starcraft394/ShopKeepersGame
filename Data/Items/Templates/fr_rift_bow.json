@@ -1,0 +1,32 @@
+{
+  "id": "fr_rift_bow",
+  "display_name": "Rift Bow",
+  "description": "This bow bends space itself — arrows emerge from small tears in reality, striking from impossible angles.",
+  "icon_hint": "angular dark purple bow with dimensional fractures along the limbs revealing void light and a crackling energy bowstring",
+  "item_type": "weapon",
+  "item_subtype": "bow",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 7
+  },
+  "stat_bonuses": {
+    "attack": 7,
+    "speed": 3,
+    "health": 2
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 65,
+  "icon_path": "",
+  "tags": ["region_7", "weapon", "bow", "fractured_realm", "tier_2"]
+}

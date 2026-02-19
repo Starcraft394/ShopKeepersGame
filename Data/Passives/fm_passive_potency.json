@@ -1,0 +1,13 @@
+{
+  "id": "fm_passive_potency",
+  "display_name": "Spore Potency",
+  "description": "Status effects applied by this hero last 1 additional turn.",
+  "icon_hint": "dense cloud of luminous violet spores swirling around a dripping fungal pod with an hourglass silhouette",
+  "passive_type": "status_duration_bonus",
+  "trigger": "passive",
+  "effect": {
+    "bonus_duration": 1
+  },
+  "source_class_id": "",
+  "category": "equipment"
+}

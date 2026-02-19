@@ -1,0 +1,32 @@
+{
+  "id": "fr_rift_knife",
+  "display_name": "Rift Knife",
+  "description": "A small blade that flickers between dimensions, its edge existing in multiple realities at once.",
+  "icon_hint": "small dark purple dagger with dimensional crack patterns revealing void light and a fractured obsidian handle that shifts appearance",
+  "item_type": "weapon",
+  "item_subtype": "dagger",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 6
+  },
+  "stat_bonuses": {
+    "attack": 6,
+    "speed": 4,
+    "health": 2
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 65,
+  "icon_path": "",
+  "tags": ["region_7", "weapon", "dagger", "fractured_realm", "tier_2"]
+}

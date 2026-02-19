@@ -1,0 +1,31 @@
+{
+  "id": "nc_ossuary_helm",
+  "display_name": "Ossuary Helm",
+  "description": "Forged deep in the ossuary from layered bone and spectral bindings, it shields body and mind alike.",
+  "icon_hint": "grey layered bone helmet with a skull-face visor and eerie green soul energy leaking from the seams",
+  "item_type": "armor",
+  "item_subtype": "helmet",
+  "category": "equipment",
+  "slot": "head",
+  "equip_slot": "helmet",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 7
+  },
+  "stat_bonuses": {
+    "defense": 7,
+    "health": 12
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 72,
+  "icon_path": "",
+  "tags": ["region_6", "armor", "helmet", "necropolis", "tier_3"]
+}

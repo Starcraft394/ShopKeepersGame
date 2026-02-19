@@ -1,0 +1,18 @@
+{
+  "id": "ss_tidal_volley",
+  "display_name": "Tidal Volley",
+  "description": "Loose a rapid volley of three tidal-enchanted arrows.",
+  "icon_hint": "three arrows wreathed in swirling blue-teal water streams arcing through sea spray mist",
+  "ability_type": "equipment",
+  "source_class_id": "",
+  "category": "equipment",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 4,
+  "damage_type": "physical",
+  "attack_scaling": 0.6,
+  "cooldown": 3,
+  "hit_count": 3,
+  "applies_status_id": "",
+  "status_stacks": 0
+}

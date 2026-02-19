@@ -1,0 +1,35 @@
+{
+  "id": "ah_drakescale_greaves",
+  "display_name": "Drakescale Greaves",
+  "description": "Leg armor of flexible drake scales, light despite their fiery origin. Volcanic glass reinforcement lines the joints.",
+  "icon_hint": "leg armor of overlapping dark red drake scales with volcanic glass reinforcements at the joints and faint ember glow",
+  "item_type": "armor",
+  "item_subtype": "light_legs",
+  "slot": "legs",
+  "equip_slot": "legs",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "category": "equipment",
+  "base_stats": {
+    "defense": 7
+  },
+  "stat_bonuses": {
+    "defense": 7,
+    "speed": 1,
+    "health": 7
+  },
+  "passive_id": "ah_passive_aggression",
+  "combat_tag": "burning_edge",
+  "combat_tag_effect": {"trigger": "on_attack", "effect": "apply_status", "status": "burning", "chance": 0.10},
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 80,
+  "icon_path": "",
+  "tags": ["region_4", "armor", "light_legs", "ashen_horizons", "tier_4"]
+}

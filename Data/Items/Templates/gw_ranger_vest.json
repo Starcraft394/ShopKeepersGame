@@ -1,0 +1,32 @@
+{
+  "id": "gw_ranger_vest",
+  "display_name": "Ranger's Vest",
+  "description": "Supple leather vest worn by Greenwood rangers, crafted for swift movement through dense forest.",
+  "icon_hint": "fitted green and brown leather vest with leaf-shaped shoulder pads and vine lacing",
+  "item_type": "armor",
+  "item_subtype": "light_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 3
+  },
+  "stat_bonuses": {
+    "defense": 3,
+    "speed": 1,
+    "health": 3
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 38,
+  "icon_path": "",
+  "tags": ["region_1", "armor", "light", "greenwood", "tier_2"]
+}

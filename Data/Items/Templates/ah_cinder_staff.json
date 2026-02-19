@@ -1,0 +1,31 @@
+{
+  "id": "ah_cinder_staff",
+  "display_name": "Cinder Staff",
+  "description": "A charred staff that radiates residual volcanic heat. Embers smolder within its obsidian-veined core.",
+  "icon_hint": "blackened charred staff with glowing orange ember cracks and obsidian veins running through dark wood",
+  "item_type": "weapon",
+  "item_subtype": "staff",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 6
+  },
+  "stat_bonuses": {
+    "attack": 6,
+    "health": 9
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 55,
+  "icon_path": "",
+  "tags": ["region_4", "weapon", "staff", "ashen_horizons", "tier_2"]
+}

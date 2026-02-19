@@ -1,0 +1,35 @@
+{
+  "id": "ss_leviathan_focus",
+  "display_name": "Leviathan Focus",
+  "description": "A smooth stone polished by millennia of ocean currents, warm with tidal magic. The deep calls to those who hold it.",
+  "icon_hint": "smooth iridescent ocean stone with swirling blue-green tidal energy inside and small water droplets orbiting it",
+  "item_type": "offhand",
+  "item_subtype": "focus",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 5
+  },
+  "stat_bonuses": {
+    "attack": 5,
+    "speed": 2,
+    "health": 13
+  },
+  "ability_id": "ss_current_shield",
+  "combat_tag": "swift_current",
+  "combat_tag_effect": {"trigger": "combat_start", "effect": "buff_stat", "stat": "speed", "value": 1},
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 120,
+  "icon_path": "",
+  "tags": ["region_3", "offhand", "focus", "sunken_strand", "tier_4"]
+}

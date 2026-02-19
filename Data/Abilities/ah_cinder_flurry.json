@@ -1,0 +1,19 @@
+{
+  "id": "ah_cinder_flurry",
+  "display_name": "Cinder Flurry",
+  "description": "Unleash a blazing flurry of strikes, each leaving cinder burns.",
+  "icon_hint": "three rapid dagger slashes leaving trails of orange cinder sparks and ash against a fiery backdrop",
+  "ability_type": "equipment",
+  "source_class_id": "",
+  "category": "equipment",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 3,
+  "damage_type": "fire",
+  "attack_scaling": 0.5,
+  "cooldown": 3,
+  "hit_count": 3,
+  "applies_status_id": "burning",
+  "applies_status_duration": 2,
+  "status_stacks": 1
+}

@@ -1,0 +1,32 @@
+{
+  "id": "fr_rift_helm",
+  "display_name": "Rift Helm",
+  "description": "A helmet touched by dimensional instability, its surface rippling like a disturbed reflection.",
+  "icon_hint": "dark purple helmet with black void cracks across the surface and glowing violet dimensional energy at the visor",
+  "item_type": "armor",
+  "item_subtype": "helmet",
+  "category": "equipment",
+  "slot": "head",
+  "equip_slot": "helmet",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 5
+  },
+  "stat_bonuses": {
+    "defense": 5,
+    "speed": 1,
+    "health": 7
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 48,
+  "icon_path": "",
+  "tags": ["region_7", "armor", "helmet", "fractured_realm", "tier_2"]
+}

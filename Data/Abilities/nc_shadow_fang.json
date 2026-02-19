@@ -1,0 +1,19 @@
+{
+  "id": "nc_shadow_fang",
+  "display_name": "Shadow Fang",
+  "description": "Strike from the shadows, piercing armor and leaving a bleeding wound.",
+  "icon_hint": "shadowy dagger lunging from darkness with dark violet edge and crimson blood trail on impact",
+  "ability_type": "equipment",
+  "source_class_id": "",
+  "category": "equipment",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 10,
+  "damage_type": "dark",
+  "attack_scaling": 1.0,
+  "cooldown": 3,
+  "armor_piercing": true,
+  "applies_status_id": "bleeding",
+  "applies_status_duration": 2,
+  "status_stacks": 1
+}

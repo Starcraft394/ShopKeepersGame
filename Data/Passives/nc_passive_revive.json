@@ -1,0 +1,13 @@
+{
+  "id": "nc_passive_revive",
+  "display_name": "Phylactery's Gift",
+  "description": "Upon taking fatal damage, revive once at 15% HP. Death is not the end.",
+  "icon_hint": "cracked obsidian soul vessel leaking dark purple necrotic energy with a faint heartbeat glow at its core",
+  "passive_type": "revive_once",
+  "trigger": "on_death",
+  "effect": {
+    "revive_hp_percent": 15
+  },
+  "source_class_id": "",
+  "category": "equipment"
+}

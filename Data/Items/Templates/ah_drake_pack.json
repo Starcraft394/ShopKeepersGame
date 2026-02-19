@@ -1,0 +1,20 @@
+{
+  "id": "ah_drake_pack",
+  "display_name": "Drake Pack",
+  "description": "A large pack fashioned from fire drake scales, nearly fireproof and remarkably durable.",
+  "icon_hint": "red-orange drake scale pack with obsidian buckles and ember-glow seams",
+  "item_type": "backpack",
+  "item_subtype": "backpack",
+  "category": "equipment",
+  "slot": "backpack",
+  "equip_slot": "bag",
+  "tier": 3,
+  "base_stats": {},
+  "stat_bonuses": {},
+  "bag_capacity_bonus": 6,
+  "base_value": 128,
+  "buy_value": 0,
+  "can_refine": false,
+  "icon_path": "",
+  "tags": ["region_4", "backpack", "ashen_horizons", "tier_3"]
+}

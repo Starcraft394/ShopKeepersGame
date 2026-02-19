@@ -1,0 +1,32 @@
+{
+  "id": "se_crystal_robe",
+  "display_name": "Crystal Robe",
+  "description": "A flowing robe threaded with crystallized starlight, offering protection without hindering agility.",
+  "icon_hint": "elegant white robe with blue crystal shard inlays along the collar and sleeves, faint starlight glow",
+  "item_type": "armor",
+  "item_subtype": "light_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 6
+  },
+  "stat_bonuses": {
+    "defense": 6,
+    "speed": 2,
+    "health": 6
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 88,
+  "icon_path": "",
+  "tags": ["region_5", "armor", "light", "starfall_expanse", "tier_3"]
+}

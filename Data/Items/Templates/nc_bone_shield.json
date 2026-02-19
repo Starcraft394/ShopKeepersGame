@@ -1,0 +1,31 @@
+{
+  "id": "nc_bone_shield",
+  "display_name": "Bone Shield",
+  "description": "A shield assembled from interlocking bones, bound by spectral energy. The souls within strengthen its bearer.",
+  "icon_hint": "round shield of interlocking white bones with green soul energy glowing between the joints and a skull boss at center",
+  "item_type": "armor",
+  "item_subtype": "shield",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 6
+  },
+  "stat_bonuses": {
+    "defense": 6,
+    "health": 14
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 65,
+  "icon_path": "",
+  "tags": ["region_6", "offhand", "shield", "necropolis", "tier_2"]
+}

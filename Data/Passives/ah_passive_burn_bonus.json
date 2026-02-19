@@ -1,0 +1,14 @@
+{
+  "id": "ah_passive_burn_bonus",
+  "display_name": "Blazing Scales",
+  "description": "Fire damage dealt is increased by 15%. Drakescale amplifies flame.",
+  "icon_hint": "overlapping crimson dragon scales radiating intense orange fire with molten gold veins between each scale",
+  "passive_type": "damage_type_bonus",
+  "trigger": "passive",
+  "effect": {
+    "damage_type": "fire",
+    "bonus_percent": 15
+  },
+  "source_class_id": "",
+  "category": "equipment"
+}

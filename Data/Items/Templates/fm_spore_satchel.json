@@ -1,0 +1,20 @@
+{
+  "id": "fm_spore_satchel",
+  "display_name": "Spore Satchel",
+  "description": "A satchel woven from treated mycelium fibers, surprisingly spacious.",
+  "icon_hint": "pale green satchel made of woven mycelium with glowing spore clasps",
+  "item_type": "backpack",
+  "item_subtype": "backpack",
+  "category": "equipment",
+  "slot": "backpack",
+  "equip_slot": "bag",
+  "tier": 2,
+  "base_stats": {},
+  "stat_bonuses": {},
+  "bag_capacity_bonus": 4,
+  "base_value": 75,
+  "buy_value": 0,
+  "can_refine": false,
+  "icon_path": "",
+  "tags": ["region_2", "backpack", "fungalmire", "tier_2"]
+}

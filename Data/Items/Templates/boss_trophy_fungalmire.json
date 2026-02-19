@@ -5,6 +5,7 @@
   "icon_hint": "large pulsating fungal heart glowing green with visible mycelium veins and spore tendrils",
   "item_type": "material",
   "category": "material",
+  "tier": 4,
   "base_stats": {},
   "base_value": 75,
   "buy_value": 0,

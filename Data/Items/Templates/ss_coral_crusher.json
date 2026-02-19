@@ -1,0 +1,31 @@
+{
+  "id": "ss_coral_crusher",
+  "display_name": "Coral Crusher",
+  "description": "A massive maul forged from hardened deep-sea coral. Each swing carries the weight of the ocean floor.",
+  "icon_hint": "huge maul head of dense blue-teal coral with shell fragments embedded in it on a barnacle-covered haft",
+  "item_type": "weapon",
+  "item_subtype": "mace",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 13
+  },
+  "stat_bonuses": {
+    "attack": 13,
+    "speed": -1
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 82,
+  "icon_path": "",
+  "tags": ["region_3", "weapon", "mace", "sunken_strand", "tier_3"]
+}

@@ -1,0 +1,34 @@
+{
+  "id": "gw_ancient_aegis",
+  "display_name": "Ancient Aegis",
+  "description": "A shield grown from the living bark of a centuries-old guardian tree, reinforced with knotted elder roots. It mends its own cracks between battles.",
+  "icon_hint": "large round shield of layered ancient bark with thick elder roots forming the rim, a green heartwood boss at the center, patches of moss and tiny sprouting leaves across the surface",
+  "item_type": "armor",
+  "item_subtype": "shield",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 10
+  },
+  "stat_bonuses": {
+    "defense": 10,
+    "health": 18
+  },
+  "ability_id": "gw_bark_wall",
+  "combat_tag": "regenerating",
+  "combat_tag_effect": {"trigger": "round_start", "effect": "heal", "value": 2},
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 105,
+  "icon_path": "",
+  "tags": ["region_1", "offhand", "shield", "greenwood", "tier_4"]
+}

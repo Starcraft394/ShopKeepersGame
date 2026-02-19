@@ -1,0 +1,20 @@
+{
+  "id": "se_crystal_satchel",
+  "display_name": "Crystal Satchel",
+  "description": "A satchel reinforced with crystal lattice, light as air yet incredibly strong.",
+  "icon_hint": "white and blue crystal-lattice satchel with prismatic shimmer and starlight clasp",
+  "item_type": "backpack",
+  "item_subtype": "backpack",
+  "category": "equipment",
+  "slot": "backpack",
+  "equip_slot": "bag",
+  "tier": 2,
+  "base_stats": {},
+  "stat_bonuses": {},
+  "bag_capacity_bonus": 4,
+  "base_value": 88,
+  "buy_value": 0,
+  "can_refine": false,
+  "icon_path": "",
+  "tags": ["region_5", "backpack", "starfall_expanse", "tier_2"]
+}

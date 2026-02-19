@@ -1,0 +1,32 @@
+{
+  "id": "fr_null_focus_t3",
+  "display_name": "Null Orb",
+  "description": "An orb of condensed void energy that erases magic it touches. Even light bends away from its surface.",
+  "icon_hint": "perfectly smooth black sphere absorbing all light with purple void cracks and a dark aura that warps the space around it",
+  "item_type": "weapon",
+  "item_subtype": "focus",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 6
+  },
+  "stat_bonuses": {
+    "attack": 6,
+    "speed": 2,
+    "health": 15
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 115,
+  "icon_path": "",
+  "tags": ["region_7", "offhand", "focus", "fractured_realm", "tier_3"]
+}

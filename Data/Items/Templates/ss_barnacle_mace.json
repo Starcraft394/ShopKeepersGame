@@ -1,0 +1,31 @@
+{
+  "id": "ss_barnacle_mace",
+  "display_name": "Barnacle Mace",
+  "description": "A heavy mace encrusted with razor-sharp barnacles, dredged from a sunken shipwreck.",
+  "icon_hint": "heavy iron mace head covered in sharp white barnacles and coral growth on a salt-stained wooden haft",
+  "item_type": "weapon",
+  "item_subtype": "mace",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 8
+  },
+  "stat_bonuses": {
+    "attack": 8,
+    "speed": -1
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 52,
+  "icon_path": "",
+  "tags": ["region_3", "weapon", "mace", "sunken_strand", "tier_2"]
+}

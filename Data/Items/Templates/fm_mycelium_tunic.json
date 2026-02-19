@@ -1,0 +1,31 @@
+{
+  "id": "fm_mycelium_tunic",
+  "display_name": "Mycelium Tunic",
+  "description": "Dense mycelium fibers woven into a tunic that hardens on impact, then relaxes again.",
+  "icon_hint": "off-white tunic with thick mycelium weave pattern and faint bioluminescent green spore accents",
+  "item_type": "armor",
+  "item_subtype": "light_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 5
+  },
+  "stat_bonuses": {
+    "defense": 5,
+    "health": 9
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 62,
+  "icon_path": "",
+  "tags": ["region_2", "armor", "light", "fungalmire", "tier_3"]
+}

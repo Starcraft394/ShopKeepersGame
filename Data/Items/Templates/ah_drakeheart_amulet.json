@@ -1,0 +1,35 @@
+{
+  "id": "ah_drakeheart_amulet",
+  "display_name": "Drakeheart Amulet",
+  "description": "A pendant containing a shard of drake heart crystal that pulses with fiery energy. It quickens the blood and sharpens the senses.",
+  "icon_hint": "glowing orange-red crystal shard pendant in a dark obsidian setting with tiny flame wisps rising from the crystal",
+  "item_type": "accessory",
+  "item_subtype": "amulet",
+  "category": "equipment",
+  "slot": "accessory_2",
+  "equip_slot": "amulet",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 5
+  },
+  "stat_bonuses": {
+    "attack": 5,
+    "speed": 1,
+    "health": 14
+  },
+  "passive_id": "ah_passive_atk_boost",
+  "combat_tag": "burning_edge",
+  "combat_tag_effect": {"trigger": "on_attack", "effect": "apply_status", "status": "burning", "chance": 0.10},
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 112,
+  "icon_path": "",
+  "tags": ["region_4", "accessory", "amulet", "ashen_horizons", "tier_4"]
+}

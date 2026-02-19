@@ -1,0 +1,32 @@
+{
+  "id": "bone_dagger",
+  "display_name": "Bone Dagger",
+  "description": "A lightweight blade carved from monster bone. Quick and lethal.",
+  "icon_hint": "pale white bone dagger with a jagged serrated edge and wrapped sinew grip",
+  "item_type": "weapon",
+  "item_subtype": "dagger",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 1,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 2,
+    "speed": 2
+  },
+  "stat_bonuses": {
+    "attack": 2,
+    "speed": 2
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 18,
+  "icon_path": "",
+  "tags": ["base", "weapon", "dagger", "tier_1"]
+}

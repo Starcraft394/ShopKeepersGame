@@ -12,10 +12,10 @@
   "max_quality": 3,
   "category": "equipment",
   "base_stats": {
-    "defense": 4
+    "defense": 5
   },
   "stat_bonuses": {
-    "defense": 4,
+    "defense": 5,
     "health": 5,
     "speed": 1
   },

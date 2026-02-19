@@ -1,0 +1,31 @@
+{
+  "id": "fm_fungal_tunic",
+  "display_name": "Fungal Tunic",
+  "description": "A light tunic cultivated from Fungalmire spores, surprisingly resilient and self-repairing.",
+  "icon_hint": "pale green tunic with overlapping mushroom cap patches and thin mycelium thread stitching",
+  "item_type": "armor",
+  "item_subtype": "light_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 3
+  },
+  "stat_bonuses": {
+    "defense": 3,
+    "health": 6
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 42,
+  "icon_path": "",
+  "tags": ["region_2", "armor", "light", "fungalmire", "tier_2"]
+}

@@ -1,0 +1,32 @@
+{
+  "id": "nc_spectral_bow",
+  "display_name": "Spectral Bow",
+  "description": "Half-translucent and cold to the touch, this bow was pulled from the hands of a skeletal archer.",
+  "icon_hint": "semi-transparent ghostly grey bow with green spectral energy swirling around the limbs and a bowstring of woven soul threads",
+  "item_type": "weapon",
+  "item_subtype": "bow",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 6
+  },
+  "stat_bonuses": {
+    "attack": 6,
+    "speed": 2,
+    "health": 3
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 60,
+  "icon_path": "",
+  "tags": ["region_6", "weapon", "bow", "necropolis", "tier_2"]
+}

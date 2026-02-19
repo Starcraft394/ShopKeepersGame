@@ -1,0 +1,31 @@
+{
+  "id": "fm_mycelium_bulwark",
+  "display_name": "Mycelium Bulwark",
+  "description": "A tower shield woven from hardened mycelium fibers. It absorbs impacts like a living sponge.",
+  "icon_hint": "large tower shield of dense woven mycelium fibers with bioluminescent purple veins and pale green fungal growths at the edges",
+  "item_type": "armor",
+  "item_subtype": "shield",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 8
+  },
+  "stat_bonuses": {
+    "defense": 8,
+    "health": 14
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 75,
+  "icon_path": "",
+  "tags": ["region_2", "offhand", "shield", "fungalmire", "tier_3"]
+}

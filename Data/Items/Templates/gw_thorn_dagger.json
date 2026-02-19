@@ -1,0 +1,31 @@
+{
+  "id": "gw_thorn_dagger",
+  "display_name": "Thorn Dagger",
+  "description": "A dagger carved from a giant briar thorn, light as a feather and wickedly sharp.",
+  "icon_hint": "short green-brown dagger shaped from a natural thorn with bark-textured handle and tiny leaves at the pommel",
+  "item_type": "weapon",
+  "item_subtype": "dagger",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 3
+  },
+  "stat_bonuses": {
+    "attack": 3,
+    "speed": 3
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 38,
+  "icon_path": "",
+  "tags": ["region_1", "weapon", "dagger", "greenwood", "tier_2"]
+}

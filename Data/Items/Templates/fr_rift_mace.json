@@ -1,0 +1,32 @@
+{
+  "id": "fr_rift_mace",
+  "display_name": "Rift Mace",
+  "description": "A mace whose head phases between dimensions. Its impact tears small holes in reality.",
+  "icon_hint": "dark mace with a head that shifts between solid black and purple void energy with reality-warping distortion around it",
+  "item_type": "weapon",
+  "item_subtype": "mace",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 10
+  },
+  "stat_bonuses": {
+    "attack": 10,
+    "speed": -1,
+    "health": 2
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 70,
+  "icon_path": "",
+  "tags": ["region_7", "weapon", "mace", "fractured_realm", "tier_2"]
+}

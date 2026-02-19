@@ -12,13 +12,16 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "defense": 8
+    "defense": 9
   },
   "stat_bonuses": {
-    "defense": 8,
+    "defense": 9,
     "speed": 2,
-    "health": 8
+    "health": 10
   },
+  "passive_id": "se_passive_cdr",
+  "combat_tag": "temporal_echo",
+  "combat_tag_effect": {"trigger": "on_ability_use", "effect": "reduce_cooldown", "value": 1, "chance": 0.20},
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,

@@ -1,0 +1,32 @@
+{
+  "id": "nc_wraith_tunic",
+  "display_name": "Wraith Tunic",
+  "description": "Spectral threads bound into physical form, this tunic phases slightly when struck.",
+  "icon_hint": "dark grey tunic with swirling green soul-energy patterns and semi-transparent ghostly patches",
+  "item_type": "armor",
+  "item_subtype": "light_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 7
+  },
+  "stat_bonuses": {
+    "defense": 7,
+    "speed": 1,
+    "health": 10
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 95,
+  "icon_path": "",
+  "tags": ["region_6", "armor", "light", "necropolis", "tier_3"]
+}

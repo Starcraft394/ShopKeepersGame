@@ -1,0 +1,20 @@
+{
+  "id": "ss_kelp_satchel",
+  "display_name": "Kelp Satchel",
+  "description": "A waterproof satchel woven from treated kelp fibers with shell button closures.",
+  "icon_hint": "teal kelp-woven satchel with shell buttons and sea glass buckle",
+  "item_type": "backpack",
+  "item_subtype": "backpack",
+  "category": "equipment",
+  "slot": "backpack",
+  "equip_slot": "bag",
+  "tier": 2,
+  "base_stats": {},
+  "stat_bonuses": {},
+  "bag_capacity_bonus": 4,
+  "base_value": 78,
+  "buy_value": 0,
+  "can_refine": false,
+  "icon_path": "",
+  "tags": ["region_3", "backpack", "sunken_strand", "tier_2"]
+}

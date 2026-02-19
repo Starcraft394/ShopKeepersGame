@@ -1,0 +1,27 @@
+{
+  "id": "fm_symbiotic_link",
+  "display_name": "Symbiotic Link",
+  "description": "Form a symbiotic bond with an ally, healing them and bolstering their defenses.",
+  "icon_hint": "glowing fungal tendrils connecting two figures with warm amber light and protective spore aura",
+  "ability_type": "equipment",
+  "source_class_id": "",
+  "category": "equipment",
+  "target_type": "single_ally",
+  "effect_type": "heal",
+  "base_damage": 0,
+  "base_heal": 12,
+  "damage_type": "magical",
+  "attack_scaling": 0.0,
+  "cooldown": 4,
+  "applies_status_id": "",
+  "status_stacks": 0,
+  "ally_buff": {
+    "stat": "defense",
+    "value": 4,
+    "duration": 2
+  },
+  "target_team": "ally",
+  "target_rule": "lowest_hp_pct",
+  "can_overheal": false,
+  "allow_self_target": true
+}

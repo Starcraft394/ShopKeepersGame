@@ -1,0 +1,23 @@
+{
+  "id": "nc_soul_shield",
+  "display_name": "Soul Shield",
+  "description": "Encase an ally in soul energy that shields and mends.",
+  "icon_hint": "spectral soul orb wrapping around a figure in dark violet protective energy with faint healing green wisps",
+  "ability_type": "equipment",
+  "source_class_id": "",
+  "category": "equipment",
+  "target_type": "single_ally",
+  "effect_type": "buff",
+  "base_damage": 0,
+  "base_heal": 10,
+  "damage_type": "dark",
+  "attack_scaling": 0.0,
+  "cooldown": 4,
+  "applies_status_id": "",
+  "status_stacks": 0,
+  "shield_value": 20,
+  "shield_duration": 2,
+  "target_team": "ally",
+  "target_rule": "lowest_hp_pct",
+  "allow_self_target": true
+}

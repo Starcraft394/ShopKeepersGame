@@ -16,8 +16,11 @@
   },
   "stat_bonuses": {
     "attack": 17,
-    "health": 22
+    "health": 28
   },
+  "ability_id": "nc_death_wave",
+  "combat_tag": "undying_will",
+  "combat_tag_effect": {"trigger": "on_low_hp", "effect": "buff_stat", "stat": "defense", "value": 3, "duration": 2, "threshold": 0.25, "once": true},
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,

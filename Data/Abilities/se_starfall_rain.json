@@ -1,0 +1,17 @@
+{
+  "id": "se_starfall_rain",
+  "display_name": "Starfall Rain",
+  "description": "Rain starlight upon all enemies with cosmic precision.",
+  "icon_hint": "shower of brilliant white-gold star fragments raining down from a deep indigo sky with cosmic trails",
+  "ability_type": "equipment",
+  "source_class_id": "",
+  "category": "equipment",
+  "target_type": "all_enemies",
+  "effect_type": "damage",
+  "base_damage": 7,
+  "damage_type": "magical",
+  "attack_scaling": 0.7,
+  "cooldown": 5,
+  "applies_status_id": "",
+  "status_stacks": 0
+}

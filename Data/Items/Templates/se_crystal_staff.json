@@ -1,0 +1,31 @@
+{
+  "id": "se_crystal_staff",
+  "display_name": "Crystal Staff",
+  "description": "A staff formed from a single prismatic crystal shard, humming with cosmic resonance.",
+  "icon_hint": "translucent crystalline staff with prismatic facets refracting white and blue light along its surface",
+  "item_type": "weapon",
+  "item_subtype": "staff",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 6
+  },
+  "stat_bonuses": {
+    "attack": 6,
+    "health": 10
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 58,
+  "icon_path": "",
+  "tags": ["region_5", "weapon", "staff", "starfall_expanse", "tier_2"]
+}

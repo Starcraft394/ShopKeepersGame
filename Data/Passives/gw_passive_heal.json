@@ -1,0 +1,14 @@
+{
+  "id": "gw_passive_heal",
+  "display_name": "Heartwood Pulse",
+  "description": "At the start of each round, heal 2 HP. The heartwood pulses with gentle warmth.",
+  "icon_hint": "warm amber tree ring cross-section radiating soft golden pulse waves of healing light",
+  "passive_type": "round_start_heal",
+  "trigger": "round_start",
+  "effect": {
+    "stat": "health",
+    "bonus": 2
+  },
+  "source_class_id": "",
+  "category": "equipment"
+}

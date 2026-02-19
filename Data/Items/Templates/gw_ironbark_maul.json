@@ -1,0 +1,32 @@
+{
+  "id": "gw_ironbark_maul",
+  "display_name": "Ironbark Maul",
+  "description": "A massive maul hewn from ironbark heartwood. Its weight alone can shatter stone.",
+  "icon_hint": "large heavy maul head of dark ironbark wood with iron-hard grain patterns on a thick green-brown haft",
+  "item_type": "weapon",
+  "item_subtype": "mace",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 11
+  },
+  "stat_bonuses": {
+    "attack": 11,
+    "speed": -1,
+    "health": 2
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 72,
+  "icon_path": "",
+  "tags": ["region_1", "weapon", "mace", "greenwood", "tier_3"]
+}

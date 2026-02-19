@@ -1,0 +1,36 @@
+{
+  "id": "ah_drakescale_plate",
+  "display_name": "Drakescale Plate",
+  "description": "Full plate of interlocking drake scales, smoldering with residual dragonfire. Nearly impenetrable but heavy.",
+  "icon_hint": "imposing full plate armor of dark red interlocking drake scales with smoldering orange glow at the joints and a drake emblem on the chest",
+  "item_type": "armor",
+  "item_subtype": "heavy_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 13,
+    "speed": -2
+  },
+  "stat_bonuses": {
+    "defense": 13,
+    "speed": -2,
+    "health": 28
+  },
+  "passive_id": "ah_passive_burn_bonus",
+  "combat_tag": "burning_edge",
+  "combat_tag_effect": {"trigger": "on_attack", "effect": "apply_status", "status": "burning", "chance": 0.10},
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 140,
+  "icon_path": "",
+  "tags": ["region_4", "armor", "ashen_horizons", "tier_4"]
+}

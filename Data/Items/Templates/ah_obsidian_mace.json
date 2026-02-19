@@ -1,0 +1,31 @@
+{
+  "id": "ah_obsidian_mace",
+  "display_name": "Obsidian Mace",
+  "description": "A mace with a head of volcanic obsidian, still warm to the touch. Its edges gleam like black glass.",
+  "icon_hint": "heavy mace with a jagged black obsidian head showing orange ember glow in its cracks on a dark iron haft",
+  "item_type": "weapon",
+  "item_subtype": "mace",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 9
+  },
+  "stat_bonuses": {
+    "attack": 9,
+    "speed": -1
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 58,
+  "icon_path": "",
+  "tags": ["region_4", "weapon", "mace", "ashen_horizons", "tier_2"]
+}

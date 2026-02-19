@@ -1,0 +1,31 @@
+{
+  "id": "se_crystal_mace",
+  "display_name": "Crystal Mace",
+  "description": "A mace with a head of fused starfall crystals. It hums with prismatic energy on each swing.",
+  "icon_hint": "heavy mace with a faceted white-blue crystal head radiating prismatic light on a silver-white haft",
+  "item_type": "weapon",
+  "item_subtype": "mace",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 9
+  },
+  "stat_bonuses": {
+    "attack": 9,
+    "speed": -1
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 62,
+  "icon_path": "",
+  "tags": ["region_5", "weapon", "mace", "starfall_expanse", "tier_2"]
+}

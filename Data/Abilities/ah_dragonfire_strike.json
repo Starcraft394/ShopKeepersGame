@@ -1,0 +1,18 @@
+{
+  "id": "ah_dragonfire_strike",
+  "display_name": "Dragonfire Strike",
+  "description": "Strike with dragonfire that engulfs the target in searing flames.",
+  "icon_hint": "flaming sword wreathed in roaring orange-red dragonfire with molten sparks trailing the blade edge",
+  "ability_type": "equipment",
+  "source_class_id": "",
+  "category": "equipment",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 10,
+  "damage_type": "fire",
+  "attack_scaling": 1.2,
+  "cooldown": 4,
+  "applies_status_id": "burning",
+  "applies_status_duration": 3,
+  "status_stacks": 2
+}

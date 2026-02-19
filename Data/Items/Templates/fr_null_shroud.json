@@ -1,0 +1,32 @@
+{
+  "id": "fr_null_shroud",
+  "display_name": "Null Shroud",
+  "description": "A cloak of pure void energy that partially erases the wearer from reality, deflecting attacks into nothing.",
+  "icon_hint": "flowing black shroud with purple rift energy edges and small floating void fragments around the shoulders",
+  "item_type": "armor",
+  "item_subtype": "light_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 8
+  },
+  "stat_bonuses": {
+    "defense": 8,
+    "speed": 2,
+    "health": 10
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 108,
+  "icon_path": "",
+  "tags": ["region_7", "armor", "light", "fractured_realm", "tier_3"]
+}

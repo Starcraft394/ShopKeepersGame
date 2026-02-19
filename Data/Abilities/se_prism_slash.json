@@ -1,0 +1,18 @@
+{
+  "id": "se_prism_slash",
+  "display_name": "Prism Slash",
+  "description": "Slash with prismatic energy that cuts through armor as if it were air.",
+  "icon_hint": "crystalline blade sweeping in an arc refracting rainbow light with shattered armor fragments scattering",
+  "ability_type": "equipment",
+  "source_class_id": "",
+  "category": "equipment",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 12,
+  "damage_type": "magical",
+  "attack_scaling": 1.0,
+  "cooldown": 3,
+  "armor_piercing": true,
+  "applies_status_id": "",
+  "status_stacks": 0
+}

@@ -5,6 +5,7 @@
   "icon_hint": "jagged black crystalline shard with swirling purple-black void energy distorting space around its edges",
   "item_type": "material",
   "category": "material",
+  "tier": 4,
   "base_stats": {},
   "base_value": 175,
   "buy_value": 0,

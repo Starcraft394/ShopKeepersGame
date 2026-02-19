@@ -95,8 +95,8 @@
   "shop_items_legacy": [
     { "item_id": "se_starlight_elixir", "price_gold": 40, "requires_unlock_group": "consumables_t1" },
     { "item_id": "se_chrono_draught", "price_gold": 45, "requires_unlock_group": "consumables_t1" },
-    { "item_id": "se_prism_blade", "price_gold": 140, "requires_unlock_group": "weapons_t1" },
-    { "item_id": "se_echo_shield", "price_gold": 150, "required_facility_tier": 2 },
+    { "item_id": "se_crystal_sword", "price_gold": 132, "requires_unlock_group": "weapons_t1" },
+    { "item_id": "se_crystal_shield", "price_gold": 132, "required_facility_tier": 2 },
     { "item_id": "sturdy_backpack", "price_gold": 120, "requires_unlock_group": "backpacks_t1" },
     { "item_id": "strong_healing_tonic", "price_gold": 40, "requires_unlock_group": "consumables_t1" }
   ],

@@ -1,0 +1,32 @@
+{
+  "id": "fm_mycelium_focus",
+  "display_name": "Mycelium Focus",
+  "description": "A focus grown from a dense knot of mycelium, pulsing with bioluminescent energy. Spores drift from its surface.",
+  "icon_hint": "dense pale orb of woven mycelium threads with bioluminescent purple-green veins and drifting spore particles",
+  "item_type": "weapon",
+  "item_subtype": "focus",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 3
+  },
+  "stat_bonuses": {
+    "attack": 3,
+    "speed": 1,
+    "health": 9
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 72,
+  "icon_path": "",
+  "tags": ["region_2", "offhand", "focus", "fungalmire", "tier_3"]
+}

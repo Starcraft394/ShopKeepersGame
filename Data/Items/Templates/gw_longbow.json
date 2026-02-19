@@ -1,0 +1,32 @@
+{
+  "id": "gw_longbow",
+  "display_name": "Greenwood Longbow",
+  "description": "Carved from a single branch of ancient heartwood, this bow bends without breaking and strikes with surprising force.",
+  "icon_hint": "tall longbow of pale green living wood with small leaves sprouting along the limbs and a braided vine bowstring",
+  "item_type": "weapon",
+  "item_subtype": "bow",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 7
+  },
+  "stat_bonuses": {
+    "attack": 7,
+    "speed": 2,
+    "health": 2
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 62,
+  "icon_path": "",
+  "tags": ["region_1", "weapon", "bow", "greenwood", "tier_3"]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "ah_cinder_fang",
+  "display_name": "Cinder Fang",
+  "description": "Forged in dragonfire and quenched in volcanic ash, this dagger burns with every strike.",
+  "icon_hint": "curved black and red dagger with molten edges that glow like embers and an ash-grey bone handle with fire runes",
+  "item_type": "weapon",
+  "item_subtype": "dagger",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 8
+  },
+  "stat_bonuses": {
+    "attack": 8,
+    "speed": 4
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 78,
+  "icon_path": "",
+  "tags": ["region_4", "weapon", "dagger", "ashen_horizons", "tier_3"]
+}

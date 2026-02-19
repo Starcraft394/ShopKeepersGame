@@ -1,0 +1,31 @@
+{
+  "id": "nc_soul_staff",
+  "display_name": "Soul Staff",
+  "description": "A staff that channels captured soul energy through its hollow bone frame. Green fire dances along its length.",
+  "icon_hint": "dark bone staff with hollow chambers containing swirling green soul energy and spectral wisps escaping the tip",
+  "item_type": "weapon",
+  "item_subtype": "staff",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 12
+  },
+  "stat_bonuses": {
+    "attack": 12,
+    "health": 18
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 105,
+  "icon_path": "",
+  "tags": ["region_6", "weapon", "staff", "necropolis", "tier_3"]
+}

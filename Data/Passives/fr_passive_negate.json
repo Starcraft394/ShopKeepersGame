@@ -1,0 +1,13 @@
+{
+  "id": "fr_passive_negate",
+  "display_name": "Phase Shift",
+  "description": "15% chance to negate incoming damage entirely. The body phases between dimensions.",
+  "icon_hint": "half-transparent figure shifting between solid and void forms with glitching purple-black dimensional tears",
+  "passive_type": "damage_negate_chance",
+  "trigger": "on_damaged",
+  "effect": {
+    "chance_percent": 15
+  },
+  "source_class_id": "",
+  "category": "equipment"
+}

@@ -5,9 +5,7 @@
 
   "weight_by_tier": {
     "1": 10,
-    "2": 6,
-    "3": 3,
-    "4": 1
+    "2": 6
   },
 
   "consumables": [
@@ -87,40 +85,49 @@
       "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "se_prism_blade",
+      "item_id": "se_crystal_sword",
       "weight": 10,
-      "price_gold": 120,
-      "tier": 3,
+      "price_gold": 132,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
+      "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "se_prism_staff",
-      "weight": 8,
-      "price_gold": 125,
-      "tier": 3,
+      "item_id": "se_astral_shortbow",
+      "weight": 10,
+      "price_gold": 128,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
+      "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "se_starfall_bow",
-      "weight": 8,
-      "price_gold": 115,
-      "tier": 3,
+      "item_id": "se_crystal_mace",
+      "weight": 10,
+      "price_gold": 136,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
+      "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "se_chrono_cleaver",
-      "weight": 6,
-      "price_gold": 140,
-      "tier": 3,
+      "item_id": "se_crystal_staff",
+      "weight": 10,
+      "price_gold": 128,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
+      "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "se_crystal_knife",
+      "weight": 10,
+      "price_gold": 121,
+      "tier": 2,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
     }
   ],
 
@@ -144,88 +151,88 @@
       "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "se_crystal_ward",
-      "weight": 8,
-      "price_gold": 110,
-      "tier": 3,
+      "item_id": "se_crystal_shield",
+      "weight": 10,
+      "price_gold": 132,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
+      "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "se_echo_shield",
-      "weight": 8,
-      "price_gold": 105,
-      "tier": 3,
+      "item_id": "se_astral_focus",
+      "weight": 10,
+      "price_gold": 132,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
-    },
-    {
-      "item_id": "se_starlight_focus",
-      "weight": 8,
-      "price_gold": 115,
-      "tier": 3,
-      "requires_unlock_group": "",
-      "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
+      "required_dungeon_floor_unlocked": 2
     }
   ],
 
   "armor": [
     {
-      "item_id": "se_astral_robe",
-      "weight": 8,
-      "price_gold": 130,
-      "tier": 3,
+      "item_id": "se_astral_tunic",
+      "weight": 10,
+      "price_gold": 128,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
+      "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "se_crystal_vest",
+      "weight": 10,
+      "price_gold": 136,
+      "tier": 2,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 2
     }
   ],
 
   "helmets": [
     {
-      "item_id": "se_prism_helm",
-      "weight": 8,
-      "price_gold": 100,
-      "tier": 3,
+      "item_id": "se_crystal_helm",
+      "weight": 10,
+      "price_gold": 84,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
+      "required_dungeon_floor_unlocked": 2
     }
   ],
 
   "legs": [
     {
-      "item_id": "se_astral_leggings",
-      "weight": 8,
-      "price_gold": 100,
-      "tier": 3,
+      "item_id": "se_astral_boots",
+      "weight": 10,
+      "price_gold": 84,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
+      "required_dungeon_floor_unlocked": 2
     }
   ],
 
   "accessories": [
     {
-      "item_id": "se_temporal_band",
-      "weight": 8,
-      "price_gold": 90,
-      "tier": 3,
+      "item_id": "se_crystal_ring",
+      "weight": 10,
+      "price_gold": 114,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
+      "required_dungeon_floor_unlocked": 2
     },
     {
-      "item_id": "se_echo_amulet",
-      "weight": 8,
-      "price_gold": 95,
-      "tier": 3,
+      "item_id": "se_crystal_pendant",
+      "weight": 10,
+      "price_gold": 121,
+      "tier": 2,
       "requires_unlock_group": "",
       "required_town_tier": 1,
-      "required_dungeon_floor_unlocked": 3
+      "required_dungeon_floor_unlocked": 2
     }
   ]
 }

@@ -8,7 +8,8 @@
     { "item_id": "fungal_fiber", "weight": 25, "min_qty": 2, "max_qty": 3 },
     { "item_id": "spore_cluster", "weight": 25, "min_qty": 1, "max_qty": 3 },
     { "item_id": "mycelium_thread", "weight": 20, "min_qty": 2, "max_qty": 3 },
-    { "item_id": "healing_tonic", "weight": 15, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "", "weight": 15, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "healing_tonic", "weight": 12, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "wyvern_scale", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 10, "min_qty": 0, "max_qty": 0 }
   ]
 }

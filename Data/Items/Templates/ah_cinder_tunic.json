@@ -1,0 +1,32 @@
+{
+  "id": "ah_cinder_tunic",
+  "display_name": "Cinder Tunic",
+  "description": "A heat-treated tunic lined with volcanic ash fibers, warm to the touch but never burning.",
+  "icon_hint": "dark red and black tunic with smoldering ember accents along the hems and ashen grey lining",
+  "item_type": "armor",
+  "item_subtype": "light_chest",
+  "category": "equipment",
+  "slot": "chest",
+  "equip_slot": "armor",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 4
+  },
+  "stat_bonuses": {
+    "defense": 4,
+    "speed": 1,
+    "health": 3
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 52,
+  "icon_path": "",
+  "tags": ["region_4", "armor", "light", "ashen_horizons", "tier_2"]
+}

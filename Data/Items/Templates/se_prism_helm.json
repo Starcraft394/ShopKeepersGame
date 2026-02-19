@@ -13,13 +13,16 @@
   "category": "equipment",
   "base_stats": {
     "defense": 8,
-    "speed": -1
+    "speed": 1
   },
   "stat_bonuses": {
     "defense": 8,
-    "health": 15,
-    "speed": -1
+    "health": 12,
+    "speed": 1
   },
+  "passive_id": "se_passive_pierce",
+  "combat_tag": "temporal_echo",
+  "combat_tag_effect": {"trigger": "on_ability_use", "effect": "reduce_cooldown", "value": 1, "chance": 0.20},
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,

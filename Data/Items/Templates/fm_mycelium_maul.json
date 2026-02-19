@@ -1,0 +1,36 @@
+{
+  "id": "fm_mycelium_maul",
+  "display_name": "Mycelium Maul",
+  "description": "A massive war hammer grown from petrified mycelium, its head studded with toxic spore clusters that burst on impact.",
+  "icon_hint": "enormous pale green war hammer with petrified mycelium head covered in glowing toxic spore clusters",
+  "item_type": "weapon",
+  "item_subtype": "mace",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 17,
+    "speed": -2
+  },
+  "stat_bonuses": {
+    "attack": 17,
+    "speed": -2,
+    "health": 5
+  },
+  "ability_id": "fm_fungal_slam",
+  "combat_tag": "spore_shield",
+  "combat_tag_effect": {"trigger": "on_melee_hit_received", "effect": "apply_status", "status": "poisoned", "chance": 0.15},
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 120,
+  "icon_path": "",
+  "tags": ["region_2", "weapon", "mace", "fungalmire", "tier_4"]
+}

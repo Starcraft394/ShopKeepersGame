@@ -1,0 +1,31 @@
+{
+  "id": "se_prism_shield",
+  "display_name": "Prism Shield",
+  "description": "A shield that bends incoming attacks through prismatic refraction. Its surface shimmers with cosmic energy.",
+  "icon_hint": "elegant kite shield of layered prismatic crystal with swirling white-blue-purple cosmic energy and floating light motes",
+  "item_type": "armor",
+  "item_subtype": "shield",
+  "category": "equipment",
+  "slot": "weapon_offhand",
+  "equip_slot": "offhand",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "defense": 10
+  },
+  "stat_bonuses": {
+    "defense": 10,
+    "health": 18
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 95,
+  "icon_path": "",
+  "tags": ["region_5", "offhand", "shield", "starfall_expanse", "tier_3"]
+}

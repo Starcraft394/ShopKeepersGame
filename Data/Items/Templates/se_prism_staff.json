@@ -12,12 +12,14 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "attack": 14
+    "attack": 15
   },
   "stat_bonuses": {
-    "attack": 14,
-    "health": 18
+    "attack": 15,
+    "health": 24
   },
+  "combat_tag": "temporal_echo",
+  "combat_tag_effect": {"trigger": "on_ability_use", "effect": "reduce_cooldown", "value": 1, "chance": 0.20},
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,

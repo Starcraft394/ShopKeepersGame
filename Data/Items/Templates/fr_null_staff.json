@@ -1,0 +1,31 @@
+{
+  "id": "fr_null_staff",
+  "display_name": "Null Staff",
+  "description": "A staff that exists partially outside reality. Its form shifts and flickers between dimensions.",
+  "icon_hint": "tall void-black staff with sections that phase in and out of visibility, surrounded by purple dimensional cracks",
+  "item_type": "weapon",
+  "item_subtype": "staff",
+  "category": "equipment",
+  "slot": "weapon_main",
+  "equip_slot": "weapon",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "base_stats": {
+    "attack": 14
+  },
+  "stat_bonuses": {
+    "attack": 14,
+    "health": 22
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 118,
+  "icon_path": "",
+  "tags": ["region_7", "weapon", "staff", "fractured_realm", "tier_3"]
+}

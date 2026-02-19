@@ -1,0 +1,22 @@
+{
+  "id": "gw_rootbound_shot",
+  "display_name": "Rootbound Shot",
+  "description": "Fire an arrow trailing roots that bind the target, slowing them.",
+  "icon_hint": "wooden arrow in flight with tangled brown roots unfurling behind it against a forest green backdrop",
+  "ability_type": "equipment",
+  "source_class_id": "",
+  "category": "equipment",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 6,
+  "damage_type": "physical",
+  "attack_scaling": 0.8,
+  "cooldown": 3,
+  "applies_status_id": "",
+  "status_stacks": 0,
+  "enemy_debuff": {
+    "stat": "speed",
+    "value": -3,
+    "duration": 2
+  }
+}
