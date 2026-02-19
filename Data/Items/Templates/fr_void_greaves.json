@@ -1,0 +1,32 @@
+{
+  "id": "fr_void_greaves",
+  "display_name": "Void Greaves",
+  "description": "Greaves forged from void-touched metal that phase between dimensions, making strikes pass harmlessly through.",
+  "icon_hint": "dark metallic greaves with surface that phases between solid and translucent, purple void energy seeping from the joints",
+  "item_type": "armor",
+  "item_subtype": "light_legs",
+  "slot": "legs",
+  "equip_slot": "legs",
+  "tier": 5,
+  "min_quality": 0,
+  "max_quality": 3,
+  "category": "equipment",
+  "base_stats": {
+    "defense": 7
+  },
+  "stat_bonuses": {
+    "defense": 7,
+    "health": 8,
+    "speed": 2
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 92,
+  "icon_path": "",
+  "tags": ["region_7", "armor", "light_legs", "final_realm", "tier_5"]
+}

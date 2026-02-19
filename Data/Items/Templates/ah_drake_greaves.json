@@ -1,0 +1,32 @@
+{
+  "id": "ah_drake_greaves",
+  "display_name": "Drake Greaves",
+  "description": "Shin guards fashioned from overlapping drake scales, heat-resistant and surprisingly flexible.",
+  "icon_hint": "red-orange drake scale greaves with leather straps and flexible joints, faint heat shimmer rising from the surface",
+  "item_type": "armor",
+  "item_subtype": "light_legs",
+  "slot": "legs",
+  "equip_slot": "legs",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "category": "equipment",
+  "base_stats": {
+    "defense": 4
+  },
+  "stat_bonuses": {
+    "defense": 4,
+    "health": 5,
+    "speed": 1
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 48,
+  "icon_path": "",
+  "tags": ["region_4", "armor", "light_legs", "ashen_horizons", "tier_3"]
+}

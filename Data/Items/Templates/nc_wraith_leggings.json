@@ -1,0 +1,32 @@
+{
+  "id": "nc_wraith_leggings",
+  "display_name": "Wraith Leggings",
+  "description": "Spectral leg wraps that trail wisps of ghostly energy. They dampen sound and blur the wearer's lower form.",
+  "icon_hint": "tattered dark grey leggings with translucent edges trailing wisps of ghostly blue-green energy",
+  "item_type": "armor",
+  "item_subtype": "light_legs",
+  "slot": "legs",
+  "equip_slot": "legs",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "category": "equipment",
+  "base_stats": {
+    "defense": 6
+  },
+  "stat_bonuses": {
+    "defense": 6,
+    "health": 8,
+    "speed": 1
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 72,
+  "icon_path": "",
+  "tags": ["region_6", "armor", "light_legs", "necropolis", "tier_4"]
+}

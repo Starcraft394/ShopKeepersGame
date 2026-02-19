@@ -1,0 +1,33 @@
+{
+  "id": "fm_sporeguard_helm",
+  "display_name": "Sporeguard Helm",
+  "description": "A helmet grown from hardened fungal caps, reinforced with mycelium fiber. Releases calming spores when struck.",
+  "icon_hint": "rounded helmet of layered pale mushroom caps with green bioluminescent veins and mycelium padding inside",
+  "item_type": "armor",
+  "item_subtype": "medium_head",
+  "slot": "head",
+  "equip_slot": "helmet",
+  "tier": 2,
+  "min_quality": 0,
+  "max_quality": 3,
+  "category": "equipment",
+  "base_stats": {
+    "defense": 4,
+    "speed": -1
+  },
+  "stat_bonuses": {
+    "defense": 4,
+    "health": 6,
+    "speed": -1
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 30,
+  "icon_path": "",
+  "tags": ["region_2", "armor", "fungalmire", "tier_2"]
+}

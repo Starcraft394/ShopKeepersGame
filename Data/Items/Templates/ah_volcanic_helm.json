@@ -1,0 +1,33 @@
+{
+  "id": "ah_volcanic_helm",
+  "display_name": "Volcanic Helm",
+  "description": "A helm shaped from cooled obsidian and volcanic stone. Radiates faint heat and resists fire.",
+  "icon_hint": "angular dark obsidian helmet with glowing orange cracks along the brow and ember-lit eye slits",
+  "item_type": "armor",
+  "item_subtype": "heavy_head",
+  "slot": "head",
+  "equip_slot": "helmet",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "category": "equipment",
+  "base_stats": {
+    "defense": 5,
+    "speed": -1
+  },
+  "stat_bonuses": {
+    "defense": 5,
+    "health": 10,
+    "speed": -1
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 48,
+  "icon_path": "",
+  "tags": ["region_4", "armor", "ashen_horizons", "tier_3"]
+}

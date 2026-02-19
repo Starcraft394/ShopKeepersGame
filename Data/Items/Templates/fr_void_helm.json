@@ -1,0 +1,33 @@
+{
+  "id": "fr_void_helm",
+  "display_name": "Void Helm",
+  "description": "A helm that exists partially in another dimension. Its surface ripples like disturbed water, absorbing blows across planes.",
+  "icon_hint": "dark metallic helmet with surface that phases between solid and translucent, purple void energy leaking from the visor",
+  "item_type": "armor",
+  "item_subtype": "heavy_head",
+  "slot": "head",
+  "equip_slot": "helmet",
+  "tier": 5,
+  "min_quality": 0,
+  "max_quality": 3,
+  "category": "equipment",
+  "base_stats": {
+    "defense": 10,
+    "speed": -1
+  },
+  "stat_bonuses": {
+    "defense": 10,
+    "health": 18,
+    "speed": -1
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 105,
+  "icon_path": "",
+  "tags": ["region_7", "armor", "final_realm", "tier_5"]
+}

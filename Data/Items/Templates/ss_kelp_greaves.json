@@ -1,0 +1,31 @@
+{
+  "id": "ss_kelp_greaves",
+  "display_name": "Kelp Greaves",
+  "description": "Lightweight greaves woven from treated kelp and lined with soft shell fragments. Ideal for coastal terrain.",
+  "icon_hint": "green-brown woven kelp leg guards with small iridescent shell plates at the knees and shin",
+  "item_type": "armor",
+  "item_subtype": "light_legs",
+  "slot": "legs",
+  "equip_slot": "legs",
+  "tier": 3,
+  "min_quality": 0,
+  "max_quality": 3,
+  "category": "equipment",
+  "base_stats": {
+    "defense": 4
+  },
+  "stat_bonuses": {
+    "defense": 4,
+    "speed": 1
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 42,
+  "icon_path": "",
+  "tags": ["region_3", "armor", "light_legs", "sunken_strand", "tier_3"]
+}

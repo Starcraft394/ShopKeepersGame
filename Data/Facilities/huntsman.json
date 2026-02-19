@@ -614,6 +614,20 @@
       ]
     },
     {
+      "output_id": "fm_mycelium_leggings",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_2",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_greaves", "qty": 1 },
+        { "item_id": "fungal_fiber", "qty": 2 },
+        { "item_id": "boss_trophy_fungalmire", "qty": 1 }
+      ]
+    },
+    {
       "output_id": "fm_fungal_longbow",
       "output_qty": 1,
       "required_tier": 4,
@@ -625,6 +639,20 @@
         { "item_id": "composite_bow", "qty": 1 },
         { "item_id": "fungal_fiber", "qty": 3 },
         { "item_id": "boss_trophy_fungalmire", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "ss_kelp_greaves",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_3",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_greaves", "qty": 1 },
+        { "item_id": "ss_crustacean_shell", "qty": 2 },
+        { "item_id": "boss_trophy_sunken_strand", "qty": 1 }
       ]
     },
     {
@@ -656,6 +684,20 @@
       ]
     },
     {
+      "output_id": "ah_drake_greaves",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_4",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_greaves", "qty": 1 },
+        { "item_id": "ah_scorched_fang", "qty": 2 },
+        { "item_id": "boss_trophy_ashen_horizons", "qty": 1 }
+      ]
+    },
+    {
       "output_id": "ah_scorched_longbow",
       "output_qty": 1,
       "required_tier": 4,
@@ -681,6 +723,20 @@
         { "item_id": "leather_vest", "qty": 1 },
         { "item_id": "ah_scorched_fang", "qty": 3 },
         { "item_id": "boss_trophy_ashen_horizons", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "se_astral_leggings",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_5",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_greaves", "qty": 1 },
+        { "item_id": "se_crystal_chitin", "qty": 2 },
+        { "item_id": "boss_trophy_starfall_expanse", "qty": 1 }
       ]
     },
     {
@@ -712,6 +768,20 @@
       ]
     },
     {
+      "output_id": "nc_wraith_leggings",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_6",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_greaves", "qty": 1 },
+        { "item_id": "nc_bone_marrow", "qty": 2 },
+        { "item_id": "boss_trophy_necropolis", "qty": 1 }
+      ]
+    },
+    {
       "output_id": "nc_wraith_bow",
       "output_qty": 1,
       "required_tier": 4,
@@ -737,6 +807,20 @@
         { "item_id": "leather_vest", "qty": 1 },
         { "item_id": "nc_bone_marrow", "qty": 3 },
         { "item_id": "boss_trophy_necropolis", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "fr_void_greaves",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "legs",
+      "is_craft": true,
+      "region": "region_7",
+      "craft_inputs": [
+        { "item_id": "tanned_leather_greaves", "qty": 1 },
+        { "item_id": "fr_corruption_ichor", "qty": 2 },
+        { "item_id": "boss_trophy_fractured_realm", "qty": 1 }
       ]
     },
     {

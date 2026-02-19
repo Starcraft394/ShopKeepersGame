@@ -1,0 +1,33 @@
+{
+  "id": "nc_bone_crown",
+  "display_name": "Bone Crown",
+  "description": "A crown forged from the skulls of fallen knights. Dark runes pulse along each suture, warding off death.",
+  "icon_hint": "jagged crown of interlocking bone fragments with faintly glowing green runes along the seams",
+  "item_type": "armor",
+  "item_subtype": "heavy_head",
+  "slot": "head",
+  "equip_slot": "helmet",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 3,
+  "category": "equipment",
+  "base_stats": {
+    "defense": 9,
+    "speed": -1
+  },
+  "stat_bonuses": {
+    "defense": 9,
+    "health": 16,
+    "speed": -1
+  },
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": true,
+  "max_refinement": 10,
+  "base_value": 85,
+  "icon_path": "",
+  "tags": ["region_6", "armor", "necropolis", "tier_4"]
+}

@@ -607,6 +607,20 @@
       ]
     },
     {
+      "output_id": "fm_sporeguard_helm",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "helmet",
+      "is_craft": true,
+      "region": "region_2",
+      "craft_inputs": [
+        { "item_id": "iron_helmet", "qty": 1 },
+        { "item_id": "spore_cluster", "qty": 2 },
+        { "item_id": "boss_trophy_fungalmire", "qty": 1 }
+      ]
+    },
+    {
       "output_id": "fm_spore_blade",
       "output_qty": 1,
       "required_tier": 4,
@@ -650,6 +664,20 @@
       ]
     },
     {
+      "output_id": "ss_tidecrest_helm",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "helmet",
+      "is_craft": true,
+      "region": "region_3",
+      "craft_inputs": [
+        { "item_id": "iron_helmet", "qty": 1 },
+        { "item_id": "sea_salt_crystal", "qty": 2 },
+        { "item_id": "boss_trophy_sunken_strand", "qty": 1 }
+      ]
+    },
+    {
       "output_id": "ss_coral_blade",
       "output_qty": 1,
       "required_tier": 4,
@@ -690,6 +718,20 @@
         { "item_id": "sea_salt_crystal", "qty": 3 },
         { "item_id": "stormglass_fragment", "qty": 2 },
         { "item_id": "boss_trophy_sunken_strand", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "ah_volcanic_helm",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "helmet",
+      "is_craft": true,
+      "region": "region_4",
+      "craft_inputs": [
+        { "item_id": "iron_helmet", "qty": 1 },
+        { "item_id": "volcanic_glass", "qty": 2 },
+        { "item_id": "boss_trophy_ashen_horizons", "qty": 1 }
       ]
     },
     {
@@ -750,6 +792,20 @@
       ]
     },
     {
+      "output_id": "se_prism_helm",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "helmet",
+      "is_craft": true,
+      "region": "region_5",
+      "craft_inputs": [
+        { "item_id": "iron_helmet", "qty": 1 },
+        { "item_id": "prism_shard", "qty": 2 },
+        { "item_id": "boss_trophy_starfall_expanse", "qty": 1 }
+      ]
+    },
+    {
       "output_id": "se_prism_blade",
       "output_qty": 1,
       "required_tier": 4,
@@ -807,6 +863,20 @@
       ]
     },
     {
+      "output_id": "nc_bone_crown",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "helmet",
+      "is_craft": true,
+      "region": "region_6",
+      "craft_inputs": [
+        { "item_id": "iron_helmet", "qty": 1 },
+        { "item_id": "soul_ore", "qty": 2 },
+        { "item_id": "boss_trophy_necropolis", "qty": 1 }
+      ]
+    },
+    {
       "output_id": "nc_soul_reaver",
       "output_qty": 1,
       "required_tier": 4,
@@ -861,6 +931,20 @@
         { "item_id": "soul_ore", "qty": 3 },
         { "item_id": "spectral_log", "qty": 2 },
         { "item_id": "boss_trophy_necropolis", "qty": 1 }
+      ]
+    },
+    {
+      "output_id": "fr_void_helm",
+      "output_qty": 1,
+      "required_tier": 4,
+      "upgrade_tier": 4,
+      "equipment_type": "helmet",
+      "is_craft": true,
+      "region": "region_7",
+      "craft_inputs": [
+        { "item_id": "iron_helmet", "qty": 1 },
+        { "item_id": "primordial_essence", "qty": 2 },
+        { "item_id": "boss_trophy_fractured_realm", "qty": 1 }
       ]
     },
     {
