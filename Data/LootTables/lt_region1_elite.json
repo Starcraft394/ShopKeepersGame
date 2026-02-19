@@ -8,7 +8,7 @@
     { "item_id": "iron_scrap", "weight": 30, "min_qty": 2, "max_qty": 3 },
     { "item_id": "herb_sprig", "weight": 25, "min_qty": 2, "max_qty": 3 },
     { "item_id": "minor_healing_tonic", "weight": 20, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "antidote_vial", "weight": 10, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "antidote", "weight": 10, "min_qty": 1, "max_qty": 1 },
     { "item_id": "honey", "weight": 8, "min_qty": 1, "max_qty": 2 },
     { "item_id": "glowing_spore", "weight": 8, "min_qty": 1, "max_qty": 2 },
     { "item_id": "leather_vest", "weight": 5, "min_qty": 1, "max_qty": 1 },

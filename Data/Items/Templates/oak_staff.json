@@ -27,5 +27,12 @@
   "max_refinement": 10,
   "base_value": 18,
   "icon_path": "res://Assets/_ArtPacks/MagicArtifacts/PNG/Transperent/Icon31.png",
-  "tags": ["base", "weapon", "magic", "staff", "tier_1"]
+  "tags": [
+    "base",
+    "weapon",
+    "magic",
+    "staff",
+    "tier_1"
+  ],
+  "stack_max": 1
 }

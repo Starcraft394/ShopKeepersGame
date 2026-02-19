@@ -28,5 +28,12 @@
   "max_refinement": 10,
   "base_value": 98,
   "icon_path": "",
-  "tags": ["region_6", "weapon", "bow", "necropolis", "tier_3"]
+  "tags": [
+    "region_6",
+    "weapon",
+    "bow",
+    "necropolis",
+    "tier_3"
+  ],
+  "stack_max": 1
 }

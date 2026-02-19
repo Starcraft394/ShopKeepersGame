@@ -10,5 +10,12 @@
   "base_value": 38,
   "buy_value": 0,
   "icon_path": "",
-  "tags": ["region_7", "material", "monster_part", "final_realm"]
+  "tags": [
+    "region_7",
+    "material",
+    "monster_part",
+    "final_realm"
+  ],
+  "tier": 4,
+  "stack_max": 20
 }

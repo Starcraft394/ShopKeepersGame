@@ -27,5 +27,12 @@
   "max_refinement": 10,
   "base_value": 42,
   "icon_path": "",
-  "tags": ["region_2", "armor", "light", "fungalmire", "tier_2"]
+  "tags": [
+    "region_2",
+    "armor",
+    "light",
+    "fungalmire",
+    "tier_2"
+  ],
+  "stack_max": 1
 }

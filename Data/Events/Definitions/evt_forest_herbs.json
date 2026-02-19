@@ -10,7 +10,7 @@
       "label": "Harvest carefully",
       "description": "Take time to gather them properly.",
       "effects": [
-        { "type": "add_item", "item_id": "herb", "min_qty": 2, "max_qty": 3 }
+        { "type": "add_item", "item_id": "herb_sprig", "min_qty": 2, "max_qty": 3 }
       ]
     },
     {
@@ -18,7 +18,7 @@
       "label": "Grab everything quickly",
       "description": "Rip up the whole patch before something finds you.",
       "effects": [
-        { "type": "add_item", "item_id": "herb", "min_qty": 1, "max_qty": 4 }
+        { "type": "add_item", "item_id": "herb_sprig", "min_qty": 1, "max_qty": 4 }
       ],
       "risk": {
         "damage_chance": 0.25,
@@ -30,8 +30,8 @@
       "label": "Search for mushrooms too",
       "description": "Rich soil like this often has fungi nearby.",
       "effects": [
-        { "type": "add_item", "item_id": "herb", "min_qty": 1, "max_qty": 2 },
-        { "type": "add_item", "item_id": "mushroom", "min_qty": 1, "max_qty": 2 }
+        { "type": "add_item", "item_id": "herb_sprig", "min_qty": 1, "max_qty": 2 },
+        { "type": "add_item", "item_id": "forest_mushroom", "min_qty": 1, "max_qty": 2 }
       ]
     },
     {

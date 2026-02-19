@@ -11,8 +11,13 @@
   "tier": 1,
   "min_quality": 0,
   "max_quality": 3,
-  "base_stats": { "defense": 2 },
-  "stat_bonuses": { "defense": 2, "health": 2 },
+  "base_stats": {
+    "defense": 2
+  },
+  "stat_bonuses": {
+    "defense": 2,
+    "health": 2
+  },
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -22,5 +27,11 @@
   "max_refinement": 10,
   "base_value": 10,
   "icon_path": "",
-  "tags": ["base", "armor", "padded", "tier_1"]
+  "tags": [
+    "base",
+    "armor",
+    "padded",
+    "tier_1"
+  ],
+  "stack_max": 1
 }

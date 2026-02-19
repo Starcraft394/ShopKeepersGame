@@ -21,7 +21,12 @@
   },
   "passive_id": "ss_passive_speed",
   "combat_tag": "swift_current",
-  "combat_tag_effect": {"trigger": "combat_start", "effect": "buff_stat", "stat": "speed", "value": 1},
+  "combat_tag_effect": {
+    "trigger": "combat_start",
+    "effect": "buff_stat",
+    "stat": "speed",
+    "value": 1
+  },
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -31,5 +36,12 @@
   "max_refinement": 10,
   "base_value": 108,
   "icon_path": "",
-  "tags": ["region_3", "armor", "light_chest", "sunken_strand", "tier_4"]
+  "tags": [
+    "region_3",
+    "armor",
+    "light_chest",
+    "sunken_strand",
+    "tier_4"
+  ],
+  "stack_max": 1
 }

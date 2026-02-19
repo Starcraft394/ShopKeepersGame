@@ -27,5 +27,12 @@
   "max_refinement": 10,
   "base_value": 68,
   "icon_path": "",
-  "tags": ["region_1", "offhand", "shield", "greenwood", "tier_3"]
+  "tags": [
+    "region_1",
+    "offhand",
+    "shield",
+    "greenwood",
+    "tier_3"
+  ],
+  "stack_max": 1
 }

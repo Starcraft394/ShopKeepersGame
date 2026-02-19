@@ -5,12 +5,17 @@
   "icon_hint": "crystalline white tome with prismatic light refracting from a shield emblem",
   "icon_path": "res://Assets/_ArtPacks/MagicBooks/PNG/Transperent/Icon13.png",
   "item_type": "consumable",
-  "rarity": "epic",
   "use_effect_id": "learn_class_prism_sentinel",
   "base_stats": {},
-  "stat_scalars": {},
   "allowed_affixes": [],
   "allowed_socket_types": [],
-  "gold_value": 300,
-  "tags": ["book", "class_unlock", "prism_sentinel", "region_5"]
+  "tags": [
+    "book",
+    "class_unlock",
+    "prism_sentinel",
+    "region_5"
+  ],
+  "base_value": 300,
+  "tier": 1,
+  "stack_max": 10
 }

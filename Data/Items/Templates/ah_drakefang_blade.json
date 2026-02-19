@@ -20,7 +20,12 @@
   },
   "ability_id": "ah_dragonfire_strike",
   "combat_tag": "burning_edge",
-  "combat_tag_effect": {"trigger": "on_attack", "effect": "apply_status", "status": "burning", "chance": 0.10},
+  "combat_tag_effect": {
+    "trigger": "on_attack",
+    "effect": "apply_status",
+    "status": "burning",
+    "chance": 0.1
+  },
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -30,5 +35,12 @@
   "max_refinement": 10,
   "base_value": 135,
   "icon_path": "",
-  "tags": ["region_4", "weapon", "sword", "ashen_horizons", "tier_4"]
+  "tags": [
+    "region_4",
+    "weapon",
+    "sword",
+    "ashen_horizons",
+    "tier_4"
+  ],
+  "stack_max": 1
 }

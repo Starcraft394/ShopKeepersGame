@@ -248,7 +248,6 @@ const BOOK_TO_CLASS_MAP: Dictionary = {
 	"book_defender": "defender",
 	"book_striker": "striker",
 	"book_warden": "warden",
-	"book_mender": "warden",  # Legacy: mender renamed to warden
 	# Region 2 classes
 	"book_druid": "druid",
 	"book_fungal_berserker": "fungal_berserker",
@@ -1005,11 +1004,11 @@ func has_player_item(item_id: String, qty: int = 1) -> bool:
 
 ## Debug: Give test items to player.
 func debug_give_test_items() -> void:
-	add_player_item("herb", 5)
+	add_player_item("herb_sprig", 5)
 	add_player_item("wood_bundle", 3)
 	add_player_item("iron_scrap", 3)
 	add_player_gold(50)
-	print("[Facility][Debug] Gave test items: herb x5, wood x3, iron_scrap x3, +50 gold")
+	print("[Facility][Debug] Gave test items: herb_sprig x5, wood x3, iron_scrap x3, +50 gold")
 
 
 # ============================================================================

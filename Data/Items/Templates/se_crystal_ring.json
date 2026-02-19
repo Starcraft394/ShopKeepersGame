@@ -12,7 +12,11 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {},
-  "stat_bonuses": { "attack": 1, "speed": 1, "health": 8 },
+  "stat_bonuses": {
+    "attack": 1,
+    "speed": 1,
+    "health": 8
+  },
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -22,5 +26,12 @@
   "max_refinement": 10,
   "base_value": 52,
   "icon_path": "",
-  "tags": ["region_5", "accessory", "ring", "starfall_expanse", "tier_2"]
+  "tags": [
+    "region_5",
+    "accessory",
+    "ring",
+    "starfall_expanse",
+    "tier_2"
+  ],
+  "stack_max": 1
 }

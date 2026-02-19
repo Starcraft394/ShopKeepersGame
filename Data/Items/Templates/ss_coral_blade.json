@@ -27,5 +27,12 @@
   "max_refinement": 10,
   "base_value": 70,
   "icon_path": "",
-  "tags": ["region_3", "weapon", "sword", "sunken_strand", "tier_3"]
+  "tags": [
+    "region_3",
+    "weapon",
+    "sword",
+    "sunken_strand",
+    "tier_3"
+  ],
+  "stack_max": 1
 }

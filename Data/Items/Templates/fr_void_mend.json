@@ -11,5 +11,13 @@
   "heal_amount": 120,
   "base_value": 85,
   "icon_path": "",
-  "tags": ["region_7", "consumable", "potion", "healing", "final_realm", "tier_5"]
+  "tags": [
+    "region_7",
+    "consumable",
+    "potion",
+    "healing",
+    "final_realm",
+    "tier_5"
+  ],
+  "stack_max": 10
 }

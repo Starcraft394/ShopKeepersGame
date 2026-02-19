@@ -20,7 +20,12 @@
   },
   "passive_id": "se_passive_temporal",
   "combat_tag": "temporal_echo",
-  "combat_tag_effect": {"trigger": "on_ability_use", "effect": "reduce_cooldown", "value": 1, "chance": 0.20},
+  "combat_tag_effect": {
+    "trigger": "on_ability_use",
+    "effect": "reduce_cooldown",
+    "value": 1,
+    "chance": 0.2
+  },
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -30,5 +35,12 @@
   "max_refinement": 10,
   "base_value": 95,
   "icon_path": "",
-  "tags": ["region_5", "accessory", "ring", "starfall_expanse", "tier_4"]
+  "tags": [
+    "region_5",
+    "accessory",
+    "ring",
+    "starfall_expanse",
+    "tier_4"
+  ],
+  "stack_max": 1
 }

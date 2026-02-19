@@ -19,5 +19,9 @@
   "max_refinement": 0,
   "base_value": 12,
   "icon_path": "res://Assets/Icons/Items/icon_item_smoke_bomb.png",
-  "tags": ["region_1", "consumable"]
+  "tags": [
+    "region_1",
+    "consumable"
+  ],
+  "stack_max": 10
 }

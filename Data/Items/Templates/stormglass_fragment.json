@@ -10,5 +10,12 @@
   "base_value": 55,
   "buy_value": 0,
   "icon_path": "",
-  "tags": ["region_3", "material", "legendary", "sunken_strand"]
+  "tags": [
+    "region_3",
+    "material",
+    "legendary",
+    "sunken_strand"
+  ],
+  "tier": 2,
+  "stack_max": 20
 }

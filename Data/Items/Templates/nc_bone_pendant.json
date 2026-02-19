@@ -12,7 +12,10 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {},
-  "stat_bonuses": { "defense": 2, "health": 10 },
+  "stat_bonuses": {
+    "defense": 2,
+    "health": 10
+  },
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -22,5 +25,12 @@
   "max_refinement": 10,
   "base_value": 58,
   "icon_path": "",
-  "tags": ["region_6", "accessory", "amulet", "necropolis", "tier_2"]
+  "tags": [
+    "region_6",
+    "accessory",
+    "amulet",
+    "necropolis",
+    "tier_2"
+  ],
+  "stack_max": 1
 }

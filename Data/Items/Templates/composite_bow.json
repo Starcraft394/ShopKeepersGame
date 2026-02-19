@@ -27,5 +27,11 @@
   "max_refinement": 10,
   "base_value": 45,
   "icon_path": "res://Assets/_ArtPacks/Bows/PNG/Transperent/Icon13.png",
-  "tags": ["region_1", "weapon", "ranged", "tier_2"]
+  "tags": [
+    "region_1",
+    "weapon",
+    "ranged",
+    "tier_2"
+  ],
+  "stack_max": 1
 }

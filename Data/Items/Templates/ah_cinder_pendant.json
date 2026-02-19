@@ -12,7 +12,10 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {},
-  "stat_bonuses": { "attack": 3, "health": 6 },
+  "stat_bonuses": {
+    "attack": 3,
+    "health": 6
+  },
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -22,5 +25,12 @@
   "max_refinement": 10,
   "base_value": 50,
   "icon_path": "",
-  "tags": ["region_4", "accessory", "amulet", "ashen_horizons", "tier_2"]
+  "tags": [
+    "region_4",
+    "accessory",
+    "amulet",
+    "ashen_horizons",
+    "tier_2"
+  ],
+  "stack_max": 1
 }

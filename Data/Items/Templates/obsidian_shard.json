@@ -10,5 +10,12 @@
   "base_value": 18,
   "buy_value": 0,
   "icon_path": "",
-  "tags": ["region_4", "material", "mineral", "ashen_horizons"]
+  "tags": [
+    "region_4",
+    "material",
+    "mineral",
+    "ashen_horizons"
+  ],
+  "tier": 2,
+  "stack_max": 20
 }

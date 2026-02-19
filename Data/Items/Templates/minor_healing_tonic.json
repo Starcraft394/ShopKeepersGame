@@ -4,13 +4,16 @@
   "description": "Restores a small amount of health.",
   "icon_hint": "small round glass vial of pale pink liquid with a simple cork",
   "item_type": "consumable",
-  "rarity": "common",
   "use_effect_id": "heal_small",
   "base_stats": {},
-  "stat_scalars": {},
   "allowed_affixes": [],
   "allowed_socket_types": [],
-  "gold_value": 8,
-  "tags": ["base", "consumable"],
-  "icon_path": "res://Assets/Icons/Items/icon_item_minor_healing_tonic.png"
+  "tags": [
+    "base",
+    "consumable"
+  ],
+  "icon_path": "res://Assets/Icons/Items/icon_item_minor_healing_tonic.png",
+  "base_value": 8,
+  "tier": 1,
+  "stack_max": 10
 }

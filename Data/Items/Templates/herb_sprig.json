@@ -4,12 +4,15 @@
   "description": "A fragrant medicinal herb.",
   "icon_hint": "small green sprig with tiny leaves and a thin brown stem",
   "item_type": "material",
-  "rarity": "common",
   "base_stats": {},
-  "stat_scalars": {},
   "allowed_affixes": [],
   "allowed_socket_types": [],
-  "gold_value": 5,
   "icon_path": "res://Assets/_ArtPacks/AlchemyItems/PNG/Transperent/Icon44.png",
-  "tags": ["base", "material"]
+  "tags": [
+    "base",
+    "material"
+  ],
+  "base_value": 5,
+  "tier": 1,
+  "stack_max": 20
 }

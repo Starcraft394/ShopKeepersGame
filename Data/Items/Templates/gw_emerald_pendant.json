@@ -12,7 +12,11 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {},
-  "stat_bonuses": { "attack": 2, "defense": 2, "health": 6 },
+  "stat_bonuses": {
+    "attack": 2,
+    "defense": 2,
+    "health": 6
+  },
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -22,5 +26,12 @@
   "max_refinement": 10,
   "base_value": 58,
   "icon_path": "",
-  "tags": ["region_1", "accessory", "amulet", "greenwood", "tier_3"]
+  "tags": [
+    "region_1",
+    "accessory",
+    "amulet",
+    "greenwood",
+    "tier_3"
+  ],
+  "stack_max": 1
 }

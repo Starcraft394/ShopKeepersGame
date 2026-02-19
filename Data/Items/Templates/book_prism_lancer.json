@@ -5,12 +5,17 @@
   "icon_hint": "luminous crystal-paged tome with a prismatic lance beam on the cover",
   "icon_path": "res://Assets/_ArtPacks/MagicBooks/PNG/Transperent/Icon43.png",
   "item_type": "consumable",
-  "rarity": "epic",
   "use_effect_id": "learn_class_prism_lancer",
   "base_stats": {},
-  "stat_scalars": {},
   "allowed_affixes": [],
   "allowed_socket_types": [],
-  "gold_value": 300,
-  "tags": ["book", "class_unlock", "prism_lancer", "region_5"]
+  "tags": [
+    "book",
+    "class_unlock",
+    "prism_lancer",
+    "region_5"
+  ],
+  "base_value": 300,
+  "tier": 1,
+  "stack_max": 10
 }

@@ -13,10 +13,21 @@
   "stat_bonuses": {},
   "bag_capacity_bonus": 8,
   "combat_tag": "swift_current",
-  "combat_tag_effect": {"trigger": "combat_start", "effect": "buff_stat", "stat": "speed", "value": 1},
+  "combat_tag_effect": {
+    "trigger": "combat_start",
+    "effect": "buff_stat",
+    "stat": "speed",
+    "value": 1
+  },
   "base_value": 172,
   "buy_value": 0,
   "can_refine": false,
   "icon_path": "",
-  "tags": ["region_3", "backpack", "sunken_strand", "tier_4"]
+  "tags": [
+    "region_3",
+    "backpack",
+    "sunken_strand",
+    "tier_4"
+  ],
+  "stack_max": 1
 }

@@ -12,7 +12,10 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {},
-  "stat_bonuses": { "defense": 1, "health": 10 },
+  "stat_bonuses": {
+    "defense": 1,
+    "health": 10
+  },
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -22,5 +25,12 @@
   "max_refinement": 10,
   "base_value": 55,
   "icon_path": "",
-  "tags": ["region_1", "accessory", "ring", "greenwood", "tier_3"]
+  "tags": [
+    "region_1",
+    "accessory",
+    "ring",
+    "greenwood",
+    "tier_3"
+  ],
+  "stack_max": 1
 }

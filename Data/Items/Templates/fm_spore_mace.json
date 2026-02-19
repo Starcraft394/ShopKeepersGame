@@ -28,5 +28,12 @@
   "max_refinement": 10,
   "base_value": 52,
   "icon_path": "",
-  "tags": ["region_2", "weapon", "mace", "fungalmire", "tier_2"]
+  "tags": [
+    "region_2",
+    "weapon",
+    "mace",
+    "fungalmire",
+    "tier_2"
+  ],
+  "stack_max": 1
 }

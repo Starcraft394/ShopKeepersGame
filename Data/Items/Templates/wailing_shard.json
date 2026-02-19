@@ -10,5 +10,12 @@
   "base_value": 100,
   "buy_value": 0,
   "icon_path": "",
-  "tags": ["region_6", "material", "legendary", "necropolis"]
+  "tags": [
+    "region_6",
+    "material",
+    "legendary",
+    "necropolis"
+  ],
+  "tier": 3,
+  "stack_max": 20
 }

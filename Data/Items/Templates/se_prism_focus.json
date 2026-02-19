@@ -28,5 +28,12 @@
   "max_refinement": 10,
   "base_value": 92,
   "icon_path": "",
-  "tags": ["region_5", "offhand", "focus", "starfall_expanse", "tier_3"]
+  "tags": [
+    "region_5",
+    "offhand",
+    "focus",
+    "starfall_expanse",
+    "tier_3"
+  ],
+  "stack_max": 1
 }

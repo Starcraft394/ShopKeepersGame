@@ -5,12 +5,17 @@
   "icon_hint": "moss-covered green tome with vine tendrils curling around the spine",
   "icon_path": "res://Assets/_ArtPacks/MagicBooks/PNG/Transperent/Icon35.png",
   "item_type": "consumable",
-  "rarity": "uncommon",
   "use_effect_id": "learn_class_druid",
   "base_stats": {},
-  "stat_scalars": {},
   "allowed_affixes": [],
   "allowed_socket_types": [],
-  "gold_value": 150,
-  "tags": ["book", "class_unlock", "druid", "region_2"]
+  "tags": [
+    "book",
+    "class_unlock",
+    "druid",
+    "region_2"
+  ],
+  "base_value": 150,
+  "tier": 1,
+  "stack_max": 10
 }

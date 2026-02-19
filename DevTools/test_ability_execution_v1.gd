@@ -4429,7 +4429,7 @@ static func _test_bag_summary_formatting() -> Dictionary:
 	# 2) Bag with items returns "<stacks>/<cap> <items>" (v1.2: stacks, not qty)
 	var entries = [
 		{"item_id": "healing_tonic", "qty": 2},
-		{"item_id": "herb", "qty": 1},
+		{"item_id": "herb_sprig", "qty": 1},
 	]
 	var filled_bag = CombatSceneScript.format_bag_summary(entries, 5)
 	var pass_2 = filled_bag.begins_with("2/5 ") and "x2" in filled_bag and "x1" in filled_bag
@@ -4750,19 +4750,19 @@ static func _test_hero_bag_all_item_types() -> Dictionary:
 		"bag": {"id": "small_backpack", "quality": 0}
 	}
 
-	# Put herb (material) and healing_tonic (consumable) in stash
+	# Put herb_sprig (material) and healing_tonic (consumable) in stash
 	GameContext.run_items = [
-		{"item_id": "herb", "qty": 1},
+		{"item_id": "herb_sprig", "qty": 1},
 		{"item_id": "healing_tonic", "qty": 1}
 	]
 
-	# Assertion 1: Material (herb) NOW ACCEPTED in v1.3
-	var mat_ok = GameContext.move_item_stash_to_hero_bag(test_hero_id, "herb", 1)
+	# Assertion 1: Material (herb_sprig) NOW ACCEPTED in v1.3
+	var mat_ok = GameContext.move_item_stash_to_hero_bag(test_hero_id, "herb_sprig", 1)
 	var pass_1 = mat_ok
 	if pass_1:
-		print("[PASS] Material 'herb' accepted into hero bag (v1.3: all types allowed)")
+		print("[PASS] Material 'herb_sprig' accepted into hero bag (v1.3: all types allowed)")
 	else:
-		print("[FAIL] Material 'herb' should be accepted in v1.3")
+		print("[FAIL] Material 'herb_sprig' should be accepted in v1.3")
 
 	# Assertion 2: can_add_to_hero_bag accepts material
 	var can_add_tonic = GameContext.can_add_to_hero_bag(test_hero_id, "healing_tonic", 1)
@@ -4780,11 +4780,11 @@ static func _test_hero_bag_all_item_types() -> Dictionary:
 	else:
 		print("[FAIL] Consumable should have been accepted")
 
-	# Assertion 4: Bag now has 2 entries (herb + tonic, no stacking)
+	# Assertion 4: Bag now has 2 entries (herb_sprig + tonic, no stacking)
 	var bag = GameContext.get_hero_bag(test_hero_id)
 	var pass_4 = bag.size() == 2
 	if pass_4:
-		print("[PASS] Hero bag has 2 items (herb + tonic)")
+		print("[PASS] Hero bag has 2 items (herb_sprig + tonic)")
 	else:
 		print("[FAIL] Hero bag expected 2 items, got %d" % bag.size())
 
@@ -4965,9 +4965,9 @@ static func _test_pending_acquisition_hero_bag_routing() -> Dictionary:
 	GameContext.current_dungeon_id = ""
 	GameContext.clear_pending_acquisitions()
 
-	# Queue healing_tonic (consumable) + herb (material)
+	# Queue healing_tonic (consumable) + herb_sprig (material)
 	GameContext.acquire_item_with_recipient("healing_tonic", 1, 0, "combat")
-	GameContext.acquire_item_with_recipient("herb", 1, 0, "combat")
+	GameContext.acquire_item_with_recipient("herb_sprig", 1, 0, "combat")
 
 	# Assertion 1: Resolve tonic to hero_bag → success
 	var ok_1 = GameContext.resolve_pending_acquisition("hero_bag", test_hero_id)
@@ -4989,26 +4989,26 @@ static func _test_pending_acquisition_hero_bag_routing() -> Dictionary:
 	else:
 		print("[FAIL] Hero bag should contain healing_tonic, got: %s" % str(bag))
 
-	# Assertion 3: v1.3 - Resolve herb to hero_bag → SUCCESS (all types allowed)
+	# Assertion 3: v1.3 - Resolve herb_sprig to hero_bag → SUCCESS (all types allowed)
 	var ok_3 = GameContext.resolve_pending_acquisition("hero_bag", test_hero_id)
 	var pending_3 = GameContext.get_all_pending_acquisitions()
 	var pass_3 = ok_3 and pending_3.size() == 0
 	if pass_3:
-		print("[PASS] herb resolved to hero_bag (v1.3: all item types allowed)")
+		print("[PASS] herb_sprig resolved to hero_bag (v1.3: all item types allowed)")
 	else:
-		print("[FAIL] herb should resolve to hero_bag in v1.3: resolved=%s pending=%d" % [str(ok_3), pending_3.size()])
+		print("[FAIL] herb_sprig should resolve to hero_bag in v1.3: resolved=%s pending=%d" % [str(ok_3), pending_3.size()])
 
-	# Assertion 4: Hero bag now has 2 items (tonic + herb)
+	# Assertion 4: Hero bag now has 2 items (tonic + herb_sprig)
 	var bag_after = GameContext.get_hero_bag(test_hero_id)
 	var has_herb = false
 	for entry in bag_after:
-		if entry.get("item_id", "") == "herb":
+		if entry.get("item_id", "") == "herb_sprig":
 			has_herb = true
 	var pass_4 = has_herb and bag_after.size() == 2
 	if pass_4:
-		print("[PASS] Hero bag contains herb (v1.3), total 2 items")
+		print("[PASS] Hero bag contains herb_sprig (v1.3), total 2 items")
 	else:
-		print("[FAIL] Hero bag should have tonic + herb, got: %s" % str(bag_after))
+		print("[FAIL] Hero bag should have tonic + herb_sprig, got: %s" % str(bag_after))
 
 	# Assertion 5: run_items should be empty (both items went to hero_bag)
 	var pass_5 = GameContext.run_items.size() == 0
@@ -5131,10 +5131,10 @@ static func _test_shopkeeper_bag_capacity_and_rules() -> Dictionary:
 		print("[FAIL] Expected capacity 6, got %d" % cap)
 
 	# Assertion 2: Add material succeeds (v1.3: qty=2 creates 2 separate entries)
-	var ok_mat = GameContext.add_item_to_shopkeeper_bag("herb", 2, 0, "test")
+	var ok_mat = GameContext.add_item_to_shopkeeper_bag("herb_sprig", 2, 0, "test")
 	var pass_2 = ok_mat and GameContext.shopkeeper_bag.size() == 2
 	if pass_2:
-		print("[PASS] Added material 'herb' x2: creates 2 separate slots (%d/6)" % GameContext.shopkeeper_bag.size())
+		print("[PASS] Added material 'herb_sprig' x2: creates 2 separate slots (%d/6)" % GameContext.shopkeeper_bag.size())
 	else:
 		print("[FAIL] add material x2: ok=%s slots=%d (expected 2)" % [str(ok_mat), GameContext.shopkeeper_bag.size()])
 
@@ -5155,10 +5155,10 @@ static func _test_shopkeeper_bag_capacity_and_rules() -> Dictionary:
 		print("[FAIL] Gear should be accepted in v1.3: ok=%s slots=%d" % [str(ok_gear), GameContext.shopkeeper_bag.size()])
 
 	# Assertion 5: v1.3 NO stacking — same item creates new entry
-	var ok_herb2 = GameContext.add_item_to_shopkeeper_bag("herb", 1, 0, "test")
+	var ok_herb2 = GameContext.add_item_to_shopkeeper_bag("herb_sprig", 1, 0, "test")
 	var pass_5 = ok_herb2 and GameContext.shopkeeper_bag.size() == 5
 	if pass_5:
-		print("[PASS] Same item 'herb' creates new slot (v1.3 no stacking): %d/6" % GameContext.shopkeeper_bag.size())
+		print("[PASS] Same item 'herb_sprig' creates new slot (v1.3 no stacking): %d/6" % GameContext.shopkeeper_bag.size())
 	else:
 		print("[FAIL] v1.3 no stacking: ok=%s slots=%d (expected 5)" % [str(ok_herb2), GameContext.shopkeeper_bag.size()])
 
@@ -5283,7 +5283,7 @@ static func _test_shopkeeper_bag_save_load() -> Dictionary:
 
 	# Setup: put items in shopkeeper bag
 	GameContext.shopkeeper_bag = [
-		{"item_id": "herb", "qty": 3, "quality_tier": 0},
+		{"item_id": "herb_sprig", "qty": 3, "quality_tier": 0},
 		{"item_id": "healing_tonic", "qty": 1, "quality_tier": 0}
 	]
 
@@ -5314,15 +5314,15 @@ static func _test_shopkeeper_bag_save_load() -> Dictionary:
 	var herb_qty = 0
 	var tonic_qty = 0
 	for entry in GameContext.shopkeeper_bag:
-		if entry.get("item_id", "") == "herb":
+		if entry.get("item_id", "") == "herb_sprig":
 			herb_qty = int(entry.get("qty", 0))
 		elif entry.get("item_id", "") == "healing_tonic":
 			tonic_qty = int(entry.get("qty", 0))
 	var pass_3 = GameContext.shopkeeper_bag.size() == 2 and herb_qty == 3 and tonic_qty == 1
 	if pass_3:
-		print("[PASS] shopkeeper_bag restored: herb x%d, tonic x%d" % [herb_qty, tonic_qty])
+		print("[PASS] shopkeeper_bag restored: herb_sprig x%d, tonic x%d" % [herb_qty, tonic_qty])
 	else:
-		print("[FAIL] Restore: size=%d herb=%d tonic=%d" % [GameContext.shopkeeper_bag.size(), herb_qty, tonic_qty])
+		print("[FAIL] Restore: size=%d herb_sprig=%d tonic=%d" % [GameContext.shopkeeper_bag.size(), herb_qty, tonic_qty])
 
 	# Assertion 4: loot_pref is deprecated (always empty)
 	var pref = GameContext.get_loot_pref()
@@ -5419,7 +5419,7 @@ static func _test_stash_routing_blocked_in_dungeon() -> Dictionary:
 	# Assertion 1: In TOWN phase, stash routing works
 	GameContext._current_phase = GameContext.GamePhase.TOWN
 	GameContext.current_dungeon_id = ""
-	GameContext.acquire_item_with_recipient("herb", 1, 0, "test")
+	GameContext.acquire_item_with_recipient("herb_sprig", 1, 0, "test")
 	var ok_town = GameContext.resolve_pending_acquisition("stash")
 	var pass_1 = ok_town and GameContext.run_items.size() == 1
 	if pass_1:
@@ -5485,7 +5485,7 @@ static func _test_extract_banks_shopkeeper_bag() -> Dictionary:
 
 	# Setup: add 2 stacks to shopkeeper_bag
 	GameContext.shopkeeper_bag = [
-		{"item_id": "herb", "qty": 3, "quality_tier": 0},
+		{"item_id": "herb_sprig", "qty": 3, "quality_tier": 0},
 		{"item_id": "healing_tonic", "qty": 2, "quality_tier": 0}
 	]
 	GameContext.run_items.clear()
@@ -5518,15 +5518,15 @@ static func _test_extract_banks_shopkeeper_bag() -> Dictionary:
 	var has_herb = false
 	var has_tonic = false
 	for item in GameContext.run_items:
-		if item.get("item_id", "") == "herb":
+		if item.get("item_id", "") == "herb_sprig":
 			has_herb = item.get("qty", 0) == 3
 		elif item.get("item_id", "") == "healing_tonic":
 			has_tonic = item.get("qty", 0) == 2
 	var pass_4 = has_herb and has_tonic
 	if pass_4:
-		print("[PASS] Stash contains herb x3 and healing_tonic x2")
+		print("[PASS] Stash contains herb_sprig x3 and healing_tonic x2")
 	else:
-		print("[FAIL] Stash contents incorrect: herb=%s tonic=%s" % [str(has_herb), str(has_tonic)])
+		print("[FAIL] Stash contents incorrect: herb_sprig=%s tonic=%s" % [str(has_herb), str(has_tonic)])
 
 	# Assertion 5: Banking empty bag is safe (no-op)
 	GameContext.run_items.clear()
@@ -5749,7 +5749,7 @@ static func _test_hero_bag_no_stacking() -> Dictionary:
 		print("[FAIL] Expected 2 iron_scrap entries with qty=1, found %d" % iron_count)
 
 	# Assertion 4: Third item fills bag (3/3)
-	GameContext.acquire_item_with_recipient("herb", 1, 0, "test")
+	GameContext.acquire_item_with_recipient("herb_sprig", 1, 0, "test")
 	GameContext.resolve_pending_acquisition("hero_bag", test_hero_id)
 	bag = GameContext.get_hero_bag(test_hero_id)
 	var pass_4 = bag.size() == 3
@@ -5927,16 +5927,16 @@ static func _test_materials_never_roll_quality() -> Dictionary:
 	var rng = RandomNumberGenerator.new()
 	rng.seed = 12345
 
-	var herb_tpl = DataRegistry.get_item_template("herb")
+	var herb_tpl = DataRegistry.get_item_template("herb_sprig")
 	if herb_tpl == null:
-		print("[FAIL] herb template not found")
+		print("[FAIL] herb_sprig template not found")
 		return {"name": "Materials Never Roll Quality", "passed": false}
 
 	var all_q0 = true
 	for i in range(50):
 		var inst = ItemInstance.from_template(herb_tpl, 1, rng)
 		if inst.quality_tier != 0:
-			print("[FAIL] herb rolled quality_tier=%d on iteration %d" % [inst.quality_tier, i])
+			print("[FAIL] herb_sprig rolled quality_tier=%d on iteration %d" % [inst.quality_tier, i])
 			all_q0 = false
 			break
 

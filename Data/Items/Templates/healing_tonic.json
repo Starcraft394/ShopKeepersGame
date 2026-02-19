@@ -5,9 +5,7 @@
   "icon_hint": "round glass flask of glowing red liquid with a cork stopper",
   "item_type": "consumable",
   "category": "consumable",
-  "rarity": "common",
   "base_stats": {},
-  "stat_scalars": {},
   "allowed_affixes": [],
   "allowed_socket_types": [],
   "base_value": 15,
@@ -15,6 +13,12 @@
   "stack_max": 20,
   "use_effect": "heal",
   "use_value": 20,
-  "tags": ["consumable", "healing", "potion", "base"],
-  "icon_path": "res://Assets/Icons/Items/icon_item_healing_tonic.png"
+  "tags": [
+    "consumable",
+    "healing",
+    "potion",
+    "base"
+  ],
+  "icon_path": "res://Assets/Icons/Items/icon_item_healing_tonic.png",
+  "tier": 1
 }

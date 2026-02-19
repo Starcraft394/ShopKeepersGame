@@ -27,5 +27,12 @@
   "max_refinement": 10,
   "base_value": 42,
   "icon_path": "",
-  "tags": ["region_6", "armor", "helmet", "necropolis", "tier_2"]
+  "tags": [
+    "region_6",
+    "armor",
+    "helmet",
+    "necropolis",
+    "tier_2"
+  ],
+  "stack_max": 1
 }

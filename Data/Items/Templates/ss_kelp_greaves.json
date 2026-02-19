@@ -29,5 +29,12 @@
   "max_refinement": 10,
   "base_value": 42,
   "icon_path": "",
-  "tags": ["region_3", "armor", "light_legs", "sunken_strand", "tier_3"]
+  "tags": [
+    "region_3",
+    "armor",
+    "light_legs",
+    "sunken_strand",
+    "tier_3"
+  ],
+  "stack_max": 1
 }

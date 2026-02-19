@@ -27,5 +27,12 @@
   "max_refinement": 10,
   "base_value": 55,
   "icon_path": "",
-  "tags": ["region_2", "weapon", "staff", "fungalmire", "tier_3"]
+  "tags": [
+    "region_2",
+    "weapon",
+    "staff",
+    "fungalmire",
+    "tier_3"
+  ],
+  "stack_max": 1
 }

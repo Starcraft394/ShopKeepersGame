@@ -27,5 +27,12 @@
   "max_refinement": 10,
   "base_value": 65,
   "icon_path": "",
-  "tags": ["region_6", "offhand", "shield", "necropolis", "tier_2"]
+  "tags": [
+    "region_6",
+    "offhand",
+    "shield",
+    "necropolis",
+    "tier_2"
+  ],
+  "stack_max": 1
 }

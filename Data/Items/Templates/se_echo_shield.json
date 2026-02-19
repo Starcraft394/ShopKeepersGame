@@ -17,10 +17,22 @@
     "health": 26
   },
   "combat_tag": "temporal_echo",
-  "combat_tag_effect": {"trigger": "on_ability_use", "effect": "reduce_cooldown", "value": 1, "chance": 0.20},
+  "combat_tag_effect": {
+    "trigger": "on_ability_use",
+    "effect": "reduce_cooldown",
+    "value": 1,
+    "chance": 0.2
+  },
   "base_value": 100,
   "buy_value": 0,
   "can_refine": true,
   "icon_path": "",
-  "tags": ["region_5", "offhand", "shield", "starfall_expanse", "tier_4"]
+  "tags": [
+    "region_5",
+    "offhand",
+    "shield",
+    "starfall_expanse",
+    "tier_4"
+  ],
+  "stack_max": 1
 }

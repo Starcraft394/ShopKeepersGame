@@ -28,5 +28,12 @@
   "max_refinement": 10,
   "base_value": 48,
   "icon_path": "",
-  "tags": ["region_7", "armor", "helmet", "fractured_realm", "tier_2"]
+  "tags": [
+    "region_7",
+    "armor",
+    "helmet",
+    "fractured_realm",
+    "tier_2"
+  ],
+  "stack_max": 1
 }

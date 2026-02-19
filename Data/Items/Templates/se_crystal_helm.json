@@ -28,5 +28,12 @@
   "max_refinement": 10,
   "base_value": 38,
   "icon_path": "",
-  "tags": ["region_5", "armor", "helmet", "starfall_expanse", "tier_2"]
+  "tags": [
+    "region_5",
+    "armor",
+    "helmet",
+    "starfall_expanse",
+    "tier_2"
+  ],
+  "stack_max": 1
 }

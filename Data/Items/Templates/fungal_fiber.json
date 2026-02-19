@@ -9,5 +9,13 @@
   "base_value": 8,
   "buy_value": 0,
   "icon_path": "",
-  "tags": ["region_2", "fungalmire", "material", "fungal", "crafting"]
+  "tags": [
+    "region_2",
+    "fungalmire",
+    "material",
+    "fungal",
+    "crafting"
+  ],
+  "tier": 1,
+  "stack_max": 20
 }

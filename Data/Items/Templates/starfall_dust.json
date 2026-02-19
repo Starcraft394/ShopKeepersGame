@@ -10,5 +10,12 @@
   "base_value": 20,
   "buy_value": 0,
   "icon_path": "",
-  "tags": ["region_5", "material", "crafting", "starfall_expanse"]
+  "tags": [
+    "region_5",
+    "material",
+    "crafting",
+    "starfall_expanse"
+  ],
+  "tier": 3,
+  "stack_max": 20
 }

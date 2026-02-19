@@ -27,5 +27,10 @@
   "max_refinement": 10,
   "base_value": 18,
   "icon_path": "res://Assets/_ArtPacks/Treasure/PNG/Transperent/jevellery1.png",
-  "tags": ["base", "accessory", "tier_1"]
+  "tags": [
+    "base",
+    "accessory",
+    "tier_1"
+  ],
+  "stack_max": 1
 }

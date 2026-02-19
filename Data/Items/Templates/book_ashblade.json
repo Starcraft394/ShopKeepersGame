@@ -5,12 +5,17 @@
   "icon_hint": "smoke-stained dark leather tome with a smoldering blade etched on the cover",
   "icon_path": "res://Assets/_ArtPacks/MagicBooks/PNG/Transperent/Icon12.png",
   "item_type": "consumable",
-  "rarity": "rare",
   "use_effect_id": "learn_class_ashblade",
   "base_stats": {},
-  "stat_scalars": {},
   "allowed_affixes": [],
   "allowed_socket_types": [],
-  "gold_value": 250,
-  "tags": ["book", "class_unlock", "ashblade", "region_4"]
+  "tags": [
+    "book",
+    "class_unlock",
+    "ashblade",
+    "region_4"
+  ],
+  "base_value": 250,
+  "tier": 1,
+  "stack_max": 10
 }

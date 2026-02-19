@@ -22,7 +22,12 @@
   },
   "ability_id": "fm_fungal_slam",
   "combat_tag": "spore_shield",
-  "combat_tag_effect": {"trigger": "on_melee_hit_received", "effect": "apply_status", "status": "poisoned", "chance": 0.15},
+  "combat_tag_effect": {
+    "trigger": "on_melee_hit_received",
+    "effect": "apply_status",
+    "status": "poisoned",
+    "chance": 0.15
+  },
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -32,5 +37,12 @@
   "max_refinement": 10,
   "base_value": 120,
   "icon_path": "",
-  "tags": ["region_2", "weapon", "mace", "fungalmire", "tier_4"]
+  "tags": [
+    "region_2",
+    "weapon",
+    "mace",
+    "fungalmire",
+    "tier_4"
+  ],
+  "stack_max": 1
 }

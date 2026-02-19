@@ -10,5 +10,12 @@
   "base_value": 175,
   "buy_value": 0,
   "icon_path": "",
-  "tags": ["region_7", "fractured_realm", "material", "boss_trophy", "crafting"]
+  "tags": [
+    "region_7",
+    "fractured_realm",
+    "material",
+    "boss_trophy",
+    "crafting"
+  ],
+  "stack_max": 20
 }

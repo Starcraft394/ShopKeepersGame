@@ -16,5 +16,11 @@
   "buy_value": 0,
   "can_refine": false,
   "icon_path": "",
-  "tags": ["region_5", "backpack", "starfall_expanse", "tier_2"]
+  "tags": [
+    "region_5",
+    "backpack",
+    "starfall_expanse",
+    "tier_2"
+  ],
+  "stack_max": 1
 }

@@ -27,5 +27,11 @@
   "max_refinement": 10,
   "base_value": 10,
   "icon_path": "res://Assets/_ArtPacks/Helmets/PNG/Transperent/Icon8.png",
-  "tags": ["base", "armor", "leather", "tier_1"]
+  "tags": [
+    "base",
+    "armor",
+    "leather",
+    "tier_1"
+  ],
+  "stack_max": 1
 }

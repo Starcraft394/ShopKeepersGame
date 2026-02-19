@@ -27,5 +27,12 @@
   "max_refinement": 10,
   "base_value": 55,
   "icon_path": "res://Assets/_ArtPacks/Axes/PNG/Transperent/Icon25.png",
-  "tags": ["region_1", "weapon", "melee", "2h", "tier_2"]
+  "tags": [
+    "region_1",
+    "weapon",
+    "melee",
+    "2h",
+    "tier_2"
+  ],
+  "stack_max": 1
 }

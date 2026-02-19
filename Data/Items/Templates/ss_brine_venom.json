@@ -10,5 +10,13 @@
   "base_value": 16,
   "buy_value": 0,
   "icon_path": "",
-  "tags": ["region_3", "material", "monster_part", "alchemy", "sunken_strand"]
+  "tags": [
+    "region_3",
+    "material",
+    "monster_part",
+    "alchemy",
+    "sunken_strand"
+  ],
+  "tier": 2,
+  "stack_max": 20
 }

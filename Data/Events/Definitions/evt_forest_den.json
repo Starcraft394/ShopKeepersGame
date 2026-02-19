@@ -11,7 +11,7 @@
       "description": "Risk a bite for the best loot.",
       "effects": [
         { "type": "add_gold_range", "min": 6, "max": 14 },
-        { "type": "add_item", "item_id": "herb", "min_qty": 1, "max_qty": 2 }
+        { "type": "add_item", "item_id": "herb_sprig", "min_qty": 1, "max_qty": 2 }
       ],
       "risk": {
         "bite_chance": 0.3,
@@ -37,7 +37,7 @@
       "description": "Wait for it to flee, then search freely.",
       "effects": [
         { "type": "add_gold_range", "min": 8, "max": 12 },
-        { "type": "add_item", "item_id": "mushroom", "min_qty": 1, "max_qty": 1 }
+        { "type": "add_item", "item_id": "forest_mushroom", "min_qty": 1, "max_qty": 1 }
       ]
     },
     {

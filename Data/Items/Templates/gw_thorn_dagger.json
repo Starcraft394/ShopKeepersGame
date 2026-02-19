@@ -27,5 +27,12 @@
   "max_refinement": 10,
   "base_value": 38,
   "icon_path": "",
-  "tags": ["region_1", "weapon", "dagger", "greenwood", "tier_2"]
+  "tags": [
+    "region_1",
+    "weapon",
+    "dagger",
+    "greenwood",
+    "tier_2"
+  ],
+  "stack_max": 1
 }

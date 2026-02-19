@@ -5,9 +5,7 @@
   "icon_hint": "rolled white linen bandage with a red-stained edge on a tray",
   "item_type": "consumable",
   "category": "consumable",
-  "rarity": "common",
   "base_stats": {},
-  "stat_scalars": {},
   "allowed_affixes": [],
   "allowed_socket_types": [],
   "base_value": 8,
@@ -15,6 +13,11 @@
   "stack_max": 20,
   "use_effect": "cure_bleeding",
   "use_value": 99,
-  "tags": ["consumable", "cure", "region_1"],
-  "icon_path": "res://Assets/Icons/Items/icon_item_bandage.png"
+  "tags": [
+    "consumable",
+    "cure",
+    "region_1"
+  ],
+  "icon_path": "res://Assets/Icons/Items/icon_item_bandage.png",
+  "tier": 1
 }

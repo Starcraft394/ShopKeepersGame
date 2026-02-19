@@ -10,5 +10,13 @@
   "base_value": 26,
   "buy_value": 0,
   "icon_path": "",
-  "tags": ["region_6", "material", "herb", "alchemy", "necropolis"]
+  "tags": [
+    "region_6",
+    "material",
+    "herb",
+    "alchemy",
+    "necropolis"
+  ],
+  "tier": 3,
+  "stack_max": 20
 }

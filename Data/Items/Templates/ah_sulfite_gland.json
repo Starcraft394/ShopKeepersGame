@@ -10,5 +10,13 @@
   "base_value": 22,
   "buy_value": 0,
   "icon_path": "",
-  "tags": ["region_4", "material", "monster_part", "alchemy", "ashen_horizons"]
+  "tags": [
+    "region_4",
+    "material",
+    "monster_part",
+    "alchemy",
+    "ashen_horizons"
+  ],
+  "tier": 2,
+  "stack_max": 20
 }

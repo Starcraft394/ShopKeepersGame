@@ -27,5 +27,11 @@
   "max_refinement": 10,
   "base_value": 12,
   "icon_path": "res://Assets/_ArtPacks/Trousers/PNG/Transperent/Icon2.png",
-  "tags": ["base", "armor", "leather", "tier_1"]
+  "tags": [
+    "base",
+    "armor",
+    "leather",
+    "tier_1"
+  ],
+  "stack_max": 1
 }

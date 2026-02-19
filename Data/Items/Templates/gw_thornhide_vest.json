@@ -21,7 +21,11 @@
   },
   "passive_id": "gw_passive_regen",
   "combat_tag": "regenerating",
-  "combat_tag_effect": {"trigger": "round_start", "effect": "heal", "value": 2},
+  "combat_tag_effect": {
+    "trigger": "round_start",
+    "effect": "heal",
+    "value": 2
+  },
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -31,5 +35,12 @@
   "max_refinement": 10,
   "base_value": 92,
   "icon_path": "",
-  "tags": ["region_1", "armor", "light_chest", "greenwood", "tier_4"]
+  "tags": [
+    "region_1",
+    "armor",
+    "light_chest",
+    "greenwood",
+    "tier_4"
+  ],
+  "stack_max": 1
 }

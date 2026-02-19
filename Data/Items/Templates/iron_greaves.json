@@ -27,5 +27,11 @@
   "max_refinement": 10,
   "base_value": 28,
   "icon_path": "res://Assets/_ArtPacks/Trousers/PNG/Transperent/Icon18.png",
-  "tags": ["region_1", "armor", "iron", "tier_2"]
+  "tags": [
+    "region_1",
+    "armor",
+    "iron",
+    "tier_2"
+  ],
+  "stack_max": 1
 }

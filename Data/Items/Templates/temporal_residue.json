@@ -10,5 +10,12 @@
   "base_value": 40,
   "buy_value": 0,
   "icon_path": "",
-  "tags": ["region_5", "material", "rare", "starfall_expanse"]
+  "tags": [
+    "region_5",
+    "material",
+    "rare",
+    "starfall_expanse"
+  ],
+  "tier": 3,
+  "stack_max": 20
 }

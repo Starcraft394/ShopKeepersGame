@@ -10,5 +10,12 @@
   "base_value": 75,
   "buy_value": 0,
   "icon_path": "",
-  "tags": ["region_2", "fungalmire", "material", "boss_trophy", "crafting"]
+  "tags": [
+    "region_2",
+    "fungalmire",
+    "material",
+    "boss_trophy",
+    "crafting"
+  ],
+  "stack_max": 20
 }

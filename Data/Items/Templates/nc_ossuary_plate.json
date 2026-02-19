@@ -22,7 +22,15 @@
   },
   "passive_id": "nc_passive_reap",
   "combat_tag": "undying_will",
-  "combat_tag_effect": {"trigger": "on_low_hp", "effect": "buff_stat", "stat": "defense", "value": 3, "duration": 2, "threshold": 0.25, "once": true},
+  "combat_tag_effect": {
+    "trigger": "on_low_hp",
+    "effect": "buff_stat",
+    "stat": "defense",
+    "value": 3,
+    "duration": 2,
+    "threshold": 0.25,
+    "once": true
+  },
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -32,5 +40,11 @@
   "max_refinement": 10,
   "base_value": 130,
   "icon_path": "",
-  "tags": ["region_6", "armor", "necropolis", "tier_4"]
+  "tags": [
+    "region_6",
+    "armor",
+    "necropolis",
+    "tier_4"
+  ],
+  "stack_max": 1
 }

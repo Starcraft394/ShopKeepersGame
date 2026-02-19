@@ -29,5 +29,11 @@
   "max_refinement": 10,
   "base_value": 22,
   "icon_path": "",
-  "tags": ["base", "armor", "heavy", "tier_1"]
+  "tags": [
+    "base",
+    "armor",
+    "heavy",
+    "tier_1"
+  ],
+  "stack_max": 1
 }

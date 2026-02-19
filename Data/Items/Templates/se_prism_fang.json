@@ -27,5 +27,12 @@
   "max_refinement": 10,
   "base_value": 88,
   "icon_path": "",
-  "tags": ["region_5", "weapon", "dagger", "starfall_expanse", "tier_3"]
+  "tags": [
+    "region_5",
+    "weapon",
+    "dagger",
+    "starfall_expanse",
+    "tier_3"
+  ],
+  "stack_max": 1
 }

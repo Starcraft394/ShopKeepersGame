@@ -10,5 +10,12 @@
   "base_value": 90,
   "buy_value": 0,
   "icon_path": "",
-  "tags": ["region_3", "sunken_strand", "material", "boss_trophy", "crafting"]
+  "tags": [
+    "region_3",
+    "sunken_strand",
+    "material",
+    "boss_trophy",
+    "crafting"
+  ],
+  "stack_max": 20
 }

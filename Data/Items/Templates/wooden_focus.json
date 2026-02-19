@@ -28,5 +28,13 @@
   "max_refinement": 10,
   "base_value": 50,
   "icon_path": "res://Assets/_ArtPacks/CraftingMaterials/PNG/Transperent/Icon12.png",
-  "tags": ["region_1", "offhand", "focus", "magic", "crafted", "tier_2"]
+  "tags": [
+    "region_1",
+    "offhand",
+    "focus",
+    "magic",
+    "crafted",
+    "tier_2"
+  ],
+  "stack_max": 1
 }

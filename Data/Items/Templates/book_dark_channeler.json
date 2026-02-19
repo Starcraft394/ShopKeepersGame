@@ -5,12 +5,17 @@
   "icon_hint": "shadow-wreathed black leather tome with swirling dark energy on the cover",
   "icon_path": "res://Assets/_ArtPacks/MagicBooks/PNG/Transperent/Icon28.png",
   "item_type": "consumable",
-  "rarity": "epic",
   "use_effect_id": "learn_class_dark_channeler",
   "base_stats": {},
-  "stat_scalars": {},
   "allowed_affixes": [],
   "allowed_socket_types": [],
-  "gold_value": 350,
-  "tags": ["book", "class_unlock", "dark_channeler", "region_6"]
+  "tags": [
+    "book",
+    "class_unlock",
+    "dark_channeler",
+    "region_6"
+  ],
+  "base_value": 350,
+  "tier": 1,
+  "stack_max": 10
 }

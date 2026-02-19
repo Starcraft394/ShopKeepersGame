@@ -14,5 +14,14 @@
   "buff_duration": 5,
   "base_value": 95,
   "icon_path": "",
-  "tags": ["region_7", "consumable", "food", "healing", "buff", "final_realm", "tier_5"]
+  "tags": [
+    "region_7",
+    "consumable",
+    "food",
+    "healing",
+    "buff",
+    "final_realm",
+    "tier_5"
+  ],
+  "stack_max": 10
 }

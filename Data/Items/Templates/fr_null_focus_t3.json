@@ -28,5 +28,12 @@
   "max_refinement": 10,
   "base_value": 115,
   "icon_path": "",
-  "tags": ["region_7", "offhand", "focus", "fractured_realm", "tier_3"]
+  "tags": [
+    "region_7",
+    "offhand",
+    "focus",
+    "fractured_realm",
+    "tier_3"
+  ],
+  "stack_max": 1
 }

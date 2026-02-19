@@ -5,12 +5,17 @@
   "icon_hint": "teal-dyed leather tome with flowing water-ward sigils on the cover",
   "icon_path": "res://Assets/_ArtPacks/MagicBooks/PNG/Transperent/Icon23.png",
   "item_type": "consumable",
-  "rarity": "uncommon",
   "use_effect_id": "learn_class_warden",
   "base_stats": {},
-  "stat_scalars": {},
   "allowed_affixes": [],
   "allowed_socket_types": [],
-  "gold_value": 100,
-  "tags": ["book", "class_unlock", "warden", "base"]
+  "tags": [
+    "book",
+    "class_unlock",
+    "warden",
+    "base"
+  ],
+  "base_value": 100,
+  "tier": 1,
+  "stack_max": 10
 }

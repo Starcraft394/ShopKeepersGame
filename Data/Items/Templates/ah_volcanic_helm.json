@@ -27,5 +27,11 @@
   "max_refinement": 10,
   "base_value": 48,
   "icon_path": "",
-  "tags": ["region_4", "armor", "ashen_horizons", "tier_3"]
+  "tags": [
+    "region_4",
+    "armor",
+    "ashen_horizons",
+    "tier_3"
+  ],
+  "stack_max": 1
 }

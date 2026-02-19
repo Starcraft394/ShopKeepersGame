@@ -27,5 +27,12 @@
   "max_refinement": 10,
   "base_value": 40,
   "icon_path": "res://Assets/_ArtPacks/Swords/PNG/Transperent/Icon1.png",
-  "tags": ["region_1", "weapon", "sword", "crafted", "tier_2"]
+  "tags": [
+    "region_1",
+    "weapon",
+    "sword",
+    "crafted",
+    "tier_2"
+  ],
+  "stack_max": 1
 }

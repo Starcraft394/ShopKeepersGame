@@ -14,6 +14,12 @@
   "allowed_socket_types": [],
   "can_refine": false,
   "base_value": 28,
-  "tags": ["region_1", "consumable", "focus", "crafted"],
-  "icon_path": "res://Assets/Icons/Items/icon_item_focus_elixir.png"
+  "tags": [
+    "region_1",
+    "consumable",
+    "focus",
+    "crafted"
+  ],
+  "icon_path": "res://Assets/Icons/Items/icon_item_focus_elixir.png",
+  "stack_max": 10
 }

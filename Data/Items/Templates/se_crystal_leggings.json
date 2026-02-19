@@ -11,8 +11,14 @@
   "tier": 3,
   "min_quality": 0,
   "max_quality": 3,
-  "base_stats": { "defense": 5 },
-  "stat_bonuses": { "defense": 5, "speed": 2, "health": 4 },
+  "base_stats": {
+    "defense": 5
+  },
+  "stat_bonuses": {
+    "defense": 5,
+    "speed": 2,
+    "health": 4
+  },
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -22,5 +28,12 @@
   "max_refinement": 10,
   "base_value": 58,
   "icon_path": "",
-  "tags": ["region_5", "armor", "legs", "starfall_expanse", "tier_3"]
+  "tags": [
+    "region_5",
+    "armor",
+    "legs",
+    "starfall_expanse",
+    "tier_3"
+  ],
+  "stack_max": 1
 }

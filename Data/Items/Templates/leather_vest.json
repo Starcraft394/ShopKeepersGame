@@ -27,5 +27,11 @@
   "max_refinement": 10,
   "base_value": 18,
   "icon_path": "res://Assets/_ArtPacks/Cuirass/PNG/Transperent/Icon16.png",
-  "tags": ["base", "armor", "leather", "tier_1"]
+  "tags": [
+    "base",
+    "armor",
+    "leather",
+    "tier_1"
+  ],
+  "stack_max": 1
 }

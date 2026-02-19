@@ -20,5 +20,12 @@
   "buy_value": 0,
   "can_refine": true,
   "icon_path": "res://Assets/_ArtPacks/ShieldsAmulets/PNG/Transperent/Icon7.png",
-  "tags": ["offhand", "shield", "region_1", "crafted", "tier_2"]
+  "tags": [
+    "offhand",
+    "shield",
+    "region_1",
+    "crafted",
+    "tier_2"
+  ],
+  "stack_max": 1
 }

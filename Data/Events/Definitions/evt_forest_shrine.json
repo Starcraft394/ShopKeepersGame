@@ -10,7 +10,7 @@
       "label": "Kneel and pray",
       "description": "Show reverence to the old spirits.",
       "effects": [
-        { "type": "add_item", "item_id": "herb", "min_qty": 1, "max_qty": 2 }
+        { "type": "add_item", "item_id": "herb_sprig", "min_qty": 1, "max_qty": 2 }
       ],
       "modifier": {
         "id": "blessing",
@@ -41,7 +41,7 @@
       "requires": { "gold": 8 },
       "effects": [
         { "type": "lose_gold", "min": 8, "max": 8 },
-        { "type": "add_item", "item_id": "mushroom", "min_qty": 2, "max_qty": 3 }
+        { "type": "add_item", "item_id": "forest_mushroom", "min_qty": 2, "max_qty": 3 }
       ]
     },
     {

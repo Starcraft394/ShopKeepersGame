@@ -27,5 +27,12 @@
   "max_refinement": 10,
   "base_value": 82,
   "icon_path": "",
-  "tags": ["region_4", "weapon", "mace", "ashen_horizons", "tier_3"]
+  "tags": [
+    "region_4",
+    "weapon",
+    "mace",
+    "ashen_horizons",
+    "tier_3"
+  ],
+  "stack_max": 1
 }

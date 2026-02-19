@@ -11,8 +11,13 @@
   "tier": 3,
   "min_quality": 0,
   "max_quality": 3,
-  "base_stats": { "defense": 4 },
-  "stat_bonuses": { "defense": 4, "health": 7 },
+  "base_stats": {
+    "defense": 4
+  },
+  "stat_bonuses": {
+    "defense": 4,
+    "health": 7
+  },
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -22,5 +27,12 @@
   "max_refinement": 10,
   "base_value": 40,
   "icon_path": "",
-  "tags": ["region_1", "armor", "legs", "greenwood", "tier_3"]
+  "tags": [
+    "region_1",
+    "armor",
+    "legs",
+    "greenwood",
+    "tier_3"
+  ],
+  "stack_max": 1
 }

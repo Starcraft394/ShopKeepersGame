@@ -27,5 +27,12 @@
   "max_refinement": 10,
   "base_value": 62,
   "icon_path": "",
-  "tags": ["region_6", "weapon", "staff", "necropolis", "tier_2"]
+  "tags": [
+    "region_6",
+    "weapon",
+    "staff",
+    "necropolis",
+    "tier_2"
+  ],
+  "stack_max": 1
 }

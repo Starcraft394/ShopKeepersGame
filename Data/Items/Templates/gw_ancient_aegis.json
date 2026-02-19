@@ -20,7 +20,11 @@
   },
   "ability_id": "gw_bark_wall",
   "combat_tag": "regenerating",
-  "combat_tag_effect": {"trigger": "round_start", "effect": "heal", "value": 2},
+  "combat_tag_effect": {
+    "trigger": "round_start",
+    "effect": "heal",
+    "value": 2
+  },
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -30,5 +34,12 @@
   "max_refinement": 10,
   "base_value": 105,
   "icon_path": "",
-  "tags": ["region_1", "offhand", "shield", "greenwood", "tier_4"]
+  "tags": [
+    "region_1",
+    "offhand",
+    "shield",
+    "greenwood",
+    "tier_4"
+  ],
+  "stack_max": 1
 }

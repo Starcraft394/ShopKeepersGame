@@ -27,5 +27,12 @@
   "max_refinement": 10,
   "base_value": 72,
   "icon_path": "",
-  "tags": ["region_7", "offhand", "shield", "fractured_realm", "tier_2"]
+  "tags": [
+    "region_7",
+    "offhand",
+    "shield",
+    "fractured_realm",
+    "tier_2"
+  ],
+  "stack_max": 1
 }

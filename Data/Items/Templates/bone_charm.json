@@ -11,8 +11,13 @@
   "tier": 1,
   "min_quality": 0,
   "max_quality": 3,
-  "base_stats": { "attack": 1 },
-  "stat_bonuses": { "attack": 1, "speed": 1 },
+  "base_stats": {
+    "attack": 1
+  },
+  "stat_bonuses": {
+    "attack": 1,
+    "speed": 1
+  },
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -22,5 +27,10 @@
   "max_refinement": 10,
   "base_value": 15,
   "icon_path": "",
-  "tags": ["base", "accessory", "tier_1"]
+  "tags": [
+    "base",
+    "accessory",
+    "tier_1"
+  ],
+  "stack_max": 1
 }

@@ -5,12 +5,17 @@
   "icon_hint": "bone-clasped ancient leather tome with a necrotic green skull on the cover",
   "icon_path": "res://Assets/_ArtPacks/Loot_Undead/PNG/Transperent/Icon25.png",
   "item_type": "consumable",
-  "rarity": "epic",
   "use_effect_id": "learn_class_lich",
   "base_stats": {},
-  "stat_scalars": {},
   "allowed_affixes": [],
   "allowed_socket_types": [],
-  "gold_value": 350,
-  "tags": ["book", "class_unlock", "lich", "region_6"]
+  "tags": [
+    "book",
+    "class_unlock",
+    "lich",
+    "region_6"
+  ],
+  "base_value": 350,
+  "tier": 1,
+  "stack_max": 10
 }

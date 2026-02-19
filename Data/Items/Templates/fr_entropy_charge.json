@@ -13,5 +13,13 @@
   "debuff_duration": 4,
   "base_value": 80,
   "icon_path": "",
-  "tags": ["region_7", "consumable", "thrown", "debuff", "final_realm", "tier_5"]
+  "tags": [
+    "region_7",
+    "consumable",
+    "thrown",
+    "debuff",
+    "final_realm",
+    "tier_5"
+  ],
+  "stack_max": 10
 }
