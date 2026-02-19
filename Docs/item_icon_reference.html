@@ -354,12 +354,12 @@ const ALL_ITEMS = [
   {id:"tanned_leather_hood", name:"Tanned Leather Hood", region:"base", cat:"equipment", type:"armor", tier:1, meta:"light_head | DEF +1 SPD +1", hint:"tanned brown leather hood with a pointed brim and drawstring ties", icon:"../Assets/_ArtPacks/Helmets/PNG/Transperent/Icon8.png"},
   {id:"wooden_mace", name:"Wooden Mace", region:"base", cat:"equipment", type:"weapon", tier:1, meta:"mace | ATK +5 SPD +-1", hint:"thick oak mace head wrapped with iron bands on a short wooden haft", icon:"../Assets/_ArtPacks/Maces/PNG/Transperent/Icon23.png"},
   {id:"wooden_shield", name:"Wooden Shield", region:"base", cat:"equipment", type:"armor", tier:1, meta:"shield | HP +5 DEF +3", hint:"round oak buckler with iron bands and a brass center boss", icon:"../Assets/_ArtPacks/ShieldsAmulets/PNG/Transperent/Icon9.png"},
-  {id:"bone_charm", name:"Bone Charm", region:"base", cat:"equipment", type:"accessory", tier:1, meta:"Amulet | ATK+1 SPD+1 | bone_charm", hint:"", icon:""},
-  {id:"cloth_cap", name:"Cloth Cap", region:"base", cat:"equipment", type:"armor", tier:1, meta:"Helmet | DEF+1 HP+3 | cloth_cap", hint:"", icon:""},
-  {id:"cloth_leggings", name:"Cloth Leggings", region:"base", cat:"equipment", type:"armor", tier:1, meta:"Legs | DEF+1 HP+3 | cloth_leggings", hint:"", icon:""},
-  {id:"cloth_robe", name:"Cloth Robe", region:"base", cat:"equipment", type:"armor", tier:1, meta:"Armor | DEF+1 HP+5 | cloth_robe", hint:"", icon:""},
-  {id:"copper_band", name:"Copper Band", region:"base", cat:"equipment", type:"accessory", tier:1, meta:"Ring | DEF+1 SPD+1 | copper_band", hint:"", icon:""},
-  {id:"padded_coif", name:"Padded Coif", region:"base", cat:"equipment", type:"armor", tier:1, meta:"Helmet | DEF+2 | padded_coif", hint:"", icon:""},
+  {id:"bone_charm", name:"Bone Charm", region:"base", cat:"equipment", type:"accessory", tier:1, meta:"Amulet | ATK+1 SPD+1 | bone_charm", hint:"small yellowed bone pendant on a leather cord with scratched rune markings", icon:""},
+  {id:"cloth_cap", name:"Cloth Cap", region:"base", cat:"equipment", type:"armor", tier:1, meta:"Helmet | DEF+1 HP+3 | cloth_cap", hint:"faded brown cloth cap with a folded brim and simple stitching", icon:""},
+  {id:"cloth_leggings", name:"Cloth Leggings", region:"base", cat:"equipment", type:"armor", tier:1, meta:"Legs | DEF+1 HP+3 | cloth_leggings", hint:"worn tan cloth leggings with simple knee patches and drawstring waist", icon:""},
+  {id:"cloth_robe", name:"Cloth Robe", region:"base", cat:"equipment", type:"armor", tier:1, meta:"Armor | DEF+1 HP+5 | cloth_robe", hint:"simple beige cloth robe with wide sleeves and a rope belt", icon:""},
+  {id:"copper_band", name:"Copper Band", region:"base", cat:"equipment", type:"accessory", tier:1, meta:"Ring | DEF+1 SPD+1 | copper_band", hint:"thin polished copper ring with a faint greenish patina", icon:""},
+  {id:"padded_coif", name:"Padded Coif", region:"base", cat:"equipment", type:"armor", tier:1, meta:"Helmet | DEF+2 | padded_coif", hint:"quilted grey padded coif with layered stitching and chin strap", icon:""},
   {id:"arcane_staff", name:"Arcane Staff", region:"region_1", cat:"equipment", type:"weapon", tier:2, meta:"staff | ATK +5 HP +6 | tier 2", hint:"dark oak staff crowned with a glowing blue crystal held by twisted branches", icon:"../Assets/_ArtPacks/MagicArtifacts/PNG/Transperent/Icon31.png"},
   {id:"chainmail_vest", name:"Chainmail Vest", region:"region_1", cat:"equipment", type:"armor", tier:2, meta:"medium_chest | HP +8 DEF +4 SPD +-1 | tier 2", hint:"sleeveless iron chainmail vest with interlocking rings and leather trim", icon:"../Assets/_ArtPacks/Cuirass/PNG/Transperent/Icon3.png"},
   {id:"composite_bow", name:"Composite Bow", region:"region_1", cat:"equipment", type:"weapon", tier:2, meta:"bow | ATK +5 SPD +2 | tier 2", hint:"recurved composite bow with layered horn and oak limbs and waxed string", icon:"../Assets/_ArtPacks/Bows/PNG/Transperent/Icon13.png"},
@@ -733,7 +733,7 @@ function renderAllItems() {
         const iconHtml = hasIcon
           ? `<img src="${item.icon}" alt="icon">`
           : `<div class="placeholder">?</div>`;
-        const hint = item.hint || HINTS[item.id] || '';
+        const hint = item.hint || '';
         const hintHtml = hint ? `<div class="item-hint">${hint}</div>` : '';
         bodyHtml += `
           <div class="item-card ${hasIcon ? 'has-icon' : 'no-icon'}" data-cat="${item.cat}" data-region="${item.region}">
