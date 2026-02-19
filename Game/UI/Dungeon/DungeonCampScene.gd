@@ -88,6 +88,9 @@ func _ready() -> void:
 	var legend_label = get_node_or_null("MainVBox/MapSection/LegendLabel")
 	if legend_label:
 		legend_label.visible = false
+	# Hide "Choose Next Room" header and hotkey hint — buttons are self-explanatory
+	$MainVBox/MapSection/MapHeader.visible = false
+	hotkey_hint.visible = false
 	print("[DungeonCamp] Loaded. Dungeon=%s Floor=%d Room=%d/%d" % [
 		GameContext.get_current_dungeon_id(),
 		GameContext.get_current_floor(),
@@ -1384,7 +1387,6 @@ func _populate_shopkeeper_bag() -> void:
 		for i in range(cap):
 			var empty_btn = Button.new()
 			empty_btn.custom_minimum_size = Vector2(60, 32)
-			empty_btn.disabled = true
 			empty_btn.text = ""
 			var is_safe: bool = i < safe_count
 			if is_safe:
@@ -1394,9 +1396,15 @@ func _populate_shopkeeper_bag() -> void:
 				safe_disabled.border_color = Color(0.2, 0.5, 0.2, 0.3)
 				safe_disabled.set_border_width_all(1)
 				safe_disabled.set_corner_radius_all(2)
-				empty_btn.add_theme_stylebox_override("disabled", safe_disabled)
+				empty_btn.add_theme_stylebox_override("normal", safe_disabled)
 			else:
 				empty_btn.tooltip_text = "Unsafe Slot (empty)"
+			# Empty slots accept drops
+			empty_btn.set_drag_forwarding(
+				_camp_bag_get_drag_empty,
+				_camp_bag_can_drop,
+				_camp_bag_drop.bind(i)
+			)
 			shopkeeper_bag.add_child(empty_btn)
 		return
 
@@ -1408,7 +1416,6 @@ func _populate_shopkeeper_bag() -> void:
 			# Empty slot beyond bag contents
 			var empty_btn = Button.new()
 			empty_btn.custom_minimum_size = Vector2(60, 32)
-			empty_btn.disabled = true
 			empty_btn.text = ""
 			if is_safe:
 				empty_btn.tooltip_text = "Safe Slot (empty)"
@@ -1417,9 +1424,15 @@ func _populate_shopkeeper_bag() -> void:
 				safe_disabled.border_color = Color(0.2, 0.5, 0.2, 0.3)
 				safe_disabled.set_border_width_all(1)
 				safe_disabled.set_corner_radius_all(2)
-				empty_btn.add_theme_stylebox_override("disabled", safe_disabled)
+				empty_btn.add_theme_stylebox_override("normal", safe_disabled)
 			else:
 				empty_btn.tooltip_text = "Unsafe Slot (empty)"
+			# Empty slots accept drops
+			empty_btn.set_drag_forwarding(
+				_camp_bag_get_drag_empty,
+				_camp_bag_can_drop,
+				_camp_bag_drop.bind(i)
+			)
 			shopkeeper_bag.add_child(empty_btn)
 			continue
 
@@ -1521,6 +1534,13 @@ func _populate_shopkeeper_bag() -> void:
 
 		# Wire up swap via gui_input (shift+click) for equippable/consumable slots
 		slot_btn.gui_input.connect(_on_shopkeeper_slot_gui_input.bind(i, slot_btn))
+
+		# Drag-and-drop reordering
+		slot_btn.set_drag_forwarding(
+			_camp_bag_get_drag.bind(i, slot_btn),
+			_camp_bag_can_drop,
+			_camp_bag_drop.bind(i)
+		)
 
 		shopkeeper_bag.add_child(slot_btn)
 
@@ -1661,3 +1681,51 @@ func _clear_swap_highlight() -> void:
 	if _swap_highlight_btn != null and is_instance_valid(_swap_highlight_btn):
 		_swap_highlight_btn.remove_theme_stylebox_override("normal")
 	_swap_highlight_btn = null
+
+
+# --- Drag-and-drop handlers for camp shopkeeper bag reordering ---
+
+## Creates drag data + preview for a filled bag slot.
+func _camp_bag_get_drag(at_pos: Vector2, index: int, origin_btn: Button) -> Variant:
+	var bag: Array = GameContext.get_shopkeeper_bag()
+	if index >= bag.size():
+		return null
+	var entry: Dictionary = bag[index]
+	var item_id: String = entry.get("item_id", "")
+	var template = DataRegistry.get_item_template(item_id)
+	var preview = TextureRect.new()
+	preview.custom_minimum_size = Vector2(32, 32)
+	preview.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	preview.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	if template:
+		var tex = template.get_icon_texture()
+		if tex:
+			preview.texture = tex
+	preview.modulate = Color(1, 1, 1, 0.8)
+	set_drag_preview(preview)
+	return {"type": "shopkeeper", "index": index}
+
+
+## Empty slots return null — they cannot initiate a drag.
+func _camp_bag_get_drag_empty(at_pos: Vector2) -> Variant:
+	return null
+
+
+## Accept drops from shopkeeper bag slots.
+func _camp_bag_can_drop(at_pos: Vector2, data) -> bool:
+	if data is Dictionary and data.get("type") == "shopkeeper":
+		return true
+	return false
+
+
+## Perform the swap when an item is dropped onto this slot.
+func _camp_bag_drop(at_pos: Vector2, data, target_index: int) -> void:
+	if not (data is Dictionary and data.get("type") == "shopkeeper"):
+		return
+	var src_index: int = int(data.get("index", -1))
+	if src_index < 0 or src_index == target_index:
+		return
+	_perform_swap(
+		{"type": "shopkeeper", "hero_id": "", "index": src_index},
+		{"type": "shopkeeper", "hero_id": "", "index": target_index}
+	)

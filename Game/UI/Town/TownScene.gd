@@ -1577,7 +1577,7 @@ func _build_storage_equipment_ui() -> void:
 	if not valid_selection:
 		_storage_selected_hero_id = roster[0].get("hero_id", "")
 
-	# Hero selector row
+	# Hero selector row with portraits
 	var hero_row = HBoxContainer.new()
 	hero_row.alignment = BoxContainer.ALIGNMENT_CENTER
 	hero_row.add_theme_constant_override("separation", 6)
@@ -1586,106 +1586,338 @@ func _build_storage_equipment_ui() -> void:
 	for hero_data in roster:
 		var hid = hero_data.get("hero_id", "")
 		var is_selected: bool = (hid == _storage_selected_hero_id)
-		var hero_btn = Button.new()
-		var hname = hero_data.get("name", "Unknown")
-		hero_btn.text = hname
-		hero_btn.custom_minimum_size = Vector2(80, 32)
-		hero_btn.add_theme_font_size_override("font_size", 12)
-		if is_selected:
-			hero_btn.modulate = Color(0.5, 1.0, 0.8, 1)
+
+		var hero_btn_vbox = VBoxContainer.new()
+		hero_btn_vbox.add_theme_constant_override("separation", 2)
+
+		# Portrait button
+		var portrait_btn = Button.new()
+		portrait_btn.custom_minimum_size = Vector2(44, 44)
+		portrait_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		var portrait_path: String = hero_data.get("portrait_path", "")
+		if portrait_path != "" and ResourceLoader.exists(portrait_path):
+			var ptex = ResourceLoader.load(portrait_path) as Texture2D
+			if ptex:
+				portrait_btn.icon = ptex
+				portrait_btn.expand_icon = true
 		else:
-			hero_btn.modulate = Color(0.75, 0.75, 0.75, 1)
-		hero_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-		hero_btn.pressed.connect(_on_storage_hero_selected.bind(hid))
-		hero_row.add_child(hero_btn)
+			portrait_btn.text = hid.left(2).to_upper()
+		if is_selected:
+			var sel_style = StyleBoxFlat.new()
+			sel_style.bg_color = Color(0.1, 0.2, 0.15, 0.9)
+			sel_style.border_color = Color(0.3, 0.8, 0.6, 0.9)
+			sel_style.set_border_width_all(2)
+			sel_style.set_corner_radius_all(4)
+			portrait_btn.add_theme_stylebox_override("normal", sel_style)
+		portrait_btn.pressed.connect(_on_storage_hero_selected.bind(hid))
+		hero_btn_vbox.add_child(portrait_btn)
+
+		# Name label below portrait
+		var name_lbl = Label.new()
+		name_lbl.text = hero_data.get("name", "?")
+		name_lbl.add_theme_font_size_override("font_size", 10)
+		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		name_lbl.modulate = Color(0.5, 1.0, 0.8, 1) if is_selected else Color(0.7, 0.7, 0.7, 1)
+		hero_btn_vbox.add_child(name_lbl)
+
+		hero_row.add_child(hero_btn_vbox)
 
 	var sep = HSeparator.new()
 	_facility_actions_container.add_child(sep)
 
-	# Equipment grid for selected hero (48x48 icons)
+	# ---- Selected hero info ----
 	var hero = GameContext.get_hero(_storage_selected_hero_id)
 	if hero.is_empty():
 		return
-	var equip = GameContext.get_hero_equipment(_storage_selected_hero_id)
+	var hero_id: String = _storage_selected_hero_id
+	var hero_name: String = hero.get("name", "Unknown")
+	var race_id: String = hero.get("race_id", "human")
+	var class_id: String = hero.get("class_id", "")
+	var hero_level: int = int(hero.get("level", 1))
 
-	var grid = GridContainer.new()
-	grid.columns = 4
-	grid.add_theme_constant_override("h_separation", 8)
-	grid.add_theme_constant_override("v_separation", 8)
-	_facility_actions_container.add_child(grid)
+	var race_data = DataRegistry.get_race(race_id)
+	var class_data = DataRegistry.get_class_data(class_id)
+	var race_name: String = race_data.display_name if race_data and race_data.display_name != "" else race_id.capitalize()
+	var cls_name: String = class_data.display_name if class_data and class_data.display_name != "" else class_id.capitalize()
 
-	var slot_abbrevs = {
-		"weapon": "WPN", "offhand": "OFF", "helmet": "HLM",
-		"armor": "ARM", "legs": "LEG", "ring": "RNG", "amulet": "AMU"
+	# Two-column layout: left = identity + stats, right = abilities + passives
+	var columns = HBoxContainer.new()
+	columns.add_theme_constant_override("separation", 16)
+	_facility_actions_container.add_child(columns)
+
+	# ======== LEFT COLUMN: Identity + Stats ========
+	var left_col = VBoxContainer.new()
+	left_col.add_theme_constant_override("separation", 4)
+	left_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	columns.add_child(left_col)
+
+	# Portrait + Name/Race/Class header
+	var identity_hbox = HBoxContainer.new()
+	identity_hbox.add_theme_constant_override("separation", 8)
+	left_col.add_child(identity_hbox)
+
+	var portrait_path: String = hero.get("portrait_path", "")
+	if portrait_path != "" and ResourceLoader.exists(portrait_path):
+		var ptex = ResourceLoader.load(portrait_path) as Texture2D
+		if ptex:
+			var portrait_rect = TextureRect.new()
+			portrait_rect.texture = ptex
+			portrait_rect.custom_minimum_size = Vector2(64, 64)
+			portrait_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			portrait_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			identity_hbox.add_child(portrait_rect)
+
+	var identity_vbox = VBoxContainer.new()
+	identity_vbox.add_theme_constant_override("separation", 1)
+	identity_hbox.add_child(identity_vbox)
+
+	var name_header = Label.new()
+	name_header.text = hero_name
+	name_header.add_theme_font_size_override("font_size", 16)
+	name_header.modulate = Color(0.9, 0.8, 0.5, 1)
+	identity_vbox.add_child(name_header)
+
+	var race_lbl = Label.new()
+	race_lbl.text = "%s  %s  Lv %d" % [race_name, cls_name, hero_level]
+	race_lbl.add_theme_font_size_override("font_size", 12)
+	race_lbl.modulate = Color(0.7, 0.7, 0.7, 1)
+	identity_vbox.add_child(race_lbl)
+
+	# Stats block
+	var eff_stats = GameContext.get_hero_effective_stats(hero_id)
+	var stat_defs: Array = [
+		{"key": "health", "label": "HP", "color": Color(0.4, 0.9, 0.4, 1)},
+		{"key": "attack", "label": "ATK", "color": Color(0.9, 0.5, 0.4, 1)},
+		{"key": "defense", "label": "DEF", "color": Color(0.5, 0.7, 0.9, 1)},
+		{"key": "speed", "label": "SPD", "color": Color(0.9, 0.9, 0.4, 1)},
+	]
+
+	var stats_grid = GridContainer.new()
+	stats_grid.columns = 2
+	stats_grid.add_theme_constant_override("h_separation", 12)
+	stats_grid.add_theme_constant_override("v_separation", 2)
+	left_col.add_child(stats_grid)
+
+	for sd in stat_defs:
+		var stat_label = Label.new()
+		stat_label.text = sd.label
+		stat_label.add_theme_font_size_override("font_size", 12)
+		stat_label.modulate = sd.color
+		stat_label.custom_minimum_size = Vector2(32, 0)
+		stats_grid.add_child(stat_label)
+
+		var stat_val = Label.new()
+		stat_val.text = str(int(eff_stats.get(sd.key, 0)))
+		stat_val.add_theme_font_size_override("font_size", 12)
+		stat_val.modulate = Color(0.9, 0.9, 0.9, 1)
+		stat_val.tooltip_text = build_inn_stat_tooltip(sd.key.capitalize(), hero_id)
+		stat_val.mouse_filter = Control.MOUSE_FILTER_STOP
+		stats_grid.add_child(stat_val)
+
+	# ======== RIGHT COLUMN: Abilities + Passives ========
+	var right_col = VBoxContainer.new()
+	right_col.add_theme_constant_override("separation", 4)
+	right_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	columns.add_child(right_col)
+
+	# Abilities
+	var ab_header = Label.new()
+	ab_header.text = "Abilities"
+	ab_header.add_theme_font_size_override("font_size", 13)
+	ab_header.modulate = Color(0.9, 0.8, 0.5, 1)
+	right_col.add_child(ab_header)
+
+	if class_data:
+		for ab_info in [{"id": class_data.ability_a_id, "tag": "A"}, {"id": class_data.ability_b_id, "tag": "B"}]:
+			if ab_info.id == "":
+				continue
+			var ability = DataRegistry.get_ability(ab_info.id)
+			var ab_name: String = ability.display_name if ability else ab_info.id.replace("_", " ").capitalize()
+			var ab_desc: String = ability.description if ability and ability.description != "" else ""
+			var ab_lbl = Label.new()
+			ab_lbl.text = "%s: %s" % [ab_info.tag, ab_name]
+			ab_lbl.add_theme_font_size_override("font_size", 11)
+			ab_lbl.modulate = Color(0.8, 0.9, 1.0, 1)
+			if ab_desc != "":
+				ab_lbl.tooltip_text = ab_desc
+				ab_lbl.mouse_filter = Control.MOUSE_FILTER_STOP
+			right_col.add_child(ab_lbl)
+
+	# Passives
+	var ps_header = Label.new()
+	ps_header.text = "Passives"
+	ps_header.add_theme_font_size_override("font_size", 13)
+	ps_header.modulate = Color(0.9, 0.8, 0.5, 1)
+	right_col.add_child(ps_header)
+
+	if class_data:
+		for ps_info in [{"id": class_data.passive_a_id, "tag": "1"}, {"id": class_data.passive_b_id, "tag": "2"}]:
+			if ps_info.id == "":
+				continue
+			var passive = DataRegistry.get_passive(ps_info.id)
+			var ps_name: String = passive.display_name if passive else ps_info.id.replace("_", " ").capitalize()
+			var ps_desc: String = passive.description if passive and passive.description != "" else ""
+			var ps_lbl = Label.new()
+			ps_lbl.text = "%s: %s" % [ps_info.tag, ps_name]
+			ps_lbl.add_theme_font_size_override("font_size", 11)
+			ps_lbl.modulate = Color(0.7, 0.85, 0.7, 1)
+			if ps_desc != "":
+				ps_lbl.tooltip_text = ps_desc
+				ps_lbl.mouse_filter = Control.MOUSE_FILTER_STOP
+			right_col.add_child(ps_lbl)
+
+	# Racial passive
+	if race_data and race_data.racial_passive_id != "":
+		var rp = DataRegistry.get_passive(race_data.racial_passive_id)
+		var rp_name: String = rp.display_name if rp else race_data.racial_passive_id.replace("_", " ").capitalize()
+		var rp_desc: String = rp.description if rp and rp.description != "" else ""
+		var rp_lbl = Label.new()
+		rp_lbl.text = "R: %s" % rp_name
+		rp_lbl.add_theme_font_size_override("font_size", 11)
+		rp_lbl.modulate = Color(0.7, 0.85, 0.7, 1)
+		if rp_desc != "":
+			rp_lbl.tooltip_text = rp_desc
+			rp_lbl.mouse_filter = Control.MOUSE_FILTER_STOP
+		right_col.add_child(rp_lbl)
+
+	# ======== INLINE MANAGE GEAR ========
+	var gear_sep = HSeparator.new()
+	_facility_actions_container.add_child(gear_sep)
+
+	var gear_header = Label.new()
+	gear_header.text = "Equipment"
+	gear_header.add_theme_font_size_override("font_size", 13)
+	gear_header.modulate = Color(0.9, 0.8, 0.5, 1)
+	_facility_actions_container.add_child(gear_header)
+
+	var equip = GameContext.get_hero_equipment(hero_id)
+	var slot_names: Dictionary = {
+		"weapon": "Weapon", "offhand": "Offhand", "helmet": "Helmet",
+		"armor": "Armor", "legs": "Legs", "ring": "Ring", "amulet": "Amulet", "bag": "Bag"
 	}
 
-	for slot in GameContext.EQUIPMENT_SLOTS:
-		var slot_data = equip.get(slot, {})
-		var item_id = slot_data.get("id", "")
-		var quality = int(slot_data.get("quality", 0))
-		var abbrev = slot_abbrevs.get(slot, slot.to_upper().left(3))
+	for slot in GameContext.ALL_EQUIP_SLOTS:
+		var slot_hbox = HBoxContainer.new()
+		slot_hbox.add_theme_constant_override("separation", 6)
+		_facility_actions_container.add_child(slot_hbox)
 
-		var slot_container = VBoxContainer.new()
-		slot_container.add_theme_constant_override("separation", 2)
+		# Slot label
+		var slot_label = Label.new()
+		slot_label.text = "%s:" % slot_names.get(slot, slot.capitalize())
+		slot_label.custom_minimum_size = Vector2(55, 0)
+		slot_label.add_theme_font_size_override("font_size", 11)
+		slot_label.modulate = Color(0.7, 0.7, 0.7, 1)
+		slot_hbox.add_child(slot_label)
+
+		# Current item
+		var slot_data: Dictionary = equip.get(slot, {})
+		var item_id: String = slot_data.get("id", "")
+		var quality: int = int(slot_data.get("quality", 0))
 
 		if item_id != "":
 			var tpl = DataRegistry.get_item_template(item_id)
-			if tpl != null:
-				var icon_node = tpl.create_bordered_icon(48, quality)
-				if icon_node != null:
+			if tpl:
+				# Icon
+				var icon_node = tpl.create_bordered_icon(24, quality)
+				if icon_node:
 					icon_node.tooltip_text = _build_equipment_slot_tooltip(slot, item_id, quality, slot_data)
 					icon_node.mouse_filter = Control.MOUSE_FILTER_STOP
-					slot_container.add_child(icon_node)
-				else:
-					slot_container.add_child(_create_empty_equip_slot(abbrev, 48))
+					slot_hbox.add_child(icon_node)
+				# Name
+				var prefix: String = ItemInstance.QUALITY_PREFIXES[quality] if quality < ItemInstance.QUALITY_PREFIXES.size() else ""
+				var item_lbl = Label.new()
+				item_lbl.text = "%s%s" % [prefix, tpl.display_name]
+				item_lbl.add_theme_font_size_override("font_size", 11)
+				item_lbl.modulate = Color(0.9, 0.7, 0.5, 1)
+				item_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+				slot_hbox.add_child(item_lbl)
 			else:
-				slot_container.add_child(_create_empty_equip_slot(abbrev, 48))
+				var empty_item = Label.new()
+				empty_item.text = "(unknown)"
+				empty_item.add_theme_font_size_override("font_size", 11)
+				empty_item.modulate = Color(0.5, 0.5, 0.5, 1)
+				empty_item.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+				slot_hbox.add_child(empty_item)
 		else:
-			slot_container.add_child(_create_empty_equip_slot(abbrev, 48))
+			var empty_item = Label.new()
+			empty_item.text = "(empty)"
+			empty_item.add_theme_font_size_override("font_size", 11)
+			empty_item.modulate = Color(0.5, 0.5, 0.5, 1)
+			empty_item.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			slot_hbox.add_child(empty_item)
 
-		var slot_lbl = Label.new()
-		slot_lbl.text = abbrev
-		slot_lbl.add_theme_font_size_override("font_size", 10)
-		slot_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		slot_lbl.modulate = Color(0.9, 0.7, 0.5, 1) if item_id != "" else Color(0.6, 0.6, 0.6, 1)
-		slot_container.add_child(slot_lbl)
+		# Equip button
+		var equip_btn = Button.new()
+		equip_btn.text = "Equip"
+		equip_btn.custom_minimum_size = Vector2(50, 22)
+		equip_btn.add_theme_font_size_override("font_size", 10)
+		equip_btn.pressed.connect(_on_equip_slot_pressed.bind(hero_id, slot))
+		slot_hbox.add_child(equip_btn)
 
-		grid.add_child(slot_container)
+		# Unequip button (only if slot has item)
+		if item_id != "":
+			var unequip_btn = Button.new()
+			unequip_btn.text = "X"
+			unequip_btn.custom_minimum_size = Vector2(24, 22)
+			unequip_btn.add_theme_font_size_override("font_size", 10)
+			unequip_btn.tooltip_text = "Unequip to stash"
+			unequip_btn.pressed.connect(_on_unequip_slot_pressed.bind(hero_id, slot))
+			slot_hbox.add_child(unequip_btn)
 
-	# 8th slot: Bag
-	var bag_item_id = GameContext.get_hero_bag_item(_storage_selected_hero_id)
-	var bag_quality = GameContext.get_hero_bag_quality(_storage_selected_hero_id)
-	var bag_container = VBoxContainer.new()
-	bag_container.add_theme_constant_override("separation", 2)
-	if bag_item_id != "":
-		var bag_tpl = DataRegistry.get_item_template(bag_item_id)
-		if bag_tpl != null:
-			var bag_icon = bag_tpl.create_bordered_icon(48, bag_quality)
-			if bag_icon != null:
-				var bag_summary = GameContext.get_hero_bag_summary(_storage_selected_hero_id)
-				bag_icon.tooltip_text = "Bag: %s (Q%d)\n%s" % [bag_tpl.display_name, bag_quality, bag_summary]
-				bag_icon.mouse_filter = Control.MOUSE_FILTER_STOP
-				bag_container.add_child(bag_icon)
-			else:
-				bag_container.add_child(_create_empty_equip_slot("BAG", 48))
-		else:
-			bag_container.add_child(_create_empty_equip_slot("BAG", 48))
-	else:
-		bag_container.add_child(_create_empty_equip_slot("BAG", 48))
-	var bag_lbl = Label.new()
-	bag_lbl.text = "BAG"
-	bag_lbl.add_theme_font_size_override("font_size", 10)
-	bag_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	bag_lbl.modulate = Color(0.9, 0.7, 0.5, 1) if bag_item_id != "" else Color(0.6, 0.6, 0.6, 1)
-	bag_container.add_child(bag_lbl)
-	grid.add_child(bag_container)
+	# ======== BAG CONTENTS ========
+	var bag_sep2 = HSeparator.new()
+	_facility_actions_container.add_child(bag_sep2)
 
-	# Manage Gear button (reuses existing flow)
-	var manage_btn = Button.new()
-	manage_btn.text = "Manage Gear"
-	manage_btn.custom_minimum_size = Vector2(140, 32)
-	manage_btn.pressed.connect(_on_manage_gear_pressed.bind(_storage_selected_hero_id))
-	_facility_actions_container.add_child(manage_btn)
+	var bag_capacity: int = GameContext.get_hero_bag_capacity(hero_id)
+	var bag_items: Array = GameContext.get_hero_bag(hero_id)
+	var bag_header = Label.new()
+	bag_header.text = "Bag (%d/%d)" % [bag_items.size(), bag_capacity]
+	bag_header.add_theme_font_size_override("font_size", 13)
+	bag_header.modulate = Color(0.9, 0.8, 0.5, 1)
+	_facility_actions_container.add_child(bag_header)
+
+	for i in range(bag_items.size()):
+		var entry: Dictionary = bag_items[i]
+		var bag_item_id: String = entry.get("item_id", "")
+		var bag_hbox = HBoxContainer.new()
+		bag_hbox.add_theme_constant_override("separation", 6)
+		_facility_actions_container.add_child(bag_hbox)
+
+		var btpl = DataRegistry.get_item_template(bag_item_id)
+		if btpl:
+			var bicon = btpl.create_bordered_icon(20, 0)
+			if bicon:
+				bicon.mouse_filter = Control.MOUSE_FILTER_STOP
+				bicon.tooltip_text = btpl.display_name
+				bag_hbox.add_child(bicon)
+
+		var bag_item_lbl = Label.new()
+		bag_item_lbl.text = btpl.display_name if btpl else bag_item_id
+		bag_item_lbl.add_theme_font_size_override("font_size", 11)
+		bag_item_lbl.modulate = Color(0.7, 0.9, 0.7, 1)
+		bag_item_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		bag_hbox.add_child(bag_item_lbl)
+
+		var remove_btn = Button.new()
+		remove_btn.text = "Remove"
+		remove_btn.custom_minimum_size = Vector2(55, 22)
+		remove_btn.add_theme_font_size_override("font_size", 10)
+		var captured_bag_id: String = bag_item_id
+		remove_btn.pressed.connect(func():
+			GameContext.move_item_hero_bag_to_stash(hero_id, captured_bag_id)
+			_refresh_facility_panel()
+		)
+		bag_hbox.add_child(remove_btn)
+
+	if bag_items.size() < bag_capacity:
+		var add_btn = Button.new()
+		add_btn.text = "Add Item to Bag"
+		add_btn.custom_minimum_size = Vector2(120, 24)
+		add_btn.add_theme_font_size_override("font_size", 11)
+		add_btn.pressed.connect(func():
+			_show_bag_item_selection(hero_id)
+		)
+		_facility_actions_container.add_child(add_btn)
 
 
 func _on_storage_hero_selected(hero_id: String) -> void:

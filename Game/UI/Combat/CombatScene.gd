@@ -1035,8 +1035,9 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 
 	card_hbox.add_child(info_vbox)
 
-	# Build rich tooltip with all stats (replaces inline stat display)
-	wrapper.tooltip_text = _build_unit_card_tooltip(unit_data)
+	# Hover tooltip removed — use right-click inspection for full stats
+	# (hover was blocking buff/debuff badge tooltips)
+	wrapper.tooltip_text = ""
 
 	wrapper.add_child(card_hbox)
 
@@ -2229,12 +2230,22 @@ func _show_loot_panel() -> void:
 		btn_row.add_child(discard_btn)
 
 		var all_shop_btn = Button.new()
-		all_shop_btn.text = "All to Shop Bag"
+		all_shop_btn.text = "Deposit All"
 		all_shop_btn.custom_minimum_size = Vector2(140, 32)
-		if shop_used >= shop_cap:
+		all_shop_btn.tooltip_text = "Shop bag first, then hero bags"
+		# Only disable if ALL bags (shop + all heroes) are full
+		var any_space = shop_used < shop_cap
+		if not any_space:
+			for pid in GameContext.selected_party:
+				var bag_used = GameContext.get_hero_bag(pid).size()
+				var bag_cap = GameContext.get_hero_bag_capacity(pid)
+				if bag_used < bag_cap:
+					any_space = true
+					break
+		if not any_space:
 			all_shop_btn.disabled = true
-			all_shop_btn.tooltip_text = "Shop bag full"
-		all_shop_btn.pressed.connect(_on_loot_all_to_shop)
+			all_shop_btn.tooltip_text = "All bags full"
+		all_shop_btn.pressed.connect(_on_loot_deposit_all)
 		btn_row.add_child(all_shop_btn)
 
 	var continue_btn = Button.new()
@@ -2579,9 +2590,11 @@ func _on_loot_discard_all() -> void:
 	_refresh_loot_panel()
 
 
-## Route all pending items to the shopkeeper bag (stops when bag is full).
-func _on_loot_all_to_shop() -> void:
-	var routed = 0
+## Route all pending items: shop bag first, then overflow to hero bags.
+func _on_loot_deposit_all() -> void:
+	var routed_shop = 0
+	var routed_hero = 0
+	# Phase 1: Fill shop bag
 	while not GameContext.get_all_pending_acquisitions().is_empty():
 		var acq = GameContext.get_all_pending_acquisitions()[0]
 		var item_id: String = acq.get("item_id", "")
@@ -2589,8 +2602,21 @@ func _on_loot_all_to_shop() -> void:
 		if not GameContext.can_add_to_shopkeeper_bag(item_id, 1, quality):
 			break
 		GameContext.resolve_acquisition_at(0, "shop_bag")
-		routed += 1
-	print("[LootPanel] All to Shop Bag: routed %d items" % routed)
+		routed_shop += 1
+	# Phase 2: Overflow to hero bags
+	while not GameContext.get_all_pending_acquisitions().is_empty():
+		var acq = GameContext.get_all_pending_acquisitions()[0]
+		var item_id: String = acq.get("item_id", "")
+		var placed = false
+		for hero_id in GameContext.selected_party:
+			if GameContext.can_add_to_hero_bag(hero_id, item_id, 1):
+				GameContext.resolve_acquisition_at(0, "hero_bag", hero_id)
+				routed_hero += 1
+				placed = true
+				break
+		if not placed:
+			break  # All bags full
+	print("[LootPanel] Deposit All: %d to shop, %d to heroes" % [routed_shop, routed_hero])
 	_loot_selected_index = -1
 	_refresh_loot_panel()
 	_refresh_shopkeeper_bag_display()
@@ -6052,13 +6078,24 @@ func _refresh_shopkeeper_bag_display() -> void:
 
 			# Connect swap click for filled slots only
 			btn.pressed.connect(_on_shopkeeper_bag_swap_click.bind(i, btn))
+			# Enable drag-and-drop reordering
+			btn.set_drag_forwarding(
+				_bag_slot_get_drag.bind(i, btn),
+				_bag_slot_can_drop,
+				_bag_slot_drop.bind(i)
+			)
 		else:
-			btn.disabled = true
 			btn.text = ""
 			if is_safe:
 				btn.tooltip_text = "Safe Slot (empty)"
 			else:
 				btn.tooltip_text = "Unsafe Slot (empty)"
+			# Empty slots can accept drops but not initiate drags
+			btn.set_drag_forwarding(
+				_bag_slot_get_drag_empty,
+				_bag_slot_can_drop,
+				_bag_slot_drop.bind(i)
+			)
 
 		# Apply safe/unsafe styling
 		if is_safe:
@@ -6119,3 +6156,51 @@ func _clear_swap_highlight() -> void:
 	if _swap_highlight_btn != null and is_instance_valid(_swap_highlight_btn):
 		_swap_highlight_btn.remove_theme_stylebox_override("normal")
 	_swap_highlight_btn = null
+
+
+# --- Drag-and-drop handlers for shopkeeper bag reordering ---
+
+## Creates drag data + preview for a filled bag slot.
+func _bag_slot_get_drag(at_pos: Vector2, index: int, origin_btn: Button) -> Variant:
+	var bag: Array = GameContext.get_shopkeeper_bag()
+	if index >= bag.size():
+		return null
+	var entry: Dictionary = bag[index]
+	var item_id: String = entry.get("item_id", "")
+	var template = DataRegistry.get_item_template(item_id)
+	# Build a small drag preview icon
+	var preview = TextureRect.new()
+	preview.custom_minimum_size = Vector2(32, 32)
+	preview.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	preview.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	if template:
+		var tex = template.get_icon_texture()
+		if tex:
+			preview.texture = tex
+	preview.modulate = Color(1, 1, 1, 0.8)
+	set_drag_preview(preview)
+	return {"type": "shopkeeper_bag", "index": index}
+
+
+## Empty slots return null — they cannot initiate a drag.
+func _bag_slot_get_drag_empty(at_pos: Vector2) -> Variant:
+	return null
+
+
+## Accept drops only from other shopkeeper bag slots.
+func _bag_slot_can_drop(at_pos: Vector2, data) -> bool:
+	if data is Dictionary and data.get("type") == "shopkeeper_bag":
+		return true
+	return false
+
+
+## Perform the swap when an item is dropped onto this slot.
+func _bag_slot_drop(at_pos: Vector2, data, target_index: int) -> void:
+	if not (data is Dictionary and data.get("type") == "shopkeeper_bag"):
+		return
+	var src_index: int = int(data.get("index", -1))
+	if src_index < 0 or src_index == target_index:
+		return
+	GameContext.swap_shopkeeper_bag_items(src_index, target_index)
+	_refresh_shopkeeper_bag_display()
+	print("[UI] Drag-swapped shopkeeper bag slots %d <-> %d" % [src_index, target_index])
