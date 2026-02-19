@@ -58,10 +58,19 @@ func _get_known_towns() -> Array[String]:
 
 func _ready() -> void:
 	print("[TownHub] Scene loaded — CraftPix shell active")
+
+	# Apply town entry reset (heal survivors, remove dead heroes, refresh shops).
+	# This MUST run before embedding TownScene because the boot router changes
+	# the phase from TOWN to TOWN_HUB, which causes TownScene's own phase check
+	# to skip the reset.  Covers the defeat→town path.
+	GameContext.apply_town_entry_reset()
+
 	_embed_town_scene()
 	_build_nav_rail()
 	_build_town_map()
 	GameContext.location_changed.connect(_on_location_changed)
+	_check_first_launch_guidance()
+	_check_region_unlock_notification()
 
 
 # ============================================================================
@@ -206,6 +215,15 @@ func _build_nav_rail() -> void:
 			_nav_vbox.add_child(btn)
 			_nav_travel_buttons.append(btn)
 
+	# Options button (opens pause/settings menu)
+	var btn_options = Button.new()
+	btn_options.text = "Options"
+	btn_options.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	btn_options.modulate = Color(0.8, 0.8, 1.0)
+	btn_options.pressed.connect(_on_options_pressed)
+	btn_options.name = "Options"
+	_nav_vbox.add_child(btn_options)
+
 	# Save & Exit button
 	var btn_save_exit = Button.new()
 	btn_save_exit.text = "Save & Exit"
@@ -215,30 +233,98 @@ func _build_nav_rail() -> void:
 	btn_save_exit.name = "SaveExit"
 	_nav_vbox.add_child(btn_save_exit)
 
-	# Dev buttons at bottom of nav
-	var dev_label = Label.new()
-	dev_label.text = "— Dev —"
-	dev_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	dev_label.add_theme_font_size_override("font_size", 11)
-	dev_label.modulate = Color(0.5, 0.5, 0.5)
-	dev_label.name = "DevLabel"
-	_nav_vbox.add_child(dev_label)
+	# Dev buttons — only visible in editor / debug builds
+	if OS.is_debug_build():
+		var dev_label = Label.new()
+		dev_label.text = "— Dev —"
+		dev_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		dev_label.add_theme_font_size_override("font_size", 11)
+		dev_label.modulate = Color(0.5, 0.5, 0.5)
+		dev_label.name = "DevLabel"
+		_nav_vbox.add_child(dev_label)
 
-	var btn_reset = Button.new()
-	btn_reset.text = "Reset Save"
-	btn_reset.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	btn_reset.modulate = Color(1, 0.6, 0.6)
-	btn_reset.pressed.connect(_on_dev_reset_save)
-	btn_reset.name = "DevResetSave"
-	_nav_vbox.add_child(btn_reset)
+		var btn_reset = Button.new()
+		btn_reset.text = "Reset Save"
+		btn_reset.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn_reset.modulate = Color(1, 0.6, 0.6)
+		btn_reset.pressed.connect(_on_dev_reset_save)
+		btn_reset.name = "DevResetSave"
+		_nav_vbox.add_child(btn_reset)
 
-	var btn_gold = Button.new()
-	btn_gold.text = "+100 Gold"
-	btn_gold.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	btn_gold.modulate = Color(1, 0.9, 0.5)
-	btn_gold.pressed.connect(_on_dev_add_gold)
-	btn_gold.name = "DevAddGold"
-	_nav_vbox.add_child(btn_gold)
+		var btn_gold = Button.new()
+		btn_gold.text = "+100 Gold"
+		btn_gold.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn_gold.modulate = Color(1, 0.9, 0.5)
+		btn_gold.pressed.connect(_on_dev_add_gold)
+		btn_gold.name = "DevAddGold"
+		_nav_vbox.add_child(btn_gold)
+
+
+## Show a welcome banner and auto-open Inn when the player has no heroes.
+func _check_first_launch_guidance() -> void:
+	if GameContext.get_party_size() > 0:
+		return
+	# No heroes — nudge player to the Inn
+	var town_id = GameContext.get_current_town_id()
+	var town = DataRegistry.get_town(town_id) if DataRegistry.has_method("get_town") else null
+	if town == null:
+		return
+	var inn_id: String = ""
+	for fac_id in town.facility_ids:
+		var fac = DataRegistry.get_facility(fac_id)
+		if fac != null and fac.facility_type == "inn":
+			inn_id = fac_id
+			break
+	if inn_id != "":
+		# Small delay so TownScene finishes initialization before we navigate
+		call_deferred("_on_facility_clicked", inn_id)
+		print("[TownHub] First launch — auto-opening Inn for hero recruitment")
+
+
+## Show a region-unlocked banner if a new region was just unlocked.
+func _check_region_unlock_notification() -> void:
+	if not GameContext.has_method("get_pending_region_unlock"):
+		return
+	var unlocked_id: String = GameContext.get_pending_region_unlock()
+	if unlocked_id == "":
+		return
+	GameContext.clear_pending_region_unlock()
+	var region = DataRegistry.get_region(unlocked_id) if DataRegistry.has_method("get_region") else null
+	var region_name: String = region.display_name if region else unlocked_id
+	# Build a CanvasLayer overlay notification
+	var canvas = CanvasLayer.new()
+	canvas.layer = 10
+	add_child(canvas)
+	var panel = PanelContainer.new()
+	panel.anchors_preset = Control.PRESET_CENTER_TOP
+	panel.position = Vector2(0, 20)
+	panel.size = Vector2(400, 60)
+	panel.add_theme_stylebox_override("panel", _create_notification_style())
+	canvas.add_child(panel)
+	var label = Label.new()
+	label.text = "New Region Unlocked: %s!" % region_name
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 16)
+	label.modulate = Color(1, 0.9, 0.4, 1)
+	panel.add_child(label)
+	# Auto-dismiss after 4 seconds
+	var timer = get_tree().create_timer(4.0)
+	timer.timeout.connect(func(): canvas.queue_free())
+	print("[TownHub] Showing region unlock notification: %s" % region_name)
+
+
+func _create_notification_style() -> StyleBoxFlat:
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.12, 0.15, 0.25, 0.95)
+	style.border_color = Color(1, 0.85, 0.3, 0.8)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(8)
+	style.content_margin_left = 16
+	style.content_margin_right = 16
+	style.content_margin_top = 8
+	style.content_margin_bottom = 8
+	return style
 
 
 func _get_nav_label(facility_id: String, facility) -> String:
@@ -422,6 +508,12 @@ func _on_location_changed(_region_id: String, _town_id: String) -> void:
 
 	# Defer rebuild so queue_free completes first
 	call_deferred("_build_town_map")
+
+
+func _on_options_pressed() -> void:
+	var ui_audio = get_node_or_null("/root/UIAudio")
+	if ui_audio and ui_audio.has_method("show_options_menu"):
+		ui_audio.show_options_menu()
 
 
 func _on_save_and_exit() -> void:

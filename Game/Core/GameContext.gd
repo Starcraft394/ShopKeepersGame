@@ -48,6 +48,9 @@ var current_region: int = 1
 # Region completion tracking (region_id -> true)
 var completed_regions: Dictionary = {}
 
+# Pending region unlock notification (set on boss defeat, consumed by TownHub UI)
+var _pending_region_unlock: String = ""
+
 # Run tracking (integrated with SeededRNG - Tier 0.4)
 var _run_id: String = ""
 var _run_seed: int = 0
@@ -502,10 +505,18 @@ func set_current_region(region: int) -> void:
 
 
 ## Mark a region as completed (boss defeated). Idempotent.
+## Also looks up the NEXT region and stores it as a pending unlock notification.
 func mark_region_completed(region_id: String) -> void:
 	if not completed_regions.has(region_id):
 		completed_regions[region_id] = true
 		print("[Region] Completed: %s (total=%d)" % [region_id, completed_regions.size()])
+		# Find the next region that is now unlocked by this completion
+		var all_regions: Array = DataRegistry.get_all_regions() if DataRegistry.has_method("get_all_regions") else []
+		for r in all_regions:
+			if r.requires_region_id == region_id:
+				_pending_region_unlock = r.region_id
+				print("[Region] Next region unlocked: %s" % r.region_id)
+				break
 		save_game()
 
 
@@ -517,6 +528,16 @@ func get_completed_region_count() -> int:
 ## Check if a specific region has been completed.
 func is_region_completed(region_id: String) -> bool:
 	return completed_regions.get(region_id, false)
+
+
+## Get the pending region unlock ID (for UI notification). Returns "" if none.
+func get_pending_region_unlock() -> String:
+	return _pending_region_unlock
+
+
+## Clear the pending region unlock after UI has shown the notification.
+func clear_pending_region_unlock() -> void:
+	_pending_region_unlock = ""
 
 
 ## Check if a region is unlocked (previous region's boss defeated).
@@ -3360,11 +3381,17 @@ func _process_dead_heroes() -> int:
 			heroes_to_remove.append(hero_id)
 
 	# Remove dead heroes from roster and party
+	var party_changed_flag := false
 	for hero_id in heroes_to_remove:
-		# Remove from party first
+		# Remove from both party arrays
 		if hero_id in selected_party:
 			selected_party.erase(hero_id)
-			print("[Permadeath] Removed %s from party" % hero_id)
+			party_changed_flag = true
+			print("[Permadeath] Removed %s from selected_party" % hero_id)
+		if hero_id in _party_hero_ids:
+			_party_hero_ids.erase(hero_id)
+			party_changed_flag = true
+			print("[Permadeath] Removed %s from _party_hero_ids" % hero_id)
 
 		# Remove from roster
 		for i in range(owned_heroes.size() - 1, -1, -1):
@@ -3378,6 +3405,11 @@ func _process_dead_heroes() -> int:
 		# Clean up equipment and bags
 		hero_equipment.erase(hero_id)
 		hero_bags.erase(hero_id)
+		hero_hp.erase(hero_id)
+
+	# Emit party_changed so UI updates (party bar, Inn, etc.)
+	if party_changed_flag:
+		party_changed.emit(_party_hero_ids)
 
 	return removed_count
 

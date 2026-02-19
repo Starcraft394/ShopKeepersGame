@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://prv0tf0imh1e"
+path="res://.godot/imported/The Xperience.mp3-b5e6eb95a6b0dd840bb8d5b505df637f.mp3str"
+
+[deps]
+
+source_file="res://Assets/Audio/BGM/The Xperience.mp3"
+dest_files=["res://.godot/imported/The Xperience.mp3-b5e6eb95a6b0dd840bb8d5b505df637f.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

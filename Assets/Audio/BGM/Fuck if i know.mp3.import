@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://ty2xx3i502cj"
+path="res://.godot/imported/Fuck if i know.mp3-64ced4a98d12cfc58f96f2aa851cc85f.mp3str"
+
+[deps]
+
+source_file="res://Assets/Audio/BGM/Fuck if i know.mp3"
+dest_files=["res://.godot/imported/Fuck if i know.mp3-64ced4a98d12cfc58f96f2aa851cc85f.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

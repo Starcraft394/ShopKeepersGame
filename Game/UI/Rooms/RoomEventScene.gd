@@ -255,11 +255,10 @@ func _check_and_apply_risk(risk: Dictionary) -> bool:
 	if roll >= chance:
 		return false
 
-	# Trap/risk triggered
+	# Trap/risk triggered — distribute damage across party
 	var damage_amount = risk.get("damage_amount", 0)
 	if damage_amount > 0:
-		# For now, just log damage (party damage system not yet implemented)
-		print("[RoomEvent] TRAP! Would deal %d damage to party" % damage_amount)
+		_apply_party_damage(damage_amount)
 		_outcome_text += "But you triggered a trap! (-%d HP)\n" % damage_amount
 
 	var gold_loss = risk.get("gold_loss", 0)
@@ -323,12 +322,43 @@ func _apply_effects(effects: Array) -> void:
 			"heal_party":
 				var amount = effect.get("amount", 0)
 				if amount > 0:
-					# Party healing not yet implemented, just log
-					print("[RoomEvent] Would heal party for %d HP" % amount)
+					_apply_party_heal(amount)
 					_outcome_text += "Party healed for %d HP\n" % amount
 
 			"nothing":
 				_outcome_text += "Nothing happens.\n"
+
+
+## Distribute damage evenly across all living party heroes.
+func _apply_party_damage(total_damage: int) -> void:
+	var party: Array[String] = GameContext.get_party()
+	if party.is_empty():
+		print("[RoomEvent] TRAP damage=%d but party is empty" % total_damage)
+		return
+	var per_hero: int = maxi(1, total_damage / party.size())
+	for hero_id in party:
+		var stats: Dictionary = GameContext.get_hero_effective_stats(hero_id)
+		var max_hp: int = int(stats.get("hp", 100))
+		var hp_data: Dictionary = GameContext.get_hero_hp(hero_id)
+		var current_hp: int = int(hp_data.get("current", max_hp)) if not hp_data.is_empty() else max_hp
+		var new_hp: int = maxi(1, current_hp - per_hero)  # Don't kill from traps (min 1 HP)
+		GameContext.set_hero_hp(hero_id, new_hp, max_hp)
+		print("[RoomEvent] TRAP hero=%s hp=%d→%d (-%d)" % [hero_id, current_hp, new_hp, current_hp - new_hp])
+
+
+## Heal all living party heroes by a flat amount (clamped to max).
+func _apply_party_heal(amount: int) -> void:
+	var party: Array[String] = GameContext.get_party()
+	if party.is_empty():
+		return
+	for hero_id in party:
+		var stats: Dictionary = GameContext.get_hero_effective_stats(hero_id)
+		var max_hp: int = int(stats.get("hp", 100))
+		var hp_data: Dictionary = GameContext.get_hero_hp(hero_id)
+		var current_hp: int = int(hp_data.get("current", max_hp)) if not hp_data.is_empty() else max_hp
+		var new_hp: int = mini(current_hp + amount, max_hp)
+		GameContext.set_hero_hp(hero_id, new_hp, max_hp)
+		print("[RoomEvent] HEAL hero=%s hp=%d→%d (+%d)" % [hero_id, current_hp, new_hp, new_hp - current_hp])
 
 
 func _build_outcome_text(choice: Dictionary, trap_triggered: bool) -> void:

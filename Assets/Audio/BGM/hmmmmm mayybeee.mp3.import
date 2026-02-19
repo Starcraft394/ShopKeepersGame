@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://da3hdq0ddnc2x"
+path="res://.godot/imported/hmmmmm mayybeee.mp3-660d81bd81c8b2f6dce31a162da7da9b.mp3str"
+
+[deps]
+
+source_file="res://Assets/Audio/BGM/hmmmmm mayybeee.mp3"
+dest_files=["res://.godot/imported/hmmmmm mayybeee.mp3-660d81bd81c8b2f6dce31a162da7da9b.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

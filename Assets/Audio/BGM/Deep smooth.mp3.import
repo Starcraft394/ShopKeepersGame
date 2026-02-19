@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bgqnbyncwxndq"
+path="res://.godot/imported/Deep smooth.mp3-b2cd3940de012cf86fc7e878f046be65.mp3str"
+
+[deps]
+
+source_file="res://Assets/Audio/BGM/Deep smooth.mp3"
+dest_files=["res://.godot/imported/Deep smooth.mp3-b2cd3940de012cf86fc7e878f046be65.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

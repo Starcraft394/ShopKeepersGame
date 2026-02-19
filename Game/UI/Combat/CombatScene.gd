@@ -174,6 +174,8 @@ var _consumable_popup: PopupMenu = null
 var _stats_window: Window = null  # Floating stats window
 var _stats_window_hero_id: String = ""  # Hero ID for stats window refresh
 var _stats_window_vbox: VBoxContainer = null  # Reference for auto-update
+var _inspect_overlay: CanvasLayer = null  # Right-click stat inspection overlay
+var _inspect_unit_id: String = ""  # Unit being inspected
 var _auto_step_pending: bool = false  # Guard against concurrent auto-steps
 var _current_input_unit: CombatUnit = null  # Current unit awaiting player input (for tooltips)
 
@@ -959,12 +961,19 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 	# Build rich tooltip with all stats (replaces inline stat display)
 	wrapper.tooltip_text = _build_unit_card_tooltip(unit_data)
 
-	# Right-click for consumable use (heroes only)
-	if unit_data["team"] == "player":
-		var hero_id = unit_data.get("source_id", unit_data["id"])
-		wrapper.gui_input.connect(_on_bag_right_clicked.bind(hero_id))
-
 	wrapper.add_child(card_hbox)
+
+	# Transparent overlay on top of card content — catches ALL mouse events.
+	# Children keep default mouse_filter so tooltip propagation still works
+	# (ClickPanel has no tooltip → Godot falls through to wrapper which does).
+	var click_panel = ColorRect.new()
+	click_panel.name = "ClickPanel"
+	click_panel.color = Color(0, 0, 0, 0)
+	click_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
+	click_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	click_panel.gui_input.connect(_on_unit_right_clicked.bind(unit_data["id"]))
+	wrapper.add_child(click_panel)
+
 	return wrapper
 
 
@@ -3062,6 +3071,12 @@ func run_smoke_test_ui() -> bool:
 # ============================================================================
 
 func _unhandled_input(event: InputEvent) -> void:
+	# Close stat inspection on Escape
+	if _inspect_overlay != null and event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+		_close_stat_inspection()
+		get_viewport().set_input_as_handled()
+		return
+
 	# Loot panel keyboard shortcuts (intercept first)
 	if _loot_panel != null and is_instance_valid(_loot_panel):
 		_loot_panel_input(event)
@@ -4454,24 +4469,23 @@ func _enter_target_selection_mode(valid_targets: Array) -> void:
 			highlight.visible = true
 			_target_highlights[unit_id] = highlight
 
-			# Make clickable and hoverable
-			display.mouse_filter = Control.MOUSE_FILTER_STOP
+			# Connect click and hover handlers to ClickPanel (the transparent overlay)
+			var click_panel = display.get_node_or_null("ClickPanel")
+			if click_panel:
+				# Disconnect old target handlers to prevent duplicates
+				for connection in click_panel.gui_input.get_connections():
+					if connection.callable.get_method() == "_on_unit_clicked":
+						click_panel.gui_input.disconnect(connection.callable)
+				for connection in click_panel.mouse_entered.get_connections():
+					if connection.callable.get_method() == "_on_target_mouse_entered":
+						click_panel.mouse_entered.disconnect(connection.callable)
+				for connection in click_panel.mouse_exited.get_connections():
+					if connection.callable.get_method() == "_on_target_mouse_exited":
+						click_panel.mouse_exited.disconnect(connection.callable)
 
-			# Disconnect old handlers to prevent duplicates
-			for connection in display.gui_input.get_connections():
-				if connection.callable.get_method() == "_on_unit_clicked":
-					display.gui_input.disconnect(connection.callable)
-			for connection in display.mouse_entered.get_connections():
-				if connection.callable.get_method() == "_on_target_mouse_entered":
-					display.mouse_entered.disconnect(connection.callable)
-			for connection in display.mouse_exited.get_connections():
-				if connection.callable.get_method() == "_on_target_mouse_exited":
-					display.mouse_exited.disconnect(connection.callable)
-
-			# Connect click and hover handlers
-			display.gui_input.connect(_on_unit_clicked.bind(unit_id))
-			display.mouse_entered.connect(_on_target_mouse_entered.bind(unit_id))
-			display.mouse_exited.connect(_on_target_mouse_exited.bind(unit_id))
+				click_panel.gui_input.connect(_on_unit_clicked.bind(unit_id))
+				click_panel.mouse_entered.connect(_on_target_mouse_entered.bind(unit_id))
+				click_panel.mouse_exited.connect(_on_target_mouse_exited.bind(unit_id))
 		else:
 			# Gray out non-valid targets
 			display.modulate = Color(0.5, 0.5, 0.5)
@@ -4505,18 +4519,19 @@ func _exit_target_selection_mode() -> void:
 	for unit_id in _unit_displays.keys():
 		var display = _unit_displays[unit_id]
 		display.modulate = Color.WHITE
-		display.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-		# Disconnect all target selection handlers to prevent accumulation
-		for connection in display.gui_input.get_connections():
-			if connection.callable.get_method() == "_on_unit_clicked":
-				display.gui_input.disconnect(connection.callable)
-		for connection in display.mouse_entered.get_connections():
-			if connection.callable.get_method() == "_on_target_mouse_entered":
-				display.mouse_entered.disconnect(connection.callable)
-		for connection in display.mouse_exited.get_connections():
-			if connection.callable.get_method() == "_on_target_mouse_exited":
-				display.mouse_exited.disconnect(connection.callable)
+		# Disconnect target selection handlers from ClickPanel
+		var click_panel = display.get_node_or_null("ClickPanel")
+		if click_panel:
+			for connection in click_panel.gui_input.get_connections():
+				if connection.callable.get_method() == "_on_unit_clicked":
+					click_panel.gui_input.disconnect(connection.callable)
+			for connection in click_panel.mouse_entered.get_connections():
+				if connection.callable.get_method() == "_on_target_mouse_entered":
+					click_panel.mouse_entered.disconnect(connection.callable)
+			for connection in click_panel.mouse_exited.get_connections():
+				if connection.callable.get_method() == "_on_target_mouse_exited":
+					click_panel.mouse_exited.disconnect(connection.callable)
 
 		# Hide highlight
 		var highlight = display.get_node_or_null("TargetHighlight")
@@ -4640,6 +4655,332 @@ func _auto_select_target() -> void:
 	print("[UI] _auto_select_target: submitting target %s" % target_id)
 	_combat_controller.submit_player_target(target_id)
 	_auto_pending_targets.clear()
+
+
+# ============================================================================
+# STAT INSPECTION — Right-Click Popup (CanvasLayer overlay)
+# ============================================================================
+
+## Handle right-click on any unit display to show stat inspection.
+func _on_unit_right_clicked(event: InputEvent, unit_id: String) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
+		_show_stat_inspection(unit_id)
+
+
+## Show a stat inspection overlay for any unit (hero or enemy).
+func _show_stat_inspection(unit_id: String) -> void:
+	_close_stat_inspection()
+
+	var snapshot = _combat_controller.get_units_snapshot()
+	var unit_data: Dictionary = {}
+	for u in snapshot["player"] + snapshot["enemy"]:
+		if u["id"] == unit_id:
+			unit_data = u
+			break
+	if unit_data.is_empty():
+		return
+
+	_inspect_unit_id = unit_id
+
+	# CanvasLayer overlay (layer 10) — works in all scene contexts
+	_inspect_overlay = CanvasLayer.new()
+	_inspect_overlay.layer = 10
+
+	# Semi-transparent backdrop (click to close)
+	var backdrop = ColorRect.new()
+	backdrop.color = Color(0, 0, 0, 0.5)
+	backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
+	backdrop.gui_input.connect(_on_inspect_backdrop_input)
+	_inspect_overlay.add_child(backdrop)
+
+	# Center the panel
+	var center = CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_inspect_overlay.add_child(center)
+
+	# Panel container
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(360, 0)
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.12, 0.10, 0.08, 0.95)
+	style.set_border_width_all(2)
+	style.border_color = Color(0.6, 0.5, 0.3, 0.8)
+	style.set_corner_radius_all(6)
+	style.set_content_margin_all(16)
+	panel.add_theme_stylebox_override("panel", style)
+	center.add_child(panel)
+
+	# Content
+	var scroll = ScrollContainer.new()
+	scroll.custom_minimum_size = Vector2(340, 300)
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	panel.add_child(scroll)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 6)
+	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(vbox)
+
+	_build_stat_inspection_content(vbox, unit_data)
+
+	add_child(_inspect_overlay)
+	print("[UI] Stat inspection opened for %s" % unit_id)
+
+
+## Build the stat inspection panel content.
+func _build_stat_inspection_content(vbox: VBoxContainer, unit_data: Dictionary) -> void:
+	var display_name: String = unit_data["name"]
+	var is_hero: bool = unit_data["team"] == "player"
+
+	# --- Header ---
+	if is_hero:
+		var cls_name := ""
+		if unit_data.get("class_id", "") != "":
+			var cls_data = DataRegistry.get_class_data(unit_data["class_id"])
+			cls_name = cls_data.display_name if cls_data != null and cls_data.display_name != "" else unit_data["class_id"].capitalize()
+		var hero_id: String = unit_data.get("source_id", unit_data["id"])
+		var hero_level := 1
+		if GameContext.has_method("get_hero_effective_stats"):
+			var stats = GameContext.get_hero_effective_stats(hero_id)
+			hero_level = stats.get("level", 1)
+		_add_inspect_header(vbox, "%s — %s Lv%d" % [display_name, cls_name, hero_level])
+	else:
+		var uid: String = unit_data.get("id", "")
+		if uid.begins_with("enemy_"):
+			var enemy_num: int = int(uid.replace("enemy_", "")) + 1
+			display_name = "%s #%d" % [unit_data["name"], enemy_num]
+		_add_inspect_header(vbox, display_name)
+
+	_add_inspect_separator(vbox)
+
+	# --- HP ---
+	var hp_pct: float = float(unit_data["hp"]) / float(unit_data["max_hp"]) if unit_data["max_hp"] > 0 else 0.0
+	var hp_color: Color = Color(0.2, 0.8, 0.2) if hp_pct > 0.5 else (Color(0.9, 0.7, 0.1) if hp_pct > 0.25 else Color(0.9, 0.2, 0.2))
+	_add_inspect_stat(vbox, "HP", "%d / %d" % [unit_data["hp"], unit_data["max_hp"]], hp_color,
+		"Current health. Reaching 0 means death.")
+
+	_add_inspect_separator(vbox)
+
+	# --- Core Stats ---
+	var atk: int = unit_data.get("attack", 0)
+	var base_atk: int = unit_data.get("base_attack", 0)
+	var def_val: int = unit_data.get("defense", 0)
+	var base_def: int = unit_data.get("base_defense", 0)
+	var spd: int = unit_data.get("speed", 0)
+	var base_spd: int = unit_data.get("base_speed", 0)
+
+	var atk_label: String = "%d" % atk
+	if atk != base_atk:
+		atk_label += "  (base %d, %+d)" % [base_atk, atk - base_atk]
+	_add_inspect_stat(vbox, "ATK", atk_label, Color(0.9, 0.6, 0.3),
+		"Attack power. Determines physical damage dealt by basic attacks and many abilities.")
+
+	var def_label: String = "%d" % def_val
+	if def_val != base_def:
+		def_label += "  (base %d, %+d)" % [base_def, def_val - base_def]
+	_add_inspect_stat(vbox, "DEF", def_label, Color(0.4, 0.7, 0.9),
+		"Defense. Reduces incoming physical damage. Damage = max(1, ATK - DEF).")
+
+	var spd_label: String = "%d" % spd
+	if spd != base_spd:
+		spd_label += "  (base %d, %+d)" % [base_spd, spd - base_spd]
+	_add_inspect_stat(vbox, "SPD", spd_label, Color(0.7, 0.9, 0.5),
+		"Speed. Determines turn order each round. Higher speed acts first.")
+
+	# --- Abilities (heroes) ---
+	if is_hero:
+		var has_abilities := false
+		var ability_a_id: String = unit_data.get("ability_a_id", "")
+		var ability_b_id: String = unit_data.get("ability_b_id", "")
+		if ability_a_id != "" or ability_b_id != "":
+			_add_inspect_separator(vbox)
+			_add_inspect_section_label(vbox, "Abilities")
+			has_abilities = true
+
+		if ability_a_id != "":
+			var ability_a = DataRegistry.get_ability(ability_a_id) if DataRegistry.has_method("get_ability") else null
+			var a_name: String = ability_a.display_name if ability_a else ability_a_id.replace("_", " ").capitalize()
+			var a_desc: String = ability_a.description if ability_a != null else ""
+			var cd_a: int = unit_data.get("ability_a_cooldown", 0)
+			var cd_str: String = "CD: %d" % cd_a if cd_a > 0 else "Ready"
+			_add_inspect_ability(vbox, a_name, cd_str, a_desc)
+
+		if ability_b_id != "":
+			var ability_b = DataRegistry.get_ability(ability_b_id) if DataRegistry.has_method("get_ability") else null
+			var b_name: String = ability_b.display_name if ability_b else ability_b_id.replace("_", " ").capitalize()
+			var b_desc: String = ability_b.description if ability_b != null else ""
+			var cd_b: int = unit_data.get("ability_b_cooldown", 0)
+			var cd_str: String = "CD: %d" % cd_b if cd_b > 0 else "Ready"
+			_add_inspect_ability(vbox, b_name, cd_str, b_desc)
+
+		# Passives
+		var passive_a_id: String = unit_data.get("passive_a_id", "")
+		var passive_b_id: String = unit_data.get("passive_b_id", "")
+		if passive_a_id != "" or passive_b_id != "":
+			_add_inspect_separator(vbox)
+			_add_inspect_section_label(vbox, "Passives")
+
+		if passive_a_id != "":
+			var passive_a = DataRegistry.get_passive(passive_a_id) if DataRegistry.has_method("get_passive") else null
+			var pa_name: String = passive_a.display_name if passive_a else passive_a_id.replace("_", " ").capitalize()
+			var pa_desc: String = passive_a.description if passive_a != null else ""
+			_add_inspect_passive(vbox, pa_name, pa_desc)
+
+		if passive_b_id != "":
+			var passive_b = DataRegistry.get_passive(passive_b_id) if DataRegistry.has_method("get_passive") else null
+			var pb_name: String = passive_b.display_name if passive_b else passive_b_id.replace("_", " ").capitalize()
+			var pb_desc: String = passive_b.description if passive_b != null else ""
+			_add_inspect_passive(vbox, pb_name, pb_desc)
+
+	# --- Active Statuses ---
+	var statuses: Array = unit_data.get("active_statuses_v1", [])
+	if statuses.size() > 0:
+		_add_inspect_separator(vbox)
+		_add_inspect_section_label(vbox, "Status Effects")
+		for s in statuses:
+			var s_name: String = s.get("id", "?").capitalize()
+			var s_dur: int = s.get("duration", 0)
+			_add_inspect_status_line(vbox, s_name, "%d turns" % s_dur, Color(0.9, 0.5, 0.5))
+
+	# --- Active Buffs ---
+	var buffs: Array = unit_data.get("active_buffs_v1", [])
+	if buffs.size() > 0:
+		_add_inspect_separator(vbox)
+		_add_inspect_section_label(vbox, "Buffs")
+		for b in buffs:
+			var b_name: String = b.get("id", "?").capitalize()
+			var b_dur: int = b.get("duration", 0)
+			_add_inspect_status_line(vbox, b_name, "%d turns" % b_dur, Color(0.5, 0.8, 0.5))
+
+	# --- Close hint ---
+	_add_inspect_separator(vbox)
+	var hint = Label.new()
+	hint.text = "Click outside or press Escape to close"
+	hint.add_theme_font_size_override("font_size", 10)
+	hint.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(hint)
+
+
+## Stat inspection: add header label.
+func _add_inspect_header(vbox: VBoxContainer, text: String) -> void:
+	var lbl = Label.new()
+	lbl.text = text
+	lbl.add_theme_font_size_override("font_size", 16)
+	lbl.add_theme_color_override("font_color", Color(0.96, 0.91, 0.82))
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(lbl)
+
+
+## Stat inspection: add separator line.
+func _add_inspect_separator(vbox: VBoxContainer) -> void:
+	var sep = HSeparator.new()
+	sep.add_theme_constant_override("separation", 4)
+	vbox.add_child(sep)
+
+
+## Stat inspection: add stat row with tooltip.
+func _add_inspect_stat(vbox: VBoxContainer, stat_name: String, value_text: String, color: Color, tooltip: String) -> void:
+	var hbox = HBoxContainer.new()
+	var name_lbl = Label.new()
+	name_lbl.text = stat_name
+	name_lbl.add_theme_font_size_override("font_size", 13)
+	name_lbl.add_theme_color_override("font_color", color)
+	name_lbl.custom_minimum_size.x = 50
+	name_lbl.tooltip_text = tooltip
+	hbox.add_child(name_lbl)
+
+	var val_lbl = Label.new()
+	val_lbl.text = value_text
+	val_lbl.add_theme_font_size_override("font_size", 13)
+	val_lbl.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9))
+	val_lbl.tooltip_text = tooltip
+	val_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hbox.add_child(val_lbl)
+	vbox.add_child(hbox)
+
+
+## Stat inspection: add section label (Abilities, Passives, etc.).
+func _add_inspect_section_label(vbox: VBoxContainer, text: String) -> void:
+	var lbl = Label.new()
+	lbl.text = text
+	lbl.add_theme_font_size_override("font_size", 13)
+	lbl.add_theme_color_override("font_color", Color(0.8, 0.75, 0.6))
+	vbox.add_child(lbl)
+
+
+## Stat inspection: add ability entry.
+func _add_inspect_ability(vbox: VBoxContainer, ability_name: String, cd_text: String, description: String) -> void:
+	var hbox = HBoxContainer.new()
+	var name_lbl = Label.new()
+	name_lbl.text = ability_name
+	name_lbl.add_theme_font_size_override("font_size", 12)
+	name_lbl.add_theme_color_override("font_color", Color(0.9, 0.85, 0.7))
+	hbox.add_child(name_lbl)
+
+	var cd_lbl = Label.new()
+	cd_lbl.text = "  [%s]" % cd_text
+	cd_lbl.add_theme_font_size_override("font_size", 11)
+	cd_lbl.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+	hbox.add_child(cd_lbl)
+	vbox.add_child(hbox)
+
+	if description != "":
+		var desc_lbl = Label.new()
+		desc_lbl.text = "  %s" % description
+		desc_lbl.add_theme_font_size_override("font_size", 10)
+		desc_lbl.add_theme_color_override("font_color", Color(0.65, 0.65, 0.65))
+		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
+		vbox.add_child(desc_lbl)
+
+
+## Stat inspection: add passive entry.
+func _add_inspect_passive(vbox: VBoxContainer, passive_name: String, description: String) -> void:
+	var name_lbl = Label.new()
+	name_lbl.text = passive_name
+	name_lbl.add_theme_font_size_override("font_size", 12)
+	name_lbl.add_theme_color_override("font_color", Color(0.7, 0.8, 0.9))
+	vbox.add_child(name_lbl)
+
+	if description != "":
+		var desc_lbl = Label.new()
+		desc_lbl.text = "  %s" % description
+		desc_lbl.add_theme_font_size_override("font_size", 10)
+		desc_lbl.add_theme_color_override("font_color", Color(0.65, 0.65, 0.65))
+		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
+		vbox.add_child(desc_lbl)
+
+
+## Stat inspection: add status/buff line.
+func _add_inspect_status_line(vbox: VBoxContainer, status_name: String, duration_text: String, color: Color) -> void:
+	var hbox = HBoxContainer.new()
+	var name_lbl = Label.new()
+	name_lbl.text = status_name
+	name_lbl.add_theme_font_size_override("font_size", 12)
+	name_lbl.add_theme_color_override("font_color", color)
+	hbox.add_child(name_lbl)
+
+	var dur_lbl = Label.new()
+	dur_lbl.text = "  (%s)" % duration_text
+	dur_lbl.add_theme_font_size_override("font_size", 11)
+	dur_lbl.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+	hbox.add_child(dur_lbl)
+	vbox.add_child(hbox)
+
+
+## Close the stat inspection overlay.
+func _close_stat_inspection() -> void:
+	if _inspect_overlay != null and is_instance_valid(_inspect_overlay):
+		_inspect_overlay.queue_free()
+		_inspect_overlay = null
+		_inspect_unit_id = ""
+
+
+## Handle click on backdrop to close inspection.
+func _on_inspect_backdrop_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed:
+		_close_stat_inspection()
 
 
 # ============================================================================

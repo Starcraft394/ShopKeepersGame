@@ -12,7 +12,7 @@ config_version=5
 
 config/name="ShopKeepersGame"
 run/main_scene="uid://cs62ali3tbiyn"
-config/features=PackedStringArray("4.5", "Forward Plus")
+config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [autoload]
@@ -20,8 +20,13 @@ config/icon="res://icon.svg"
 DataRegistry="*res://Game/Core/DataRegistry.gd"
 GameContext="*res://Game/Core/GameContext.gd"
 SeededRng="*res://Game/Core/SeededRNG.gd"
+UIAudio="*res://Game/Core/UIAudio.gd"
 
 [display]
 
 window/size/viewport_width=960
 window/size/viewport_height=540
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"

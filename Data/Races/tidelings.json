@@ -3,7 +3,7 @@
   "display_name": "Tidelings",
   "description": "Amphibious people from coastal regions who draw power from the sea and storms. Fluid in combat and resilient against elemental forces.",
   "icon_hint": "teal shell spiral with water droplets and coral accents",
-  "unlock_region": 1,
+  "unlock_region": 3,
   "stat_modifiers": {
     "health": 5,
     "attack": 0,

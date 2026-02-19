@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://lxl2mr1i0vgo"
+path="res://.godot/imported/AHHHH SHIT.mp3-ac646ef766aa02dff7d6b939da997ecc.mp3str"
+
+[deps]
+
+source_file="res://Assets/Audio/BGM/AHHHH SHIT.mp3"
+dest_files=["res://.godot/imported/AHHHH SHIT.mp3-ac646ef766aa02dff7d6b939da997ecc.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

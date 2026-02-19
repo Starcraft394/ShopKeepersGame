@@ -3,7 +3,7 @@
   "display_name": "Voidwalkers",
   "description": "Entities touched by the void between worlds. They phase between dimensions and command powers that defy natural law.",
   "icon_hint": "dark purple void rift silhouette with phasing edges",
-  "unlock_region": 1,
+  "unlock_region": 7,
   "stat_modifiers": {
     "health": -5,
     "attack": 8,

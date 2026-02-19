@@ -1473,7 +1473,7 @@ func _pick_target_with_fallback(caster: CombatUnit, ability: AbilityData) -> Dic
 # ============================================================================
 
 ## Execute a class ability based on its effect_type and target_type.
-func _execute_class_ability_step(unit: CombatUnit, ability: AbilityData, ability_type: String) -> void:
+func _execute_class_ability_step(unit: CombatUnit, ability: AbilityData, ability_type: String, player_target: CombatUnit = null) -> void:
 	print("[Ability] %s uses %s (effect=%s, target=%s, team=%s, rule=%s)" % [
 		unit.display_name, ability.display_name, ability.effect_type, ability.target_type,
 		ability.target_team, ability.target_rule])
@@ -1491,10 +1491,10 @@ func _execute_class_ability_step(unit: CombatUnit, ability: AbilityData, ability
 			intent_target_id = pick_result.unit_id
 	intent_decided.emit(unit.unit_id, "class_ability", ability.ability_id, intent_target_id)
 
-	# Route based on effect_type
+	# Route based on effect_type (pass player_target so player's choice is respected)
 	match ability.effect_type:
 		"damage":
-			_execute_damage_ability(unit, ability, ability_type)
+			_execute_damage_ability(unit, ability, ability_type, player_target)
 		"heal":
 			# Check for cleansing heal (all_allies + cleanses_debuffs)
 			if ability.target_type == "all_allies" and ability.cleanses_debuffs > 0:
@@ -1502,26 +1502,27 @@ func _execute_class_ability_step(unit: CombatUnit, ability: AbilityData, ability
 			elif ability.target_type == "all_allies":
 				_execute_aoe_heal_ability(unit, ability, ability_type)
 			else:
-				_execute_heal_ability(unit, ability, ability_type)
+				_execute_heal_ability(unit, ability, ability_type, player_target)
 		"buff":
 			# Check for AoE buff (all_allies)
 			if ability.target_type == "all_allies":
 				_execute_aoe_buff_ability(unit, ability, ability_type)
 			else:
-				_execute_buff_ability(unit, ability, ability_type)
+				_execute_buff_ability(unit, ability, ability_type, player_target)
 		"damage_and_heal":
-			_execute_drain_ability(unit, ability, ability_type)
+			_execute_drain_ability(unit, ability, ability_type, player_target)
 		"debuff":
 			# Debuff-only abilities (e.g., void_anchor)
-			_execute_debuff_ability(unit, ability, ability_type)
+			_execute_debuff_ability(unit, ability, ability_type, player_target)
 		_:
 			# Fallback: treat as damage ability
-			_execute_damage_ability(unit, ability, ability_type)
+			_execute_damage_ability(unit, ability, ability_type, player_target)
 
 
 ## Execute a damage-type ability (guardian_challenge, aegis_slam, twin_strike).
 ## Supports single target and AoE (all_enemies) abilities.
-func _execute_damage_ability(unit: CombatUnit, ability: AbilityData, ability_type: String) -> void:
+## player_target: if provided, use the player's chosen target instead of AI policy.
+func _execute_damage_ability(unit: CombatUnit, ability: AbilityData, ability_type: String, player_target: CombatUnit = null) -> void:
 	var enemies = TargetingPolicy.get_enemies_for_team(_all_units, unit.team)
 
 	# Check for AoE ability (all_enemies)
@@ -1529,8 +1530,12 @@ func _execute_damage_ability(unit: CombatUnit, ability: AbilityData, ability_typ
 		_execute_aoe_damage_ability(unit, ability, ability_type, enemies)
 		return
 
-	# Single target ability
-	var target = _targeting_policy.select_target(unit, enemies)
+	# Single target: use player's selection if available, else AI targeting policy
+	var target: CombatUnit = null
+	if player_target != null and player_target.is_alive:
+		target = player_target
+	else:
+		target = _targeting_policy.select_target(unit, enemies)
 
 	if target == null:
 		return
@@ -1654,10 +1659,15 @@ func _execute_aoe_damage_ability(unit: CombatUnit, ability: AbilityData, ability
 
 ## Execute a heal-type ability (natures_grace).
 ## Uses data-driven targeting via _pick_target_for_ability().
-func _execute_heal_ability(unit: CombatUnit, ability: AbilityData, ability_type: String) -> void:
-	# Use data-driven targeting (Ability Targeting v1)
-	var pick_result = _pick_target_with_fallback(unit, ability)
-	var target = pick_result["target"]
+func _execute_heal_ability(unit: CombatUnit, ability: AbilityData, ability_type: String, player_target: CombatUnit = null) -> void:
+	# Use player's selection if available, else data-driven targeting
+	var target: CombatUnit = null
+	var pick_result: Dictionary = {"fallback": false, "target": null}
+	if player_target != null and player_target.is_alive:
+		target = player_target
+	else:
+		pick_result = _pick_target_with_fallback(unit, ability)
+		target = pick_result["target"]
 
 	# If fallback to basic attack (no valid heal target)
 	if pick_result["fallback"]:
@@ -1695,10 +1705,15 @@ func _execute_heal_ability(unit: CombatUnit, ability: AbilityData, ability_type:
 ## Execute a buff-type ability (shadowstep, barkskin_blessing).
 ## Buffs are tracked with duration and expire automatically at round start.
 ## Uses data-driven targeting via _pick_target_for_ability().
-func _execute_buff_ability(unit: CombatUnit, ability: AbilityData, ability_type: String) -> void:
-	# Use data-driven targeting (Ability Targeting v1)
-	var pick_result = _pick_target_with_fallback(unit, ability)
-	var target = pick_result["target"]
+func _execute_buff_ability(unit: CombatUnit, ability: AbilityData, ability_type: String, player_target: CombatUnit = null) -> void:
+	# Use player's selection if available, else data-driven targeting
+	var target: CombatUnit = null
+	var pick_result: Dictionary = {"fallback": false, "target": null}
+	if player_target != null and player_target.is_alive:
+		target = player_target
+	else:
+		pick_result = _pick_target_with_fallback(unit, ability)
+		target = pick_result["target"]
 
 	# If fallback to basic attack (no valid buff target)
 	if pick_result["fallback"]:
@@ -1837,7 +1852,7 @@ func _execute_aoe_buff_ability(unit: CombatUnit, ability: AbilityData, ability_t
 
 
 ## Execute a debuff-only ability (void_anchor).
-func _execute_debuff_ability(unit: CombatUnit, ability: AbilityData, ability_type: String) -> void:
+func _execute_debuff_ability(unit: CombatUnit, ability: AbilityData, ability_type: String, player_target: CombatUnit = null) -> void:
 	var enemies = TargetingPolicy.get_enemies_for_team(_all_units, unit.team)
 
 	# Check for AoE debuff
@@ -1873,8 +1888,12 @@ func _execute_debuff_ability(unit: CombatUnit, ability: AbilityData, ability_typ
 		_result.add_action(action)
 		action_performed.emit(action)
 	else:
-		# Single target debuff
-		var target = _targeting_policy.select_target(unit, enemies)
+		# Single target debuff: use player's selection if available
+		var target: CombatUnit = null
+		if player_target != null and player_target.is_alive:
+			target = player_target
+		else:
+			target = _targeting_policy.select_target(unit, enemies)
 		if target == null:
 			return
 
@@ -1956,10 +1975,14 @@ func _apply_enemy_debuff(target: CombatUnit, debuff: Dictionary, ability_id: Str
 
 ## Execute a damage_and_heal ability (life_drain).
 ## Damages an enemy and heals an ally based on the damage dealt.
-func _execute_drain_ability(unit: CombatUnit, ability: AbilityData, ability_type: String) -> void:
-	# Get damage target (enemy)
+func _execute_drain_ability(unit: CombatUnit, ability: AbilityData, ability_type: String, player_target: CombatUnit = null) -> void:
+	# Get damage target (enemy): use player's selection if available
 	var enemies = TargetingPolicy.get_enemies_for_team(_all_units, unit.team)
-	var damage_target = _targeting_policy.select_target(unit, enemies)
+	var damage_target: CombatUnit = null
+	if player_target != null and player_target.is_alive:
+		damage_target = player_target
+	else:
+		damage_target = _targeting_policy.select_target(unit, enemies)
 
 	if damage_target == null:
 		return
@@ -2820,9 +2843,9 @@ func _execute_player_action(unit: CombatUnit, action_type: String, target: Comba
 		"basic":
 			_execute_basic_attack_player(unit, target)
 		"ability_a":
-			_execute_class_ability_step(unit, ability, "ability_a")
+			_execute_class_ability_step(unit, ability, "ability_a", target)
 		"ability_b":
-			_execute_class_ability_step(unit, ability, "ability_b")
+			_execute_class_ability_step(unit, ability, "ability_b", target)
 
 
 ## Execute a basic attack from player input (with specific target).
@@ -2860,8 +2883,8 @@ func _execute_equipment_ability_step(unit: CombatUnit, ability: AbilityData, equ
 
 	print("[Combat] %s uses equipment ability [%d] %s" % [unit.display_name, equip_index, ability.display_name])
 
-	# Use the same execution pipeline as class abilities
-	_execute_class_ability_step(unit, ability, "equip_%d" % equip_index)
+	# Use the same execution pipeline as class abilities (pass player target)
+	_execute_class_ability_step(unit, ability, "equip_%d" % equip_index, target)
 
 	# Put equipment ability on cooldown (class ability step handles class cooldowns,
 	# but we need to handle equip cooldown separately)

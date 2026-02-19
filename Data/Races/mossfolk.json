@@ -3,7 +3,7 @@
   "display_name": "Mossfolk",
   "description": "Plant-like beings born from the deep forests. Their connection to nature grants regenerative abilities and an affinity for fungi.",
   "icon_hint": "green mossy face with sprouting mushrooms and vine hair",
-  "unlock_region": 1,
+  "unlock_region": 2,
   "stat_modifiers": {
     "health": 15,
     "attack": -2,

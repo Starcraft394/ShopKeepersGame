@@ -2756,7 +2756,6 @@ func _build_equipment_ui() -> void:
 	var menu = [
 		{"view": "recipes", "label": "Recipes"},
 		{"view": "upgrade", "label": "Upgrade Facility"},
-		{"view": "repair", "label": "Repair"},
 	]
 	_build_npc_header(facility, menu, _equipment_view, _on_equipment_view_pressed)
 

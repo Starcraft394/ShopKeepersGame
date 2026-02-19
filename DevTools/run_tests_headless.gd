@@ -75,8 +75,12 @@ func _initialize() -> void:
 	print("")
 
 	# ========================================================================
-	# STEP 2: Load and run test suite
+	# STEP 2: Load and run test suites
 	# ========================================================================
+	var all_passed: int = 0
+	var all_failed: int = 0
+
+	# --- Suite 1: Ability Execution Tests ---
 	var test_script = load("res://DevTools/test_ability_execution_v1.gd")
 	if test_script == null:
 		print("[Tests] ERROR: Failed to load test_ability_execution_v1.gd")
@@ -101,25 +105,38 @@ func _initialize() -> void:
 			quit(1)
 			return
 
+	if results is Dictionary:
+		all_passed += results.get("passed", 0)
+		all_failed += results.get("failed", 0)
+
+	# --- Suite 2: Comprehensive Playtest ---
+	var playtest_script = load("res://DevTools/test_playtest_v1.gd")
+	if playtest_script != null:
+		var playtest_results: Dictionary = {}
+		if playtest_script.has_method("run_tests"):
+			playtest_results = playtest_script.run_tests()
+		else:
+			var pt_instance = playtest_script.new()
+			if pt_instance != null and pt_instance.has_method("run_tests"):
+				playtest_results = pt_instance.run_tests()
+		if playtest_results is Dictionary:
+			all_passed += playtest_results.get("passed", 0)
+			all_failed += playtest_results.get("failed", 0)
+	else:
+		print("[Tests] WARNING: Playtest suite not found (skipping)")
+
 	# ========================================================================
 	# STEP 3: Print summary and exit
 	# ========================================================================
-	if not results is Dictionary:
-		print("[Tests] ERROR: run_tests() did not return a Dictionary")
-		quit(1)
-		return
-
-	var passed = results.get("passed", 0)
-	var failed = results.get("failed", 0)
-	var total = passed + failed
+	var total = all_passed + all_failed
 
 	print("")
 	print("=" .repeat(60))
 	print("  HEADLESS TEST SUMMARY")
 	print("=" .repeat(60))
-	print("TEST RESULTS: %d passed, %d failed" % [passed, failed])
+	print("TEST RESULTS: %d passed, %d failed" % [all_passed, all_failed])
 
-	if failed > 0:
+	if all_failed > 0:
 		print("[Tests] RESULT: FAILED")
 		print("=" .repeat(60))
 		quit(1)

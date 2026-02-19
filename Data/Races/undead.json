@@ -3,7 +3,7 @@
   "display_name": "Undead",
   "description": "Risen souls who have returned from beyond death. Their connection to dark energies grants them resilience but at a cost to their vitality.",
   "icon_hint": "cracked bone skull with dark hollow eyes and faint glow",
-  "unlock_region": 1,
+  "unlock_region": 6,
   "stat_modifiers": {
     "health": -10,
     "attack": 5,

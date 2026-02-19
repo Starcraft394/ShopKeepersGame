@@ -17,8 +17,9 @@ const GRID_CAPACITY := 24
 
 func _ready() -> void:
 	print("[StorageScene] Loaded")
-	_btn_sort.pressed.connect(_on_sort_pressed)
-	_btn_filter.pressed.connect(_on_filter_pressed)
+	# Hide unimplemented Sort/Filter buttons for playtest
+	_btn_sort.visible = false
+	_btn_filter.visible = false
 	_btn_sell_junk.pressed.connect(_on_sell_junk_pressed)
 	_refresh()
 
