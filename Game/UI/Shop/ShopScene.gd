@@ -107,11 +107,13 @@ func _on_buy_pressed() -> void:
 		_item_label.text = "Not enough gold!\nNeed %d, have %d." % [
 			buy_price, GameContext.get_player_gold()
 		]
+		UIAudio.play_sfx("error_insufficient")
 		print("[ShopScene] BUY FAILED: %s — insufficient gold (%d/%d)" % [
 			_selected_template.template_id, GameContext.get_player_gold(), buy_price
 		])
 		return
 	GameContext.add_player_item(_selected_template.template_id, 1)
+	UIAudio.play_sfx("item_buy")
 	_item_label.text = "Purchased %s!\n\nGold remaining: %d" % [
 		_selected_template.display_name, GameContext.get_player_gold()
 	]

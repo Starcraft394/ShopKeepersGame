@@ -71,6 +71,9 @@ var _is_descend_mode: bool = false  # True when at end of floor (descend instead
 # ============================================================================
 
 func _ready() -> void:
+	# Switch to dungeon camp BGM
+	UIAudio.play_bgm("dungeon_camp")
+
 	# Load region palette for theming
 	_region_palette = RegionTheme.get_palette_for_current_region()
 	_apply_region_theme()
@@ -89,7 +92,9 @@ func _ready() -> void:
 	if legend_label:
 		legend_label.visible = false
 	# Hide "Choose Next Room" header and hotkey hint — buttons are self-explanatory
-	$MainVBox/MapSection/MapHeader.visible = false
+	var map_header = get_node_or_null("MainVBox/MapSection/MapHeader")
+	if map_header:
+		map_header.visible = false
 	hotkey_hint.visible = false
 	print("[DungeonCamp] Loaded. Dungeon=%s Floor=%d Room=%d/%d" % [
 		GameContext.get_current_dungeon_id(),
@@ -440,6 +445,7 @@ func _select_choice(choice: Dictionary) -> void:
 		print("[DungeonCamp] Not in dungeon, ignoring choice")
 		return
 
+	UIAudio.play_sfx("room_choice")
 	# Health Persistence v1: Log that no healing occurs between rooms
 	print("[HP] dungeon_camp_no_heal (proceeding to next room)")
 
@@ -478,6 +484,7 @@ func _do_descend() -> void:
 		print("[DungeonCamp] Not in descend mode, ignoring")
 		return
 
+	UIAudio.play_sfx("descend_floor")
 	# Health Persistence v1: Log that no healing occurs when descending
 	print("[HP] dungeon_camp_no_heal (descending to next floor)")
 
@@ -526,6 +533,7 @@ func _do_extract() -> void:
 		return
 
 	print("[DungeonCamp] Extracting - committing dungeon stash to run stash...")
+	UIAudio.play_sfx("extraction")
 
 	# Mark first floor completion if applicable
 	if not GameContext.has_completed_first_floor():
@@ -573,15 +581,15 @@ func _populate_hero_rows() -> void:
 		return
 
 	# Build a row for each hero
-	for hero_id in party:
-		var row = _create_hero_row(hero_id)
+	for i in range(party.size()):
+		var row = _create_hero_row(party[i], i, party.size())
 		hero_rows.add_child(row)
 
 	print("[Camp] Populated %d hero rows" % party.size())
 
 
-## Create a single hero card: [Portrait | Name + Class + HP Bar | Info | Bag Slots]
-func _create_hero_row(hero_id: String) -> PanelContainer:
+## Create a single hero card: [Arrows | Portrait | Name + Class + HP Bar | Info | Bag Slots]
+func _create_hero_row(hero_id: String, party_idx: int = 0, party_size: int = 1) -> PanelContainer:
 	var hero = GameContext.get_hero(hero_id)
 	var hero_name = hero.get("name", hero_id) if hero else hero_id
 	var class_id = hero.get("class_id", "") if hero else ""
@@ -623,6 +631,18 @@ func _create_hero_row(hero_id: String) -> PanelContainer:
 	var row = HBoxContainer.new()
 	row.add_theme_constant_override("separation", 8)
 	card.add_child(row)
+
+	# Combat row selector (Front/Middle/Back)
+	var row_select = OptionButton.new()
+	row_select.custom_minimum_size = Vector2(65, 26)
+	row_select.add_theme_font_size_override("font_size", 10)
+	row_select.add_item("Front", 0)
+	row_select.add_item("Mid", 1)
+	row_select.add_item("Back", 2)
+	row_select.selected = GameContext.get_hero_row(hero_id)
+	row_select.tooltip_text = "Combat row position\nFront: Targeted first by melee\nMiddle: Targeted after Front\nBack: Targeted last by melee"
+	row_select.item_selected.connect(_on_hero_row_changed.bind(hero_id))
+	row.add_child(row_select)
 
 	# Portrait (28x28)
 	var portrait_rect = TextureRect.new()
@@ -771,16 +791,27 @@ func _create_hero_row(hero_id: String) -> PanelContainer:
 			# Wire swap via shift+click
 			slot_btn.gui_input.connect(_on_hero_bag_slot_gui_input.bind(hero_id, slot_idx, slot_btn))
 
+			# Drag-and-drop forwarding for cross-bag transfers
+			slot_btn.set_drag_forwarding(
+				_hero_bag_get_drag.bind(hero_id, slot_idx, slot_btn),
+				_hero_bag_can_drop,
+				_hero_bag_drop.bind(hero_id, slot_idx)
+			)
+
 			_hero_bag_cache[hero_id].append({
 				"slot_idx": slot_idx,
 				"item_id": item_id,
 				"qty": qty
 			})
 		else:
-			# Empty slot
+			# Empty slot — accept drops but cannot initiate drag
 			slot_btn.text = "-"
-			slot_btn.disabled = true
-			slot_btn.tooltip_text = "Empty slot"
+			slot_btn.tooltip_text = "Empty slot (drop item here)"
+			slot_btn.set_drag_forwarding(
+				_hero_bag_get_drag_empty,
+				_hero_bag_can_drop,
+				_hero_bag_drop.bind(hero_id, slot_idx)
+			)
 
 		bag_container.add_child(slot_btn)
 
@@ -993,6 +1024,13 @@ func _on_consumable_picker_backdrop(event: InputEvent) -> void:
 		_close_consumable_picker()
 
 
+## Handle hero row assignment change (combat position: Front/Middle/Back).
+func _on_hero_row_changed(row_index: int, hero_id: String) -> void:
+	GameContext.set_hero_row(hero_id, row_index)
+	var row_names = ["Front", "Middle", "Back"]
+	print("[Camp] Hero %s assigned to %s row" % [hero_id, row_names[row_index]])
+
+
 ## Show hero info overlay (stats, equipment, abilities, etc.)
 ## Uses CanvasLayer overlay instead of Window (avoids Godot 4 Window embedding issues).
 func _on_hero_info_pressed(hero_id: String) -> void:
@@ -1005,6 +1043,7 @@ func _on_hero_info_pressed(hero_id: String) -> void:
 	var hero_name = hero.get("name", hero_id) if hero else hero_id
 	var class_id = hero.get("class_id", "") if hero else ""
 	var race_id = hero.get("race_id", "human") if hero else "human"
+	var hero_level: int = int(hero.get("level", 1)) if hero else 1
 
 	# Get class and race display names
 	var cls_display_name = class_id.capitalize()
@@ -1081,7 +1120,8 @@ func _on_hero_info_pressed(hero_id: String) -> void:
 	name_label.add_theme_color_override("font_color", Color(accent.r * 1.6, accent.g * 1.6, accent.b * 1.6, 1.0))
 	vbox.add_child(name_label)
 
-	vbox.add_child(HSeparator.new())
+	var sep1 = HSeparator.new()
+	vbox.add_child(sep1)
 
 	# === STATS ===
 	var stats_title = Label.new()
@@ -1098,7 +1138,8 @@ func _on_hero_info_pressed(hero_id: String) -> void:
 	_add_camp_stat_line(vbox, "Defense", str(stats.get("defense", 0)), Color.LIGHT_BLUE, _build_camp_stat_tooltip("Defense", hero_id))
 	_add_camp_stat_line(vbox, "Speed", str(stats.get("speed", 0)), Color.YELLOW, _build_camp_stat_tooltip("Speed", hero_id))
 
-	vbox.add_child(HSeparator.new())
+	var sep2 = HSeparator.new()
+	vbox.add_child(sep2)
 
 	# === EQUIPMENT ===
 	var equip_title = Label.new()
@@ -1132,7 +1173,8 @@ func _on_hero_info_pressed(hero_id: String) -> void:
 			equip_color = Color.SANDY_BROWN
 		_add_camp_equipment_line(vbox, slot_display, slot_text, equip_color, tooltip_text)
 
-	vbox.add_child(HSeparator.new())
+	var sep3 = HSeparator.new()
+	vbox.add_child(sep3)
 
 	# === ABILITIES ===
 	var ability_title = Label.new()
@@ -1150,14 +1192,22 @@ func _on_hero_info_pressed(hero_id: String) -> void:
 		var ability_a = DataRegistry.get_ability(ability_a_id) if DataRegistry.has_method("get_ability") else null
 		var a_name = ability_a.display_name if ability_a else ability_a_id
 		var a_desc = ability_a.description if ability_a else ""
-		_add_camp_ability_line(vbox, "[A] %s" % a_name, a_desc)
+		if GameContext.is_ability_slot_unlocked("ability_a", hero_level):
+			_add_camp_ability_line(vbox, "[A] %s" % a_name, a_desc)
+		else:
+			var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("ability_a", 5)
+			_add_camp_ability_line(vbox, "[A] %s (Lv %d)" % [a_name, req_lv], a_desc, Color(0.5, 0.5, 0.5, 1))
 		has_abilities = true
 
 	if ability_b_id != "":
 		var ability_b = DataRegistry.get_ability(ability_b_id) if DataRegistry.has_method("get_ability") else null
 		var b_name = ability_b.display_name if ability_b else ability_b_id
 		var b_desc = ability_b.description if ability_b else ""
-		_add_camp_ability_line(vbox, "[B] %s" % b_name, b_desc)
+		if GameContext.is_ability_slot_unlocked("ability_b", hero_level):
+			_add_camp_ability_line(vbox, "[B] %s" % b_name, b_desc)
+		else:
+			var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("ability_b", 25)
+			_add_camp_ability_line(vbox, "[B] %s (Lv %d)" % [b_name, req_lv], b_desc, Color(0.5, 0.5, 0.5, 1))
 		has_abilities = true
 
 	if not has_abilities:
@@ -1167,7 +1217,8 @@ func _on_hero_info_pressed(hero_id: String) -> void:
 		vbox.add_child(none_lbl)
 
 	# === CLOSE BUTTON ===
-	vbox.add_child(HSeparator.new())
+	var sep4 = HSeparator.new()
+	vbox.add_child(sep4)
 	var close_btn = Button.new()
 	close_btn.text = "Close"
 	close_btn.custom_minimum_size = Vector2(100, 30)
@@ -1211,14 +1262,14 @@ func _add_camp_stat_line(container: VBoxContainer, stat_name: String, value: Str
 
 
 ## Helper: Add an ability line with name and description
-func _add_camp_ability_line(container: VBoxContainer, ability_name: String, desc: String) -> void:
+func _add_camp_ability_line(container: VBoxContainer, ability_name: String, desc: String, color_override: Color = Color.WHITE) -> void:
 	var ability_vbox = VBoxContainer.new()
 	ability_vbox.add_theme_constant_override("separation", 2)
 
 	var name_lbl = Label.new()
 	name_lbl.text = ability_name
 	name_lbl.add_theme_font_size_override("font_size", 12)
-	name_lbl.add_theme_color_override("font_color", Color.WHITE)
+	name_lbl.add_theme_color_override("font_color", color_override)
 	ability_vbox.add_child(name_lbl)
 
 	if desc != "":
@@ -1642,8 +1693,10 @@ func _on_bag_slot_swap_click(slot_type: String, hero_id: String, index: int, btn
 ## Execute the actual swap between two bag slots.
 func _perform_swap(src: Dictionary, dst: Dictionary) -> void:
 	if src.type == "shopkeeper" and dst.type == "shopkeeper":
-		GameContext.swap_shopkeeper_bag_items(src.index, dst.index)
-		print("[Camp] Swapped shopkeeper bag slots %d <-> %d" % [src.index, dst.index])
+		# Skip no-op when target is an empty trailing slot (compact array)
+		if dst.index < GameContext.shopkeeper_bag.size():
+			GameContext.swap_shopkeeper_bag_items(src.index, dst.index)
+			print("[Camp] Swapped shopkeeper bag slots %d <-> %d" % [src.index, dst.index])
 	elif src.type == "hero_bag" and dst.type == "shopkeeper":
 		GameContext.move_item_hero_to_shopkeeper(src.hero_id, src.index)
 		print("[Camp] Moved hero %s bag[%d] -> shopkeeper" % [src.hero_id, src.index])
@@ -1652,13 +1705,31 @@ func _perform_swap(src: Dictionary, dst: Dictionary) -> void:
 		print("[Camp] Moved shopkeeper[%d] -> hero %s" % [src.index, dst.hero_id])
 	elif src.type == "hero_bag" and dst.type == "hero_bag":
 		if src.hero_id == dst.hero_id:
-			# Same hero bag swap
+			# Same hero bag swap (both must be filled)
 			var bag: Array = GameContext.hero_bags.get(src.hero_id, [])
 			if src.index < bag.size() and dst.index < bag.size():
 				var temp: Dictionary = bag[src.index]
 				bag[src.index] = bag[dst.index]
 				bag[dst.index] = temp
 				print("[Camp] Swapped hero %s bag[%d] <-> bag[%d]" % [src.hero_id, src.index, dst.index])
+		else:
+			# Cross-hero bag transfer
+			var src_bag: Array = GameContext.hero_bags.get(src.hero_id, [])
+			var dst_bag: Array = GameContext.hero_bags.get(dst.hero_id, [])
+			if src.index < src_bag.size():
+				if dst.index < dst_bag.size():
+					# Both filled: swap items between heroes
+					var temp: Dictionary = src_bag[src.index]
+					src_bag[src.index] = dst_bag[dst.index]
+					dst_bag[dst.index] = temp
+					print("[Camp] Swapped hero %s bag[%d] <-> hero %s bag[%d]" % [src.hero_id, src.index, dst.hero_id, dst.index])
+				else:
+					# Dst is empty slot: move src item to dst hero
+					var dst_cap: int = GameContext.get_hero_bag_capacity(dst.hero_id)
+					if dst_bag.size() < dst_cap:
+						dst_bag.append(src_bag[src.index].duplicate())
+						src_bag.remove_at(src.index)
+						print("[Camp] Moved hero %s bag[%d] -> hero %s" % [src.hero_id, src.index, dst.hero_id])
 	_update_display()
 
 
@@ -1711,21 +1782,93 @@ func _camp_bag_get_drag_empty(at_pos: Vector2) -> Variant:
 	return null
 
 
-## Accept drops from shopkeeper bag slots.
+## Accept drops from shopkeeper or hero bag slots.
 func _camp_bag_can_drop(at_pos: Vector2, data) -> bool:
-	if data is Dictionary and data.get("type") == "shopkeeper":
+	if data is Dictionary and data.get("type") in ["shopkeeper", "hero_bag"]:
 		return true
 	return false
 
 
-## Perform the swap when an item is dropped onto this slot.
+## Perform the swap when an item is dropped onto a shopkeeper bag slot.
 func _camp_bag_drop(at_pos: Vector2, data, target_index: int) -> void:
-	if not (data is Dictionary and data.get("type") == "shopkeeper"):
+	if not (data is Dictionary):
 		return
-	var src_index: int = int(data.get("index", -1))
-	if src_index < 0 or src_index == target_index:
+	var src_type: String = data.get("type", "")
+	if src_type == "shopkeeper":
+		var src_index: int = int(data.get("index", -1))
+		if src_index < 0 or src_index == target_index:
+			return
+		_perform_swap(
+			{"type": "shopkeeper", "hero_id": "", "index": src_index},
+			{"type": "shopkeeper", "hero_id": "", "index": target_index}
+		)
+	elif src_type == "hero_bag":
+		var src_hero: String = data.get("hero_id", "")
+		var src_index: int = int(data.get("index", -1))
+		if src_hero == "" or src_index < 0:
+			return
+		_perform_swap(
+			{"type": "hero_bag", "hero_id": src_hero, "index": src_index},
+			{"type": "shopkeeper", "hero_id": "", "index": target_index}
+		)
+
+
+# --- Drag-and-drop handlers for hero bag slots ---
+
+## Creates drag data + preview for a filled hero bag slot.
+func _hero_bag_get_drag(at_pos: Vector2, hero_id: String, index: int, origin_btn: Button) -> Variant:
+	var bag: Array = GameContext.get_hero_bag(hero_id)
+	if index >= bag.size():
+		return null
+	var entry: Dictionary = bag[index]
+	var item_id: String = entry.get("item_id", "")
+	var template = DataRegistry.get_item_template(item_id)
+	var preview = TextureRect.new()
+	preview.custom_minimum_size = Vector2(32, 32)
+	preview.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	preview.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	if template:
+		var tex = template.get_icon_texture()
+		if tex:
+			preview.texture = tex
+	preview.modulate = Color(1, 1, 1, 0.8)
+	set_drag_preview(preview)
+	return {"type": "hero_bag", "hero_id": hero_id, "index": index}
+
+
+## Empty hero bag slots return null — they cannot initiate a drag.
+func _hero_bag_get_drag_empty(at_pos: Vector2) -> Variant:
+	return null
+
+
+## Accept drops from shopkeeper or hero bag slots onto hero bag.
+func _hero_bag_can_drop(at_pos: Vector2, data) -> bool:
+	if data is Dictionary and data.get("type") in ["shopkeeper", "hero_bag"]:
+		return true
+	return false
+
+
+## Perform the swap when an item is dropped onto a hero bag slot.
+func _hero_bag_drop(at_pos: Vector2, data, target_hero_id: String, target_index: int) -> void:
+	if not (data is Dictionary):
 		return
-	_perform_swap(
-		{"type": "shopkeeper", "hero_id": "", "index": src_index},
-		{"type": "shopkeeper", "hero_id": "", "index": target_index}
-	)
+	var src_type: String = data.get("type", "")
+	if src_type == "shopkeeper":
+		var src_index: int = int(data.get("index", -1))
+		if src_index < 0:
+			return
+		_perform_swap(
+			{"type": "shopkeeper", "hero_id": "", "index": src_index},
+			{"type": "hero_bag", "hero_id": target_hero_id, "index": target_index}
+		)
+	elif src_type == "hero_bag":
+		var src_hero: String = data.get("hero_id", "")
+		var src_index: int = int(data.get("index", -1))
+		if src_hero == "" or src_index < 0:
+			return
+		if src_hero == target_hero_id and src_index == target_index:
+			return
+		_perform_swap(
+			{"type": "hero_bag", "hero_id": src_hero, "index": src_index},
+			{"type": "hero_bag", "hero_id": target_hero_id, "index": target_index}
+		)

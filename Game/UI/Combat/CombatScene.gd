@@ -13,6 +13,7 @@ extends Control
 const CombatControllerScript = preload("res://Game/Combat/CombatController.gd")
 const SLOT_STYLE = preload("res://Themes/CraftPix/slot_inventory.tres")
 
+
 # ============================================================================
 # NODE REFERENCES
 # ============================================================================
@@ -62,6 +63,19 @@ var _loot_routing_bar: HBoxContainer = null  # Routing buttons row
 var _loot_swap_mode: bool = false  # True when in swap mode for a hero bag
 var _loot_swap_hero_id: String = ""  # Hero ID for active swap
 var _loot_swap_acq_index: int = -1  # Pending acq index for swap
+
+# Loot panel resize state
+var _loot_resizing: bool = false
+var _loot_resize_edge: int = 0  # bitmask: 1=left, 2=right, 4=top, 8=bottom
+var _loot_resize_start_pos: Vector2 = Vector2.ZERO
+var _loot_resize_start_size: Vector2 = Vector2.ZERO
+var _loot_resize_start_panel_pos: Vector2 = Vector2.ZERO
+# Loot panel drag state
+var _loot_dragging: bool = false
+var _loot_drag_offset: Vector2 = Vector2.ZERO
+const LOOT_RESIZE_MARGIN := 8
+const LOOT_PANEL_MIN_SIZE := Vector2(460, 320)
+const LOOT_PANEL_MAX_SIZE := Vector2(1100, 800)
 
 # Status UI v1.6: Unit display references for targeted refresh
 var _unit_displays: Dictionary = {}  # unit_id -> Control (unit display container)
@@ -440,12 +454,19 @@ func _start_encounter() -> void:
 	_monster_buff_percent = 0
 	_update_monster_buff_button()
 
-	# Update auto button text
+	# Re-enable combat buttons for new encounter
 	auto_button.text = "Auto"
+	auto_button.disabled = false
+	step_button.disabled = false
 
 	# Clear log
 	combat_log.clear()
 	_log("[b]--- Combat Started ---[/b]")
+
+	# SFX: Combat start sound + switch to combat BGM
+	UIAudio.play_sfx("combat_start")
+	var is_boss: bool = GameContext.is_boss_room() if GameContext.has_method("is_boss_room") else false
+	UIAudio.play_bgm("combat_boss" if is_boss else "combat_normal")
 
 	# Consume any pending combat modifier from events (one-time use)
 	var combat_mod = GameContext.consume_pending_combat_modifier()
@@ -674,11 +695,27 @@ func _select_floor_enemies(rng: RandomNumberGenerator) -> Dictionary:
 		for m_id in dungeon.tier2_monster_ids:
 			tier2_pool.append(m_id)
 
-	# Select 2 enemies: 70% tier1, 30% tier2
+	# Scale enemy count and tier2 chance by floor depth
+	var enemy_count: int = 2
+	var tier2_chance: float = 20.0
+	match floor_index:
+		0:
+			enemy_count = 2
+			tier2_chance = 20.0
+		1:
+			enemy_count = rng.randi_range(2, 3)
+			tier2_chance = 30.0
+		2:
+			enemy_count = 3
+			tier2_chance = 50.0
+		3, _:
+			enemy_count = rng.randi_range(3, 4)
+			tier2_chance = 60.0
+
 	var enemies: Array = []
-	for i in range(2):
+	for i in range(enemy_count):
 		var roll = rng.randf() * 100.0
-		var pool = tier1_pool if roll < 70.0 else tier2_pool
+		var pool = tier1_pool if roll >= tier2_chance else tier2_pool
 		if pool.is_empty():
 			pool = tier1_pool if tier1_pool.size() > 0 else ["goblin"]
 		var idx = rng.randi_range(0, pool.size() - 1)
@@ -990,13 +1027,14 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 		info_vbox.add_child(stats_hbox)
 		_unit_stat_labels[unit_data["id"]] = hero_stat_labels
 
-	# HP bar (colored by health %)
+	# HP bar (ProgressBar with color-coded fill)
 	var hp_bar = ProgressBar.new()
-	hp_bar.custom_minimum_size = Vector2(0, 10)
+	hp_bar.custom_minimum_size.y = 10
 	hp_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hp_bar.max_value = unit_data["max_hp"]
 	hp_bar.value = unit_data["hp"]
-	hp_bar.show_percentage = false
+	hp_bar.mouse_filter = Control.MOUSE_FILTER_STOP
+	hp_bar.tooltip_text = _build_hp_tooltip(unit_data)
 	info_vbox.add_child(hp_bar)
 
 	# D1: HP numbers label inside HP bar
@@ -1105,34 +1143,55 @@ func _build_unit_card_tooltip(unit_data: Dictionary) -> String:
 
 	# Abilities (heroes only)
 	if unit_data["team"] == "player":
+		var tt_hero_id: String = unit_data.get("source_id", unit_data["id"])
+		var tt_hero_level := 1
+		if GameContext.has_method("get_hero_effective_stats"):
+			var tt_stats = GameContext.get_hero_effective_stats(tt_hero_id)
+			tt_hero_level = tt_stats.get("level", 1)
 		var ability_a_id = unit_data.get("ability_a_id", "")
 		if ability_a_id != "":
 			var ability_a = DataRegistry.get_ability(ability_a_id) if DataRegistry.has_method("get_ability") else null
 			var a_name = ability_a.display_name if ability_a else ability_a_id.replace("_", " ").capitalize()
-			var cd_a = unit_data.get("ability_a_cooldown", 0)
-			var cd_str = " (CD: %d)" % cd_a if cd_a > 0 else " (Ready)"
-			lines.append("[A] %s%s" % [a_name, cd_str])
+			if GameContext.is_ability_slot_unlocked("ability_a", tt_hero_level):
+				var cd_a = unit_data.get("ability_a_cooldown", 0)
+				var cd_str = " (CD: %d)" % cd_a if cd_a > 0 else " (Ready)"
+				lines.append("[A] %s%s" % [a_name, cd_str])
+			else:
+				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("ability_a", 5)
+				lines.append("[A] %s (Lv %d)" % [a_name, req_lv])
 
 		var ability_b_id = unit_data.get("ability_b_id", "")
 		if ability_b_id != "":
 			var ability_b = DataRegistry.get_ability(ability_b_id) if DataRegistry.has_method("get_ability") else null
 			var b_name = ability_b.display_name if ability_b else ability_b_id.replace("_", " ").capitalize()
-			var cd_b = unit_data.get("ability_b_cooldown", 0)
-			var cd_str = " (CD: %d)" % cd_b if cd_b > 0 else " (Ready)"
-			lines.append("[B] %s%s" % [b_name, cd_str])
+			if GameContext.is_ability_slot_unlocked("ability_b", tt_hero_level):
+				var cd_b = unit_data.get("ability_b_cooldown", 0)
+				var cd_str = " (CD: %d)" % cd_b if cd_b > 0 else " (Ready)"
+				lines.append("[B] %s%s" % [b_name, cd_str])
+			else:
+				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("ability_b", 25)
+				lines.append("[B] %s (Lv %d)" % [b_name, req_lv])
 
 		# Passives
 		var passive_a_id = unit_data.get("passive_a_id", "")
 		if passive_a_id != "":
 			var passive_a = DataRegistry.get_passive(passive_a_id) if DataRegistry.has_method("get_passive") else null
 			var pa_name = passive_a.display_name if passive_a else passive_a_id.replace("_", " ").capitalize()
-			lines.append("[P] %s" % pa_name)
+			if GameContext.is_ability_slot_unlocked("passive_a", tt_hero_level):
+				lines.append("[P] %s" % pa_name)
+			else:
+				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("passive_a", 15)
+				lines.append("[P] %s (Lv %d)" % [pa_name, req_lv])
 
 		var passive_b_id = unit_data.get("passive_b_id", "")
 		if passive_b_id != "":
 			var passive_b = DataRegistry.get_passive(passive_b_id) if DataRegistry.has_method("get_passive") else null
 			var pb_name = passive_b.display_name if passive_b else passive_b_id.replace("_", " ").capitalize()
-			lines.append("[P] %s" % pb_name)
+			if GameContext.is_ability_slot_unlocked("passive_b", tt_hero_level):
+				lines.append("[P] %s" % pb_name)
+			else:
+				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("passive_b", 40)
+				lines.append("[P] %s (Lv %d)" % [pb_name, req_lv])
 
 		# Bag
 		var hero_id = unit_data.get("source_id", unit_data["id"])
@@ -1146,6 +1205,25 @@ func _build_unit_card_tooltip(unit_data: Dictionary) -> String:
 
 
 ## Build a tooltip for a single combat stat (ATK/DEF/SPD) on the hero card stats row.
+func _build_hp_tooltip(unit_data: Dictionary) -> String:
+	var lines: Array = []
+	lines.append("HP (Hit Points)")
+	lines.append("Hero is defeated at 0 HP.")
+	lines.append("Restored by healing effects and potions.")
+	lines.append("")
+
+	var max_hp: int = int(unit_data.get("max_hp", 0))
+	var cur_hp: int = int(unit_data.get("hp", 0))
+	var base_hp: int = int(unit_data.get("base_hp", max_hp))
+	var bonus: int = max_hp - base_hp
+
+	lines.append("Current: %d / %d" % [cur_hp, max_hp])
+	lines.append("Base: %d" % base_hp)
+	if bonus != 0:
+		lines.append("Bonuses: %+d" % bonus)
+	return "\n".join(lines)
+
+
 func _build_combat_card_stat_tooltip(stat_key: String, stat_display: String, unit_data: Dictionary) -> String:
 	var descriptions: Dictionary = {
 		"attack": "ATK (Attack Power)\nDetermines physical damage dealt.\nDamage = max(1, ATK - target DEF)",
@@ -1834,7 +1912,11 @@ func _update_top_bar() -> void:
 	var turn_info = _combat_controller.get_turn_info()
 	var unit_name = turn_info["current_actor_name"] if turn_info["current_actor_name"] != "" else "---"
 
-	top_bar.text = "Round %d | Current Turn: %s" % [turn_info["round"], unit_name]
+	var cl: int = GameContext.challenge_level
+	if cl > 0:
+		top_bar.text = "Round %d | Turn: %s | Challenge: %d" % [turn_info["round"], unit_name, cl]
+	else:
+		top_bar.text = "Round %d | Current Turn: %s" % [turn_info["round"], unit_name]
 
 
 func _update_dungeon_progress_label() -> void:
@@ -1870,10 +1952,14 @@ func _log(message: String) -> void:
 # ============================================================================
 
 func _on_step_pressed() -> void:
+	if _combat_controller == null or _combat_controller.is_combat_over():
+		return
 	_step_turn()
 
 
 func _on_auto_pressed() -> void:
+	if _combat_controller == null or _combat_controller.is_combat_over():
+		return
 	_is_auto_running = not _is_auto_running
 	auto_button.text = "Stop" if _is_auto_running else "Auto"
 	_auto_timer = 0.0
@@ -1928,6 +2014,8 @@ func _update_monster_buff_button() -> void:
 func _on_combat_ended(_result) -> void:
 	_is_auto_running = false
 	auto_button.text = "Auto"
+	auto_button.disabled = true
+	step_button.disabled = true
 
 	# v1.9A: Clear active unit highlight
 	_set_active_unit("")
@@ -1974,6 +2062,12 @@ func _on_combat_ended(_result) -> void:
 		GameContext.get_all_pending_acquisitions().size(),
 		_result.gold_earned if _result != null else 0])
 
+	# SFX: Victory or defeat stinger
+	if show_loot:
+		UIAudio.play_sfx("extraction_success")
+	elif show_defeat:
+		UIAudio.play_sfx("dungeon_enter")  # somber defeat sting
+
 	if show_loot:
 		_loot_result = _result
 		_show_loot_panel()
@@ -2017,6 +2111,15 @@ func _do_combat_transition() -> void:
 ## v2: Visual slot-based overlay with icon grids instead of text lists.
 func _show_loot_panel() -> void:
 	print("[LootPanel] _show_loot_panel() ENTERED — pending=%d" % GameContext.get_all_pending_acquisitions().size())
+	UIAudio.play_sfx("loot_appear")
+
+	# Auto-Loot: deposit all items automatically if enabled
+	if GameContext.auto_loot:
+		_auto_deposit_all_loot()
+		if not GameContext.has_pending_acquisition():
+			print("[LootPanel] Auto-Loot deposited everything — skipping loot panel")
+			_do_combat_transition()
+			return
 
 	# Remove old overlay if exists
 	if _loot_overlay != null and is_instance_valid(_loot_overlay):
@@ -2025,9 +2128,11 @@ func _show_loot_panel() -> void:
 		_loot_panel = null
 		_loot_routing_bar = null
 
-	_loot_swap_mode = false
-	_loot_swap_hero_id = ""
-	_loot_swap_acq_index = -1
+	# Preserve swap state across panel rebuilds (set by _on_loot_swap_request)
+	# Only clear swap state when NOT already in swap mode (i.e. fresh open)
+	if not _loot_swap_mode:
+		_loot_swap_hero_id = ""
+		_loot_swap_acq_index = -1
 
 	var pending = GameContext.get_all_pending_acquisitions()
 
@@ -2043,17 +2148,21 @@ func _show_loot_panel() -> void:
 	backdrop.set_offsets_preset(Control.PRESET_FULL_RECT)
 	_loot_overlay.add_child(backdrop)
 
-	# CenterContainer for the popup — full-screen anchors
-	var center = CenterContainer.new()
-	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	center.set_offsets_preset(Control.PRESET_FULL_RECT)
-	_loot_overlay.add_child(center)
+	# Popup panel — manually centered (no CenterContainer so resize can reposition)
+	var panel_size: Vector2 = GameContext.loot_panel_size
+	panel_size.x = clampf(panel_size.x, LOOT_PANEL_MIN_SIZE.x, LOOT_PANEL_MAX_SIZE.x)
+	panel_size.y = clampf(panel_size.y, LOOT_PANEL_MIN_SIZE.y, LOOT_PANEL_MAX_SIZE.y)
+	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
+	var panel_pos: Vector2 = (viewport_size - panel_size) * 0.5
 
-	# Popup panel — needs explicit minimum height so CenterContainer can center it
 	_loot_panel = PanelContainer.new()
 	_loot_panel.name = "LootPopup"
-	_loot_panel.custom_minimum_size = Vector2(620, 400)
+	_loot_panel.custom_minimum_size = panel_size
+	_loot_panel.size = panel_size
+	_loot_panel.position = panel_pos
 	_loot_panel.focus_mode = Control.FOCUS_ALL
+	_loot_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	_loot_panel.gui_input.connect(_on_loot_panel_gui_input)
 	var popup_style = StyleBoxFlat.new()
 	popup_style.bg_color = _region_palette.get("bg_dark", Color(0.14, 0.11, 0.09, 0.95))
 	popup_style.border_width_left = 2
@@ -2070,7 +2179,7 @@ func _show_loot_panel() -> void:
 	popup_style.content_margin_right = 16.0
 	popup_style.content_margin_bottom = 12.0
 	_loot_panel.add_theme_stylebox_override("panel", popup_style)
-	center.add_child(_loot_panel)
+	_loot_overlay.add_child(_loot_panel)
 
 	var scroll = ScrollContainer.new()
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -2150,10 +2259,11 @@ func _show_loot_panel() -> void:
 	shop_grid.add_theme_constant_override("v_separation", 3)
 	vbox.add_child(shop_grid)
 
+	var is_shop_swap: bool = _loot_swap_mode and _loot_swap_hero_id == "__shop__"
 	for j in range(shop_cap):
 		if j < GameContext.shopkeeper_bag.size():
 			var entry = GameContext.shopkeeper_bag[j]
-			shop_grid.add_child(_create_bag_slot(entry, 32))
+			shop_grid.add_child(_create_bag_slot(entry, 32, is_shop_swap, "__shop__", j))
 		else:
 			shop_grid.add_child(_create_empty_bag_slot(32))
 
@@ -2196,9 +2306,12 @@ func _show_loot_panel() -> void:
 	# ── Swap mode warning ──
 	if _loot_swap_mode:
 		var swap_warn = Label.new()
-		var swap_hero = GameContext.get_hero(_loot_swap_hero_id)
-		var swap_hero_name: String = swap_hero.get("name", _loot_swap_hero_id) if not swap_hero.is_empty() else _loot_swap_hero_id
-		swap_warn.text = "Click a slot in %s's bag to replace it (item will be DISCARDED)" % swap_hero_name
+		if _loot_swap_hero_id == "__shop__":
+			swap_warn.text = "Click a slot in Shop Bag to replace it (displaced item returns to loot)"
+		else:
+			var swap_hero = GameContext.get_hero(_loot_swap_hero_id)
+			var swap_hero_name: String = swap_hero.get("name", _loot_swap_hero_id) if not swap_hero.is_empty() else _loot_swap_hero_id
+			swap_warn.text = "Click a slot in %s's bag to replace it (item will be DISCARDED)" % swap_hero_name
 		swap_warn.add_theme_font_size_override("font_size", 11)
 		swap_warn.add_theme_color_override("font_color", Color(1.0, 0.5, 0.4))
 		swap_warn.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -2232,7 +2345,7 @@ func _show_loot_panel() -> void:
 		var all_shop_btn = Button.new()
 		all_shop_btn.text = "Deposit All"
 		all_shop_btn.custom_minimum_size = Vector2(140, 32)
-		all_shop_btn.tooltip_text = "Shop bag first, then hero bags"
+		all_shop_btn.tooltip_text = "Shop bag first, then hero bags (D)"
 		# Only disable if ALL bags (shop + all heroes) are full
 		var any_space = shop_used < shop_cap
 		if not any_space:
@@ -2472,12 +2585,14 @@ func _update_routing_bar() -> void:
 	var shop_used = GameContext.shopkeeper_bag.size()
 	var shop_cap = GameContext.get_shopkeeper_bag_capacity()
 	var shop_btn = Button.new()
-	shop_btn.text = "Shop Bag (%d/%d)" % [shop_used, shop_cap]
 	shop_btn.custom_minimum_size = Vector2(100, 26)
 	if not GameContext.can_add_to_shopkeeper_bag(item_id, 1, quality):
-		shop_btn.disabled = true
-		shop_btn.tooltip_text = "Shop bag full"
+		shop_btn.text = "Swap Shop (%d/%d)" % [shop_used, shop_cap]
+		shop_btn.modulate = Color(1.0, 0.8, 0.6)
+		shop_btn.tooltip_text = "Replace an item in the shop bag"
+		shop_btn.pressed.connect(_on_loot_shop_swap_request.bind(_loot_selected_index))
 	else:
+		shop_btn.text = "Shop Bag (%d/%d)" % [shop_used, shop_cap]
 		shop_btn.pressed.connect(_on_loot_to_shop_bag.bind(_loot_selected_index))
 	_loot_routing_bar.add_child(shop_btn)
 
@@ -2523,6 +2638,7 @@ func _refresh_loot_panel() -> void:
 ## Route a pending acquisition to the shopkeeper bag.
 func _on_loot_to_shop_bag(acq_index: int) -> void:
 	GameContext.resolve_acquisition_at(acq_index, "shop_bag")
+	UIAudio.play_sfx("loot_assign")
 	_loot_selected_index = -1
 	_refresh_loot_panel()
 	_refresh_shopkeeper_bag_display()
@@ -2533,6 +2649,8 @@ func _on_loot_to_hero(acq_index: int, hero_id: String) -> void:
 	var ok = GameContext.resolve_acquisition_at(acq_index, "hero_bag", hero_id)
 	if not ok:
 		print("[LootPanel] Failed to route to hero=%s (rejected)" % hero_id)
+	else:
+		UIAudio.play_sfx("loot_assign")
 	_loot_selected_index = -1
 	_refresh_loot_panel()
 
@@ -2550,22 +2668,50 @@ func _on_loot_swap_request(acq_index: int, hero_id: String) -> void:
 func _on_swap_bag_slot_clicked(hero_id: String, bag_index: int, old_item_id: String) -> void:
 	var acq_index = _loot_swap_acq_index
 
-	# Remove and DISCARD the old item from hero bag
-	var success = GameContext.remove_item_from_hero_bag(hero_id, old_item_id, 1, 0)
-	if success:
-		print("[LootPanel] DISCARDED old_item=%s from hero=%s" % [old_item_id, hero_id])
-		var ok = GameContext.resolve_acquisition_at(acq_index, "hero_bag", hero_id)
-		if ok:
-			print("[LootPanel] Swap complete: added new item to hero=%s" % hero_id)
-		else:
-			print("[LootPanel] Swap failed: couldn't add new item")
+	if hero_id == "__shop__":
+		# Shop bag swap: displaced item returns to pending
+		if bag_index >= 0 and bag_index < GameContext.shopkeeper_bag.size():
+			var displaced: Dictionary = GameContext.shopkeeper_bag[bag_index].duplicate()
+			GameContext.shopkeeper_bag.remove_at(bag_index)
+			var ok = GameContext.resolve_acquisition_at(acq_index, "shop_bag")
+			if ok:
+				# Return displaced item to pending acquisitions
+				var d_quality: int = int(displaced.get("quality_tier", 0))
+				var d_affix: Dictionary = {}
+				if displaced.get("affix_id", "") != "":
+					d_affix = {"affix_id": displaced.get("affix_id", ""), "affix_stats": displaced.get("affix_stats", {}), "affix_prefix": displaced.get("affix_prefix", ""), "source_region": displaced.get("source_region", "")}
+				GameContext.acquire_item_with_recipient(displaced.get("item_id", ""), int(displaced.get("qty", 1)), d_quality, "swap", d_affix)
+				print("[LootPanel] Shop swap: replaced slot %d, displaced %s returned to pending" % [bag_index, old_item_id])
+			else:
+				# Restore displaced item on failure
+				GameContext.shopkeeper_bag.insert(bag_index, displaced)
+				print("[LootPanel] Shop swap failed: couldn't add new item")
 	else:
-		print("[LootPanel] Swap failed: couldn't remove old item")
+		# Hero bag swap: discard old item
+		var success = GameContext.remove_item_from_hero_bag(hero_id, old_item_id, 1, 0)
+		if success:
+			print("[LootPanel] DISCARDED old_item=%s from hero=%s" % [old_item_id, hero_id])
+			var ok = GameContext.resolve_acquisition_at(acq_index, "hero_bag", hero_id)
+			if ok:
+				print("[LootPanel] Swap complete: added new item to hero=%s" % hero_id)
+			else:
+				print("[LootPanel] Swap failed: couldn't add new item")
+		else:
+			print("[LootPanel] Swap failed: couldn't remove old item")
 
 	_loot_swap_mode = false
 	_loot_swap_hero_id = ""
 	_loot_swap_acq_index = -1
 	_loot_selected_index = -1
+	_refresh_loot_panel()
+
+
+## Enter swap mode for shopkeeper bag (bag is full, need to pick a slot to replace).
+func _on_loot_shop_swap_request(acq_index: int) -> void:
+	_loot_swap_mode = true
+	_loot_swap_hero_id = "__shop__"
+	_loot_swap_acq_index = acq_index
+	print("[LootPanel] Entering swap mode for shop_bag acq=%d" % acq_index)
 	_refresh_loot_panel()
 
 
@@ -2578,6 +2724,7 @@ func _on_swap_cancel() -> void:
 
 
 ## v1.2: Discard all remaining pending items (explicit user action).
+## SFX: loot_discard is played once for the whole batch.
 func _on_loot_discard_all() -> void:
 	var pending = GameContext.get_all_pending_acquisitions()
 	for acq in pending:
@@ -2586,6 +2733,7 @@ func _on_loot_discard_all() -> void:
 		var quality = int(acq.get("quality", 0))
 		print("[Loot] discard item=%s qty=%d q=%d" % [item_id, qty, quality])
 	GameContext.clear_pending_acquisitions()
+	UIAudio.play_sfx("loot_discard")
 	_loot_selected_index = -1
 	_refresh_loot_panel()
 
@@ -2620,6 +2768,133 @@ func _on_loot_deposit_all() -> void:
 	_loot_selected_index = -1
 	_refresh_loot_panel()
 	_refresh_shopkeeper_bag_display()
+
+
+## Detect which edge(s) the mouse is near on the loot panel. Returns bitmask: 1=left, 2=right, 4=top, 8=bottom.
+func _detect_loot_resize_edge(local_pos: Vector2, panel_size: Vector2) -> int:
+	var edge: int = 0
+	if local_pos.x < LOOT_RESIZE_MARGIN:
+		edge |= 1
+	elif local_pos.x > panel_size.x - LOOT_RESIZE_MARGIN:
+		edge |= 2
+	if local_pos.y < LOOT_RESIZE_MARGIN:
+		edge |= 4
+	elif local_pos.y > panel_size.y - LOOT_RESIZE_MARGIN:
+		edge |= 8
+	return edge
+
+## Map edge bitmask to cursor shape for loot panel resize.
+func _loot_cursor_for_edge(edge: int) -> Control.CursorShape:
+	match edge:
+		5, 10:  # top+left or bottom+right
+			return Control.CURSOR_FDIAGSIZE
+		6, 9:  # top+right or bottom+left
+			return Control.CURSOR_BDIAGSIZE
+		1, 2:  # left or right
+			return Control.CURSOR_HSIZE
+		4, 8:  # top or bottom
+			return Control.CURSOR_VSIZE
+		_:
+			return Control.CURSOR_ARROW
+
+## Handle gui_input on the loot panel for edge-resize and drag-to-move.
+func _on_loot_panel_gui_input(event: InputEvent) -> void:
+	if _loot_panel == null or not is_instance_valid(_loot_panel):
+		return
+	var local_pos: Vector2 = _loot_panel.get_local_mouse_position()
+	var edge: int = _detect_loot_resize_edge(local_pos, _loot_panel.size)
+
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			if edge != 0:
+				_loot_resizing = true
+				_loot_resize_edge = edge
+				_loot_resize_start_pos = event.global_position
+				_loot_resize_start_size = _loot_panel.size
+				_loot_resize_start_panel_pos = _loot_panel.position
+			else:
+				# Click inside panel (not on edge) — start drag
+				_loot_dragging = true
+				_loot_drag_offset = event.global_position - _loot_panel.position
+		else:
+			if _loot_resizing:
+				GameContext.loot_panel_size = _loot_panel.size
+				GameContext.save_game()
+				_loot_resizing = false
+				_loot_resize_edge = 0
+			if _loot_dragging:
+				_loot_dragging = false
+
+	elif event is InputEventMouseMotion:
+		if _loot_resizing:
+			_handle_loot_resize_motion(event.global_position)
+		elif _loot_dragging:
+			_loot_panel.position = event.global_position - _loot_drag_offset
+		else:
+			# Hover — update cursor on edges
+			if edge != 0:
+				_loot_panel.mouse_default_cursor_shape = _loot_cursor_for_edge(edge)
+			else:
+				_loot_panel.mouse_default_cursor_shape = Control.CURSOR_MOVE
+
+## Apply resize delta based on edge bitmask for loot panel.
+func _handle_loot_resize_motion(global_pos: Vector2) -> void:
+	var delta: Vector2 = global_pos - _loot_resize_start_pos
+	var new_size: Vector2 = _loot_resize_start_size
+	var new_pos: Vector2 = _loot_resize_start_panel_pos
+
+	if _loot_resize_edge & 2:
+		new_size.x = _loot_resize_start_size.x + delta.x
+	if _loot_resize_edge & 1:
+		new_size.x = _loot_resize_start_size.x - delta.x
+		new_pos.x = _loot_resize_start_panel_pos.x + delta.x
+	if _loot_resize_edge & 8:
+		new_size.y = _loot_resize_start_size.y + delta.y
+	if _loot_resize_edge & 4:
+		new_size.y = _loot_resize_start_size.y - delta.y
+		new_pos.y = _loot_resize_start_panel_pos.y + delta.y
+
+	new_size.x = clampf(new_size.x, LOOT_PANEL_MIN_SIZE.x, LOOT_PANEL_MAX_SIZE.x)
+	new_size.y = clampf(new_size.y, LOOT_PANEL_MIN_SIZE.y, LOOT_PANEL_MAX_SIZE.y)
+
+	if _loot_resize_edge & 1:
+		new_pos.x = _loot_resize_start_panel_pos.x + (_loot_resize_start_size.x - new_size.x)
+	if _loot_resize_edge & 4:
+		new_pos.y = _loot_resize_start_panel_pos.y + (_loot_resize_start_size.y - new_size.y)
+
+	_loot_panel.custom_minimum_size = new_size
+	_loot_panel.size = new_size
+	_loot_panel.position = new_pos
+
+
+## Auto-deposit all loot: shopkeeper bag first, then hero bags (same logic as Deposit All button).
+func _auto_deposit_all_loot() -> void:
+	var routed_shop: int = 0
+	var routed_hero: int = 0
+	# Phase 1: Fill shopkeeper bag
+	while not GameContext.get_all_pending_acquisitions().is_empty():
+		var acq = GameContext.get_all_pending_acquisitions()[0]
+		var item_id: String = acq.get("item_id", "")
+		var quality: int = int(acq.get("quality", 0))
+		if not GameContext.can_add_to_shopkeeper_bag(item_id, 1, quality):
+			break
+		GameContext.resolve_acquisition_at(0, "shop_bag")
+		routed_shop += 1
+	# Phase 2: Overflow to hero bags
+	while not GameContext.get_all_pending_acquisitions().is_empty():
+		var acq = GameContext.get_all_pending_acquisitions()[0]
+		var item_id: String = acq.get("item_id", "")
+		var placed: bool = false
+		for hero_id in GameContext.selected_party:
+			if GameContext.can_add_to_hero_bag(hero_id, item_id, 1):
+				GameContext.resolve_acquisition_at(0, "hero_bag", hero_id)
+				routed_hero += 1
+				placed = true
+				break
+		if not placed:
+			break  # All bags full
+	var remaining: int = GameContext.get_all_pending_acquisitions().size()
+	print("[AutoLoot] Deposited: %d to shop bag, %d to hero bags, %d remaining" % [routed_shop, routed_hero, remaining])
 
 
 ## Continue after loot routing — only allowed when no pending items remain.
@@ -2676,6 +2951,10 @@ func _loot_panel_input(event: InputEvent) -> void:
 					_loot_swap_acq_index = idx
 					_refresh_loot_panel()
 					get_viewport().set_input_as_handled()
+		# D = Deposit All
+		elif keycode == KEY_D and not _loot_swap_mode:
+			_on_loot_deposit_all()
+			get_viewport().set_input_as_handled()
 		# Escape = cancel swap mode
 		elif keycode == KEY_ESCAPE and _loot_swap_mode:
 			_on_swap_cancel()
@@ -3229,6 +3508,54 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 
 	if event is InputEventKey and event.pressed:
+		# Alt = Toggle Auto Battle
+		if event.keycode == KEY_ALT and not event.echo:
+			_on_auto_pressed()
+			get_viewport().set_input_as_handled()
+			return
+
+		# Ability hotkeys: 1=Basic, 2=Primary, 3=Secondary, 4=Equip0, 5=Equip1, P=Pass, Esc=Cancel
+		if _combat_controller != null and _combat_controller.is_awaiting_player_input():
+			if _target_selection_active:
+				# In target selection: Escape cancels
+				if event.keycode == KEY_ESCAPE:
+					_on_cancel_pressed()
+					get_viewport().set_input_as_handled()
+					return
+			else:
+				# In action selection: 1-5 select abilities, P passes
+				match event.keycode:
+					KEY_1:
+						if _btn_basic != null and _btn_basic.visible and not _btn_basic.disabled:
+							_on_basic_attack_pressed()
+							get_viewport().set_input_as_handled()
+							return
+					KEY_2:
+						if _btn_ability_a != null and _btn_ability_a.visible and not _btn_ability_a.disabled:
+							_on_ability_a_pressed()
+							get_viewport().set_input_as_handled()
+							return
+					KEY_3:
+						if _btn_ability_b != null and _btn_ability_b.visible and not _btn_ability_b.disabled:
+							_on_ability_b_pressed()
+							get_viewport().set_input_as_handled()
+							return
+					KEY_4:
+						if _btn_equip_0 != null and _btn_equip_0.visible and not _btn_equip_0.disabled:
+							_on_equip_ability_0_pressed()
+							get_viewport().set_input_as_handled()
+							return
+					KEY_5:
+						if _btn_equip_1 != null and _btn_equip_1.visible and not _btn_equip_1.disabled:
+							_on_equip_ability_1_pressed()
+							get_viewport().set_input_as_handled()
+							return
+					KEY_P:
+						if _btn_pass != null and _btn_pass.visible and not _btn_pass.disabled:
+							_on_pass_pressed()
+							get_viewport().set_input_as_handled()
+							return
+
 		match event.keycode:
 			KEY_F5, KEY_F6, KEY_F7:
 				# Guard: block dungeon state changes during active combat
@@ -3533,9 +3860,64 @@ func _on_turn_started(unit: CombatUnit) -> void:
 
 
 ## v1.9A: Handle action performed signal - show pop text and cast callouts.
+## SFX: Determine and play the appropriate sound for a combat action.
+func _play_action_sfx(action: CombatAction) -> void:
+	match action.action_type:
+		CombatAction.ActionType.BASIC_ATTACK:
+			# Determine melee/ranged from actor's attack_type
+			var actor: CombatUnit = _combat_controller.get_unit_by_id(action.actor_id) if _combat_controller else null
+			var attack_type: String = actor.attack_type if actor != null else "melee"
+			if attack_type == "ranged":
+				UIAudio.play_sfx("attack_ranged_bow")
+			else:
+				UIAudio.play_sfx("attack_generic")
+			# Impact sound
+			if action.damage_dealt > 0:
+				if action.was_critical:
+					UIAudio.play_sfx("hit_critical")
+				else:
+					UIAudio.play_sfx("hit_damage")
+		CombatAction.ActionType.WEAPON_ABILITY, CombatAction.ActionType.CLASS_ABILITY, CombatAction.ActionType.EQUIPMENT_ABILITY:
+			# Spell/ability — play generic spell cast
+			if action.healing_done > 0 and action.damage_dealt == 0:
+				UIAudio.play_sfx("heal")
+			else:
+				UIAudio.play_sfx("spell_generic")
+				if action.damage_dealt > 0:
+					UIAudio.play_sfx("hit_damage")
+		CombatAction.ActionType.BUFF:
+			UIAudio.play_sfx("buff_apply")
+		CombatAction.ActionType.SKIP:
+			UIAudio.play_sfx("stun_applied")
+		CombatAction.ActionType.DOOM_TRIGGER:
+			UIAudio.play_sfx("spell_doom")
+		CombatAction.ActionType.DEATH:
+			# Determine if hero or enemy died
+			var unit: CombatUnit = _combat_controller.get_unit_by_id(action.actor_id) if _combat_controller else null
+			if unit != null and unit.team == CombatUnit.Team.PLAYER:
+				UIAudio.play_sfx("death_hero")
+			else:
+				UIAudio.play_sfx("death_enemy")
+		CombatAction.ActionType.ITEM_USE:
+			UIAudio.play_sfx("consumable_use")
+
+	# Status application sound (additional, on top of action sound)
+	if action.status_applied != "":
+		var status_id: String = action.status_applied
+		if status_id in ["stunned", "blinded"]:
+			UIAudio.play_sfx("stun_applied")
+		elif status_id in ["burning", "poisoned", "bleeding", "shocked", "doom"]:
+			UIAudio.play_sfx("debuff_apply")
+		elif status_id in ["regenerating", "reflecting", "taunting"]:
+			UIAudio.play_sfx("buff_apply")
+
+
 func _on_action_performed(action: CombatAction) -> void:
 	if action == null:
 		return
+
+	# SFX: Play sound based on action type
+	_play_action_sfx(action)
 
 	# Attack Line v1: Draw visual line from actor to target
 	if action.target_id != "" and action.actor_id != "":
@@ -3629,12 +4011,12 @@ func _create_v19b_ui() -> void:
 	const TIMELINE_HEIGHT: int = 44
 	const TIMELINE_MARGIN: int = 5
 
-	# Compute timeline top from actual UI element heights
-	var top_bar_h: float = top_bar.get_combined_minimum_size().y if top_bar != null else 40.0
-	var dungeon_label_h: float = 0.0
+	# Position timeline below the dungeon progress label using its actual layout offset
+	var timeline_top: float = 65.0
 	if dungeon_progress_label != null and dungeon_progress_label.visible:
-		dungeon_label_h = dungeon_progress_label.get_combined_minimum_size().y
-	var timeline_top: float = top_bar_h + dungeon_label_h + TIMELINE_MARGIN
+		timeline_top = dungeon_progress_label.offset_bottom + TIMELINE_MARGIN
+	elif top_bar != null:
+		timeline_top = top_bar.offset_bottom + TIMELINE_MARGIN
 
 	# v1.9D: Push MainContent down dynamically
 	if main_content != null:
@@ -4158,35 +4540,54 @@ func _on_player_input_required(unit: CombatUnit, available_actions: Array) -> vo
 	for action_info in available_actions:
 		var atype: String = action_info.type
 		if atype == "basic":
+			_btn_basic.text = "[1] Attack"
 			_btn_basic.disabled = false
 			_btn_basic.tooltip_text = _build_action_tooltip(unit, null, "basic")
 		elif atype == "ability_a":
-			_btn_ability_a.text = action_info.name
+			_btn_ability_a.text = "[2] %s" % action_info.name
 			if action_info.cooldown > 0:
 				_btn_ability_a.text += " (CD:%d)" % action_info.cooldown
 			_btn_ability_a.disabled = not action_info.enabled
 			_btn_ability_a.visible = true
 			_btn_ability_a.tooltip_text = _build_action_tooltip(unit, action_info.get("ability"), "ability_a")
 		elif atype == "ability_b":
-			_btn_ability_b.text = action_info.name
+			_btn_ability_b.text = "[3] %s" % action_info.name
 			if action_info.cooldown > 0:
 				_btn_ability_b.text += " (CD:%d)" % action_info.cooldown
 			_btn_ability_b.disabled = not action_info.enabled
 			_btn_ability_b.visible = true
 			_btn_ability_b.tooltip_text = _build_action_tooltip(unit, action_info.get("ability"), "ability_b")
 		elif atype == "pass":
+			_btn_pass.text = "[P] Pass"
 			_btn_pass.visible = true
 			_btn_pass.tooltip_text = "Skip remaining actions and end turn."
 		elif atype.begins_with("equip_ability_"):
 			_equip_row.visible = true
 			var eq_idx: int = int(action_info.get("equip_index", 0))
 			var btn: Button = _btn_equip_0 if eq_idx == 0 else _btn_equip_1
-			btn.text = action_info.name
+			btn.text = "[%d] %s" % [eq_idx + 4, action_info.name]
 			if action_info.cooldown > 0:
 				btn.text += " (CD:%d)" % action_info.cooldown
 			btn.disabled = not action_info.enabled
 			btn.visible = true
 			btn.tooltip_text = _build_action_tooltip(unit, action_info.get("ability"), atype)
+
+	# Show locked abilities as disabled buttons with level requirement
+	if not _btn_ability_a.visible and unit.ability_a_id != "":
+		var locked_ab = DataRegistry.get_ability(unit.ability_a_id)
+		var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("ability_a", 5)
+		_btn_ability_a.text = "[2] %s (Lv %d)" % [locked_ab.display_name if locked_ab else unit.ability_a_id, req_lv]
+		_btn_ability_a.disabled = true
+		_btn_ability_a.visible = true
+		_btn_ability_a.tooltip_text = "Unlocks at hero level %d" % req_lv
+
+	if not _btn_ability_b.visible and unit.ability_b_id != "":
+		var locked_ab = DataRegistry.get_ability(unit.ability_b_id)
+		var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("ability_b", 25)
+		_btn_ability_b.text = "[3] %s (Lv %d)" % [locked_ab.display_name if locked_ab else unit.ability_b_id, req_lv]
+		_btn_ability_b.disabled = true
+		_btn_ability_b.visible = true
+		_btn_ability_b.tooltip_text = "Unlocks at hero level %d" % req_lv
 
 	_log("[color=#ffcc66]%s's turn - choose an action[/color]" % unit.display_name)
 	print("[UI] Action panel shown, awaiting player input")
@@ -5005,6 +5406,11 @@ func _build_stat_inspection_content(vbox: VBoxContainer, unit_data: Dictionary) 
 
 	# --- Abilities (heroes) ---
 	if is_hero:
+		var inspect_hero_id: String = unit_data.get("source_id", unit_data["id"])
+		var inspect_hero_level := 1
+		if GameContext.has_method("get_hero_effective_stats"):
+			var h_stats = GameContext.get_hero_effective_stats(inspect_hero_id)
+			inspect_hero_level = h_stats.get("level", 1)
 		var has_abilities := false
 		var ability_a_id: String = unit_data.get("ability_a_id", "")
 		var ability_b_id: String = unit_data.get("ability_b_id", "")
@@ -5017,17 +5423,25 @@ func _build_stat_inspection_content(vbox: VBoxContainer, unit_data: Dictionary) 
 			var ability_a = DataRegistry.get_ability(ability_a_id) if DataRegistry.has_method("get_ability") else null
 			var a_name: String = ability_a.display_name if ability_a else ability_a_id.replace("_", " ").capitalize()
 			var a_desc: String = ability_a.description if ability_a != null else ""
-			var cd_a: int = unit_data.get("ability_a_cooldown", 0)
-			var cd_str: String = "CD: %d" % cd_a if cd_a > 0 else "Ready"
-			_add_inspect_ability(vbox, a_name, cd_str, a_desc)
+			if GameContext.is_ability_slot_unlocked("ability_a", inspect_hero_level):
+				var cd_a: int = unit_data.get("ability_a_cooldown", 0)
+				var cd_str: String = "CD: %d" % cd_a if cd_a > 0 else "Ready"
+				_add_inspect_ability(vbox, a_name, cd_str, a_desc)
+			else:
+				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("ability_a", 5)
+				_add_inspect_ability(vbox, a_name, "Lv %d" % req_lv, a_desc)
 
 		if ability_b_id != "":
 			var ability_b = DataRegistry.get_ability(ability_b_id) if DataRegistry.has_method("get_ability") else null
 			var b_name: String = ability_b.display_name if ability_b else ability_b_id.replace("_", " ").capitalize()
 			var b_desc: String = ability_b.description if ability_b != null else ""
-			var cd_b: int = unit_data.get("ability_b_cooldown", 0)
-			var cd_str: String = "CD: %d" % cd_b if cd_b > 0 else "Ready"
-			_add_inspect_ability(vbox, b_name, cd_str, b_desc)
+			if GameContext.is_ability_slot_unlocked("ability_b", inspect_hero_level):
+				var cd_b: int = unit_data.get("ability_b_cooldown", 0)
+				var cd_str: String = "CD: %d" % cd_b if cd_b > 0 else "Ready"
+				_add_inspect_ability(vbox, b_name, cd_str, b_desc)
+			else:
+				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("ability_b", 25)
+				_add_inspect_ability(vbox, b_name, "Lv %d" % req_lv, b_desc)
 
 		# Passives
 		var passive_a_id: String = unit_data.get("passive_a_id", "")
@@ -5040,13 +5454,21 @@ func _build_stat_inspection_content(vbox: VBoxContainer, unit_data: Dictionary) 
 			var passive_a = DataRegistry.get_passive(passive_a_id) if DataRegistry.has_method("get_passive") else null
 			var pa_name: String = passive_a.display_name if passive_a else passive_a_id.replace("_", " ").capitalize()
 			var pa_desc: String = passive_a.description if passive_a != null else ""
-			_add_inspect_passive(vbox, pa_name, pa_desc)
+			if GameContext.is_ability_slot_unlocked("passive_a", inspect_hero_level):
+				_add_inspect_passive(vbox, pa_name, pa_desc)
+			else:
+				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("passive_a", 15)
+				_add_inspect_passive(vbox, "%s (Lv %d)" % [pa_name, req_lv], pa_desc)
 
 		if passive_b_id != "":
 			var passive_b = DataRegistry.get_passive(passive_b_id) if DataRegistry.has_method("get_passive") else null
 			var pb_name: String = passive_b.display_name if passive_b else passive_b_id.replace("_", " ").capitalize()
 			var pb_desc: String = passive_b.description if passive_b != null else ""
-			_add_inspect_passive(vbox, pb_name, pb_desc)
+			if GameContext.is_ability_slot_unlocked("passive_b", inspect_hero_level):
+				_add_inspect_passive(vbox, pb_name, pb_desc)
+			else:
+				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("passive_b", 40)
+				_add_inspect_passive(vbox, "%s (Lv %d)" % [pb_name, req_lv], pb_desc)
 
 	# --- Active Statuses ---
 	var statuses: Array = unit_data.get("active_statuses_v1", [])
@@ -5715,7 +6137,9 @@ func _populate_stats_window(hero_id: String) -> void:
 		no_stats.modulate = Color.DIM_GRAY
 		vbox.add_child(no_stats)
 
-	vbox.add_child(HSeparator.new())
+	var equip_sep = HSeparator.new()
+	equip_sep.add_theme_constant_override("separation", 4)
+	vbox.add_child(equip_sep)
 
 	# === EQUIPMENT ===
 	var equip_title = Label.new()
@@ -5751,7 +6175,9 @@ func _populate_stats_window(hero_id: String) -> void:
 	var has_bonuses = gear_bonuses.get("health", 0) != 0 or gear_bonuses.get("attack", 0) != 0 or gear_bonuses.get("defense", 0) != 0 or gear_bonuses.get("speed", 0) != 0
 
 	if has_bonuses:
-		vbox.add_child(HSeparator.new())
+		var bonus_sep = HSeparator.new()
+		bonus_sep.add_theme_constant_override("separation", 4)
+		vbox.add_child(bonus_sep)
 		var bonus_title = Label.new()
 		bonus_title.text = "Gear Bonuses"
 		bonus_title.add_theme_font_size_override("font_size", 14)
@@ -5767,7 +6193,9 @@ func _populate_stats_window(hero_id: String) -> void:
 		if gear_bonuses.get("speed", 0) != 0:
 			_add_stat_line(vbox, "Speed", "+%d" % gear_bonuses["speed"], Color.LIME_GREEN)
 
-	vbox.add_child(HSeparator.new())
+	var ability_sep = HSeparator.new()
+	ability_sep.add_theme_constant_override("separation", 4)
+	vbox.add_child(ability_sep)
 
 	# === ABILITIES ===
 	var ability_title = Label.new()
@@ -5786,16 +6214,24 @@ func _populate_stats_window(hero_id: String) -> void:
 		var ability_a = DataRegistry.get_ability(ability_a_id) if DataRegistry.has_method("get_ability") else null
 		var a_name = ability_a.display_name if ability_a else ability_a_id
 		var a_desc = ability_a.description if ability_a else ""
-		var a_cd = "CD: %d" % (ability_a.cooldown if ability_a else 0)
-		_add_ability_line(vbox, "[A] %s" % a_name, a_desc, a_cd)
+		if GameContext.is_ability_slot_unlocked("ability_a", hero_level):
+			var a_cd = "CD: %d" % (ability_a.cooldown if ability_a else 0)
+			_add_ability_line(vbox, "[A] %s" % a_name, a_desc, a_cd)
+		else:
+			var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("ability_a", 5)
+			_add_ability_line(vbox, "[A] %s (Lv %d)" % [a_name, req_lv], a_desc, "Locked")
 		has_abilities = true
 
 	if ability_b_id != "":
 		var ability_b = DataRegistry.get_ability(ability_b_id) if DataRegistry.has_method("get_ability") else null
 		var b_name = ability_b.display_name if ability_b else ability_b_id
 		var b_desc = ability_b.description if ability_b else ""
-		var b_cd = "CD: %d" % (ability_b.cooldown if ability_b else 0)
-		_add_ability_line(vbox, "[B] %s" % b_name, b_desc, b_cd)
+		if GameContext.is_ability_slot_unlocked("ability_b", hero_level):
+			var b_cd = "CD: %d" % (ability_b.cooldown if ability_b else 0)
+			_add_ability_line(vbox, "[B] %s" % b_name, b_desc, b_cd)
+		else:
+			var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("ability_b", 25)
+			_add_ability_line(vbox, "[B] %s (Lv %d)" % [b_name, req_lv], b_desc, "Locked")
 		has_abilities = true
 
 	if not has_abilities:
@@ -5804,7 +6240,9 @@ func _populate_stats_window(hero_id: String) -> void:
 		none_lbl.add_theme_color_override("font_color", Color.DIM_GRAY)
 		vbox.add_child(none_lbl)
 
-	vbox.add_child(HSeparator.new())
+	var passive_sep = HSeparator.new()
+	passive_sep.add_theme_constant_override("separation", 4)
+	vbox.add_child(passive_sep)
 
 	# === PASSIVES (Class + Race) ===
 	var passive_title = Label.new()
@@ -5823,14 +6261,22 @@ func _populate_stats_window(hero_id: String) -> void:
 		var p_data = DataRegistry.get_passive(passive_a_id) if DataRegistry.has_method("get_passive") else null
 		var p_name = p_data.display_name if p_data else passive_a_id
 		var p_desc = p_data.description if p_data else ""
-		_add_ability_line(vbox, "[Class] %s" % p_name, p_desc, "")
+		if GameContext.is_ability_slot_unlocked("passive_a", hero_level):
+			_add_ability_line(vbox, "[Class] %s" % p_name, p_desc, "")
+		else:
+			var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("passive_a", 15)
+			_add_ability_line(vbox, "[Class] %s (Lv %d)" % [p_name, req_lv], p_desc, "Locked")
 		has_passives = true
 
 	if passive_b_id != "":
 		var p_data = DataRegistry.get_passive(passive_b_id) if DataRegistry.has_method("get_passive") else null
 		var p_name = p_data.display_name if p_data else passive_b_id
 		var p_desc = p_data.description if p_data else ""
-		_add_ability_line(vbox, "[Class] %s" % p_name, p_desc, "")
+		if GameContext.is_ability_slot_unlocked("passive_b", hero_level):
+			_add_ability_line(vbox, "[Class] %s" % p_name, p_desc, "")
+		else:
+			var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("passive_b", 40)
+			_add_ability_line(vbox, "[Class] %s (Lv %d)" % [p_name, req_lv], p_desc, "Locked")
 		has_passives = true
 
 	# Race passive

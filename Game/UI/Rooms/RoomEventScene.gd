@@ -1,6 +1,6 @@
 ## RoomEventScene.gd
 ## Non-combat room handler for choice-based events.
-## Loads event from DataRegistry, displays choices, applies effects to dungeon stash.
+## Loads event from DataRegistry, displays choices, applies weighted outcome effects.
 extends Control
 
 const BOOT_SCENE_PATH = "res://Game/Boot/game_boot.tscn"
@@ -29,6 +29,10 @@ var _event_rng: RandomNumberGenerator = null
 var _choice_made: bool = false
 var _outcome_text: String = ""
 
+# Combat trigger state (from trigger_combat effect)
+var _trigger_combat_after: bool = false
+var _trigger_combat_type: String = ""  # "basic" or "elite"
+
 # ============================================================================
 # LIFECYCLE
 # ============================================================================
@@ -39,11 +43,15 @@ func _ready() -> void:
 		choice_buttons[i].pressed.connect(_on_choice_pressed.bind(i))
 	return_button.pressed.connect(_on_return_pressed)
 
+	# SFX: Event room entered
+	UIAudio.play_sfx("event_trigger")
+
 	# Load and display event
 	_load_and_display_event()
 
 	# Tutorial on first event room (non-blocking overlay)
 	TutorialOverlay.try_show(self, "tutorial_first_event")
+
 
 	var payload = GameContext.current_room_payload
 	print("[RoomEvent] type=%s dungeon=%s floor=%d room=%d" % [
@@ -199,7 +207,7 @@ func _check_requirements(requires: Dictionary) -> bool:
 
 
 # ============================================================================
-# CHOICE HANDLING
+# CHOICE HANDLING (v2 — weighted outcomes)
 # ============================================================================
 
 func _on_choice_pressed(choice_index: int) -> void:
@@ -211,6 +219,7 @@ func _on_choice_pressed(choice_index: int) -> void:
 		return
 
 	_choice_made = true
+	UIAudio.play_sfx("event_choice")
 	var choice = _current_event.choices[choice_index]
 	print("[RoomEvent] Player chose: %s" % choice.get("label", "?"))
 
@@ -218,38 +227,54 @@ func _on_choice_pressed(choice_index: int) -> void:
 	for btn in choice_buttons:
 		btn.disabled = true
 
-	# Handle risk/trap first
-	var risk = choice.get("risk", {})
-	var trap_triggered = _check_and_apply_risk(risk)
+	# Roll weighted outcome
+	var outcome: Dictionary = EventData.roll_outcome(choice, _event_rng)
+	print("[RoomEvent] Rolled outcome (weight=%.0f)" % outcome.get("weight", 0))
 
-	# Apply effects (even if trap triggered, effects still apply)
-	var effects = choice.get("effects", [])
+	# Display outcome narrative text
+	var outcome_narrative: String = outcome.get("text", "")
+	if outcome_narrative != "":
+		_outcome_text += outcome_narrative + "\n\n"
+
+	# Legacy v1 support: handle risk/modifier if present in outcome
+	var legacy_risk = outcome.get("_legacy_risk", {})
+	if not legacy_risk.is_empty():
+		_check_and_apply_risk(legacy_risk)
+	var legacy_modifier = outcome.get("_legacy_modifier", {})
+	if not legacy_modifier.is_empty():
+		GameContext.set_pending_combat_modifier(legacy_modifier)
+		var mod_label = legacy_modifier.get("label", legacy_modifier.get("id", "unknown"))
+		_outcome_text += "[Next Combat: %s]\n" % mod_label
+
+	# Apply effects from the rolled outcome
+	var effects: Array = outcome.get("effects", [])
 	_apply_effects(effects)
 
-	# Check for combat modifier (Part C - Event-Driven Next-Combat Modifiers)
-	var modifier = choice.get("modifier", {})
-	if not modifier.is_empty():
-		GameContext.set_pending_combat_modifier(modifier)
-		var mod_label = modifier.get("label", modifier.get("id", "unknown"))
-		_outcome_text += "[Next Combat: %s]\n" % mod_label
-		print("[RoomEvent][Modifier] Set pending modifier: %s" % modifier.get("id", "unknown"))
-
-	# Build outcome text
-	_build_outcome_text(choice, trap_triggered)
+	# Build outcome display
+	_build_outcome_text(effects)
 
 	# Show return button
 	choices_header.visible = false
 	return_button.visible = true
-	hotkey_hint.text = "Press R or Enter to continue"
+	if _trigger_combat_after:
+		return_button.text = "Prepare for Battle!"
+		hotkey_hint.text = "Press R or Enter to fight"
+	else:
+		return_button.text = "Return to Camp"
+		hotkey_hint.text = "Press R or Enter to continue"
 
 
+## Legacy risk handling (for v1 events not yet migrated to outcomes).
 func _check_and_apply_risk(risk: Dictionary) -> bool:
 	if risk.is_empty():
 		return false
 
 	var trap_chance = risk.get("trap_chance", 0.0)
 	var damage_chance = risk.get("damage_chance", 0.0)
-	var chance = maxf(trap_chance, damage_chance)
+	var fight_chance = risk.get("fight_chance", 0.0)
+	var ambush_chance = risk.get("ambush_chance", 0.0)
+	var catch_chance = risk.get("catch_chance", 0.0)
+	var chance = maxf(trap_chance, maxf(damage_chance, maxf(fight_chance, maxf(ambush_chance, catch_chance))))
 
 	if chance <= 0.0:
 		return false
@@ -272,6 +297,10 @@ func _check_and_apply_risk(risk: Dictionary) -> bool:
 
 	return true
 
+
+# ============================================================================
+# EFFECT APPLICATION (v2 — all effect types)
+# ============================================================================
 
 func _apply_effects(effects: Array) -> void:
 	for effect in effects:
@@ -302,8 +331,8 @@ func _apply_effects(effects: Array) -> void:
 				if item_id != "" and qty > 0:
 					GameContext.add_dungeon_item(item_id, qty)
 					var template = DataRegistry.get_item_template(item_id)
-					var name = template.display_name if template != null else item_id
-					_outcome_text += "+%d %s\n" % [qty, name]
+					var dname: String = template.display_name if template != null else item_id
+					_outcome_text += "+%d %s\n" % [qty, dname]
 
 			"lose_gold":
 				var min_loss = effect.get("min", 0)
@@ -323,14 +352,65 @@ func _apply_effects(effects: Array) -> void:
 						_outcome_text += "Lost %d %s\n" % [removed, item_id]
 
 			"heal_party":
-				var amount = effect.get("amount", 0)
-				if amount > 0:
-					_apply_party_heal(amount)
-					_outcome_text += "Party healed for %d HP\n" % amount
+				var heal_amt = effect.get("value", effect.get("amount", 0))
+				if heal_amt > 0:
+					_apply_party_heal(heal_amt)
+					_outcome_text += "Party healed for %d HP\n" % heal_amt
+
+			"heal_hero":
+				var heal_amt = effect.get("amount", 0)
+				if heal_amt > 0:
+					_apply_hero_heal(heal_amt)
+
+			"damage_party":
+				var dmg_amt = effect.get("value", effect.get("amount", 0))
+				if dmg_amt > 0:
+					_apply_party_damage(dmg_amt)
+					_outcome_text += "Party took %d damage!\n" % dmg_amt
+
+			"damage_hero":
+				var dmg_amt = effect.get("amount", 0)
+				if dmg_amt > 0:
+					_apply_hero_damage(dmg_amt)
+
+			"apply_status":
+				var status_id = effect.get("status_id", "")
+				var duration = effect.get("duration", 2)
+				var target = effect.get("target", "random_hero")
+				if status_id != "":
+					GameContext.add_pending_combat_status(status_id, duration, target)
+					var status_name: String = status_id.capitalize()
+					var status_data = DataRegistry.get_status_effect(status_id) if DataRegistry.has_method("get_status_effect") else null
+					if status_data != null and status_data.display_name != "":
+						status_name = status_data.display_name
+					var scope: String = "party" if target == "party" else "a hero"
+					_outcome_text += "[Next Combat: %s on %s (%d turns)]\n" % [status_name, scope, duration]
+
+			"remove_equipment":
+				_apply_equipment_removal()
+
+			"trigger_combat":
+				var encounter_type = effect.get("encounter_type", "basic")
+				_trigger_combat_after = true
+				_trigger_combat_type = encounter_type
+				var combat_label: String = "Elite Combat" if encounter_type == "elite" else "Combat"
+				_outcome_text += "[%s Incoming!]\n" % combat_label
+
+			"modifier":
+				var modifier = effect.duplicate()
+				modifier.erase("type")
+				if not modifier.is_empty():
+					GameContext.set_pending_combat_modifier(modifier)
+					var mod_label = modifier.get("label", modifier.get("id", "unknown"))
+					_outcome_text += "[Next Combat: %s]\n" % mod_label
 
 			"nothing":
-				_outcome_text += "Nothing happens.\n"
+				pass  # Outcome text handles flavor via the outcome's "text" field
 
+
+# ============================================================================
+# DAMAGE / HEAL HELPERS
+# ============================================================================
 
 ## Distribute damage evenly across all living party heroes.
 func _apply_party_damage(total_damage: int) -> void:
@@ -341,12 +421,12 @@ func _apply_party_damage(total_damage: int) -> void:
 	var per_hero: int = maxi(1, total_damage / party.size())
 	for hero_id in party:
 		var stats: Dictionary = GameContext.get_hero_effective_stats(hero_id)
-		var max_hp: int = int(stats.get("hp", 100))
+		var max_hp: int = int(stats.get("health", 100))
 		var hp_data: Dictionary = GameContext.get_hero_hp(hero_id)
 		var current_hp: int = int(hp_data.get("current", max_hp)) if not hp_data.is_empty() else max_hp
-		var new_hp: int = maxi(1, current_hp - per_hero)  # Don't kill from traps (min 1 HP)
+		var new_hp: int = maxi(1, current_hp - per_hero)  # Don't kill from events (min 1 HP)
 		GameContext.set_hero_hp(hero_id, new_hp, max_hp)
-		print("[RoomEvent] TRAP hero=%s hp=%d→%d (-%d)" % [hero_id, current_hp, new_hp, current_hp - new_hp])
+		print("[RoomEvent] DMG hero=%s hp=%d->%d (-%d)" % [hero_id, current_hp, new_hp, current_hp - new_hp])
 
 
 ## Heal all living party heroes by a flat amount (clamped to max).
@@ -356,27 +436,122 @@ func _apply_party_heal(amount: int) -> void:
 		return
 	for hero_id in party:
 		var stats: Dictionary = GameContext.get_hero_effective_stats(hero_id)
-		var max_hp: int = int(stats.get("hp", 100))
+		var max_hp: int = int(stats.get("health", 100))
 		var hp_data: Dictionary = GameContext.get_hero_hp(hero_id)
 		var current_hp: int = int(hp_data.get("current", max_hp)) if not hp_data.is_empty() else max_hp
 		var new_hp: int = mini(current_hp + amount, max_hp)
 		GameContext.set_hero_hp(hero_id, new_hp, max_hp)
-		print("[RoomEvent] HEAL hero=%s hp=%d→%d (+%d)" % [hero_id, current_hp, new_hp, new_hp - current_hp])
+		print("[RoomEvent] HEAL hero=%s hp=%d->%d (+%d)" % [hero_id, current_hp, new_hp, new_hp - current_hp])
 
 
-func _build_outcome_text(choice: Dictionary, trap_triggered: bool) -> void:
+## Damage a single random party hero.
+func _apply_hero_damage(amount: int) -> void:
+	var party: Array[String] = GameContext.get_party()
+	if party.is_empty():
+		return
+	var hero_id: String = party[_event_rng.randi() % party.size()]
+	var stats: Dictionary = GameContext.get_hero_effective_stats(hero_id)
+	var max_hp: int = int(stats.get("health", 100))
+	var hp_data: Dictionary = GameContext.get_hero_hp(hero_id)
+	var current_hp: int = int(hp_data.get("current", max_hp)) if not hp_data.is_empty() else max_hp
+	var new_hp: int = maxi(1, current_hp - amount)
+	GameContext.set_hero_hp(hero_id, new_hp, max_hp)
+	var hero = GameContext.get_hero(hero_id)
+	var hero_name: String = hero.get("name", hero_id) if not hero.is_empty() else hero_id
+	_outcome_text += "%s took %d damage!\n" % [hero_name, current_hp - new_hp]
+	print("[RoomEvent] DMG hero=%s hp=%d->%d (-%d)" % [hero_id, current_hp, new_hp, current_hp - new_hp])
+
+
+## Heal a single random party hero.
+func _apply_hero_heal(amount: int) -> void:
+	var party: Array[String] = GameContext.get_party()
+	if party.is_empty():
+		return
+	var hero_id: String = party[_event_rng.randi() % party.size()]
+	var stats: Dictionary = GameContext.get_hero_effective_stats(hero_id)
+	var max_hp: int = int(stats.get("health", 100))
+	var hp_data: Dictionary = GameContext.get_hero_hp(hero_id)
+	var current_hp: int = int(hp_data.get("current", max_hp)) if not hp_data.is_empty() else max_hp
+	var new_hp: int = mini(current_hp + amount, max_hp)
+	GameContext.set_hero_hp(hero_id, new_hp, max_hp)
+	var hero = GameContext.get_hero(hero_id)
+	var hero_name: String = hero.get("name", hero_id) if not hero.is_empty() else hero_id
+	_outcome_text += "%s healed for %d HP\n" % [hero_name, new_hp - current_hp]
+	print("[RoomEvent] HEAL hero=%s hp=%d->%d (+%d)" % [hero_id, current_hp, new_hp, new_hp - current_hp])
+
+
+## Remove a random piece of equipment from a random hero → stash.
+func _apply_equipment_removal() -> void:
+	var party: Array[String] = GameContext.get_party()
+	if party.is_empty():
+		_outcome_text += "No equipment to lose.\n"
+		return
+	# Find heroes with at least one equipped item (excluding bag)
+	var equipped_heroes: Array = []
+	for hero_id in party:
+		var equip: Dictionary = GameContext.get_hero_equipment(hero_id)
+		for slot in GameContext.EQUIPMENT_SLOTS:
+			var slot_data = equip.get(slot, {})
+			if slot_data.get("id", "") != "":
+				equipped_heroes.append(hero_id)
+				break
+	if equipped_heroes.is_empty():
+		_outcome_text += "No equipment to lose.\n"
+		return
+	# Pick random hero with gear
+	var hero_id: String = equipped_heroes[_event_rng.randi() % equipped_heroes.size()]
+	var equip: Dictionary = GameContext.get_hero_equipment(hero_id)
+	# Find filled slots
+	var filled_slots: Array = []
+	for slot in GameContext.EQUIPMENT_SLOTS:
+		var slot_data = equip.get(slot, {})
+		if slot_data.get("id", "") != "":
+			filled_slots.append(slot)
+	if filled_slots.is_empty():
+		return
+	var slot: String = filled_slots[_event_rng.randi() % filled_slots.size()]
+	var item_id: String = equip[slot].get("id", "")
+	var template = DataRegistry.get_item_template(item_id)
+	var item_name: String = template.display_name if template != null else item_id
+	var hero = GameContext.get_hero(hero_id)
+	var hero_name: String = hero.get("name", hero_id) if not hero.is_empty() else hero_id
+	GameContext.unequip_hero_item(hero_id, slot)
+	_outcome_text += "%s lost their %s! (sent to storage)\n" % [hero_name, item_name]
+	print("[RoomEvent] UNEQUIP hero=%s slot=%s item=%s -> stash" % [hero_id, slot, item_id])
+
+
+# ============================================================================
+# OUTCOME DISPLAY
+# ============================================================================
+
+func _build_outcome_text(effects: Array) -> void:
 	if _outcome_text == "":
-		_outcome_text = "You chose: %s\n" % choice.get("label", "?")
+		_outcome_text = "Nothing of note happened.\n"
 
 	outcome_label.text = _outcome_text.strip_edges()
 
-	# Color based on outcome
-	if trap_triggered:
-		outcome_label.modulate = Color(1, 0.7, 0.5, 1)  # Orange for trap
-	elif _outcome_text.find("+") >= 0:
+	# Determine tone from effects for coloring and SFX
+	var has_negative: bool = false
+	var has_positive: bool = false
+	for effect in effects:
+		var etype: String = effect.get("type", "")
+		if etype in ["damage_party", "damage_hero", "apply_status", "remove_equipment", "trigger_combat", "lose_gold", "lose_item"]:
+			has_negative = true
+		if etype in ["add_gold", "add_gold_range", "add_item", "heal_party", "heal_hero"]:
+			has_positive = true
+
+	if has_negative and not has_positive:
+		outcome_label.modulate = Color(1, 0.5, 0.5, 1)  # Red for bad
+		UIAudio.play_sfx("event_outcome_bad")
+	elif has_negative and has_positive:
+		outcome_label.modulate = Color(1, 0.7, 0.5, 1)  # Orange for mixed
+		UIAudio.play_sfx("event_outcome_bad")
+	elif has_positive:
 		outcome_label.modulate = Color(0.7, 1, 0.7, 1)  # Green for rewards
+		UIAudio.play_sfx("event_outcome_good")
 	else:
 		outcome_label.modulate = Color(0.7, 0.8, 0.9, 1)  # Blue-ish neutral
+		UIAudio.play_sfx("event_outcome_neutral")
 
 
 # ============================================================================
@@ -394,8 +569,19 @@ func _return_to_camp() -> void:
 	# Award event completion XP
 	GameContext.grant_party_xp(20, "event")
 
-	print("[RoomEvent] Returning to camp")
-	GameContext.set_phase(GameContext.GamePhase.DUNGEON_CAMP)
+	if _trigger_combat_after:
+		# Route to combat instead of camp
+		print("[RoomEvent] Triggering %s combat from event" % _trigger_combat_type)
+		if _trigger_combat_type == "elite":
+			GameContext.current_room_is_elite = true
+		else:
+			GameContext.current_room_is_elite = false
+		GameContext.current_room_type = "combat"
+		GameContext.set_phase(GameContext.GamePhase.COMBAT)
+	else:
+		print("[RoomEvent] Returning to camp")
+		GameContext.set_phase(GameContext.GamePhase.DUNGEON_CAMP)
+
 	get_tree().change_scene_to_file(BOOT_SCENE_PATH)
 
 

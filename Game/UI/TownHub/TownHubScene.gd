@@ -225,6 +225,24 @@ func _build_nav_rail() -> void:
 	btn_options.name = "Options"
 	_nav_vbox.add_child(btn_options)
 
+	# Challenge Level button (playtest tool — session only)
+	var btn_challenge = Button.new()
+	btn_challenge.text = "Challenge: %d" % GameContext.challenge_level
+	btn_challenge.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	btn_challenge.modulate = Color(1.0, 0.7, 0.3)
+	btn_challenge.pressed.connect(_on_challenge_pressed.bind(btn_challenge))
+	btn_challenge.gui_input.connect(func(event: InputEvent):
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT and event.shift_pressed:
+			GameContext.reset_challenge()
+			btn_challenge.text = "Challenge: %d" % GameContext.challenge_level
+			_update_challenge_tooltip(btn_challenge)
+			get_viewport().set_input_as_handled()
+	)
+	btn_challenge.name = "Challenge"
+	btn_challenge.mouse_filter = Control.MOUSE_FILTER_STOP
+	_update_challenge_tooltip(btn_challenge)
+	_nav_vbox.add_child(btn_challenge)
+
 	# Save & Exit button
 	var btn_save_exit = Button.new()
 	btn_save_exit.text = "Save & Exit"
@@ -528,6 +546,37 @@ func _on_options_pressed() -> void:
 	var ui_audio = get_node_or_null("/root/UIAudio")
 	if ui_audio and ui_audio.has_method("show_options_menu"):
 		ui_audio.show_options_menu()
+
+
+func _on_challenge_pressed(btn: Button) -> void:
+	GameContext.increment_challenge()
+	btn.text = "Challenge: %d" % GameContext.challenge_level
+	_update_challenge_tooltip(btn)
+
+
+func _update_challenge_tooltip(btn: Button) -> void:
+	var cl: int = GameContext.challenge_level
+	var lines: Array = []
+	lines.append("Difficulty Modifier (resets each session)")
+	lines.append("")
+	lines.append("Click to increase | Shift+Click to reset")
+	lines.append("")
+	if cl == 0:
+		lines.append("No modifiers active.")
+	else:
+		var hp_pct: int = int(cl * 12)
+		var dmg_pct: int = int(cl * 8)
+		var gold_pct: int = int(cl * 5)
+		lines.append("Current (Level %d):" % cl)
+		lines.append("  Monster HP: +%d%%" % hp_pct)
+		lines.append("  Monster Damage: +%d%%" % dmg_pct)
+		lines.append("  Gold Rewards: +%d%%" % gold_pct)
+	lines.append("")
+	if cl >= 5:
+		lines.append("Level 5+ Bonus: Extra boss loot roll (ACTIVE)")
+	else:
+		lines.append("Level 5+: ???")
+	btn.tooltip_text = "\n".join(lines)
 
 
 func _on_save_and_exit() -> void:
