@@ -5,7 +5,7 @@
       "speaker": "Mira",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
       "title": "Welcome to Thornhaven!",
-      "body": "Well met, ShopKeeper! I'm Mira, innkeeper of the Wanderer's Rest. This little town has seen better days, but with someone like you running the supply lines, we might just pull through.\n\nThe wilds beyond our walls are crawling with corrupted beasts. We need brave souls to venture out there — and someone sharp enough to keep them equipped."
+      "body": "Well met, Shopkeeper! I'm Mira, innkeeper of the Wanderer's Rest. The Crown said you'd be coming — and not a moment too soon.\n\nCorruption creeps in from the forest. Twisted roots, blighted beasts, things that shouldn't exist. We have brave souls willing to fight, but they need supplies. Gear. Potions. That's where you come in."
     },
     {
       "speaker": "Mira",
@@ -17,7 +17,7 @@
       "speaker": "Mira",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
       "title": "The Loop",
-      "body": "Here's how it works: recruit heroes, equip them from your Manage Roster tab here at the Inn, then send them into the dungeons. Whatever they bring back, you use to craft better gear and unlock new recipes.\n\nBut be warned — heroes who fall in the dungeon don't come back. Choose your battles wisely.",
+      "body": "Here's how it works: recruit heroes, equip them from your Manage Roster tab here at the Inn, then send them into the dungeons. Whatever they bring back, you use to craft better gear and unlock new recipes.\n\nBut be warned — heroes who fall in the dungeon don't come back. Choose your battles wisely.\n\nThe inn's warm and the ale's cold. Let's get to work.",
       "button_text": "Let's get started!"
     }
   ]

@@ -1,0 +1,83 @@
+{
+  "region": "region_5",
+  "region_name": "Starfall Expanse",
+  "dialogs": [
+    {
+      "id": "r5_first_arrival",
+      "trigger": "region_first_arrival",
+      "flag_required": null,
+      "flag_set": "story_r5_arrived",
+      "display_type": "full_screen_overlay",
+      "speaker_id": "luxiel",
+      "speaker_name": "Luxiel",
+      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_Crystalborn_PNG/Icon12.png",
+      "lines": [
+        "The crystals told me you were coming. They tell me many things.",
+        "Crystalhearth exists outside normal time. Moments layer here — past, present, futures that never were.",
+        "The corruption in this place doesn't destroy. It distorts. Reality bends around it like light through a prism.",
+        "Be careful what you see in the crystals, Shopkeeper. Some of them remember you."
+      ],
+      "notes": "First hint at timeline/rewrite lore. Luxiel knows more than she should."
+    },
+    {
+      "id": "r5_crystal_vision",
+      "trigger": "dungeon_camp_story",
+      "flag_required": "story_r5_arrived",
+      "flag_set": "story_grail_known",
+      "display_type": "event_popup",
+      "dungeon_floor": 3,
+      "speaker_id": null,
+      "speaker_name": "Crystal Vision",
+      "speaker_portrait": null,
+      "lines": [
+        "A crystal formation hums as you approach. Images flicker inside.",
+        "A grand hall. Advisors arguing. A man on a throne, face drawn with desperation.",
+        "A brilliant artifact — impossibly bright — cracks. The light inverts. The hall shatters.",
+        "A woman reaches out. She dissolves.",
+        "The vision fades. Your heroes look unsettled. None of them speak."
+      ],
+      "notes": "First glimpse of the Grail rupture. No names, just images. Emotional, not expository."
+    },
+    {
+      "id": "r5_boss_kill",
+      "trigger": "boss_first_kill",
+      "flag_required": null,
+      "flag_set": "story_r5_boss_killed",
+      "display_type": "full_screen_overlay",
+      "speaker_id": "void_sovereign",
+      "speaker_name": "The Void Sovereign",
+      "speaker_portrait": "",
+      "lines": [
+        "The Oracle showed you something, didn't it?",
+        "A king. A broken thing. A choice that unmade the world.",
+        "That was not metaphor, Shopkeeper. That happened.",
+        "And your Crown — your employer — is the one who broke it.",
+        "I intend to fix what he destroyed.",
+        "Step aside... or be corrected."
+      ],
+      "notes": "Clear apparition, full portrait emerging. First uses title 'The Void Sovereign'. The accusation lands."
+    },
+    {
+      "id": "r5_herald_crisis",
+      "trigger": "herald_visit",
+      "flag_required": "story_r5_boss_killed",
+      "flag_set": "story_king_revealed",
+      "display_type": "portrait_text_box",
+      "speaker_id": "cedric",
+      "speaker_name": "Sir Cedric Ashmore",
+      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon39.png",
+      "lines": [
+        "Shopkeeper. I need to speak with you. Not as Herald. As... myself.",
+        "I've been digging. The King's archives. The sealed records.",
+        "The fragments he asked you to find — they're pieces of something called the Grail of Life.",
+        "An artifact that can... rewrite history.",
+        "The rupture that created the corruption. The reason the void exists.",
+        "It was the King's doing. He tried to use the Grail to change the royal succession. It failed.",
+        "And everything broke.",
+        "...",
+        "I don't know what to believe anymore. But I believe you deserve the truth."
+      ],
+      "notes": "Cedric arrives without formal composure. The big reveal. Everything clicks into place."
+    }
+  ]
+}

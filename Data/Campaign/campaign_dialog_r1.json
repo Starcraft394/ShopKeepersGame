@@ -1,0 +1,53 @@
+{
+  "region": "region_1",
+  "region_name": "Forest Haven",
+  "dialogs": [
+    {
+      "id": "r1_herald_intro",
+      "trigger": "region_first_arrival",
+      "flag_required": null,
+      "flag_set": "story_r1_arrived",
+      "display_type": "portrait_text_box",
+      "speaker_id": "cedric",
+      "speaker_name": "Sir Cedric Ashmore",
+      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon39.png",
+      "lines": [
+        "Shopkeeper. I am Sir Cedric Ashmore, Herald of the Crown.",
+        "By order of His Majesty, you are appointed Crown Supplier to the frontier settlements.",
+        "The corruption must be contained. Resources will follow your progress.",
+        "I will check in periodically. The Crown... takes an interest in your work.",
+        "Good day."
+      ]
+    },
+    {
+      "id": "r1_boss_kill",
+      "trigger": "boss_first_kill",
+      "flag_required": null,
+      "flag_set": "story_r1_boss_killed",
+      "display_type": "full_screen_overlay",
+      "speaker_id": "void_sovereign",
+      "speaker_name": "???",
+      "speaker_portrait": null,
+      "lines": [
+        "...Hm. Noise."
+      ],
+      "notes": "Voice only. Brief, dismissive. Player may not realize this is significant."
+    },
+    {
+      "id": "r1_post_boss_herald",
+      "trigger": "herald_visit",
+      "flag_required": "story_r1_boss_killed",
+      "flag_set": null,
+      "display_type": "portrait_text_box",
+      "speaker_id": "cedric",
+      "speaker_name": "Sir Cedric Ashmore",
+      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon39.png",
+      "lines": [
+        "Well done, Shopkeeper. His Majesty is... pleased.",
+        "The Fungalmire to the east reports increased corruption. The spore-folk there are overwhelmed.",
+        "You are to establish supply lines in the region. The Crown provides.",
+        "Travel authorization and initial funds are enclosed. Make haste."
+      ]
+    }
+  ]
+}

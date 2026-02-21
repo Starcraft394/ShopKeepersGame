@@ -1,0 +1,108 @@
+{
+  "region": "region_7",
+  "region_name": "The Final Realm",
+  "dialogs": [
+    {
+      "id": "r7_first_arrival",
+      "trigger": "region_first_arrival",
+      "flag_required": null,
+      "flag_set": "story_r7_arrived",
+      "display_type": "full_screen_overlay",
+      "speaker_id": "null_merchant",
+      "speaker_name": "The Null Merchant",
+      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_GoblinOrc/PNG/Simple_color/Icon40.png",
+      "lines": [
+        "You perceive an ending. That is... close enough to what this is.",
+        "The Sovereign waits at the heart. The Grail waits with him.",
+        "But you already know — you've always known — that artifacts don't save worlds.",
+        "People do. Supply lines do. The quiet work of keeping others alive.",
+        "Choose what you carry into the abyss, Shopkeeper. Not everything comes back."
+      ]
+    },
+    {
+      "id": "r7_kings_final_letter",
+      "trigger": "herald_visit",
+      "flag_required": "story_r7_arrived",
+      "flag_set": null,
+      "display_type": "portrait_text_box",
+      "speaker_id": "cedric",
+      "speaker_name": "Sir Cedric (delivering the King's letter)",
+      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon39.png",
+      "lines": [
+        "The King sent one last letter. Cedric hands it over without a word.",
+        "I cannot undo what I have done. The Grail cannot undo what I have done — I know that now.",
+        "Even if it could rewrite the timeline, the corruption would simply begin again from a new wound.",
+        "You have built something I never could. Not a kingdom — a network. Connections. Trust.",
+        "That is stronger than any artifact.",
+        "Stop him. Not because I command it. Because he will break the world again trying to fix it.",
+        "And this time, there may be nothing left to rebuild.",
+        "— The King"
+      ]
+    },
+    {
+      "id": "r7_cedric_camp",
+      "trigger": "dungeon_camp_story",
+      "flag_required": "story_herald_resigned",
+      "flag_set": null,
+      "display_type": "event_popup",
+      "dungeon_floor": 3,
+      "speaker_id": "cedric",
+      "speaker_name": "Sir Cedric",
+      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon39.png",
+      "lines": [
+        "I keep thinking about what the Sovereign said. About remembering. About grief.",
+        "Do you think if the Grail worked perfectly — if it could truly rewrite everything — would that be mercy?",
+        "Or would it just be... forgetting?"
+      ]
+    },
+    {
+      "id": "r7_sovereign_final_speech",
+      "trigger": "dungeon_camp_story",
+      "flag_required": "story_r7_arrived",
+      "flag_set": null,
+      "display_type": "full_screen_overlay",
+      "dungeon_floor": -1,
+      "speaker_id": "void_sovereign",
+      "speaker_name": "The Void Sovereign",
+      "speaker_portrait": "",
+      "lines": [
+        "This is the last threshold, Shopkeeper.",
+        "Beyond that door is the Grail — or what remains of it. And me.",
+        "I want you to understand. I am not a monster.",
+        "I am a man who lost everything because a king was afraid of dying without an heir.",
+        "Every void tear, every corrupted creature, every region you've fought through — all of it traces back to one man's fear of being forgotten.",
+        "I will use the Grail. I will rewrite the rupture. Lira will live.",
+        "The corruption will never have existed.",
+        "Your towns, your heroes, your supply lines — none of it will have needed to exist.",
+        "Isn't that... better?"
+      ],
+      "notes": "Final floor camp, before boss room. Almost gentle. The fundamental question: Is erasure of suffering worth the erasure of everything built in response?"
+    },
+    {
+      "id": "r7_boss_kill",
+      "trigger": "boss_first_kill",
+      "flag_required": null,
+      "flag_set": "story_r7_boss_killed",
+      "display_type": "full_screen_overlay",
+      "speaker_id": "narrator",
+      "speaker_name": null,
+      "speaker_portrait": null,
+      "lines": [
+        "The Sovereign falls. The Grail pulses. Reality shudders.",
+        "\"You... chose. To build forward. Not rewrite backward.\"",
+        "He looks at the Grail, then at the towns you've built across seven regions.",
+        "\"Perhaps... perhaps that is the answer I couldn't accept.\"",
+        "The Grail of Life dims. The corruption begins to recede — not erased, but calming.",
+        "The void tears seal. The regions stabilize.",
+        "The corruption will fade. Slowly. As the Grail's energy dissipates.",
+        "The world will heal — not because it was rewritten, but because people like you kept it alive long enough to recover.",
+        "...",
+        "Back in Thornhaven, the Anchor Stone pulses once. Faintly.",
+        "You feel something shift — a memory of a memory.",
+        "The stone has always been there.",
+        "Hasn't it?"
+      ],
+      "notes": "Extended ending sequence. Sovereign defeated, Grail deactivated, world healing. Final line is NG+ hook — the cycle continues."
+    }
+  ]
+}

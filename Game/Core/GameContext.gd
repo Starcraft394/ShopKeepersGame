@@ -180,6 +180,10 @@ var unlocked_groups: Dictionary = {}
 # { "tutorial_id": true, ... }
 var completed_tutorials: Dictionary = {}
 
+# Tracks campaign/story progression flags
+# { "story_r1_arrived": true, "shown_r1_first_arrival": true, ... }
+var campaign_flags: Dictionary = {}
+
 # Default unlock groups given on fresh save (so shop isn't empty)
 const DEFAULT_UNLOCK_GROUPS: Array[String] = ["consumables_t1", "weapons_t1", "materials_t1"]
 
@@ -2078,6 +2082,26 @@ func reset_tutorials() -> void:
 	completed_tutorials = {}
 	print("[Tutorial] All tutorials reset")
 	save_game()
+
+
+# ============================================================================
+# CAMPAIGN FLAGS
+# ============================================================================
+
+func has_campaign_flag(flag_id: String) -> bool:
+	return campaign_flags.get(flag_id, false)
+
+
+func set_campaign_flag(flag_id: String) -> void:
+	if has_campaign_flag(flag_id):
+		return
+	campaign_flags[flag_id] = true
+	print("[Campaign] Flag set: %s (total=%d)" % [flag_id, campaign_flags.size()])
+
+
+func clear_campaign_flags() -> void:
+	campaign_flags = {}
+	print("[Campaign] All flags cleared")
 
 
 ## Check if the player has completed their first dungeon floor ever.
@@ -4606,6 +4630,7 @@ func save_game() -> void:
 		# Region progression
 		"current_region": current_region,
 		"completed_tutorials": completed_tutorials,
+		"campaign_flags": campaign_flags,
 		"completed_regions": completed_regions,
 		"region_id": _current_region_id,
 		"town_id": _current_town_id,
@@ -4693,6 +4718,9 @@ func reset_save_game() -> void:
 
 	# Tutorials
 	completed_tutorials = {}
+
+	# Campaign
+	campaign_flags = {}
 
 	# Mixing system
 	discovered_mixes = {}
@@ -4851,6 +4879,8 @@ func load_game() -> void:
 		# Tutorials
 		if save_data.has("completed_tutorials") and save_data.completed_tutorials is Dictionary:
 			completed_tutorials = save_data.completed_tutorials
+		if save_data.has("campaign_flags") and save_data.campaign_flags is Dictionary:
+			campaign_flags = save_data.campaign_flags
 		# Mixing system
 		var discovered_val = save_data.get("discovered_mixes", {})
 		discovered_mixes = discovered_val if discovered_val is Dictionary else {}

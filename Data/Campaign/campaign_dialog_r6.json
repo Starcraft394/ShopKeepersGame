@@ -1,0 +1,121 @@
+{
+  "region": "region_6",
+  "region_name": "The Necropolis",
+  "dialogs": [
+    {
+      "id": "r6_first_arrival",
+      "trigger": "region_first_arrival",
+      "flag_required": null,
+      "flag_set": "story_r6_arrived",
+      "display_type": "full_screen_overlay",
+      "speaker_id": "mortimer",
+      "speaker_name": "Mortimer",
+      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_GoblinOrc/PNG/Simple_color/Icon15.png",
+      "lines": [
+        "Ah, a customer with a pulse. How refreshing.",
+        "Duskhollow is where the dead gather. Not mindlessly — they remember.",
+        "The corruption here doesn't destroy. It preserves. Every soul trapped between was and wasn't.",
+        "A kingdom of almost-people, Shopkeeper. And they all have stories they can't finish.",
+        "Make yourself at home. Such as it is."
+      ]
+    },
+    {
+      "id": "r6_kings_confession",
+      "trigger": "herald_visit",
+      "flag_required": "story_r6_arrived",
+      "flag_set": null,
+      "display_type": "portrait_text_box",
+      "speaker_id": "king",
+      "speaker_name": "The King's Letter",
+      "speaker_portrait": "",
+      "lines": [
+        "No formal address. The handwriting is unsteady.",
+        "You know, don't you. What I did. What I am.",
+        "I wanted to save my line. My father's legacy. Instead I broke the world and condemned its people to this... half-existence.",
+        "The man in the void — the Strategist — he was my friend once. My closest advisor. I drove him to this.",
+        "If you can stop him without the Grail, perhaps that is enough.",
+        "Perhaps rebuilding is enough.",
+        "— No signature"
+      ],
+      "notes": "First genuine vulnerability from the King. Personal, handwritten, no royal pretense."
+    },
+    {
+      "id": "r6_lira_vision",
+      "trigger": "dungeon_camp_story",
+      "flag_required": "story_r6_arrived",
+      "flag_set": "story_lira_seen",
+      "display_type": "event_popup",
+      "dungeon_floor": 2,
+      "speaker_id": null,
+      "speaker_name": "Ghostly Vision",
+      "speaker_portrait": null,
+      "lines": [
+        "The air shimmers at the edge of camp. A translucent figure appears — a woman in scholar's robes, her expression caught between warning and sorrow.",
+        "She looks at you. Through you. As if searching for someone who isn't there.",
+        "Her lips move, but no sound comes. Only a faint hum — like crystal vibrating at the edge of hearing.",
+        "Then she turns toward the deeper halls. Points. And fades.",
+        "Your heroes exchange uneasy glances. The air smells of old parchment and ozone."
+      ],
+      "notes": "Lira's ghost. She appears as a vision on floor 2 of the Necropolis dungeon. Does not speak — communicates through gesture. Points deeper, toward where the Sovereign's camp scene happens on floor 4. Players who pay attention will connect her to Valdric's story two floors later."
+    },
+    {
+      "id": "r6_sovereign_lira",
+      "trigger": "dungeon_camp_story",
+      "flag_required": "story_r6_arrived",
+      "flag_set": null,
+      "display_type": "full_screen_overlay",
+      "dungeon_floor": 4,
+      "speaker_id": "void_sovereign",
+      "speaker_name": "The Void Sovereign",
+      "speaker_portrait": "",
+      "lines": [
+        "Her name was Lira.",
+        "She was the finest mind in the kingdom. She warned the King the Grail was unstable.",
+        "He ordered the activation anyway.",
+        "She was standing next to it.",
+        "...",
+        "I remember her. Across every rewrite, every shattered timeline. I remember her because the void burned her into me.",
+        "The King gets to forget. I do not.",
+        "That is why the Grail must be mine. Not revenge. Correction."
+      ],
+      "notes": "Full portrait, standing before you. His voice breaks, just slightly, on 'standing next to it.' Then cold again. The most human the villain gets."
+    },
+    {
+      "id": "r6_boss_kill",
+      "trigger": "boss_first_kill",
+      "flag_required": null,
+      "flag_set": "story_r6_boss_killed",
+      "display_type": "full_screen_overlay",
+      "speaker_id": "void_sovereign",
+      "speaker_name": "The Void Sovereign",
+      "speaker_portrait": "",
+      "lines": [
+        "Six regions. Six puppets. You are remarkably persistent for a merchant.",
+        "One region remains. The void's heart. My domain.",
+        "Come if you dare, Shopkeeper.",
+        "But know this — everything you've built, every town, every hero, every supply line — exists because I allow it.",
+        "That courtesy ends now."
+      ],
+      "notes": "Full presence. Grudging respect turns to direct threat."
+    },
+    {
+      "id": "r6_herald_resignation",
+      "trigger": "herald_visit",
+      "flag_required": "story_r6_boss_killed",
+      "flag_set": "story_herald_resigned",
+      "display_type": "portrait_text_box",
+      "speaker_id": "cedric",
+      "speaker_name": "Sir Cedric Ashmore",
+      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon39.png",
+      "lines": [
+        "Cedric arrives in civilian clothes. No tabard. No royal seal.",
+        "I've resigned my commission.",
+        "The King's cause is just — his guilt is real. But I cannot serve a crown that hides the truth from the people fighting for it.",
+        "...",
+        "I'm not leaving, Shopkeeper. I'll fight alongside you.",
+        "Not for the Crown. For the towns. For what you've built."
+      ],
+      "notes": "Major character moment for Cedric. He becomes an ally, not a mouthpiece."
+    }
+  ]
+}

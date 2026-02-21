@@ -1184,6 +1184,48 @@ static func run_tests() -> Dictionary:
 	else:
 		results["failed"] += 1
 
+	var t148 = _test_campaign_flag_api()
+	results["tests"].append(t148)
+	if t148["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t149 = _test_campaign_flag_save_roundtrip()
+	results["tests"].append(t149)
+	if t149["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t150 = _test_campaign_dialog_data_parsing()
+	results["tests"].append(t150)
+	if t150["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t151 = _test_campaign_dialog_loading()
+	results["tests"].append(t151)
+	if t151["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t152 = _test_campaign_flag_required_filtering()
+	results["tests"].append(t152)
+	if t152["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t153 = _test_campaign_shown_flag_prevents_retrigger()
+	results["tests"].append(t153)
+	if t153["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
 	print("")
 	print("=" .repeat(60))
 	print("  TEST RESULTS: %d passed, %d failed" % [results["passed"], results["failed"]])
@@ -8247,3 +8289,184 @@ static func _test_event_outcomes_from_dict() -> Dictionary:
 	return {"name": "EventData.from_dict parses v2 outcomes correctly", "passed": passed}
 
 
+# ============================================================================
+# TESTS 148-153: Campaign Dialog System
+# ============================================================================
+
+static func _test_campaign_flag_api() -> Dictionary:
+	print("--- TEST 148: Campaign flag set/get/has API ---")
+	var old_flags: Dictionary = GameContext.campaign_flags.duplicate()
+
+	GameContext.campaign_flags = {}
+	var before: bool = GameContext.has_campaign_flag("test_flag")
+	GameContext.set_campaign_flag("test_flag")
+	var after: bool = GameContext.has_campaign_flag("test_flag")
+	var other: bool = GameContext.has_campaign_flag("other_flag")
+
+	# Duplicate set should not crash
+	GameContext.set_campaign_flag("test_flag")
+	var count: int = GameContext.campaign_flags.size()
+
+	GameContext.campaign_flags = old_flags
+	var passed: bool = not before and after and not other and count == 1
+	if passed:
+		print("[PASS] Campaign flag API: set/get/has work correctly")
+	else:
+		print("[FAIL] before=%s after=%s other=%s count=%d" % [str(before), str(after), str(other), count])
+	return {"name": "Campaign flag set/get/has API", "passed": passed}
+
+
+static func _test_campaign_flag_save_roundtrip() -> Dictionary:
+	print("--- TEST 149: Campaign flag save/load round-trip ---")
+	var old_flags: Dictionary = GameContext.campaign_flags.duplicate()
+
+	GameContext.campaign_flags = {"story_test_a": true, "story_test_b": true}
+
+	# Build save data dict the same way save_game() does
+	var save_data: Dictionary = {"campaign_flags": GameContext.campaign_flags.duplicate()}
+
+	# Clear and simulate load
+	GameContext.campaign_flags = {}
+	if save_data.has("campaign_flags") and save_data.campaign_flags is Dictionary:
+		GameContext.campaign_flags = save_data.campaign_flags
+
+	var a_ok: bool = GameContext.has_campaign_flag("story_test_a")
+	var b_ok: bool = GameContext.has_campaign_flag("story_test_b")
+	var c_absent: bool = not GameContext.has_campaign_flag("story_test_c")
+
+	GameContext.campaign_flags = old_flags
+	var passed: bool = a_ok and b_ok and c_absent
+	if passed:
+		print("[PASS] Campaign flags survive save/load round-trip")
+	else:
+		print("[FAIL] a=%s b=%s c_absent=%s" % [str(a_ok), str(b_ok), str(c_absent)])
+	return {"name": "Campaign flag save/load round-trip", "passed": passed}
+
+
+static func _test_campaign_dialog_data_parsing() -> Dictionary:
+	print("--- TEST 150: CampaignDialogData.from_dict parsing ---")
+
+	var data: Dictionary = {
+		"id": "r1_test",
+		"trigger": "region_first_arrival",
+		"flag_required": null,
+		"flag_set": "story_r1_test",
+		"display_type": "full_screen_overlay",
+		"speaker_id": "mira",
+		"speaker_name": "Mira",
+		"speaker_portrait": "res://test.png",
+		"lines": ["Line 1", "Line 2", "Line 3"],
+		"notes": "Test notes"
+	}
+
+	var dialog: CampaignDialogData = CampaignDialogData.from_dict(data, "region_1")
+
+	var id_ok: bool = dialog.id == "r1_test"
+	var region_ok: bool = dialog.region == "region_1"
+	var trigger_ok: bool = dialog.trigger == "region_first_arrival"
+	var flag_req_ok: bool = dialog.flag_required == ""  # null -> ""
+	var flag_set_ok: bool = dialog.flag_set == "story_r1_test"
+	var display_ok: bool = dialog.display_type == "full_screen_overlay"
+	var speaker_ok: bool = dialog.speaker_name == "Mira"
+	var lines_ok: bool = dialog.lines.size() == 3 and dialog.lines[0] == "Line 1"
+	var valid_ok: bool = dialog.is_valid()
+
+	# Test null speaker_name handling
+	var data2: Dictionary = {"id": "r1_null", "trigger": "test", "speaker_name": null, "lines": ["x"]}
+	var d2: CampaignDialogData = CampaignDialogData.from_dict(data2, "region_1")
+	var null_name_ok: bool = d2.speaker_name == ""
+
+	var passed: bool = id_ok and region_ok and trigger_ok and flag_req_ok and flag_set_ok and display_ok and speaker_ok and lines_ok and valid_ok and null_name_ok
+	if passed:
+		print("[PASS] CampaignDialogData.from_dict: all fields parsed, null handling correct")
+	else:
+		print("[FAIL] id=%s region=%s trigger=%s flag_req='%s' flag_set='%s' lines=%d valid=%s null_name='%s'" % [dialog.id, dialog.region, dialog.trigger, dialog.flag_required, dialog.flag_set, dialog.lines.size(), str(dialog.is_valid()), d2.speaker_name])
+	return {"name": "CampaignDialogData.from_dict parsing", "passed": passed}
+
+
+static func _test_campaign_dialog_loading() -> Dictionary:
+	print("--- TEST 151: DataRegistry campaign dialog loading ---")
+
+	var all_dialogs: Array = DataRegistry.get_all_campaign_dialogs()
+	var r1: Array = DataRegistry.get_campaign_dialogs_for_region("region_1")
+	var r7: Array = DataRegistry.get_campaign_dialogs_for_region("region_7")
+	var empty: Array = DataRegistry.get_campaign_dialogs_for_region("region_99")
+
+	var total_ok: bool = all_dialogs.size() >= 27  # At least 27 (may grow)
+	var r1_ok: bool = r1.size() >= 3  # R1 has 3 dialogs (herald_intro merged Mira into tutorial)
+	var r7_ok: bool = r7.size() >= 5  # R7 has 5 dialogs
+	var empty_ok: bool = empty.size() == 0
+
+	# Verify first R1 dialog has correct data (Cedric's herald_intro is now first)
+	var first_ok: bool = false
+	if r1.size() > 0:
+		var first = r1[0]
+		first_ok = first.id == "r1_herald_intro" and first.trigger == "region_first_arrival" and first.lines.size() >= 3
+
+	var passed: bool = total_ok and r1_ok and r7_ok and empty_ok and first_ok
+	if passed:
+		print("[PASS] Campaign dialogs loaded: total=%d r1=%d r7=%d" % [all_dialogs.size(), r1.size(), r7.size()])
+	else:
+		print("[FAIL] total=%d(>=27?%s) r1=%d(>=3?%s) r7=%d(>=5?%s) empty=%d first_ok=%s" % [all_dialogs.size(), str(total_ok), r1.size(), str(r1_ok), r7.size(), str(r7_ok), empty.size(), str(first_ok)])
+	return {"name": "DataRegistry campaign dialog loading", "passed": passed}
+
+
+static func _test_campaign_flag_required_filtering() -> Dictionary:
+	print("--- TEST 152: Campaign dialog flag_required filtering ---")
+	var old_flags: Dictionary = GameContext.campaign_flags.duplicate()
+	GameContext.campaign_flags = {}
+
+	# R1 post_boss_herald requires "story_r1_boss_killed" flag
+	# Without the flag, it should NOT appear in pending
+	var pending_without: Array = CampaignDialog.get_pending_dialogs("herald_visit", "region_1")
+	var found_herald_without: bool = false
+	for d in pending_without:
+		if d.id == "r1_post_boss_herald":
+			found_herald_without = true
+
+	# Set the required flag
+	GameContext.set_campaign_flag("story_r1_boss_killed")
+	var pending_with: Array = CampaignDialog.get_pending_dialogs("herald_visit", "region_1")
+	var found_herald_with: bool = false
+	for d in pending_with:
+		if d.id == "r1_post_boss_herald":
+			found_herald_with = true
+
+	GameContext.campaign_flags = old_flags
+	var passed: bool = not found_herald_without and found_herald_with
+	if passed:
+		print("[PASS] flag_required filtering: blocked without flag, allowed with flag")
+	else:
+		print("[FAIL] without_flag=%s with_flag=%s" % [str(found_herald_without), str(found_herald_with)])
+	return {"name": "Campaign dialog flag_required filtering", "passed": passed}
+
+
+static func _test_campaign_shown_flag_prevents_retrigger() -> Dictionary:
+	print("--- TEST 153: Shown flag prevents re-trigger ---")
+	var old_flags: Dictionary = GameContext.campaign_flags.duplicate()
+	GameContext.campaign_flags = {}
+
+	# R1 herald_intro should appear (now fires as region_first_arrival)
+	var pending_before: Array = CampaignDialog.get_pending_dialogs("region_first_arrival", "region_1")
+	var found_before: bool = false
+	for d in pending_before:
+		if d.id == "r1_herald_intro":
+			found_before = true
+
+	# Mark as shown
+	GameContext.set_campaign_flag("shown_r1_herald_intro")
+
+	# Should no longer appear
+	var pending_after: Array = CampaignDialog.get_pending_dialogs("region_first_arrival", "region_1")
+	var found_after: bool = false
+	for d in pending_after:
+		if d.id == "r1_herald_intro":
+			found_after = true
+
+	GameContext.campaign_flags = old_flags
+	var passed: bool = found_before and not found_after
+	if passed:
+		print("[PASS] shown_ flag prevents re-trigger")
+	else:
+		print("[FAIL] before=%s after=%s" % [str(found_before), str(found_after)])
+	return {"name": "Shown flag prevents re-trigger", "passed": passed}

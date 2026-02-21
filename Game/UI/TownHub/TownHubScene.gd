@@ -69,9 +69,28 @@ func _ready() -> void:
 	_build_nav_rail()
 	_build_town_map()
 	GameContext.location_changed.connect(_on_location_changed)
-	_check_first_launch_guidance()
-	_check_facilities_overview()
+	# Show overlays sequentially — each must finish before the next starts,
+	# otherwise multiple dialogs/tutorials stack on screen simultaneously.
+	await _check_campaign_dialogs()
+	await _check_first_launch_guidance()
+	await _check_facilities_overview()
 	_check_region_unlock_notification()
+
+
+## Show campaign story dialogs triggered by entering town.
+func _check_campaign_dialogs() -> void:
+	# Region first arrival
+	var overlay = CampaignDialog.try_show(self, "region_first_arrival")
+	if overlay != null:
+		await overlay.dialog_finished
+	# Herald visits (flag-gated)
+	overlay = CampaignDialog.try_show(self, "herald_visit")
+	if overlay != null:
+		await overlay.dialog_finished
+	# Keeper story beats (flag-gated, fire on town entry)
+	overlay = CampaignDialog.try_show(self, "keeper_story")
+	if overlay != null:
+		await overlay.dialog_finished
 
 
 # ============================================================================
@@ -461,7 +480,22 @@ func _create_building_panel(facility_id: String, facility) -> PanelContainer:
 
 	# Building icon — TextureRect if icon_path available, ColorRect fallback
 	var icon_tex: Texture2D = null
-	if facility != null and facility.icon_path != "":
+	# Dungeon board: show a random monster portrait from the dungeon's pool
+	if facility != null and facility.facility_type == "dungeon":
+		var dungeon = DataRegistry.get_dungeon(facility_id)
+		if dungeon != null:
+			var all_monsters: Array[String] = []
+			all_monsters.append_array(dungeon.tier1_monster_ids)
+			all_monsters.append_array(dungeon.tier2_monster_ids)
+			all_monsters.append_array(dungeon.elite_monster_ids)
+			if not all_monsters.is_empty():
+				var seed_val: int = SeededRNG.derive_seed("dungeon_icon:%s" % facility_id, GameContext.get_run_seed())
+				var rng: RandomNumberGenerator = SeededRNG.create_rng(seed_val)
+				var monster_id: String = all_monsters[rng.randi_range(0, all_monsters.size() - 1)]
+				var monster = DataRegistry.get_monster(monster_id)
+				if monster != null and monster.portrait_path != "":
+					icon_tex = _load_icon(monster.portrait_path)
+	elif facility != null and facility.icon_path != "":
 		icon_tex = _load_icon(facility.icon_path)
 
 	if icon_tex != null:

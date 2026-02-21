@@ -103,8 +103,19 @@ func _ready() -> void:
 		GameContext.get_rooms_per_floor()
 	])
 
-	# Tutorial on first camp visit (non-blocking overlay)
-	TutorialOverlay.try_show(self, "tutorial_first_camp")
+	# Show overlays sequentially — tutorial first, then campaign story
+	call_deferred("_show_camp_overlays")
+
+
+## Show tutorial then campaign overlays sequentially so they don't stack.
+func _show_camp_overlays() -> void:
+	var tut_overlay = TutorialOverlay.try_show(self, "tutorial_first_camp")
+	if tut_overlay != null:
+		await tut_overlay.tutorial_finished
+	var floor_num: int = GameContext.get_current_floor()
+	var campaign_overlay = CampaignDialog.try_show(self, "dungeon_camp_story", "", floor_num)
+	if campaign_overlay != null:
+		await campaign_overlay.dialog_finished
 
 
 # ============================================================================

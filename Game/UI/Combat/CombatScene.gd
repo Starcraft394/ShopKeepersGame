@@ -216,9 +216,6 @@ var _current_input_unit: CombatUnit = null  # Current unit awaiting player input
 # Auto mode deferred selection state
 var _auto_pending_targets: Array = []  # Valid targets for deferred auto-selection
 
-# DEV TOOL: Monster buff tracking
-var _monster_buff_percent: int = 0  # Cumulative buff percentage (0, 25, 50, 75, ...)
-var _monster_buff_btn: Button = null  # Reference to dev button for updating text
 
 # ============================================================================
 # GRID FORMATION v1: Two Side-by-Side Grids with Depth as Columns
@@ -395,13 +392,6 @@ func _ready() -> void:
 	# Make grid cells transparent so empty PanelContainers don't show themed rectangles
 	_clear_cell_backgrounds()
 
-	# DEV TOOL: Add monster buff button
-	_monster_buff_btn = Button.new()
-	_monster_buff_btn.text = "Buff Monsters"
-	_monster_buff_btn.custom_minimum_size = Vector2(110, 0)
-	_monster_buff_btn.pressed.connect(_on_monster_buff_pressed)
-	$BottomPanel/ButtonRow.add_child(_monster_buff_btn)
-
 	# Tutorial on first combat (non-blocking — overlay sits on top)
 	TutorialOverlay.try_show(self, "tutorial_first_combat")
 
@@ -449,10 +439,6 @@ func _start_encounter() -> void:
 	_auto_step_pending = false  # Reset auto-step guard
 	_auto_pending_targets.clear()  # Clear any pending auto-selection targets
 	_stop_hero_input_highlight()  # Ensure tween is stopped before encounter reset
-
-	# DEV TOOL: Reset monster buff on new encounter
-	_monster_buff_percent = 0
-	_update_monster_buff_button()
 
 	# Re-enable combat buttons for new encounter
 	auto_button.text = "Auto"
@@ -1027,14 +1013,44 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 		info_vbox.add_child(stats_hbox)
 		_unit_stat_labels[unit_data["id"]] = hero_stat_labels
 
-	# HP bar (ProgressBar with color-coded fill)
+	# HP bar (ProgressBar with custom styling)
 	var hp_bar = ProgressBar.new()
-	hp_bar.custom_minimum_size.y = 10
+	hp_bar.custom_minimum_size.y = 14
 	hp_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hp_bar.max_value = unit_data["max_hp"]
 	hp_bar.value = unit_data["hp"]
+	hp_bar.show_percentage = false
 	hp_bar.mouse_filter = Control.MOUSE_FILTER_STOP
 	hp_bar.tooltip_text = _build_hp_tooltip(unit_data)
+
+	# Style: dark background
+	var hp_bg = StyleBoxFlat.new()
+	hp_bg.bg_color = Color(0.12, 0.12, 0.12, 0.9)
+	hp_bg.corner_radius_top_left = 2
+	hp_bg.corner_radius_top_right = 2
+	hp_bg.corner_radius_bottom_left = 2
+	hp_bg.corner_radius_bottom_right = 2
+	hp_bg.content_margin_left = 0
+	hp_bg.content_margin_right = 0
+	hp_bg.content_margin_top = 0
+	hp_bg.content_margin_bottom = 0
+	hp_bar.add_theme_stylebox_override("background", hp_bg)
+
+	# Style: colored fill based on HP percentage
+	var hp_pct: float = float(unit_data["hp"]) / float(unit_data["max_hp"]) if unit_data["max_hp"] > 0 else 0.0
+	var fill_color: Color = Color(0.2, 0.75, 0.2) if hp_pct > 0.5 else (Color(0.85, 0.65, 0.1) if hp_pct > 0.25 else Color(0.85, 0.2, 0.2))
+	var hp_fill = StyleBoxFlat.new()
+	hp_fill.bg_color = fill_color
+	hp_fill.corner_radius_top_left = 2
+	hp_fill.corner_radius_top_right = 2
+	hp_fill.corner_radius_bottom_left = 2
+	hp_fill.corner_radius_bottom_right = 2
+	hp_fill.content_margin_left = 0
+	hp_fill.content_margin_right = 0
+	hp_fill.content_margin_top = 0
+	hp_fill.content_margin_bottom = 0
+	hp_bar.add_theme_stylebox_override("fill", hp_fill)
+
 	info_vbox.add_child(hp_bar)
 
 	# D1: HP numbers label inside HP bar
@@ -1984,33 +2000,6 @@ func _on_reset_pressed() -> void:
 	_start_encounter()
 
 
-## DEV TOOL: Buff all monsters by 25% each click
-func _on_monster_buff_pressed() -> void:
-	if _combat_controller == null:
-		return
-
-	# Apply 25% buff (multiplier = 1.25)
-	_combat_controller.buff_all_enemies(1.25)
-	_monster_buff_percent += 25
-
-	# Update button text to show current buff level
-	_update_monster_buff_button()
-
-	# Refresh enemy display to show new stats
-	_refresh_all_panels()
-
-	_log("[color=orange][DEV] Monsters buffed to +%d%%[/color]" % _monster_buff_percent)
-
-
-func _update_monster_buff_button() -> void:
-	if _monster_buff_btn == null:
-		return
-	if _monster_buff_percent == 0:
-		_monster_buff_btn.text = "Buff Monsters"
-	else:
-		_monster_buff_btn.text = "Buff +%d%%" % _monster_buff_percent
-
-
 func _on_combat_ended(_result) -> void:
 	_is_auto_running = false
 	auto_button.text = "Auto"
@@ -2906,6 +2895,12 @@ func _on_loot_continue() -> void:
 		_loot_overlay.queue_free()
 		_loot_overlay = null
 		_loot_panel = null
+
+	# Campaign dialog: boss_first_kill (fires after loot, before transition)
+	if _loot_result != null and _loot_result.is_boss_encounter and _loot_result.is_victory:
+		var campaign_overlay = CampaignDialog.try_show(self, "boss_first_kill")
+		if campaign_overlay != null:
+			await campaign_overlay.dialog_finished
 
 	# Campaign victory: show victory panel before transitioning
 	if _loot_result != null and _loot_result.is_campaign_victory:

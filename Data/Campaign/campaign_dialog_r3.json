@@ -1,0 +1,89 @@
+{
+  "region": "region_3",
+  "region_name": "The Sunken Strand",
+  "dialogs": [
+    {
+      "id": "r3_first_arrival",
+      "trigger": "region_first_arrival",
+      "flag_required": null,
+      "flag_set": "story_r3_arrived",
+      "display_type": "full_screen_overlay",
+      "speaker_id": "barnacle_bill",
+      "speaker_name": "Barnacle Bill",
+      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_Tidelings_PNG/Icon5.png",
+      "lines": [
+        "Ahoy, landlubber! So you're the one the Crown keeps sending ahead of the storm.",
+        "Shelldrift's barely holding together. The tides bring corruption inland — ruins surface that were better left drowned.",
+        "Every salvage run gets worse. Whatever's down in those depths, it's angry.",
+        "Set up shop and make yourself useful. We need supplies more than speeches."
+      ]
+    },
+    {
+      "id": "r3_kings_letter",
+      "trigger": "herald_visit",
+      "flag_required": "story_r3_arrived",
+      "flag_set": "story_r3_kings_letter",
+      "display_type": "portrait_text_box",
+      "speaker_id": "king",
+      "speaker_name": "Royal Letter",
+      "speaker_portrait": "",
+      "lines": [
+        "To the Crown Supplier —",
+        "The Sunken Strand contains ruins of... historical significance to the realm.",
+        "Ensure nothing of value is lost to the tides. Report any unusual artifacts or inscriptions.",
+        "This is a matter of Crown interest. Details will follow as appropriate.",
+        "— His Majesty"
+      ],
+      "notes": "First direct King communication. Oddly specific about ruins. Plants suspicion."
+    },
+    {
+      "id": "r3_keeper_suspicion",
+      "trigger": "keeper_story",
+      "flag_required": "story_r3_kings_letter",
+      "flag_set": null,
+      "display_type": "portrait_text_box",
+      "speaker_id": "barnacle_bill",
+      "speaker_name": "Barnacle Bill",
+      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_Tidelings_PNG/Icon5.png",
+      "lines": [
+        "Say, Shopkeeper... strange folk been asking about old ruins down there.",
+        "Royal types. Before you even arrived.",
+        "Makes a sailor wonder what the Crown really wants from these depths."
+      ]
+    },
+    {
+      "id": "r3_boss_kill",
+      "trigger": "boss_first_kill",
+      "flag_required": null,
+      "flag_set": "story_r3_boss_killed",
+      "display_type": "full_screen_overlay",
+      "speaker_id": "void_sovereign",
+      "speaker_name": "???",
+      "speaker_portrait": "",
+      "lines": [
+        "You've reached the Strand. Interesting.",
+        "The Crown sent you here specifically, didn't they?",
+        "Ask yourself why."
+      ],
+      "notes": "First visual manifestation — dark silhouette that flickers. No longer dismissive. Curious."
+    },
+    {
+      "id": "r3_post_boss_herald",
+      "trigger": "herald_visit",
+      "flag_required": "story_r3_boss_killed",
+      "flag_set": null,
+      "display_type": "portrait_text_box",
+      "speaker_id": "cedric",
+      "speaker_name": "Sir Cedric Ashmore",
+      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon39.png",
+      "lines": [
+        "Shopkeeper. His Majesty wishes to know — did you find anything unusual in the depths?",
+        "Artifacts? Inscriptions? Anything... out of the ordinary?",
+        "...",
+        "Very well. I will relay your report.",
+        "Proceed to the Ashen Horizons. The corruption there... accelerates."
+      ],
+      "notes": "Cedric shows visible relief when Shopkeeper has nothing specific. But also confusion. First sign he doesn't know everything."
+    }
+  ]
+}

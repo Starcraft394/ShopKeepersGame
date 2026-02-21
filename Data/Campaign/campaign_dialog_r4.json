@@ -1,0 +1,73 @@
+{
+  "region": "region_4",
+  "region_name": "Ashen Horizons",
+  "dialogs": [
+    {
+      "id": "r4_first_arrival",
+      "trigger": "region_first_arrival",
+      "flag_required": null,
+      "flag_set": "story_r4_arrived",
+      "display_type": "full_screen_overlay",
+      "speaker_id": "cindra",
+      "speaker_name": "Cindra",
+      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_Dwarf/PNG/Simple_color/Icon15.png",
+      "lines": [
+        "So the Crown Supplier finally reaches the fire. About time.",
+        "Embercradle was built on strength. We forge or we burn — there's no middle ground in the Horizons.",
+        "The corruption here is flame — twisted, consuming. Even our forges run hot with it.",
+        "Set up your supply lines, merchant. My people need steel, not speeches."
+      ]
+    },
+    {
+      "id": "r4_herald_urgent",
+      "trigger": "herald_visit",
+      "flag_required": "story_r4_arrived",
+      "flag_set": "story_herald_questioning",
+      "display_type": "portrait_text_box",
+      "speaker_id": "cedric",
+      "speaker_name": "Sir Cedric Ashmore",
+      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon39.png",
+      "lines": [
+        "Shopkeeper. The King has issued new orders.",
+        "You are to search for... fragments. Crystalline fragments that predate the corruption.",
+        "I asked for clarification. I was told to deliver the message. Nothing more.",
+        "...",
+        "I don't like this. But orders are orders. For now."
+      ],
+      "notes": "Cedric is beginning to question. First crack in his loyalty."
+    },
+    {
+      "id": "r4_boss_kill",
+      "trigger": "boss_first_kill",
+      "flag_required": null,
+      "flag_set": "story_r4_boss_killed",
+      "display_type": "full_screen_overlay",
+      "speaker_id": "void_sovereign",
+      "speaker_name": "???",
+      "speaker_portrait": "",
+      "lines": [
+        "Four regions cleared. Four puppets toppled.",
+        "Does your King tell you why the corruption follows his interests so precisely?",
+        "No. He wouldn't.",
+        "You build well, Shopkeeper. It would be a shame if everything you've built was... temporary."
+      ],
+      "notes": "Hooded figure apparition, clearer than before. Knows the Shopkeeper by role. Direct challenge."
+    },
+    {
+      "id": "r4_thalric_observation",
+      "trigger": "keeper_story",
+      "flag_required": "story_r4_boss_killed",
+      "flag_set": null,
+      "display_type": "portrait_text_box",
+      "speaker_id": "thalric",
+      "speaker_name": "Thalric",
+      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon35.png",
+      "lines": [
+        "I've trained soldiers my whole life. Seen corruption in a dozen forms.",
+        "But this — the corruption in each region — it's not random. It's focused.",
+        "Like someone is directing it toward specific places.",
+        "You've noticed too, haven't you?"
+      ]
+    }
+  ]
+}

@@ -10,6 +10,7 @@ const TownDataScript := preload("res://Game/Core/DataTypes/TownData.gd")
 const DungeonDataScript := preload("res://Game/Core/DataTypes/DungeonData.gd")
 const EventTableDataScript := preload("res://Game/Core/DataTypes/EventTableData.gd")
 const EventDataScript := preload("res://Game/Core/DataTypes/EventData.gd")
+const CampaignDialogDataScript := preload("res://Game/Core/DataTypes/CampaignDialogData.gd")
 
 # ============================================================================
 # SIGNALS
@@ -38,6 +39,7 @@ var _event_tables: Dictionary = {}     # id -> EventTableData
 var _events: Dictionary = {}           # id -> EventData
 var _mixing_recipes: Dictionary = {}   # facility_id -> Array of recipe dicts
 var _regional_affixes: Dictionary = {} # region_id -> { prefix, stat_bonus, description }
+var _campaign_dialogs: Dictionary = {} # region_id -> Array[CampaignDialogData]
 
 var _is_loaded: bool = false
 var _load_errors: Array[String] = []
@@ -77,6 +79,7 @@ func _load_all_data() -> void:
 	_load_folder("Events/Definitions", _events, EventDataScript)
 	_load_mixing_recipes()
 	_load_regional_affixes()
+	_load_campaign_dialogs()
 
 	_is_loaded = true
 
@@ -352,6 +355,59 @@ func get_mixing_recipe_count(facility_id: String, max_tier: int) -> int:
 
 
 # ============================================================================
+# CAMPAIGN DIALOG LOADING
+# ============================================================================
+
+func _load_campaign_dialogs() -> void:
+	var folder_path: String = DATA_BASE_PATH + "Campaign"
+	var dir = DirAccess.open(folder_path)
+	if dir == null:
+		print("[DataRegistry] Campaign folder not found (optional)")
+		return
+	var total: int = 0
+	dir.list_dir_begin()
+	var fname: String = dir.get_next()
+	while fname != "":
+		if not dir.current_is_dir() and fname.ends_with(".json"):
+			var file_path: String = folder_path + "/" + fname
+			var file = FileAccess.open(file_path, FileAccess.READ)
+			if file != null:
+				var json_text: String = file.get_as_text()
+				file.close()
+				var json = JSON.new()
+				var err = json.parse(json_text)
+				if err == OK and json.data is Dictionary:
+					var data: Dictionary = json.data
+					var region_id: String = data.get("region", "")
+					var raw_dialogs = data.get("dialogs", [])
+					if region_id != "" and raw_dialogs is Array:
+						if not _campaign_dialogs.has(region_id):
+							_campaign_dialogs[region_id] = []
+						for raw in raw_dialogs:
+							if raw is Dictionary:
+								var dialog = CampaignDialogDataScript.from_dict(raw, region_id)
+								if dialog.is_valid():
+									_campaign_dialogs[region_id].append(dialog)
+									total += 1
+		fname = dir.get_next()
+	dir.list_dir_end()
+	print("[DataRegistry] Campaign dialogs: %d across %d regions" % [total, _campaign_dialogs.size()])
+
+
+## Get all campaign dialogs for a specific region.
+func get_campaign_dialogs_for_region(region_id: String) -> Array:
+	return _campaign_dialogs.get(region_id, [])
+
+
+## Get all campaign dialogs across all regions.
+func get_all_campaign_dialogs() -> Array:
+	var result: Array = []
+	for region_dialogs in _campaign_dialogs.values():
+		result.append_array(region_dialogs)
+	return result
+
+
+# ============================================================================
 # PUBLIC API - QUERIES
 # ============================================================================
 
@@ -458,6 +514,10 @@ func _print_summary() -> void:
 	print("  Dungeons:       %d" % _dungeons.size())
 	print("  Event Tables:   %d" % _event_tables.size())
 	print("  Events:         %d" % _events.size())
+	var total_campaign: int = 0
+	for region_dialogs in _campaign_dialogs.values():
+		total_campaign += region_dialogs.size()
+	print("  Campaign:       %d" % total_campaign)
 	print("============================")
 
 
