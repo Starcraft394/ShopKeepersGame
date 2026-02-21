@@ -275,11 +275,18 @@ static func create_monster(monster_id: String, unit_index: int) -> CombatUnit:
 		unit.defense = 2
 		unit.speed = 8
 
+	# Apply challenge level scaling (session-only playtest tool)
+	var _gc = Engine.get_main_loop().root.get_node_or_null("GameContext") if Engine.get_main_loop() else null
+	if _gc and _gc.challenge_level > 0:
+		unit.max_health = int(unit.max_health * _gc.get_hp_multiplier())
+		unit.attack = int(unit.attack * _gc.get_damage_multiplier())
+
 	unit.current_health = unit.max_health
 	unit.statuses = StatusRuntime.new(unit.unit_id)
 
-	print("[CombatUnit] Created monster: %s (HP:%d ATK:%d DEF:%d SPD:%d)" % [
-		unit.display_name, unit.max_health, unit.attack, unit.defense, unit.speed])
+	var _cl: int = _gc.challenge_level if _gc else 0
+	print("[CombatUnit] Created monster: %s (HP:%d ATK:%d DEF:%d SPD:%d CL:%d)" % [
+		unit.display_name, unit.max_health, unit.attack, unit.defense, unit.speed, _cl])
 
 	return unit
 

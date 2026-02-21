@@ -331,6 +331,18 @@ func calculate_rewards(enemy_data: Array) -> void:
 									if biased_id != "":
 										item_id = biased_id
 								merged[item_id] = merged.get(item_id, 0) + qty
+
+					# Floor 1 bonus: base materials drop in all dungeons on first floor
+					var floor_idx: int = _context.get("floor_index", -1)
+					if floor_idx == 0:
+						var base_table = DataRegistry.get_loot_table("lt_base_materials")
+						if base_table != null:
+							var base_rolls = SeededRNG.roll_loot_table(base_table, _rng)
+							for base_drop in base_rolls:
+								var base_id: String = base_drop.get("item_id", "")
+								var base_qty: int = base_drop.get("quantity", 1)
+								if base_id != "":
+									merged[base_id] = merged.get(base_id, 0) + base_qty
 			else:
 				gold_earned += 10  # Fallback
 
@@ -347,6 +359,29 @@ func calculate_rewards(enemy_data: Array) -> void:
 	var gear_drop = _roll_gear_drop(bias_tags)
 	if gear_drop != null:
 		items_dropped.append(gear_drop)
+
+	# Challenge level scaling (session-only playtest tool)
+	if GameContext.challenge_level > 0:
+		gold_earned = int(gold_earned * GameContext.get_gold_multiplier())
+		# Boss bonus: extra loot roll at challenge >= 5
+		if GameContext.boss_bonus_enabled() and is_boss_encounter and _rng != null:
+			for unit in enemy_data:
+				if not unit.is_alive:
+					var monster = DataRegistry.get_monster(unit.source_id)
+					if monster != null and monster.loot_table_id != "":
+						var eff_table = _get_effective_table_id(monster.loot_table_id)
+						var table = DataRegistry.get_loot_table(eff_table)
+						if table != null:
+							var bonus_rolls = SeededRNG.roll_loot_table(table, _rng)
+							for bdrop in bonus_rolls:
+								var bid: String = bdrop.get("item_id", "")
+								var bqty: int = bdrop.get("quantity", 1)
+								if bid != "":
+									var btemplate = DataRegistry.get_item_template(bid)
+									if btemplate:
+										items_dropped.append(ItemInstance.from_template(btemplate, bqty, _rng))
+							print("[Challenge] Boss bonus loot roll (CL=%d)" % GameContext.challenge_level)
+						break  # One bonus roll from first dead boss only
 
 	# Validation print with room/floor context
 	var room_idx = GameContext.get_current_room_index()

@@ -340,40 +340,40 @@ func _determine_route() -> Dictionary:
 
 	# COMBAT phase -> CombatScene
 	if phase == "COMBAT":
-		if FileAccess.file_exists(COMBAT_SCENE_PATH):
+		if ResourceLoader.exists(COMBAT_SCENE_PATH):
 			target_scene = COMBAT_SCENE_PATH
 
 	# DUNGEON_CAMP phase -> DungeonCampScene
 	elif phase == "DUNGEON_CAMP":
-		if FileAccess.file_exists(DUNGEON_CAMP_SCENE_PATH):
+		if ResourceLoader.exists(DUNGEON_CAMP_SCENE_PATH):
 			target_scene = DUNGEON_CAMP_SCENE_PATH
 
 	# ROOM_EVENT phase -> RoomEventScene (non-combat rooms)
 	elif phase == "ROOM_EVENT":
-		if FileAccess.file_exists(ROOM_EVENT_SCENE_PATH):
+		if ResourceLoader.exists(ROOM_EVENT_SCENE_PATH):
 			target_scene = ROOM_EVENT_SCENE_PATH
 
 	# TOWN_HUB phase -> TownHubScene (CraftPix MVP UI)
 	elif phase == "TOWN_HUB":
-		if FileAccess.file_exists(TOWN_HUB_SCENE_PATH):
+		if ResourceLoader.exists(TOWN_HUB_SCENE_PATH):
 			target_scene = TOWN_HUB_SCENE_PATH
 
 	# TOWN or DUNGEON_SELECT -> TownScene
 	elif phase in ["TOWN", "DUNGEON_SELECT", "BOOT", "REWARDS", "RETURN_TO_TOWN"]:
-		if FileAccess.file_exists(TOWN_SCENE_PATH):
+		if ResourceLoader.exists(TOWN_SCENE_PATH):
 			target_scene = TOWN_SCENE_PATH
 
 	# Unknown phase: fallback logic based on dungeon state
 	else:
 		# If in a dungeon (dungeon_id set), might need CombatScene
 		# Otherwise default to TownScene
-		if FileAccess.file_exists(TOWN_SCENE_PATH):
+		if ResourceLoader.exists(TOWN_SCENE_PATH):
 			target_scene = TOWN_SCENE_PATH
 
 	# Final fallback if primary choice doesn't exist
 	if target_scene == "":
 		for fallback in FALLBACK_SCENES:
-			if FileAccess.file_exists(fallback):
+			if ResourceLoader.exists(fallback):
 				target_scene = fallback
 				break
 

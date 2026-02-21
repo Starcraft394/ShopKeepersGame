@@ -56,7 +56,7 @@ var use_value: int = 0  # Effect magnitude (heal amount, etc.)
 # Falls back to base_stats for backwards compatibility
 var stat_bonuses: Dictionary = {}  # { "attack": int, "defense": int, "speed": int, "health": int }
 
-# Backpack-specific: bonus bag capacity when equipped (NOT scaled by quality)
+# Backpack-specific: bonus bag capacity when equipped (+1 per quality tier)
 var bag_capacity_bonus: int = 0
 
 # T4 Equipment ability: grants this ability when equipped
@@ -171,7 +171,12 @@ func get_stat_bonuses_with_quality(quality_tier: int = 0, region_bonus: float = 
 	var result: Dictionary = {}
 	for stat_key in bonuses:
 		var base_val = int(bonuses[stat_key])
-		result[stat_key] = int(base_val * multiplier * (1.0 + region_bonus))
+		var scaled = base_val * multiplier * (1.0 + region_bonus)
+		if q > 0 and base_val > 0:
+			# Guarantee at least +1 per quality tier so low-stat items always benefit
+			result[stat_key] = maxi(ceili(scaled), base_val + q)
+		else:
+			result[stat_key] = int(scaled)
 	return result
 
 ## Get effective buy value (for shop purchases).

@@ -151,6 +151,11 @@ func initialize_combat(hero_ids: Array, enemy_ids: Array, rng: RandomNumberGener
 	# Apply combat modifier damage/gold AFTER units are set up
 	_apply_combat_modifier_effects(modifier)
 
+	# Apply pending event statuses (queued from dungeon events)
+	var pending_statuses = GameContext.consume_pending_combat_statuses()
+	if not pending_statuses.is_empty():
+		_apply_pending_event_statuses(pending_statuses)
+
 	combat_started.emit(_player_units, _enemy_units)
 
 
@@ -256,11 +261,11 @@ func _apply_all_passives() -> void:
 		_apply_passives_to_unit(unit)
 
 
-## Apply passive stat bonuses to a single unit.
+## Apply passive stat bonuses to a single unit (respects level-gating).
 func _apply_passives_to_unit(unit: CombatUnit) -> void:
-	if unit.passive_a_id != "":
+	if unit.passive_a_id != "" and GameContext.is_ability_slot_unlocked("passive_a", unit.hero_level):
 		_apply_single_passive(unit, unit.passive_a_id)
-	if unit.passive_b_id != "":
+	if unit.passive_b_id != "" and GameContext.is_ability_slot_unlocked("passive_b", unit.hero_level):
 		_apply_single_passive(unit, unit.passive_b_id)
 
 
@@ -604,6 +609,28 @@ func _apply_combat_modifier_effects(modifier: Dictionary) -> void:
 		print("[CombatMod] Applied bonus_gold=%d to dungeon stash" % bonus_gold)
 
 
+## Apply pending status effects queued from dungeon events.
+func _apply_pending_event_statuses(statuses: Array) -> void:
+	for entry in statuses:
+		var status_id: String = entry.get("status_id", "")
+		var duration: int = entry.get("duration", 2)
+		var target_type: String = entry.get("target", "random_hero")
+		if status_id == "":
+			continue
+		match target_type:
+			"random_hero":
+				var living: Array = _player_units.filter(func(u): return u.is_alive)
+				if living.size() > 0:
+					var target = living[_rng.randi() % living.size()]
+					target.apply_status_v1(status_id, duration, "event")
+					print("[CombatMod] Applied %s (%d turns) to %s (from event)" % [status_id, duration, target.display_name])
+			"party":
+				for unit in _player_units:
+					if unit.is_alive:
+						unit.apply_status_v1(status_id, duration, "event")
+				print("[CombatMod] Applied %s (%d turns) to entire party (from event)" % [status_id, duration])
+
+
 ## Determine which ability a unit should use (priority: Active A > Active B > Weapon > Basic).
 func _get_ability_to_use(unit: CombatUnit) -> Dictionary:
 	# Priority 1: Class Active A
@@ -882,6 +909,7 @@ func _unit_to_snapshot(unit: CombatUnit) -> Dictionary:
 		"name": unit.display_name,
 		"hp": unit.current_health,
 		"max_hp": unit.max_health,
+		"base_hp": unit.max_health,
 		"speed": unit.get_effective_speed(),
 		"attack": unit.get_effective_attack(),
 		"defense": unit.get_effective_defense(),
@@ -2708,7 +2736,7 @@ func _consume_action(unit: CombatUnit) -> void:
 func _get_available_actions(unit: CombatUnit) -> Array:
 	var actions = [{"type": "basic", "name": "Basic Attack", "enabled": true, "cooldown": 0}]
 
-	if unit.ability_a_id != "":
+	if unit.ability_a_id != "" and GameContext.is_ability_slot_unlocked("ability_a", unit.hero_level):
 		var ability = DataRegistry.get_ability(unit.ability_a_id)
 		actions.append({
 			"type": "ability_a",
@@ -2718,7 +2746,7 @@ func _get_available_actions(unit: CombatUnit) -> Array:
 			"ability": ability
 		})
 
-	if unit.ability_b_id != "":
+	if unit.ability_b_id != "" and GameContext.is_ability_slot_unlocked("ability_b", unit.hero_level):
 		var ability = DataRegistry.get_ability(unit.ability_b_id)
 		actions.append({
 			"type": "ability_b",
