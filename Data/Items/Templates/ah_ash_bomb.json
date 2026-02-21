@@ -23,6 +23,13 @@
   "base_value": 25,
   "buy_value": 40,
   "stack_max": 3,
-  "icon_path": "",
-  "tags": ["region_4", "consumable", "thrown", "utility", "ashen_horizons", "tier_3"]
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/ah_ash_bomb.png",
+  "tags": [
+    "region_4",
+    "consumable",
+    "thrown",
+    "utility",
+    "ashen_horizons",
+    "tier_3"
+  ]
 }

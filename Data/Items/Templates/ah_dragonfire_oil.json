@@ -23,6 +23,13 @@
   "base_value": 32,
   "buy_value": 50,
   "stack_max": 3,
-  "icon_path": "",
-  "tags": ["region_4", "consumable", "potion", "buff", "ashen_horizons", "tier_3"]
+  "icon_path": "res://Assets/_ArtPacks/Potions/PNG/Transperent/Icon13.png",
+  "tags": [
+    "region_4",
+    "consumable",
+    "potion",
+    "buff",
+    "ashen_horizons",
+    "tier_3"
+  ]
 }

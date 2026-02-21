@@ -25,6 +25,14 @@
   "base_value": 105,
   "buy_value": 0,
   "stack_max": 1,
-  "icon_path": "",
-  "tags": ["region_6", "consumable", "tonic", "healing", "necropolis", "tier_4", "refillable"]
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/nc_phylactery_tonic.png",
+  "tags": [
+    "region_6",
+    "consumable",
+    "tonic",
+    "healing",
+    "necropolis",
+    "tier_4",
+    "refillable"
+  ]
 }

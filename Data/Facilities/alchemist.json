@@ -2,7 +2,7 @@
   "id": "alchemist",
   "display_name": "Alchemist",
   "description": "A bubbling laboratory where monster parts become healing tonics and potent elixirs.",
-  "icon_path": "res://Assets/Icons/Facilities/icon_facility_alchemist.png",
+  "icon_path": "res://Assets/_ArtPacks/Loot_Demon/PNG/Transperent/Icon41.png",
   "facility_type": "production",
   "max_tier": 4,
   "unlock_region": 1,

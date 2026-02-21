@@ -35,7 +35,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 80,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/ah_drakescale_greaves.png",
   "tags": [
     "region_4",
     "armor",

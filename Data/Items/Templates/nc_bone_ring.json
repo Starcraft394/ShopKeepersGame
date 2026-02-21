@@ -24,7 +24,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 55,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/MeatSkins/PNG/Transperent/Icon39.png",
   "tags": [
     "region_6",
     "accessory",

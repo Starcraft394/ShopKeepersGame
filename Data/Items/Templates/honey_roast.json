@@ -23,6 +23,11 @@
   "base_value": 18,
   "buy_value": 28,
   "stack_max": 5,
-  "icon_path": "",
-  "tags": ["region_1", "consumable", "food", "tier_2"]
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/honey_roast.png",
+  "tags": [
+    "region_1",
+    "consumable",
+    "food",
+    "tier_2"
+  ]
 }

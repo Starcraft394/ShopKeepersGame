@@ -36,7 +36,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 108,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/se_echo_amulet.png",
   "tags": [
     "region_5",
     "accessory",

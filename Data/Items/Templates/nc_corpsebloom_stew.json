@@ -24,6 +24,12 @@
   "stack_max": 5,
   "base_value": 40,
   "buy_value": 62,
-  "icon_path": "",
-  "tags": ["region_6", "consumable", "food", "necropolis", "tier_4"]
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/nc_corpsebloom_stew.png",
+  "tags": [
+    "region_6",
+    "consumable",
+    "food",
+    "necropolis",
+    "tier_4"
+  ]
 }

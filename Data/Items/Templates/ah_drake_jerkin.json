@@ -27,7 +27,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 76,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/ah_drake_jerkin.png",
   "tags": [
     "region_4",
     "armor",

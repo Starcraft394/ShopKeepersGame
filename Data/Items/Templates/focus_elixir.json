@@ -20,6 +20,6 @@
     "focus",
     "crafted"
   ],
-  "icon_path": "res://Assets/Icons/Items/icon_item_focus_elixir.png",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/focus_elixir.png",
   "stack_max": 10
 }

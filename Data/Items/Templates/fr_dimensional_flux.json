@@ -12,7 +12,7 @@
   "buff_amount": 8,
   "buff_duration": 5,
   "base_value": 90,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/fr_dimensional_flux.png",
   "tags": [
     "region_7",
     "consumable",

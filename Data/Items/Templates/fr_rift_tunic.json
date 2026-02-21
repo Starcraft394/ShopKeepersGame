@@ -27,7 +27,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 68,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/fr_rift_tunic.png",
   "tags": [
     "region_7",
     "armor",

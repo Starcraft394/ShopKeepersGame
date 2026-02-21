@@ -23,6 +23,12 @@
   "base_value": 38,
   "buy_value": 60,
   "stack_max": 3,
-  "icon_path": "",
-  "tags": ["region_2", "consumable", "potion", "buff", "tier_3"]
+  "icon_path": "res://Assets/_ArtPacks/Potions/PNG/Transperent/Icon32.png",
+  "tags": [
+    "region_2",
+    "consumable",
+    "potion",
+    "buff",
+    "tier_3"
+  ]
 }

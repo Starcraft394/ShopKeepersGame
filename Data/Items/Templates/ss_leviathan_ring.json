@@ -35,7 +35,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 98,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Rings/PNG/Transperent/Icon9.png",
   "tags": [
     "region_3",
     "accessory",

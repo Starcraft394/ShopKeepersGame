@@ -25,6 +25,14 @@
   "base_value": 90,
   "buy_value": 0,
   "stack_max": 1,
-  "icon_path": "",
-  "tags": ["region_2", "consumable", "elixir", "buff", "fungalmire", "tier_4", "refillable"]
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/fm_spore_elixir.png",
+  "tags": [
+    "region_2",
+    "consumable",
+    "elixir",
+    "buff",
+    "fungalmire",
+    "tier_4",
+    "refillable"
+  ]
 }

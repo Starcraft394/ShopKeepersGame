@@ -34,7 +34,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 92,
-  "icon_path": "res://Assets/_ArtPacks/Cuirass/PNG/Transperent/Icon23.png",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/gw_thornhide_vest.png",
   "tags": [
     "region_1",
     "armor",

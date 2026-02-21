@@ -23,6 +23,11 @@
   "base_value": 25,
   "buy_value": 40,
   "stack_max": 10,
-  "icon_path": "res://Assets/Icons/Items/icon_item_strong_healing_tonic.png",
-  "tags": ["region_1", "consumable", "healing", "crafted"]
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/strong_healing_tonic.png",
+  "tags": [
+    "region_1",
+    "consumable",
+    "healing",
+    "crafted"
+  ]
 }

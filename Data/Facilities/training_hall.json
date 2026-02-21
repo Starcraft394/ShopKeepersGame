@@ -2,7 +2,7 @@
   "id": "training_hall",
   "display_name": "Training Hall",
   "description": "A sparring ground where heroes hone their skills and learn new classes.",
-  "icon_path": "res://Assets/Icons/Facilities/icon_facility_training_hall.png",
+  "icon_path": "res://Assets/_ArtPacks/MagicBooks/PNG/Transperent/Icon1.png",
   "facility_type": "training_hall",
   "max_tier": 4,
   "unlock_region": 1,

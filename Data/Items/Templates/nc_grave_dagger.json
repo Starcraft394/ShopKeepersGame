@@ -39,7 +39,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 118,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Daggers/PNG/Transperent/Icon47.png",
   "tags": [
     "region_6",
     "weapon",

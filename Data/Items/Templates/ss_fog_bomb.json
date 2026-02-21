@@ -23,6 +23,13 @@
   "base_value": 22,
   "buy_value": 35,
   "stack_max": 3,
-  "icon_path": "",
-  "tags": ["region_3", "consumable", "thrown", "utility", "sunken_strand", "tier_3"]
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/ss_fog_bomb.png",
+  "tags": [
+    "region_3",
+    "consumable",
+    "thrown",
+    "utility",
+    "sunken_strand",
+    "tier_3"
+  ]
 }

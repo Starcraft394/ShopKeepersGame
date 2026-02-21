@@ -9,7 +9,10 @@
   "equip_slot": "bag",
   "category": "equipment",
   "tier": 4,
-  "base_stats": {"defense": 3, "health": 8},
+  "base_stats": {
+    "defense": 3,
+    "health": 8
+  },
   "stat_bonuses": {},
   "bag_capacity_bonus": 8,
   "combat_tag": "spore_shield",
@@ -22,7 +25,7 @@
   "base_value": 165,
   "buy_value": 0,
   "can_refine": false,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/fm_fungal_heart_pack.png",
   "tags": [
     "region_2",
     "backpack",

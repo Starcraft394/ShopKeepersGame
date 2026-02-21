@@ -10,7 +10,7 @@
   "use_effect": "heal",
   "heal_amount": 120,
   "base_value": 85,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/fr_void_mend.png",
   "tags": [
     "region_7",
     "consumable",

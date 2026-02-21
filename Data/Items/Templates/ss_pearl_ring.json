@@ -24,7 +24,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 42,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/ss_pearl_ring.png",
   "tags": [
     "region_3",
     "accessory",

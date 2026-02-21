@@ -23,6 +23,9 @@ var _bgm_tracks: Dictionary = {}  # key -> AudioStream
 var _bgm_track_keys: Array[String] = []  # ordered list of track keys
 var _current_track_key: String = ""  # currently playing track key
 
+# Closeable Stack — LIFO overlay close system for ESC key
+var _closeable_stack: Array = []  # [{node: Node, close: Callable}]
+
 # Pause/Options Menu
 var _pause_overlay: CanvasLayer = null
 var _bgm_slider: HSlider = null
@@ -216,12 +219,55 @@ func _play_click() -> void:
 
 
 # ============================================================================
+# CLOSEABLE STACK — Register overlays for ESC-to-close (LIFO)
+# ============================================================================
+
+## Register an overlay node so ESC closes it before showing the pause menu.
+## Later registrations close first (LIFO). The close_fn callable is invoked on ESC.
+func register_closeable(node: Node, close_fn: Callable) -> void:
+	# Avoid duplicates
+	for entry in _closeable_stack:
+		if entry["node"] == node:
+			return
+	_closeable_stack.append({"node": node, "close": close_fn})
+
+
+## Unregister an overlay node (call when the overlay closes itself).
+func unregister_closeable(node: Node) -> void:
+	for i in range(_closeable_stack.size() - 1, -1, -1):
+		if _closeable_stack[i]["node"] == node:
+			_closeable_stack.remove_at(i)
+			return
+
+
+## Returns true if there are any closeable overlays registered.
+func has_closeables() -> bool:
+	# Prune stale entries first
+	_prune_stale_closeables()
+	return _closeable_stack.size() > 0
+
+
+## Remove entries whose nodes have been freed.
+func _prune_stale_closeables() -> void:
+	for i in range(_closeable_stack.size() - 1, -1, -1):
+		if not is_instance_valid(_closeable_stack[i]["node"]):
+			_closeable_stack.remove_at(i)
+
+
+# ============================================================================
 # GLOBAL ESC HANDLER
 # ============================================================================
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
-		if _pause_overlay != null:
+		# Prune stale entries (nodes freed without unregister)
+		_prune_stale_closeables()
+		if _closeable_stack.size() > 0:
+			# Pop the topmost closeable and invoke its close callable
+			var top = _closeable_stack.pop_back()
+			if is_instance_valid(top["node"]):
+				top["close"].call()
+		elif _pause_overlay != null:
 			_close_pause_menu()
 		else:
 			_open_pause_menu()

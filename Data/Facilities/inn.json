@@ -2,7 +2,7 @@
   "id": "inn",
   "display_name": "Wanderer's Rest Inn",
   "description": "A cozy tavern where heroes gather, rest, and join your cause.",
-  "icon_path": "res://Assets/Icons/Facilities/icon_facility_inn.png",
+  "icon_path": "res://Assets/_ArtPacks/Food/PNG/Transperent/Icon38.png",
   "facility_type": "inn",
   "max_tier": 4,
   "unlock_region": 1,

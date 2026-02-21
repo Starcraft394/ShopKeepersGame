@@ -27,7 +27,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 60,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/nc_spectral_bow.png",
   "tags": [
     "region_6",
     "weapon",

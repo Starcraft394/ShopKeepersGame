@@ -34,7 +34,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 105,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/fr_void_helm.png",
   "tags": [
     "region_7",
     "armor",

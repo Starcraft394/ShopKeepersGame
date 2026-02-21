@@ -24,7 +24,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 82,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/nc_deathward_band.png",
   "tags": [
     "region_6",
     "accessory",

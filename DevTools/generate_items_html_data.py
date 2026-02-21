@@ -76,25 +76,146 @@ RECOLOR_SOURCES = {
     # R1/R2 Materials
     "aged_cheese": ("AA", 6), "boss_trophy_greenwood": ("AA", 18),
     "mycelium_thread": ("Q", 47), "cursed_dust": ("AF", 1),
-    # R3 — Sunken Shoals
+    # R2 — Fungal Marshes T2
+    "fm_bioluminescent_ring": ("V", 34), "fm_fungal_shortbow": ("D", 13),
+    "fm_fungal_tunic": ("H", 7), "fm_mycelium_vest": ("H", 1),
+    "fm_spore_blade": ("B", 31), "fm_spore_knife": ("B", 30),
+    "fm_spore_mace": ("E", 44), "fm_spore_satchel": ("BO", 15),
+    "fm_sporeguard_helm": ("G", 6),
+    # R2 — Fungal Marshes T3
+    "fm_fungal_crown": ("G", 11), "fm_fungal_crusher": ("E", 6),
+    "fm_fungal_fang": ("B", 36), "fm_fungal_longbow": ("D", 18),
+    "fm_fungal_plate": ("H", 15), "fm_mycelium_focus": ("M", 9),
+    "fm_mycelium_saber": ("B", 43), "fm_mycelium_tunic": ("H", 7),
+    "fm_sporeguard_pendant": ("AD", 26),
+    # R2 — Fungal Marshes T4
+    "fm_fungal_heart_focus": ("AA", 39), "fm_fungal_heart_pack": ("BO", 22),
+    # R3 — Sunken Shoals Materials
     "driftwood": ("W", 27), "ss_kelp_sinew": ("W", 6),
     "stormglass_fragment": ("BM", 7), "boss_trophy_sunken_strand": ("AE", 5),
-    # R4 — Ashen Horizons
+    # R3 — Sunken Shoals T2
+    "ss_coral_focus": ("AA", 40), "ss_driftwood_bow": ("D", 17),
+    "ss_kelp_leggings": ("I", 33), "ss_kelp_satchel": ("BO", 13),
+    "ss_pearl_pendant": ("AF", 26), "ss_pearl_ring": ("L", 3),
+    "ss_shell_helm": ("G", 22), "ss_tide_sword": ("A", 12),
+    # R3 — Sunken Shoals T3
+    "ss_abalone_shield": ("AC", 23), "ss_barnacle_plate": ("H", 33),
+    "ss_kelp_greaves": ("I", 41), "ss_kelp_vest": ("H", 39),
+    "ss_sea_glass_focus": ("BN", 41), "ss_shell_pack": ("BO", 38),
+    "ss_tide_fang": ("B", 3),
+    # R3 — Sunken Shoals T4
+    "ss_leviathan_pack": ("BO", 28), "ss_leviathan_staff": ("F", 25),
+    "ss_tidewoven_vest": ("H", 40),
+    # R4 — Ashen Horizons Materials
     "ah_drake_scale": ("AE", 38), "ember_dust": ("AE", 26),
     "magma_core": ("AA", 14), "obsidian_shard": ("M", 4),
     "ah_sulfite_gland": ("AA", 14), "volcanic_glass": ("AA", 22),
-    # R5 — Starfall Expanse
+    # R4 — Ashen Horizons T2
+    "ah_cinder_pendant": ("AC", 12), "ah_cinder_satchel": ("BO", 11),
+    "ah_cinder_tunic": ("H", 8), "ah_obsidian_mace": ("E", 1),
+    "ah_obsidian_ring": ("L", 14), "ah_obsidian_vest": ("H", 9),
+    # R4 — Ashen Horizons T3
+    "ah_drake_jerkin": ("H", 6), "ah_drake_pack": ("BO", 31),
+    "ah_magma_plate": ("H", 26), "ah_obsidian_staff": ("F", 23),
+    "ah_scorched_longbow": ("D", 19), "ah_volcanic_helm": ("G", 15),
+    # R4 — Ashen Horizons T4
+    "ah_drakefang_blade": ("B", 23), "ah_drakescale_greaves": ("I", 43),
+    "ah_drakescale_plate": ("H", 27), "ah_draketalon": ("B", 46),
+    # R5 — Starfall Expanse Materials
     "astral_fragment": ("Z", 15), "starfall_core_fragment": ("Z", 39),
     "starfall_dust": ("W", 4), "boss_trophy_starfall_expanse": ("Z", 45),
-    # R6 — Necropolis
+    # R5 — Starfall Expanse T2
+    "se_astral_shortbow": ("D", 13), "se_astral_tunic": ("H", 1),
+    "se_crystal_knife": ("B", 36), "se_crystal_mace": ("E", 9),
+    "se_crystal_pendant": ("M", 28), "se_crystal_ring": ("L", 8),
+    "se_crystal_staff": ("F", 24), "se_crystal_sword": ("A", 16),
+    # R5 — Starfall Expanse T3
+    "se_astral_pack": ("BO", 36), "se_astral_plate": ("H", 13),
+    "se_astral_ring": ("L", 18),
+    "se_crystal_robe": ("H", 10), "se_prism_edge": ("A", 30),
+    "se_prism_fang": ("B", 39), "se_prism_shield": ("BN", 19),
+    "se_temporal_maul": ("E", 11),
+    # R5 — Starfall Expanse T4
+    "se_astral_robe": ("H", 19), "se_chrono_cleaver": ("C", 38),
+    "se_crystal_ward": ("H", 36), "se_echo_amulet": ("AD", 30),
+    "se_echo_shield": ("BN", 29), "se_prism_helm": ("G", 45),
+    "se_prism_staff": ("F", 11), "se_starlight_focus": ("M", 17),
+    "se_temporal_dagger": ("B", 18),
+    # R6 — Necropolis Materials
     "nc_bone_marrow": ("Y", 16), "deadmans_grass": ("BM", 21),
     "nc_grave_dust": ("W", 4), "soul_ore": ("Z", 30),
     "spectral_log": ("BB", 3), "wailing_shard": ("AD", 4),
     "nc_wraith_thread": ("AA", 33), "boss_trophy_necropolis": ("AA", 23),
-    # R7 — Fractured Realm
+    # R6 — Necropolis T2
+    "nc_bone_greaves": ("I", 14), "nc_bone_helm": ("G", 16),
+    "nc_bone_knife": ("B", 33), "nc_bone_mace": ("E", 2),
+    "nc_bone_satchel": ("BO", 19), "nc_bone_shield": ("BN", 3),
+    "nc_bone_vest": ("H", 2), "nc_grave_sword": ("A", 22),
+    "nc_spectral_bow": ("D", 23),
+    # R6 — Necropolis T3
+    "nc_deathward_band": ("L", 16), "nc_ossuary_greaves": ("I", 15),
+    "nc_ossuary_mail": ("H", 13),
+    "nc_ossuary_helm": ("G", 29), "nc_ossuary_maul": ("E", 40),
+    "nc_ossuary_pendant": ("L", 42), "nc_ossuary_shield": ("BN", 15),
+    "nc_soul_edge": ("A", 27), "nc_wraith_fang": ("B", 17),
+    "nc_wraith_pack": ("BB", 17), "nc_wraith_tunic": ("H", 17),
+    # R6 — Necropolis T4
+    "nc_bone_crown": ("G", 41), "nc_ossuary_plate": ("H", 18),
+    "nc_soulfire_focus": ("BN", 43), "nc_spectral_aegis": ("BN", 34),
+    "nc_wraith_leggings": ("I", 10), "nc_wraith_robe": ("H", 46),
+    # R7 — Fractured Realm Materials
     "fr_entropy_residue": ("W", 4), "fractured_soulglass": ("W", 39),
     "primordial_essence": ("V", 35), "void_crystal": ("V", 20),
     "boss_trophy_fractured_realm": ("AE", 35),
+    # R7 — Final Realm T2
+    "fr_rift_focus": ("AC", 48), "fr_rift_greaves": ("I", 25),
+    "fr_rift_helm": ("G", 28), "fr_rift_knife": ("B", 12),
+    "fr_rift_mace": ("E", 19), "fr_rift_satchel": ("BO", 32),
+    "fr_rift_shield": ("BN", 31), "fr_rift_sword": ("A", 37),
+    "fr_rift_tunic": ("H", 2), "fr_rift_vest": ("H", 1),
+    "fr_rift_wand": ("B", 37),
+    # R7 — Final Realm T3
+    "fr_null_blade": ("A", 35), "fr_null_bow": ("D", 4),
+    "fr_null_fang": ("B", 44), "fr_null_greaves": ("I", 42),
+    "fr_null_helm": ("G", 43), "fr_null_maul": ("E", 25),
+    "fr_null_focus_t3": ("AC", 8), "fr_null_pack": ("BO", 39),
+    "fr_null_pendant": ("L", 23), "fr_null_plate": ("H", 31),
+    "fr_null_ring": ("L", 26), "fr_null_shield": ("BN", 35),
+    "fr_null_shroud": ("H", 19), "fr_null_staff": ("E", 27),
+    # R7 — Final Realm T4
+    "fr_dimensional_locket": ("L", 29), "fr_entropy_bow": ("D", 21),
+    "fr_null_barrier": ("BN", 5), "fr_null_focus": ("AB", 43),
+    "fr_rift_band": ("L", 27), "fr_rift_staff": ("F", 47),
+    "fr_void_edge": ("A", 46), "fr_void_greaves": ("I", 46),
+    "fr_void_helm": ("G", 47), "fr_void_pack": ("BO", 89),
+    "fr_void_shroud": ("H", 29),
+    # Consumables — R1 Base (Recoloured)
+    "minor_healing_tonic": ("S", 40), "healing_tonic": ("S", 42),
+    "bandage": ("X", 22), "minor_stamina_snack": ("T", 20),
+    "smelling_salts": ("T", 16), "smoke_bomb": ("T", 27),
+    "focus_elixir": ("T", 36), "power_elixir": ("T", 26),
+    "resistance_salve": ("BB", 45), "stamina_draught": ("AC", 46),
+    "strong_healing_tonic": ("AC", 47),
+    # Consumables — R2 Fungal Marshes
+    "fm_spore_elixir": ("Y", 45),
+    # Consumables — R3 Sunken Shoals
+    "ss_fog_bomb": ("Y", 28), "ss_kelp_wrap": ("T", 13),
+    # Consumables — R4 Ashen Horizons
+    "ah_ash_bomb": ("Y", 46), "ah_charred_feast": ("T", 32),
+    # Consumables — R5 Starfall Expanse
+    "se_starlight_elixir": ("Y", 25),
+    # Consumables — R6 Necropolis
+    "nc_banshee_vial": ("Y", 2), "nc_phylactery_tonic": ("Y", 34),
+    "nc_spectral_draught": ("Y", 11),
+    # Consumables — R7 Fractured Realm
+    "fr_void_essence_flask": ("Y", 44), "fr_entropy_charge": ("Y", 26),
+    "fr_dimensional_flux": ("AC", 46), "fr_void_mend": ("Y", 24),
+    "fr_null_feast": ("T", 46),
+    # Duplicate Icon Fixes
+    "nc_corpsebloom_stew": ("T", 45), "minor_venom_flask": ("T", 29),
+    "ss_brine_venom": ("T", 29), "forest_bounty": ("T", 32),
+    "honey_roast": ("T", 46), "slime_gel": ("Y", 3),
+    "gw_thornhide_vest": ("H", 23), "ah_ember_focus": ("X", 36),
 }
 
 

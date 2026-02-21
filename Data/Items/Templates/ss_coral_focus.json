@@ -27,7 +27,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 50,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/ss_coral_focus.png",
   "tags": [
     "region_3",
     "offhand",

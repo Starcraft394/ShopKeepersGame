@@ -24,6 +24,13 @@
   "stack_max": 5,
   "base_value": 48,
   "buy_value": 75,
-  "icon_path": "",
-  "tags": ["region_6", "consumable", "potion", "healing", "necropolis", "tier_4"]
+  "icon_path": "res://Assets/_ArtPacks/Potions/PNG/Transperent/Icon7.png",
+  "tags": [
+    "region_6",
+    "consumable",
+    "potion",
+    "healing",
+    "necropolis",
+    "tier_4"
+  ]
 }

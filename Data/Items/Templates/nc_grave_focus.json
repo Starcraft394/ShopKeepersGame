@@ -27,7 +27,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 62,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/MagicArtifacts/PNG/Transperent/Icon3.png",
   "tags": [
     "region_6",
     "offhand",

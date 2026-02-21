@@ -38,7 +38,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 120,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/nc_soulfire_focus.png",
   "tags": [
     "region_6",
     "offhand",

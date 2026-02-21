@@ -908,6 +908,7 @@ func _show_hero_picker_for_consumable(item_id: String, source_hero_id: String, s
 	_consumable_picker_overlay = CanvasLayer.new()
 	_consumable_picker_overlay.layer = 10
 	add_child(_consumable_picker_overlay)
+	UIAudio.register_closeable(_consumable_picker_overlay, _close_consumable_picker)
 
 	# Root control for input blocking
 	var root = Control.new()
@@ -1025,6 +1026,7 @@ func _on_consumable_hero_chosen(item_id: String, target_hero_id: String, source_
 ## Close the consumable hero picker overlay.
 func _close_consumable_picker() -> void:
 	if _consumable_picker_overlay != null and is_instance_valid(_consumable_picker_overlay):
+		UIAudio.unregister_closeable(_consumable_picker_overlay)
 		_consumable_picker_overlay.queue_free()
 		_consumable_picker_overlay = null
 
@@ -1074,6 +1076,7 @@ func _on_hero_info_pressed(hero_id: String) -> void:
 	_hero_info_overlay = CanvasLayer.new()
 	_hero_info_overlay.layer = 10
 	add_child(_hero_info_overlay)
+	UIAudio.register_closeable(_hero_info_overlay, _close_hero_info_overlay)
 
 	# Root control for input blocking
 	var root = Control.new()
@@ -1245,6 +1248,7 @@ func _on_hero_info_backdrop_input(event: InputEvent) -> void:
 
 func _close_hero_info_overlay() -> void:
 	if _hero_info_overlay != null and is_instance_valid(_hero_info_overlay):
+		UIAudio.unregister_closeable(_hero_info_overlay)
 		_hero_info_overlay.queue_free()
 		_hero_info_overlay = null
 

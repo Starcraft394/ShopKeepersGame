@@ -9,13 +9,16 @@
   "slot": "backpack",
   "equip_slot": "bag",
   "tier": 3,
-  "base_stats": {"defense": 2, "health": 5},
+  "base_stats": {
+    "defense": 2,
+    "health": 5
+  },
   "stat_bonuses": {},
   "bag_capacity_bonus": 6,
   "base_value": 128,
   "buy_value": 0,
   "can_refine": false,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/ah_drake_pack.png",
   "tags": [
     "region_4",
     "backpack",

@@ -37,7 +37,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 122,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/nc_wraith_robe.png",
   "tags": [
     "region_6",
     "armor",

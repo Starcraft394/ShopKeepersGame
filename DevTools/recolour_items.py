@@ -54,6 +54,12 @@ PACKS = {
     "BM": os.path.join(ARTPACKS, "Ingredients", "PNG", "Transperent"),
     "BN": os.path.join(ARTPACKS, "ShieldsAmulets", "PNG", "Transperent"),
     "BO": os.path.join(ARTPACKS, "RPGThings", "PNG", "Transperent"),
+    "F":  os.path.join(ARTPACKS, "Spears", "PNG", "Transperent"),
+    "R":  os.path.join(ARTPACKS, "Berries", "PNG", "Transperent"),
+    "S":  os.path.join(ARTPACKS, "FruitsVegetables", "PNG", "Transperent"),
+    "U":  os.path.join(ARTPACKS, "MeatSkins", "PNG", "Transperent"),
+    "X":  os.path.join(ARTPACKS, "AlchemyItems", "PNG", "Transperent"),
+    "AB": os.path.join(ARTPACKS, "Loot_Demon", "PNG", "Transperent"),
 }
 
 # BM (Ingredients) has custom filenames instead of Icon{N}.png
@@ -96,6 +102,10 @@ HUE_LIGHT_BLUE = 0.560     # ~202°
 HUE_BLUE = 0.583           # ~210°
 HUE_PURPLE = 0.778         # ~280°
 HUE_DARK_PURPLE = 0.800    # ~288°
+HUE_NEON_GREEN = 0.300     # ~108° - bright neon
+HUE_NEON_BLUE = 0.590      # ~212° - bright electric blue
+HUE_LIGHT_PINK = 0.920     # ~331° - light pink/rose
+HUE_LIGHT_RED = 0.020      # ~7° - coral/light red
 
 
 # ============================================================
@@ -264,6 +274,58 @@ def tint_purple_red(img):
                           hue_range=0.08)
 
 
+# --- New tints for R2-R7 batch ---
+
+def tint_neon_green(img):
+    """Neon green — bioluminescent/spore items."""
+    return recolour_image(img, HUE_NEON_GREEN, sat_mult=1.3, val_mult=1.1, hue_range=0.04)
+
+
+def tint_green(img):
+    """Green — fungal/mycelium items."""
+    return recolour_image(img, HUE_GREEN, sat_mult=1.0, val_mult=1.0, hue_range=0.05)
+
+
+def tint_light_pink(img):
+    """Light pink — crystal/prism/starfall items."""
+    return recolour_image(img, HUE_LIGHT_PINK, sat_mult=0.7, val_mult=1.1, hue_range=0.05)
+
+
+def tint_light_red(img):
+    """Light red/coral — shell items."""
+    return recolour_image(img, HUE_LIGHT_RED, sat_mult=0.8, val_mult=1.05, hue_range=0.05)
+
+
+def tint_blue(img):
+    """Blue — deep water/tide items."""
+    return recolour_image(img, HUE_BLUE, sat_mult=1.0, val_mult=1.0, hue_range=0.05)
+
+
+def tint_orange(img):
+    """Orange — warm ocean items."""
+    return recolour_image(img, HUE_ORANGE, sat_mult=1.0, val_mult=1.05, hue_range=0.05)
+
+
+def tint_spectral_blue(img):
+    """Spectral blue — ghostly/wraith items."""
+    return recolour_image(img, HUE_LIGHT_BLUE, sat_mult=0.6, val_mult=1.1, hue_range=0.06)
+
+
+def tint_light_purple(img):
+    """Light purple — echo/astral items."""
+    return recolour_image(img, HUE_PURPLE, sat_mult=0.7, val_mult=1.1, hue_range=0.05)
+
+
+def tint_neon_blue(img):
+    """Neon blue — bright electric blue for caustic/brine items."""
+    return recolour_image(img, HUE_NEON_BLUE, sat_mult=1.3, val_mult=1.1, hue_range=0.04)
+
+
+def tint_brown(img):
+    """Brown — earthy/hide/leather items."""
+    return recolour_image(img, HUE_BROWN, sat_mult=0.9, val_mult=0.9, hue_range=0.06)
+
+
 # ============================================================
 # Helpers
 # ============================================================
@@ -392,6 +454,232 @@ JOBS = [
     ("primordial_essence",           "V",  35, tint_purple),
     ("void_crystal",                 "V",  20, tint_purple),
     ("boss_trophy_fractured_realm",  "AE", 35, tint_purple),
+
+    # ========== R2 — Fungal Marshes T2 ==========
+    ("fm_bioluminescent_ring",       "V",  34, tint_neon_green),
+    ("fm_fungal_shortbow",           "D",  13, tint_green),
+    ("fm_fungal_tunic",              "H",   7, tint_neon_green),
+    ("fm_mycelium_vest",             "H",   1, tint_dark_green),
+    ("fm_spore_blade",               "B",  31, tint_neon_green),
+    ("fm_spore_knife",               "B",  30, tint_green),
+    ("fm_spore_mace",                "E",  44, tint_neon_green),
+    ("fm_spore_satchel",             "BO", 15, tint_neon_green),
+    ("fm_sporeguard_helm",           "G",   6, tint_green),
+
+    # ========== R2 — Fungal Marshes T3 ==========
+    ("fm_fungal_crown",              "G",  11, tint_green),
+    ("fm_fungal_crusher",            "E",   6, tint_green),
+    ("fm_fungal_fang",               "B",  36, tint_green),
+    ("fm_fungal_longbow",            "D",  18, tint_green),
+    ("fm_fungal_plate",              "H",  15, tint_green),
+    ("fm_mycelium_focus",            "M",   9, tint_neon_green),
+    ("fm_mycelium_saber",            "B",  43, tint_neon_green),
+    ("fm_mycelium_tunic",            "H",   7, tint_green),
+    ("fm_sporeguard_pendant",        "AD", 26, tint_green),
+
+    # ========== R2 — Fungal Marshes T4 ==========
+    ("fm_fungal_heart_focus",        "AA", 39, tint_green),
+    ("fm_fungal_heart_pack",         "BO", 22, tint_dark_green),
+
+    # ========== R3 — Sunken Shoals T2 ==========
+    ("ss_coral_focus",               "AA", 40, tint_light_pink),
+    ("ss_driftwood_bow",             "D",  17, tint_teal),
+    ("ss_kelp_leggings",             "I",  33, tint_dark_green),
+    ("ss_kelp_satchel",              "BO", 13, tint_dark_green),
+    ("ss_pearl_pendant",             "AF", 26, tint_teal),
+    ("ss_pearl_ring",                "L",   3, tint_teal),
+    ("ss_shell_helm",                "G",  22, tint_light_red),
+    ("ss_tide_sword",                "A",  12, tint_teal),
+
+    # ========== R3 — Sunken Shoals T3 ==========
+    ("ss_abalone_shield",            "AC", 23, tint_teal),
+    ("ss_barnacle_plate",            "H",  33, tint_teal),
+    ("ss_kelp_greaves",              "I",  41, tint_dark_green),
+    ("ss_kelp_vest",                 "H",  39, tint_dark_green),
+    ("ss_sea_glass_focus",           "BN", 41, tint_light_blue),
+    ("ss_shell_pack",                "BO", 38, tint_orange),
+    ("ss_tide_fang",                 "B",   3, tint_blue),
+
+    # ========== R3 — Sunken Shoals T4 ==========
+    ("ss_leviathan_pack",            "BO", 28, tint_blue),
+    ("ss_leviathan_staff",           "F",  25, tint_blue),
+    ("ss_tidewoven_vest",            "H",  40, tint_teal),
+
+    # ========== R4 — Ashen Horizons T2 ==========
+    ("ah_cinder_pendant",            "AC", 12, tint_red),
+    ("ah_cinder_satchel",            "BO", 11, tint_red),
+    ("ah_cinder_tunic",              "H",   8, tint_red),
+    ("ah_obsidian_mace",             "E",   1, tint_black),
+    ("ah_obsidian_ring",             "L",  14, tint_black),
+    ("ah_obsidian_vest",             "H",   9, tint_black),
+
+    # ========== R4 — Ashen Horizons T3 ==========
+    ("ah_drake_jerkin",              "H",   6, tint_red),
+    ("ah_drake_pack",                "BO", 31, tint_red),
+    ("ah_magma_plate",               "H",  26, tint_red),
+    ("ah_obsidian_staff",            "F",  23, tint_black),
+    ("ah_scorched_longbow",          "D",  19, tint_red),
+    ("ah_volcanic_helm",             "G",  15, tint_red),
+
+    # ========== R4 — Ashen Horizons T4 ==========
+    ("ah_drakefang_blade",           "B",  23, tint_red),
+    ("ah_drakescale_greaves",        "I",  43, tint_red),
+    ("ah_drakescale_plate",          "H",  27, tint_red),
+    ("ah_draketalon",                "B",  46, tint_red),
+
+    # ========== R5 — Starfall Expanse T2 ==========
+    ("se_astral_shortbow",           "D",  13, tint_purple),
+    ("se_astral_tunic",              "H",   1, tint_light_pink),
+    ("se_crystal_knife",             "B",  36, tint_light_blue),
+    ("se_crystal_mace",              "E",   9, tint_light_pink),     # was DIRECT dupe w/ nc_soul_staff
+    ("se_crystal_pendant",           "M",  28, tint_light_blue),
+    ("se_crystal_ring",              "L",   8, tint_light_pink),     # was DIRECT dupe w/ silver_ring
+    ("se_crystal_staff",             "F",  24, tint_light_pink),
+    ("se_crystal_sword",             "A",  16, tint_light_blue),
+
+    # ========== R5 — Starfall Expanse T3 ==========
+    ("se_astral_pack",               "BO", 36, tint_light_pink),
+    ("se_astral_plate",              "H",  13, tint_light_pink),     # was DIRECT dupe w/ nc_ossuary_mail
+    ("se_astral_ring",               "L",  18, tint_light_blue),
+    ("se_crystal_robe",              "H",  10, tint_light_blue),
+    ("se_prism_edge",                "A",  30, tint_light_pink),
+    ("se_prism_fang",                "B",  39, tint_light_pink),
+    ("se_prism_shield",              "BN", 19, tint_light_pink),
+    ("se_temporal_maul",             "E",  11, tint_light_pink),
+
+    # ========== R5 — Starfall Expanse T4 ==========
+    ("se_astral_robe",               "H",  19, tint_light_blue),
+    ("se_chrono_cleaver",            "C",  38, tint_light_pink),
+    ("se_crystal_ward",              "H",  36, tint_light_blue),
+    ("se_echo_amulet",               "AD", 30, tint_purple),
+    ("se_echo_shield",               "BN", 29, tint_light_purple),
+    ("se_prism_helm",                "G",  45, tint_light_pink),
+    ("se_prism_staff",               "F",  11, tint_light_pink),
+    ("se_starlight_focus",           "M",  17, tint_light_pink),
+    ("se_temporal_dagger",           "B",  18, tint_light_pink),
+
+    # ========== R6 — Necropolis T2 ==========
+    ("nc_bone_greaves",              "I",  14, tint_white),
+    ("nc_bone_helm",                 "G",  16, tint_white),
+    ("nc_bone_knife",                "B",  33, tint_white),
+    ("nc_bone_mace",                 "E",   2, tint_white),
+    ("nc_bone_satchel",              "BO", 19, tint_white),
+    ("nc_bone_shield",               "BN",  3, tint_white),
+    ("nc_bone_vest",                 "H",   2, tint_white),
+    ("nc_grave_sword",               "A",  22, tint_white),
+    ("nc_spectral_bow",              "D",  23, tint_light_blue),
+
+    # ========== R6 — Necropolis T3 ==========
+    ("nc_deathward_band",            "L",  16, tint_white),
+    ("nc_ossuary_greaves",           "I",  15, tint_light_blue),
+    ("nc_ossuary_helm",              "G",  29, tint_white),
+    ("nc_ossuary_mail",              "H",  13, tint_white),          # was DIRECT dupe w/ se_astral_plate
+    ("nc_ossuary_maul",              "E",  40, tint_white),
+    ("nc_ossuary_pendant",           "L",  42, tint_light_blue),
+    ("nc_ossuary_shield",            "BN", 15, tint_white),
+    ("nc_soul_edge",                 "A",  27, tint_light_blue),
+    ("nc_wraith_fang",               "B",  17, tint_light_blue),
+    ("nc_wraith_pack",               "BB", 17, tint_spectral_blue),
+    ("nc_wraith_tunic",              "H",  17, tint_light_blue),
+
+    # ========== R6 — Necropolis T4 ==========
+    ("nc_bone_crown",                "G",  41, tint_white),
+    ("nc_ossuary_plate",             "H",  18, tint_white),
+    ("nc_soulfire_focus",            "BN", 43, tint_light_blue),
+    ("nc_spectral_aegis",            "BN", 34, tint_spectral_blue),
+    ("nc_wraith_leggings",           "I",  10, tint_light_blue),
+    ("nc_wraith_robe",               "H",  46, tint_light_blue),
+
+    # ========== R7 — Final Realm T2 ==========
+    ("fr_rift_focus",                "AC", 48, tint_purple),
+    ("fr_rift_greaves",              "I",  25, tint_purple),
+    ("fr_rift_helm",                 "G",  28, tint_purple),
+    ("fr_rift_knife",                "B",  12, tint_purple),
+    ("fr_rift_mace",                 "E",  19, tint_purple),
+    ("fr_rift_satchel",              "BO", 32, tint_purple),
+    ("fr_rift_shield",               "BN", 31, tint_purple),
+    ("fr_rift_sword",                "A",  37, tint_purple),
+    ("fr_rift_tunic",                "H",   2, tint_purple),
+    ("fr_rift_vest",                 "H",   1, tint_purple),
+    ("fr_rift_wand",                 "B",  37, tint_purple),
+
+    # ========== R7 — Final Realm T3 ==========
+    ("fr_null_blade",                "A",  35, tint_dark_purple),
+    ("fr_null_bow",                  "D",   4, tint_dark_purple),
+    ("fr_null_fang",                 "B",  44, tint_dark_purple),
+    ("fr_null_greaves",              "I",  42, tint_dark_purple),
+    ("fr_null_helm",                 "G",  43, tint_dark_purple),
+    ("fr_null_maul",                 "E",  25, tint_dark_purple),
+    ("fr_null_focus_t3",             "AC",  8, tint_dark_purple),
+    ("fr_null_pack",                 "BO", 39, tint_dark_purple),
+    ("fr_null_pendant",              "L",  23, tint_dark_purple),
+    ("fr_null_plate",                "H",  31, tint_dark_purple),
+    ("fr_null_ring",                 "L",  26, tint_dark_purple),
+    ("fr_null_shield",               "BN", 35, tint_dark_purple),
+    ("fr_null_shroud",               "H",  19, tint_dark_purple),
+    ("fr_null_staff",                "E",  27, tint_dark_purple),
+
+    # ========== R7 — Final Realm T4 ==========
+    ("fr_dimensional_locket",        "L",  29, tint_dark_purple),
+    ("fr_entropy_bow",               "D",  21, tint_purple),
+    ("fr_null_barrier",              "BN",  5, tint_dark_purple),
+    ("fr_null_focus",                "AB", 43, tint_dark_purple),
+    ("fr_rift_band",                 "L",  27, tint_purple),
+    ("fr_rift_staff",                "F",  47, tint_purple),
+    ("fr_void_edge",                 "A",  46, tint_purple),
+    ("fr_void_greaves",              "I",  46, tint_purple),
+    ("fr_void_helm",                 "G",  47, tint_purple),
+    ("fr_void_pack",                 "BO", 89, tint_purple),
+    ("fr_void_shroud",               "H",  29, tint_purple),
+
+    # ========== Consumables — R1 Base (Recoloured) ==========
+    ("minor_healing_tonic",          "S",  40, tint_green),          # Green
+    ("healing_tonic",                "S",  42, tint_green),          # Green
+    ("bandage",                      "X",  22, tint_white),          # White
+    ("minor_stamina_snack",          "T",  20, tint_yellow),         # Yellow Tint
+    ("smelling_salts",               "T",  16, tint_white),          # White
+    ("smoke_bomb",                   "T",  27, tint_white),          # White
+    ("focus_elixir",                 "T",  36, tint_blue),           # Blue
+    ("power_elixir",                 "T",  26, tint_red),            # Red
+    ("resistance_salve",             "BB", 45, tint_orange),         # Orange
+    ("stamina_draught",              "AC", 46, tint_yellow),         # Yellow
+    ("strong_healing_tonic",         "AC", 47, tint_green),          # Green
+
+    # ========== Consumables — R2 Fungal Marshes (Recoloured) ==========
+    ("fm_spore_elixir",              "Y",  45, tint_neon_green),     # Neon Green
+
+    # ========== Consumables — R3 Sunken Shoals (Recoloured) ==========
+    ("ss_fog_bomb",                  "Y",  28, tint_blue),           # Blue
+    ("ss_kelp_wrap",                 "T",  13, tint_green),          # Green
+
+    # ========== Consumables — R4 Ashen Horizons (Recoloured) ==========
+    ("ah_ash_bomb",                  "Y",  46, tint_silver),         # Grey
+    ("ah_charred_feast",             "T",  32, tint_black),          # Black
+
+    # ========== Consumables — R5 Starfall Expanse (Recoloured) ==========
+    ("se_starlight_elixir",          "Y",  25, tint_light_pink),     # Pink
+
+    # ========== Consumables — R6 Necropolis (Recoloured) ==========
+    ("nc_banshee_vial",              "Y",   2, tint_white),          # White
+    ("nc_phylactery_tonic",          "Y",  34, tint_spectral_blue),  # Spectral Blue
+    ("nc_spectral_draught",          "Y",  11, tint_spectral_blue),  # Spectral Blue
+
+    # ========== Consumables — R7 Fractured Realm (Recoloured) ==========
+    ("fr_void_essence_flask",        "Y",  44, tint_purple),         # Purple
+    ("fr_entropy_charge",            "Y",  26, tint_purple),         # Purple
+    ("fr_dimensional_flux",          "AC", 46, tint_purple),         # Purple
+    ("fr_void_mend",                 "Y",  24, tint_purple),         # Purple
+    ("fr_null_feast",                "T",  46, tint_purple),         # Purple
+
+    # ========== Duplicate Icon Fixes ==========
+    ("nc_corpsebloom_stew",          "T",  45, tint_light_blue),     # Light Blue (was same as legendary_feast)
+    ("minor_venom_flask",            "T",  29, tint_light_green),    # Light Green (was same as ss_brine_venom)
+    ("ss_brine_venom",               "T",  29, tint_neon_blue),      # Neon Blue (was same as minor_venom_flask)
+    ("forest_bounty",                "T",  32, tint_green),          # Green (was same as hero_banquet)
+    ("honey_roast",                  "T",  46, tint_yellow),         # Yellow (was same as hunters_feast)
+    ("slime_gel",                    "Y",   3, tint_neon_green),     # Neon Green (was same as antidote)
+    ("gw_thornhide_vest",            "H",  23, tint_brown),          # Brown (was same as fm_mycelium_ruin_plate)
+    ("ah_ember_focus",               "X",  36, tint_red),            # Red (changed icon from M#1 to X#36)
 ]
 
 

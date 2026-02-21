@@ -35,7 +35,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 150,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/fr_null_focus.png",
   "tags": [
     "region_7",
     "offhand",

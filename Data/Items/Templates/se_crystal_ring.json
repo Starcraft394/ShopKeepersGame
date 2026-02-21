@@ -25,7 +25,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 52,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/se_crystal_ring.png",
   "tags": [
     "region_5",
     "accessory",

@@ -34,7 +34,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 125,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/ah_draketalon.png",
   "tags": [
     "region_4",
     "weapon",

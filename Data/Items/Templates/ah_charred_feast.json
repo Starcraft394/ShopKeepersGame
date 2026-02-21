@@ -23,6 +23,12 @@
   "base_value": 30,
   "buy_value": 48,
   "stack_max": 5,
-  "icon_path": "",
-  "tags": ["region_4", "consumable", "food", "ashen_horizons", "tier_3"]
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/ah_charred_feast.png",
+  "tags": [
+    "region_4",
+    "consumable",
+    "food",
+    "ashen_horizons",
+    "tier_3"
+  ]
 }

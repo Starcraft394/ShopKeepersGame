@@ -23,6 +23,13 @@
   "base_value": 42,
   "buy_value": 65,
   "stack_max": 5,
-  "icon_path": "",
-  "tags": ["region_5", "consumable", "potion", "healing", "starfall_expanse", "tier_4"]
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/se_starlight_elixir.png",
+  "tags": [
+    "region_5",
+    "consumable",
+    "potion",
+    "healing",
+    "starfall_expanse",
+    "tier_4"
+  ]
 }

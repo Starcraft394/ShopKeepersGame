@@ -35,7 +35,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 145,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Maces/PNG/Transperent/Icon46.png",
   "tags": [
     "region_4",
     "weapon",

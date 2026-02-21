@@ -11,14 +11,14 @@
       "speaker": "Mira",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
       "title": "Recruit Your First Heroes",
-      "body": "First things first — you'll need a party. The town council has put up 400 gold as an investment in your venture. Use it to recruit heroes at the Inn — each one has a race and class that shape how they fight.\n\nPick at least two to start. A Defender to soak hits and a Striker to deal damage is a solid foundation."
+      "body": "First things first — you'll need a party. The town council has put up 400 gold as an investment in your venture. Use it to recruit heroes at the Inn — each one has a race and class that shape how they fight.\n\nAfter recruiting, use the Add to Party button to assign them to your active party. Pick at least two to start — a Defender to soak hits and a Striker to deal damage is a solid foundation."
     },
     {
       "speaker": "Mira",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
-      "title": "The Loop",
-      "body": "Here's how it works: recruit heroes, equip them from your Manage Roster tab here at the Inn, then send them into the dungeons. Whatever they bring back, you use to craft better gear and unlock new recipes.\n\nBut be warned — heroes who fall in the dungeon don't come back. Choose your battles wisely.\n\nThe inn's warm and the ale's cold. Let's get to work.",
-      "button_text": "Let's get started!"
+      "title": "Upgrading the Inn",
+      "body": "As your venture grows, you can upgrade the Inn to attract better recruits. Higher tiers unlock new races and starting equipment for fresh hires.\n\nFor now, recruit your first heroes and add at least one to your party. I'll have more advice once you're ready to head out.",
+      "button_text": "Time to recruit!"
     }
   ]
 }

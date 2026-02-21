@@ -13,7 +13,7 @@
   "buff_amount": 25,
   "buff_duration": 5,
   "base_value": 95,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/fr_null_feast.png",
   "tags": [
     "region_7",
     "consumable",

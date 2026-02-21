@@ -39,7 +39,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 130,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/nc_ossuary_plate.png",
   "tags": [
     "region_6",
     "armor",

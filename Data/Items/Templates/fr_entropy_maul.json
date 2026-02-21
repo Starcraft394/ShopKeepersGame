@@ -37,7 +37,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 175,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Axes/PNG/Transperent/Icon39.png",
   "tags": [
     "region_7",
     "weapon",

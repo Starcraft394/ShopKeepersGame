@@ -27,7 +27,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 92,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/ShieldsAmulets/PNG/Transperent/Icon33.png",
   "tags": [
     "region_5",
     "offhand",

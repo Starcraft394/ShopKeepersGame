@@ -23,6 +23,12 @@
   "base_value": 25,
   "buy_value": 40,
   "stack_max": 5,
-  "icon_path": "",
-  "tags": ["region_3", "consumable", "food", "sunken_strand", "tier_3"]
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/ss_kelp_wrap.png",
+  "tags": [
+    "region_3",
+    "consumable",
+    "food",
+    "sunken_strand",
+    "tier_3"
+  ]
 }

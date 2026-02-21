@@ -23,6 +23,11 @@
   "base_value": 10,
   "buy_value": 15,
   "stack_max": 10,
-  "icon_path": "res://Assets/Icons/Items/icon_item_trail_rations.png",
-  "tags": ["base", "consumable", "food", "tier_1"]
+  "icon_path": "res://Assets/_ArtPacks/Food/PNG/Transperent/Icon12.png",
+  "tags": [
+    "base",
+    "consumable",
+    "food",
+    "tier_1"
+  ]
 }

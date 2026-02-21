@@ -35,7 +35,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 112,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/fm_fungal_heart_focus.png",
   "tags": [
     "region_2",
     "offhand",

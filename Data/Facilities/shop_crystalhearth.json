@@ -2,7 +2,7 @@
   "id": "shop_crystalhearth",
   "display_name": "Crystalhearth Emporium",
   "description": "A shimmering crystal tent where prismatic light illuminates rare wares. Luxiel trades in things from other timelines.",
-  "icon_path": "res://Assets/Icons/Facilities/icon_facility_shop.png",
+  "icon_path": "res://Assets/_ArtPacks/RPGThings/PNG/Transperent/icons_30_14.png",
   "facility_type": "shop",
   "max_tier": 4,
   "unlock_region": 5,

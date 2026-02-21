@@ -37,7 +37,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 150,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/fr_void_edge.png",
   "tags": [
     "region_7",
     "weapon",

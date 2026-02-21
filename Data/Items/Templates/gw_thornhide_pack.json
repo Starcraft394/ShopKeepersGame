@@ -9,7 +9,10 @@
   "slot": "backpack",
   "equip_slot": "bag",
   "tier": 4,
-  "base_stats": {"defense": 3, "health": 8},
+  "base_stats": {
+    "defense": 3,
+    "health": 8
+  },
   "stat_bonuses": {},
   "bag_capacity_bonus": 8,
   "combat_tag": "regenerating",
@@ -21,7 +24,7 @@
   "base_value": 155,
   "buy_value": 0,
   "can_refine": false,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/RPGThings/PNG/Transperent/icons_30_81.png",
   "tags": [
     "region_1",
     "backpack",

@@ -2,7 +2,7 @@
   "id": "chef",
   "display_name": "Chef",
   "description": "A humble kitchen where forest ingredients become restorative meals.",
-  "icon_path": "res://Assets/Icons/Facilities/icon_facility_chef.png",
+  "icon_path": "res://Assets/_ArtPacks/Food/PNG/Transperent/Icon46.png",
   "facility_type": "production",
   "max_tier": 4,
   "unlock_region": 1,

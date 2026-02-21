@@ -1,0 +1,30 @@
+{
+  "id": "tutorial_party_bar",
+  "steps": [
+    {
+      "speaker": "Mira",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
+      "title": "Your Party Bar",
+      "body": "See those hero cards at the bottom of the screen? That's your Party Bar. It shows every hero in your active party at a glance — their stats, health, and equipment.\n\nYou can manage everything about your party right from there."
+    },
+    {
+      "speaker": "Mira",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
+      "title": "Gear Management",
+      "body": "Click the Gear button on any hero card to equip weapons, armor, and accessories. You can also equip a backpack in the Bag slot to carry more items into the dungeon.\n\nBelow the equipment you'll see the hero's bag — fill it with consumables like potions before heading out. Preparation saves lives."
+    },
+    {
+      "speaker": "Mira",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
+      "title": "Row Formations",
+      "body": "Below the Gear button you'll see three position buttons — F, M, and B — for Front, Middle, and Back rows.\n\nFront row heroes get targeted first by melee attacks, so put your toughest fighters there. Ranged and support heroes are safer in the Back."
+    },
+    {
+      "speaker": "Mira",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
+      "title": "One More Thing",
+      "body": "Before you head into the dungeon, visit the Shop! You can buy healing potions and other consumables to keep your heroes alive.\n\nGood luck out there, Shopkeeper. The inn's warm and the ale's cold when you get back.",
+      "button_text": "Let's get started!"
+    }
+  ]
+}

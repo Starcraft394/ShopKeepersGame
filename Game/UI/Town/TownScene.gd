@@ -95,6 +95,7 @@ var _highlight_roster_tab: bool = false  # Pulse roster tab after first hire
 
 # Shop view state
 var _shop_view: String = "buy"  # "buy", "upgrade"
+var _temp_shop_allocations: Dictionary = {}  # facility_id -> slot count (unstocked state only)
 
 # Training Hall view state
 var _training_view: String = "books"  # "books", "assign", "upgrade"
@@ -289,8 +290,17 @@ func _close_all_panels() -> void:
 func _on_close_facility_panel(facility_id: String) -> void:
 	if not _open_panels.has(facility_id):
 		return
+	# Block Inn close during first launch until player has at least 1 party member
+	if facility_id == "inn" and not GameContext.has_completed_tutorial("tutorial_party_bar"):
+		if GameContext.selected_party.size() == 0:
+			_show_inn_recruit_reminder()
+			return
+	var was_inn: bool = (facility_id == "inn")
 	var info = _open_panels[facility_id]
 	var panel = info.get("panel")
+	# Unregister from ESC-close stack
+	if panel != null and is_instance_valid(panel):
+		UIAudio.unregister_closeable(panel)
 	# Remember panel size for next open
 	if panel != null and is_instance_valid(panel):
 		_panel_sizes[facility_id] = panel.size
@@ -306,6 +316,31 @@ func _on_close_facility_panel(facility_id: String) -> void:
 	_equip_pending_quality = 0
 	_equip_selected_hero_id = ""
 	print("[FacilityOverlay] Closed panel: %s" % facility_id)
+	# After Inn close: show Mira's party bar / gear / formation tutorial (once)
+	if was_inn and not GameContext.has_completed_tutorial("tutorial_party_bar"):
+		TutorialOverlay.try_show(self, "tutorial_party_bar")
+
+
+## Show a timed warning when the player tries to close the Inn without a party member.
+func _show_inn_recruit_reminder() -> void:
+	if _facility_actions_container == null:
+		return
+	var existing = _facility_actions_container.get_node_or_null("RecruitReminder")
+	if existing != null:
+		return
+	var reminder = Label.new()
+	reminder.name = "RecruitReminder"
+	reminder.text = "You need at least one hero in your party before leaving the Inn!"
+	reminder.add_theme_font_size_override("font_size", 13)
+	reminder.modulate = Color(1.0, 0.7, 0.3, 1)
+	reminder.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	reminder.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_facility_actions_container.add_child(reminder)
+	_facility_actions_container.move_child(reminder, 0)
+	var tween = create_tween()
+	tween.tween_interval(3.0)
+	tween.tween_property(reminder, "modulate:a", 0.0, 0.5)
+	tween.tween_callback(reminder.queue_free)
 
 
 ## Detect which edge(s) the mouse is near. Returns bitmask: 1=left, 2=right, 4=top, 8=bottom.
@@ -1161,6 +1196,7 @@ func _show_facility_panel(facility_id: String) -> void:
 	_facility_greeting = ""
 	_inn_view = "recruit"
 	_shop_view = "buy"
+	_temp_shop_allocations = {}
 	_equipment_view = "recipes"
 	_training_view = "books"
 	_dungeon_view = "enter"
@@ -1182,6 +1218,10 @@ func _show_facility_panel(facility_id: String) -> void:
 
 	# Re-point _facility_actions_container to this panel's actions area
 	_facility_actions_container = info["actions_container"]
+
+	# Register panel with ESC-close stack
+	var panel_node = info["panel"]
+	UIAudio.register_closeable(panel_node, _on_close_facility_panel.bind(facility_id))
 
 	# Create dynamic action UI based on facility type
 	_create_facility_actions(facility)
@@ -2128,12 +2168,13 @@ func _build_shop_ui() -> void:
 	print("[ShopUI] facility=%s tier=%d view=%s" % [facility_id, current_tier, _shop_view])
 
 
-## Shop buy view: equipment items for purchase
+## Shop buy view: two-state flow (unstocked → allocate → stock → browse items)
 func _build_shop_buy_view(facility, current_tier: int) -> void:
 	var town_id = GameContext.get_current_town_id()
 	var shop_id = _current_facility_id
+	var saved_allocations: int = GameContext.get_shop_allocated_slots(town_id)
 
-	# Stash full warning
+	# Stash full warning (shown in both states)
 	var stash_count: int = GameContext.get_current_stash_count()
 	var stash_max: int = GameContext.get_max_stash_capacity()
 	if stash_count >= stash_max:
@@ -2145,42 +2186,66 @@ func _build_shop_buy_view(facility, current_tier: int) -> void:
 		warn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		_facility_actions_container.add_child(warn)
 
-	# Compact slot allocation inline (2-column grid)
-	var max_slots = GameContext.get_shop_max_slots(town_id)
-	var allocated_slots = GameContext.get_shop_allocated_slots(town_id)
+	if saved_allocations > 0:
+		_build_shop_stocked_view(facility, current_tier, town_id, shop_id)
+	else:
+		_build_shop_unstocked_view(facility, current_tier, town_id, shop_id)
 
-	var alloc_grid = GridContainer.new()
-	alloc_grid.columns = 2
-	alloc_grid.add_theme_constant_override("h_separation", 4)
-	alloc_grid.add_theme_constant_override("v_separation", 2)
-	_facility_actions_container.add_child(alloc_grid)
 
+## Unstocked state: allocation controls + Stock Shop button, no items yet.
+func _build_shop_unstocked_view(facility, current_tier: int, town_id: String, shop_id: String) -> void:
+	var max_slots: int = GameContext.get_shop_max_slots(town_id)
+	var temp_total: int = _get_temp_allocated_total()
+
+	var hint = Label.new()
+	hint.text = "Choose how many slots each facility fills, then stock the shop."
+	hint.add_theme_font_size_override("font_size", 11)
+	hint.modulate = Color(0.7, 0.8, 0.9, 1)
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_facility_actions_container.add_child(hint)
+
+	# Allocation rows (reads from _temp_shop_allocations)
 	for contrib_facility_id in GameContext.SHOP_CONTRIBUTING_FACILITIES:
 		var facility_data = DataRegistry.get_facility(contrib_facility_id)
-		var display_name = facility_data.display_name if facility_data != null else contrib_facility_id.capitalize()
-		var current_alloc = GameContext.get_facility_slot_allocation(town_id, contrib_facility_id)
-		var recipe_count = GameContext.get_facility_unlocked_recipes(contrib_facility_id).size()
+		var display_name: String = facility_data.display_name if facility_data != null else contrib_facility_id.capitalize()
+		var current_alloc: int = _temp_shop_allocations.get(contrib_facility_id, 0)
+		var recipe_count: int = GameContext.get_facility_unlocked_recipes(contrib_facility_id).size()
 
 		var alloc_row = HBoxContainer.new()
 		alloc_row.add_theme_constant_override("separation", 4)
-		alloc_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
+		# Facility icon (20x20)
+		var icon_path: String = facility_data.icon_path if facility_data != null else ""
+		if icon_path != "" and ResourceLoader.exists(icon_path):
+			var icon_tex = ResourceLoader.load(icon_path) as Texture2D
+			if icon_tex != null:
+				var icon_rect = TextureRect.new()
+				icon_rect.texture = icon_tex
+				icon_rect.custom_minimum_size = Vector2(20, 20)
+				icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+				icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+				alloc_row.add_child(icon_rect)
+
+		var fac_tier: int = GameContext.get_facility_tier(town_id, contrib_facility_id)
 		var fac_label = Label.new()
-		fac_label.text = "%s (%d)" % [display_name, recipe_count]
+		fac_label.text = "%s T%d" % [display_name, fac_tier]
 		fac_label.add_theme_font_size_override("font_size", 11)
-		fac_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		fac_label.tooltip_text = "Recipes unlocked: %d" % recipe_count
 		if recipe_count == 0:
 			fac_label.modulate = Color(0.5, 0.5, 0.5, 1)
 		alloc_row.add_child(fac_label)
 
-		var purchased_count = GameContext._count_purchased_slots_for_facility(town_id, contrib_facility_id)
+		var recipe_label = Label.new()
+		recipe_label.text = "Recipes: %d" % recipe_count
+		recipe_label.add_theme_font_size_override("font_size", 10)
+		recipe_label.modulate = Color(0.6, 0.7, 0.6, 1) if recipe_count > 0 else Color(0.5, 0.5, 0.5, 1)
+		alloc_row.add_child(recipe_label)
+
 		var minus_btn = Button.new()
 		minus_btn.text = "-"
 		minus_btn.custom_minimum_size = Vector2(22, 22)
-		minus_btn.disabled = current_alloc <= 0 or current_alloc <= purchased_count
-		if purchased_count > 0:
-			minus_btn.tooltip_text = "%d slot(s) locked (items purchased)" % purchased_count
-		minus_btn.pressed.connect(_on_shop_slot_minus.bind(contrib_facility_id))
+		minus_btn.disabled = current_alloc <= 0
+		minus_btn.pressed.connect(_on_temp_slot_minus.bind(contrib_facility_id))
 		alloc_row.add_child(minus_btn)
 
 		var slot_count = Label.new()
@@ -2193,18 +2258,81 @@ func _build_shop_buy_view(facility, current_tier: int) -> void:
 		var plus_btn = Button.new()
 		plus_btn.text = "+"
 		plus_btn.custom_minimum_size = Vector2(22, 22)
-		plus_btn.disabled = allocated_slots >= max_slots or recipe_count == 0
-		plus_btn.pressed.connect(_on_shop_slot_plus.bind(contrib_facility_id))
+		plus_btn.disabled = temp_total >= max_slots or recipe_count == 0
+		plus_btn.pressed.connect(_on_temp_slot_plus.bind(contrib_facility_id))
 		alloc_row.add_child(plus_btn)
 
-		alloc_grid.add_child(alloc_row)
+		_facility_actions_container.add_child(alloc_row)
 
-	# Slots summary line below the grid
+	# Slots summary
 	var slots_label = Label.new()
-	slots_label.text = "Slots: %d / %d" % [allocated_slots, max_slots]
+	slots_label.text = "Slots: %d / %d" % [temp_total, max_slots]
 	slots_label.add_theme_font_size_override("font_size", 11)
-	slots_label.modulate = Color(0.7, 1.0, 0.7, 1) if allocated_slots < max_slots else Color(1.0, 0.9, 0.5, 1)
+	slots_label.modulate = Color(0.7, 1.0, 0.7, 1) if temp_total < max_slots else Color(1.0, 0.9, 0.5, 1)
 	_facility_actions_container.add_child(slots_label)
+
+	# Stock Shop button — enabled only when all slots allocated
+	var stock_btn = Button.new()
+	stock_btn.text = "Stock Shop (%d/%d)" % [temp_total, max_slots]
+	stock_btn.custom_minimum_size = Vector2(180, 32)
+	stock_btn.disabled = temp_total != max_slots
+	if temp_total == max_slots:
+		stock_btn.modulate = Color(1.0, 0.9, 0.5, 1)
+	stock_btn.pressed.connect(_on_stock_shop_pressed)
+	_facility_actions_container.add_child(stock_btn)
+
+
+## Stocked state: read-only allocation summary + items + Refresh + Clear & Re-allocate.
+func _build_shop_stocked_view(facility, current_tier: int, town_id: String, shop_id: String) -> void:
+	var max_slots: int = GameContext.get_shop_max_slots(town_id)
+	var allocated_slots: int = GameContext.get_shop_allocated_slots(town_id)
+
+	# Read-only allocation summary with icons
+	var summary_hbox = HBoxContainer.new()
+	summary_hbox.add_theme_constant_override("separation", 6)
+	_facility_actions_container.add_child(summary_hbox)
+
+	var stocked_prefix = Label.new()
+	stocked_prefix.text = "Stocked:"
+	stocked_prefix.add_theme_font_size_override("font_size", 11)
+	stocked_prefix.modulate = Color(0.7, 0.9, 0.7, 1)
+	summary_hbox.add_child(stocked_prefix)
+
+	for contrib_facility_id in GameContext.SHOP_CONTRIBUTING_FACILITIES:
+		var alloc: int = GameContext.get_facility_slot_allocation(town_id, contrib_facility_id)
+		if alloc <= 0:
+			continue
+		var facility_data = DataRegistry.get_facility(contrib_facility_id)
+		var dname: String = facility_data.display_name if facility_data != null else contrib_facility_id.capitalize()
+
+		# Facility icon (16x16)
+		var icon_path: String = facility_data.icon_path if facility_data != null else ""
+		if icon_path != "" and ResourceLoader.exists(icon_path):
+			var icon_tex = ResourceLoader.load(icon_path) as Texture2D
+			if icon_tex != null:
+				var icon_rect = TextureRect.new()
+				icon_rect.texture = icon_tex
+				icon_rect.custom_minimum_size = Vector2(16, 16)
+				icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+				icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+				summary_hbox.add_child(icon_rect)
+
+		var entry_label = Label.new()
+		entry_label.text = "%d" % alloc
+		entry_label.add_theme_font_size_override("font_size", 11)
+		entry_label.modulate = Color(0.7, 0.9, 0.7, 1)
+		summary_hbox.add_child(entry_label)
+
+	var slots_suffix = Label.new()
+	slots_suffix.text = "(%d/%d)" % [allocated_slots, max_slots]
+	slots_suffix.add_theme_font_size_override("font_size", 11)
+	slots_suffix.modulate = Color(0.7, 0.9, 0.7, 1)
+	summary_hbox.add_child(slots_suffix)
+
+	# Action buttons row: Refresh + Clear & Re-allocate
+	var btn_row = HBoxContainer.new()
+	btn_row.add_theme_constant_override("separation", 8)
+	_facility_actions_container.add_child(btn_row)
 
 	# Shop refresh button with tier-based limit
 	var refresh_count_val: int = GameContext.get_shop_refresh_count(shop_id)
@@ -2218,32 +2346,42 @@ func _build_shop_buy_view(facility, current_tier: int) -> void:
 		refresh_btn.text = "Refresh (0 left)"
 	refresh_btn.custom_minimum_size = Vector2(160, 28)
 	refresh_btn.disabled = refresh_remaining <= 0 or GameContext.get_run_gold() < refresh_cost
+	refresh_btn.tooltip_text = "Re-roll shop inventory with new random items.\nKeeps your current facility allocation."
 	refresh_btn.pressed.connect(_on_shop_refresh_pressed.bind(shop_id))
-	_facility_actions_container.add_child(refresh_btn)
+	btn_row.add_child(refresh_btn)
+
+	var realloc_btn = Button.new()
+	realloc_btn.text = "Re-allocate (%d left) - %dg" % [refresh_remaining, refresh_cost] if refresh_remaining > 0 else "Re-allocate (0 left)"
+	realloc_btn.custom_minimum_size = Vector2(160, 28)
+	realloc_btn.modulate = Color(0.8, 0.6, 0.5, 1)
+	realloc_btn.disabled = refresh_remaining <= 0 or GameContext.get_run_gold() < refresh_cost
+	realloc_btn.tooltip_text = "Clear current stock and change facility allocations.\nCosts one refresh."
+	realloc_btn.pressed.connect(_on_clear_and_reallocate_pressed)
+	btn_row.add_child(realloc_btn)
 
 	var items_sep = HSeparator.new()
 	_facility_actions_container.add_child(items_sep)
 
 	# Get context for seeded RNG
 	var town = DataRegistry.get_town(town_id) if DataRegistry.has_method("get_town") else null
-	var dungeon_id = town.dungeon_id if town != null else ""
-	var town_tier = GameContext.get_town_tier(town_id)
-	var highest_floor = GameContext.get_unlocked_floor(dungeon_id) if dungeon_id != "" else 1
-	var refresh_count = GameContext.get_shop_refresh_count(shop_id)
+	var dungeon_id: String = town.dungeon_id if town != null else ""
+	var town_tier: int = GameContext.get_town_tier(town_id)
+	var highest_floor: int = GameContext.get_unlocked_floor(dungeon_id) if dungeon_id != "" else 1
+	var refresh_count: int = GameContext.get_shop_refresh_count(shop_id)
 
 	# Get shop profile for town-unique inventory
 	var shop_profile = facility.shop_profile
-	var profile_id = shop_profile.get("profile_id", "default") if shop_profile else "default"
+	var profile_id: String = shop_profile.get("profile_id", "default") if shop_profile else "default"
 
 	# Generate deterministic seed including refresh count
 	var seed_str = "%s_%s_%d_%d_%d" % [town_id, shop_id, town_tier, highest_floor, refresh_count]
-	var shop_seed = seed_str.hash()
+	var shop_seed: int = seed_str.hash()
 	var shop_rng = RandomNumberGenerator.new()
 	shop_rng.seed = shop_seed
 
 	print("[ShopRNG] shop=%s town=%s profile=%s refresh=%d slots=%d/%d" % [shop_id, town_id, profile_id, refresh_count, allocated_slots, max_slots])
 
-	# Facility-allocated equipment section (items based on slot allocation)
+	# Facility-allocated equipment section (items based on saved allocations)
 	var facility_items = _generate_facility_allocated_items(town_id, shop_rng)
 	if facility_items.size() > 0:
 		var equip_header = Label.new()
@@ -2253,18 +2391,13 @@ func _build_shop_buy_view(facility, current_tier: int) -> void:
 		_facility_actions_container.add_child(equip_header)
 
 		for entry in facility_items:
-			var slot_key = entry.get("slot_key", "")
+			var slot_key: String = entry.get("slot_key", "")
 			if slot_key != "" and GameContext.is_shop_slot_purchased(shop_id, slot_key):
 				var empty_row = _create_empty_shop_slot_row()
 				_facility_actions_container.add_child(empty_row)
 			else:
 				var row = _create_shop_row(entry, shop_id)
 				_facility_actions_container.add_child(row)
-	elif allocated_slots == 0:
-		var no_alloc = Label.new()
-		no_alloc.text = "(Allocate slots above to stock equipment)"
-		no_alloc.modulate = Color(0.6, 0.6, 0.6, 1)
-		_facility_actions_container.add_child(no_alloc)
 	else:
 		var no_recipes = Label.new()
 		no_recipes.text = "(No items available - unlock recipes at facilities)"
@@ -2345,33 +2478,15 @@ func _build_shop_upgrade_view(facility, current_tier: int) -> void:
 		lock_msg.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_facility_actions_container.add_child(lock_msg)
 
-## Display Shop tier benefits (services, shop slots)
+## Display Shop tier benefits (real mechanical stats)
 func _build_shop_tier_benefits(facility, tier: int, current_tier: int) -> void:
-	# Shop slots at this tier
-	var tier_slots = GameContext.SHOP_TIER_MAX_SLOTS.get(tier, 4)
-	var slot_label = Label.new()
-	slot_label.text = "Max Shop Slots: %d" % tier_slots
-	slot_label.add_theme_font_size_override("font_size", 12)
-	slot_label.modulate = Color(0.7, 0.85, 1.0, 1)
-	_facility_actions_container.add_child(slot_label)
-
-	# Services at this tier
-	var tier_key = str(tier)
-	var services: Array = []
-	if facility.services_per_tier.has(tier_key):
-		services = facility.services_per_tier[tier_key]
-	elif facility.services_per_tier.has(tier):
-		services = facility.services_per_tier[tier]
-
-	if services.size() > 0:
-		var pretty_services: Array[String] = []
-		for svc in services:
-			pretty_services.append(str(svc).replace("_", " ").capitalize())
-		var svc_label = Label.new()
-		svc_label.text = "Services: %s" % ", ".join(pretty_services)
-		svc_label.add_theme_font_size_override("font_size", 12)
-		svc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		_facility_actions_container.add_child(svc_label)
+	var benefits: Array[String] = _get_tier_benefits(facility, tier)
+	for benefit_text in benefits:
+		var blabel = Label.new()
+		blabel.text = benefit_text
+		blabel.add_theme_font_size_override("font_size", 12)
+		blabel.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_facility_actions_container.add_child(blabel)
 
 
 ## Generate shop inventory from pool data using weighted random selection.
@@ -2684,28 +2799,88 @@ func _filter_legacy_items(items: Array, town_id: String, dungeon_id: String, fac
 func _on_shop_refresh_pressed(shop_id: String) -> void:
 	var success = GameContext.spend_shop_refresh(shop_id)
 	if success:
-		_refresh_facility_panel()
-	# If failed, button should have been disabled - just refresh UI to sync state
-	else:
-		_refresh_facility_panel()
+		GameContext.clear_shop_purchased_slots(shop_id)
+	_refresh_facility_panel()
 
 
-## Handle shop slot allocation plus button.
-func _on_shop_slot_plus(facility_id: String) -> void:
+## Get total temp-allocated slots across all facilities.
+func _get_temp_allocated_total() -> int:
+	var total: int = 0
+	for key in _temp_shop_allocations:
+		total += _temp_shop_allocations[key]
+	return total
+
+
+## Temp allocation: increment a facility's slot count (unstocked state).
+func _on_temp_slot_plus(facility_id: String) -> void:
 	var town_id = GameContext.get_current_town_id()
-	var success = GameContext.increment_facility_slots(town_id, facility_id)
-	if success:
-		print("[Shop] slot_plus facility=%s" % facility_id)
-		_refresh_facility_panel()
+	var max_slots: int = GameContext.get_shop_max_slots(town_id)
+	if _get_temp_allocated_total() >= max_slots:
+		return
+	_temp_shop_allocations[facility_id] = _temp_shop_allocations.get(facility_id, 0) + 1
+	print("[Shop] temp_slot_plus facility=%s total=%d" % [facility_id, _get_temp_allocated_total()])
+	_refresh_facility_panel()
 
 
-## Handle shop slot allocation minus button.
-func _on_shop_slot_minus(facility_id: String) -> void:
+## Temp allocation: decrement a facility's slot count (unstocked state).
+func _on_temp_slot_minus(facility_id: String) -> void:
+	var current: int = _temp_shop_allocations.get(facility_id, 0)
+	if current <= 0:
+		return
+	_temp_shop_allocations[facility_id] = current - 1
+	print("[Shop] temp_slot_minus facility=%s total=%d" % [facility_id, _get_temp_allocated_total()])
+	_refresh_facility_panel()
+
+
+## Commit temp allocations to GameContext, generate items.
+func _on_stock_shop_pressed() -> void:
 	var town_id = GameContext.get_current_town_id()
-	var success = GameContext.decrement_facility_slots(town_id, facility_id)
-	if success:
-		print("[Shop] slot_minus facility=%s" % facility_id)
+	var shop_id = _current_facility_id
+
+	# Write temp allocations to GameContext
+	for facility_id in _temp_shop_allocations:
+		var slots: int = _temp_shop_allocations[facility_id]
+		if slots > 0:
+			GameContext.set_facility_slot_allocation(town_id, facility_id, slots)
+
+	# Clear purchased slots for fresh stock (refresh count preserved for RNG seed)
+	GameContext.clear_shop_purchased_slots(shop_id)
+	GameContext.save_game()
+
+	# Clear temp allocations
+	_temp_shop_allocations = {}
+
+	print("[Shop] Stocked shop=%s refresh=%d allocations=%s" % [shop_id, GameContext.get_shop_refresh_count(shop_id), GameContext.get_shop_slot_allocations(town_id)])
+	UIAudio.play_sfx("facility_access")
+	_refresh_facility_panel()
+
+
+## Clear saved allocations and return to unstocked allocation state. Costs one refresh.
+func _on_clear_and_reallocate_pressed() -> void:
+	var town_id = GameContext.get_current_town_id()
+	var shop_id = _current_facility_id
+
+	# Spend a refresh (gold + increment count) to prevent bypass
+	var success = GameContext.spend_shop_refresh(shop_id)
+	if not success:
 		_refresh_facility_panel()
+		return
+
+	# Clear all saved allocations for this town
+	for facility_id in GameContext.SHOP_CONTRIBUTING_FACILITIES:
+		if not GameContext.shop_slot_allocations.has(town_id):
+			break
+		GameContext.shop_slot_allocations[town_id][facility_id] = 0
+
+	# Clear purchased slots
+	GameContext.clear_shop_purchased_slots(shop_id)
+	GameContext.save_game()
+
+	# Reset temp allocations
+	_temp_shop_allocations = {}
+
+	print("[Shop] Cleared allocations for re-allocation shop=%s refresh=%d" % [shop_id, GameContext.get_shop_refresh_count(shop_id)])
+	_refresh_facility_panel()
 
 
 ## Handle shop sell button - opens sell items window.
@@ -2794,10 +2969,14 @@ func _show_sell_window() -> void:
 	close_btn.pressed.connect(_close_sell_overlay)
 	vbox.add_child(close_btn)
 
+	# Register with ESC-close stack
+	UIAudio.register_closeable(_sell_overlay, _close_sell_overlay)
+
 
 ## Close the sell overlay and refresh the shop panel.
 func _close_sell_overlay() -> void:
 	if _sell_overlay != null and is_instance_valid(_sell_overlay):
+		UIAudio.unregister_closeable(_sell_overlay)
 		_sell_overlay.queue_free()
 	_sell_overlay = null
 	_sell_gold_label = null
@@ -3480,12 +3659,16 @@ func _build_npc_header(facility, menu_options: Array, current_view: String, view
 func _build_equipment_recipes_view(facility, current_tier: int) -> void:
 	var facility_id = facility.facility_id
 
-	# Pre-compute which equipment types have visible recipes (non-tier-locked)
+	# Pre-compute which equipment types have visible recipes (non-tier-locked, current region)
 	var available_types: Dictionary = {}  # equipment_type -> count
+	var current_region: String = GameContext.get_current_region_id()
 	for recipe in facility.crafting_recipes:
 		var required_tier = recipe.get("required_tier", 1)
 		if required_tier > current_tier:
 			continue  # tier-locked recipes are hidden
+		var recipe_region: String = recipe.get("region", "")
+		if recipe_region != "" and recipe_region != current_region:
+			continue  # wrong region
 		var etype = recipe.get("equipment_type", "")
 		available_types[etype] = available_types.get(etype, 0) + 1
 
@@ -3651,37 +3834,25 @@ func _build_equipment_upgrade_view(facility, current_tier: int) -> void:
 
 ## Display benefits/contents of a specific tier (services, recipes, slots)
 func _build_tier_benefits_display(facility, tier: int, current_tier: int) -> void:
-	# Slots
-	var slots = facility.get_slots_for_tier(tier)
-	if slots > 0:
-		var slots_label = Label.new()
-		slots_label.text = "Recipe Slots: %d" % slots
-		slots_label.add_theme_font_size_override("font_size", 12)
-		_facility_actions_container.add_child(slots_label)
+	# Show real mechanical benefits based on facility type
+	var benefits: Array[String] = _get_tier_benefits(facility, tier)
+	for benefit_text in benefits:
+		var blabel = Label.new()
+		blabel.text = benefit_text
+		blabel.add_theme_font_size_override("font_size", 12)
+		blabel.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_facility_actions_container.add_child(blabel)
 
-	# Services at this tier
-	var tier_key = str(tier)
-	var services: Array = []
-	if facility.services_per_tier.has(tier_key):
-		services = facility.services_per_tier[tier_key]
-	elif facility.services_per_tier.has(tier):
-		services = facility.services_per_tier[tier]
-
-	if services.size() > 0:
-		var pretty_services: Array[String] = []
-		for svc in services:
-			pretty_services.append(str(svc).replace("_", " ").capitalize())
-		var svc_label = Label.new()
-		svc_label.text = "Services: %s" % ", ".join(pretty_services)
-		svc_label.add_theme_font_size_override("font_size", 12)
-		svc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		_facility_actions_container.add_child(svc_label)
-
-	# Recipes available at this tier
+	# Recipes available at this tier (filtered by current region)
+	var current_region: String = GameContext.get_current_region_id()
 	var tier_recipes: Array = []
 	for recipe in facility.crafting_recipes:
-		if recipe.get("required_tier", 1) == tier:
-			tier_recipes.append(recipe)
+		if recipe.get("required_tier", 1) != tier:
+			continue
+		var recipe_region: String = recipe.get("region", "")
+		if recipe_region != "" and recipe_region != current_region:
+			continue
+		tier_recipes.append(recipe)
 
 	if tier_recipes.size() > 0:
 		var recipe_header = Label.new()
@@ -3727,6 +3898,64 @@ func _build_tier_benefits_display(facility, tier: int, current_tier: int) -> voi
 			grid.add_child(row)
 
 
+## Get real mechanical benefit descriptions for a facility tier.
+func _get_tier_benefits(facility, tier: int) -> Array[String]:
+	var benefits: Array[String] = []
+	var ftype: String = facility.facility_type
+
+	match ftype:
+		"storage":
+			var capacity: int = GameContext.STASH_BASE_CAPACITY + tier * GameContext.STASH_CAPACITY_PER_STORAGE_TIER
+			benefits.append("Stash Capacity: %d items" % capacity)
+		"inn":
+			# Recruit level
+			var recruit_lvl_data: Dictionary = facility.recruit_level_by_tier
+			var recruit_lvl: int = recruit_lvl_data.get(str(tier), recruit_lvl_data.get(tier, 1))
+			benefits.append("Recruit Level: %d" % recruit_lvl)
+			# Party size
+			var party_size: int = GameContext.PARTY_SIZE_BY_INN_TIER.get(tier, 4)
+			benefits.append("Party Size: %d" % party_size)
+			# Race access
+			if tier >= 2:
+				benefits.append("Recruits: All races available")
+				benefits.append("Recruits start with equipment")
+			else:
+				benefits.append("Recruits: Region-native races only")
+		"training_hall":
+			# Book slots
+			var slots: int = facility.get_slots_for_tier(tier)
+			if slots > 0:
+				benefits.append("Book Slots: %d" % slots)
+			# XP bonus
+			var xp_pct: int = tier * 2
+			benefits.append("XP Bonus: +%d%% (global, per hall)" % xp_pct)
+			# Book discount
+			if tier >= 3:
+				benefits.append("Class Book Discount: 50%")
+		"shop":
+			# Shop item slots
+			var shop_slots: int = GameContext.SHOP_TIER_MAX_SLOTS.get(tier, 4)
+			benefits.append("Shop Slots: %d items" % shop_slots)
+			# Refresh limit
+			var refresh_limit: int = GameContext.SHOP_REFRESH_LIMIT_BY_TIER.get(tier, 1)
+			benefits.append("Shop Refreshes: %d per visit" % refresh_limit)
+		"equipment":
+			# Crafting slots
+			var slots: int = facility.get_slots_for_tier(tier)
+			if slots > 0:
+				benefits.append("Crafting Slots: %d" % slots)
+			# Tier-based quality hint
+			if tier >= 3:
+				benefits.append("Recipe Discount: 25%")
+		"production":
+			# Mixing/crafting slots
+			var slots: int = facility.get_slots_for_tier(tier)
+			if slots > 0:
+				benefits.append("Crafting Slots: %d" % slots)
+
+	return benefits
+
+
 ## Repair view: placeholder for future implementation
 func _build_equipment_repair_view(facility) -> void:
 	var keeper_name: String = facility.keeper_name if facility.keeper_name != "" else "The keeper"
@@ -3761,11 +3990,10 @@ func _get_filtered_equipment_recipes(facility, current_tier: int) -> Array:
 		var upgrade_tier: int = int(recipe.get("upgrade_tier", 1))
 		var is_craft: bool = recipe.get("is_craft", false)
 
-		# T4 craft recipes are region-specific — skip if wrong region
-		if is_craft:
-			var recipe_region: String = recipe.get("region", "")
-			if recipe_region != "" and recipe_region != current_region:
-				continue
+		# Region-specific recipes — skip if wrong region
+		var recipe_region: String = recipe.get("region", "")
+		if recipe_region != "" and recipe_region != current_region:
+			continue
 
 		# Check unlock state using compound key
 		var is_unlocked: bool = GameContext.is_recipe_unlocked(output_id, upgrade_tier)
@@ -4929,34 +5157,15 @@ func _build_training_upgrade_view(facility, current_tier: int) -> void:
 		_facility_actions_container.add_child(lock_msg)
 
 
-## Display Training Hall tier benefits (book slots, services)
+## Display Training Hall tier benefits (real mechanical stats)
 func _build_training_tier_benefits(facility, tier: int, current_tier: int) -> void:
-	# Book slots at this tier
-	var tier_key = str(tier)
-	if facility.slots_per_tier.has(tier_key):
-		var tier_slots = int(facility.slots_per_tier[tier_key])
-		var slot_label = Label.new()
-		slot_label.text = "Book Slots: %d" % tier_slots
-		slot_label.add_theme_font_size_override("font_size", 12)
-		slot_label.modulate = Color(0.7, 0.85, 1.0, 1)
-		_facility_actions_container.add_child(slot_label)
-
-	# Services at this tier
-	var services: Array = []
-	if facility.services_per_tier.has(tier_key):
-		services = facility.services_per_tier[tier_key]
-	elif facility.services_per_tier.has(tier):
-		services = facility.services_per_tier[tier]
-
-	if services.size() > 0:
-		var pretty_services: Array[String] = []
-		for svc in services:
-			pretty_services.append(str(svc).replace("_", " ").capitalize())
-		var svc_label = Label.new()
-		svc_label.text = "Services: %s" % ", ".join(pretty_services)
-		svc_label.add_theme_font_size_override("font_size", 12)
-		svc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		_facility_actions_container.add_child(svc_label)
+	var benefits: Array[String] = _get_tier_benefits(facility, tier)
+	for benefit_text in benefits:
+		var blabel = Label.new()
+		blabel.text = benefit_text
+		blabel.add_theme_font_size_override("font_size", 12)
+		blabel.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_facility_actions_container.add_child(blabel)
 
 
 ## Create a hero row for Training Hall roster (Name + Race + Class + Select button)
@@ -5318,6 +5527,29 @@ func _create_party_card(hero_id: String) -> PanelContainer:
 	gear_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	gear_btn.pressed.connect(_on_manage_gear_pressed.bind(hero_id))
 	card_vbox.add_child(gear_btn)
+
+	# Row selector (compact F/M/B toggle buttons)
+	var row_hbox = HBoxContainer.new()
+	row_hbox.add_theme_constant_override("separation", 2)
+	row_hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var row_names = ["F", "M", "B"]
+	var row_tips = ["Front — Targeted first by melee", "Middle — Targeted after Front", "Back — Targeted last by melee"]
+	var current_row: int = GameContext.get_hero_row(hero_id)
+	for i in range(3):
+		var rbtn = Button.new()
+		rbtn.text = row_names[i]
+		rbtn.add_theme_font_size_override("font_size", 9)
+		rbtn.custom_minimum_size = Vector2(0, 18)
+		rbtn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		rbtn.tooltip_text = row_tips[i]
+		if i == current_row:
+			rbtn.disabled = true
+			rbtn.modulate = Color(0.5, 1.0, 0.5, 1)
+		else:
+			rbtn.modulate = Color(0.7, 0.7, 0.7, 1)
+		rbtn.pressed.connect(_on_party_card_row_changed.bind(i, hero_id))
+		row_hbox.add_child(rbtn)
+	card_vbox.add_child(row_hbox)
 
 	return card
 
@@ -5754,9 +5986,6 @@ func _create_empty_recruit_slot_row() -> HBoxContainer:
 
 ## Inn roster view: owned heroes with party management
 func _build_inn_roster_view(facility, current_tier: int) -> void:
-	# Tutorial on first roster visit
-	TutorialOverlay.try_show(self, "tutorial_manage_roster")
-
 	# Permadeath warning
 	var permadeath_warning = Label.new()
 	permadeath_warning.text = "Heroes who fall in the dungeon are lost forever!"
@@ -5865,35 +6094,15 @@ func _build_inn_upgrade_view(facility, current_tier: int) -> void:
 		_facility_actions_container.add_child(lock_msg)
 
 
-## Display Inn tier benefits (recruit level, services, party size)
+## Display Inn tier benefits (real mechanical stats)
 func _build_inn_tier_benefits(facility, tier: int, current_tier: int) -> void:
-	# Recruit level at this tier
-	var tier_key = str(tier)
-	var level_by_tier = facility.recruit_level_by_tier
-	if level_by_tier.has(tier_key):
-		var recruit_lv = int(level_by_tier[tier_key])
-		var lv_label = Label.new()
-		lv_label.text = "Recruit Level: %d" % recruit_lv
-		lv_label.add_theme_font_size_override("font_size", 12)
-		lv_label.modulate = Color(0.7, 0.85, 1.0, 1)
-		_facility_actions_container.add_child(lv_label)
-
-	# Services at this tier
-	var services: Array = []
-	if facility.services_per_tier.has(tier_key):
-		services = facility.services_per_tier[tier_key]
-	elif facility.services_per_tier.has(tier):
-		services = facility.services_per_tier[tier]
-
-	if services.size() > 0:
-		var pretty_services: Array[String] = []
-		for svc in services:
-			pretty_services.append(str(svc).replace("_", " ").capitalize())
-		var svc_label = Label.new()
-		svc_label.text = "Services: %s" % ", ".join(pretty_services)
-		svc_label.add_theme_font_size_override("font_size", 12)
-		svc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		_facility_actions_container.add_child(svc_label)
+	var benefits: Array[String] = _get_tier_benefits(facility, tier)
+	for benefit_text in benefits:
+		var blabel = Label.new()
+		blabel.text = benefit_text
+		blabel.add_theme_font_size_override("font_size", 12)
+		blabel.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_facility_actions_container.add_child(blabel)
 
 
 ## Create a hero tile/card for the Inn UI.
@@ -6178,44 +6387,7 @@ func _create_hero_row(hero: Dictionary, selected_party: Array) -> PanelContainer
 		party_btn.pressed.connect(_on_add_to_party_pressed.bind(hero_id))
 	btn_vbox.add_child(party_btn)
 
-	# Row selector (3-Row Formation v1) - only for party members
-	if in_party:
-		var row_hbox = HBoxContainer.new()
-		row_hbox.add_theme_constant_override("separation", 4)
-
-		var row_label = Label.new()
-		row_label.text = "Row:"
-		row_label.add_theme_font_size_override("font_size", 11)
-		row_hbox.add_child(row_label)
-
-		var row_select = OptionButton.new()
-		row_select.custom_minimum_size = Vector2(70, 24)
-		row_select.add_item("Front", 0)
-		row_select.add_item("Middle", 1)
-		row_select.add_item("Back", 2)
-		row_select.selected = GameContext.get_hero_row(hero_id)
-		row_select.item_selected.connect(_on_hero_row_changed.bind(hero_id))
-		row_hbox.add_child(row_select)
-
-		btn_vbox.add_child(row_hbox)
-
-		# Row explanation text (3-Row Formation v1)
-		var row_explain = Label.new()
-		row_explain.text = "Front: Targeted first by melee.\nMiddle: Targeted after Front.\nBack: Targeted last by melee."
-		row_explain.add_theme_font_size_override("font_size", 9)
-		row_explain.add_theme_color_override("font_color", Color.GRAY)
-		btn_vbox.add_child(row_explain)
-
-	# Equipment buttons (only for party members)
-	if in_party:
-		# Manage Gear button opens slot selection popup
-		var manage_gear_btn = Button.new()
-		manage_gear_btn.custom_minimum_size = Vector2(100, 28)
-		manage_gear_btn.text = "Manage Gear"
-		manage_gear_btn.pressed.connect(_on_manage_gear_pressed.bind(hero_id))
-		btn_vbox.add_child(manage_gear_btn)
-
-		# Equip/Unequip Bag buttons removed — covered by Manage Gear
+	# Row selector and Manage Gear moved to Party Bar cards
 
 	# Rename button
 	var rename_btn = Button.new()
@@ -6349,6 +6521,14 @@ func _on_hero_row_changed(row_index: int, hero_id: String) -> void:
 	print("[Inn] Hero %s assigned to %s row" % [hero_id, row_names[row_index]])
 
 
+## Handle hero row assignment change from party bar card.
+func _on_party_card_row_changed(row_index: int, hero_id: String) -> void:
+	GameContext.set_hero_row(hero_id, row_index)
+	var row_names = ["Front", "Middle", "Back"]
+	print("[PartyBar] Hero %s assigned to %s row" % [hero_id, row_names[row_index]])
+	_populate_heroes_section()
+
+
 func _on_equip_slot_pressed(hero_id: String, slot: String) -> void:
 	# Show equip selection popup for this hero and slot
 	_show_equip_selection_popup(hero_id, slot)
@@ -6403,6 +6583,9 @@ func _open_manage_gear_overlay() -> void:
 	_manage_gear_content.add_theme_constant_override("separation", 4)
 	_manage_gear_content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(_manage_gear_content)
+
+	# Register with ESC-close stack
+	UIAudio.register_closeable(_manage_gear_overlay, _close_manage_gear_overlay)
 
 	_build_manage_gear_content()
 
@@ -6795,6 +6978,7 @@ func _build_manage_gear_content() -> void:
 
 func _close_manage_gear_overlay() -> void:
 	if _manage_gear_overlay != null and is_instance_valid(_manage_gear_overlay):
+		UIAudio.unregister_closeable(_manage_gear_overlay)
 		_manage_gear_overlay.queue_free()
 		_manage_gear_overlay = null
 		_manage_gear_content = null
@@ -7973,9 +8157,13 @@ func _build_crafting_recipes_section() -> void:
 	var facility_id = _current_facility.facility_id
 	var current_tier = GameContext.get_facility_tier(town_id, facility_id)
 
+	var current_region: String = GameContext.get_current_region_id()
 	var available_recipes: Array = []
 	var locked_recipes: Array = []
 	for recipe in crafting_recipes:
+		var recipe_region: String = recipe.get("region", "")
+		if recipe_region != "" and recipe_region != current_region:
+			continue  # wrong region
 		var required_tier = recipe.get("required_tier", 1)
 		if required_tier <= current_tier:
 			available_recipes.append(recipe)
@@ -8297,20 +8485,22 @@ func _build_dungeon_enter_view(dungeon, dungeon_id: String, floor_count: int) ->
 	var current_dungeon = GameContext.get_current_dungeon_id()
 	var in_this_dungeon = current_dungeon == dungeon_id
 
-	# Enter Dungeon button
+	# Warning if no party recruited
 	var has_party: bool = GameContext.selected_party.size() > 0
+	if not has_party:
+		var warn = Label.new()
+		warn.text = "Recruit heroes at the Inn first!"
+		warn.modulate = Color(1, 0.6, 0.4, 1)
+		warn.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_facility_actions_container.add_child(warn)
+
+	# Enter Dungeon button
 	var enter_btn = Button.new()
 	enter_btn.text = "Enter Dungeon"
 	enter_btn.custom_minimum_size = Vector2(180, 32)
 	enter_btn.disabled = current_dungeon != "" or not has_party
 	enter_btn.pressed.connect(_on_dungeon_enter_pressed.bind(dungeon_id))
 	_facility_actions_container.add_child(enter_btn)
-
-	if not has_party:
-		var warn = Label.new()
-		warn.text = "Recruit heroes at the Inn first!"
-		warn.modulate = Color(1, 0.6, 0.4, 1)
-		_facility_actions_container.add_child(warn)
 
 	# Continue Run button (only if in this dungeon)
 	if in_this_dungeon:

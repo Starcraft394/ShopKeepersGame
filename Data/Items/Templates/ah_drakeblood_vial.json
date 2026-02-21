@@ -25,6 +25,14 @@
   "base_value": 100,
   "buy_value": 0,
   "stack_max": 1,
-  "icon_path": "",
-  "tags": ["region_4", "consumable", "vial", "buff", "ashen_horizons", "tier_4", "refillable"]
+  "icon_path": "res://Assets/_ArtPacks/Potions/PNG/Transperent/Icon17.png",
+  "tags": [
+    "region_4",
+    "consumable",
+    "vial",
+    "buff",
+    "ashen_horizons",
+    "tier_4",
+    "refillable"
+  ]
 }

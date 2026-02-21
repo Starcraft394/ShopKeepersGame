@@ -23,6 +23,10 @@
   "base_value": 8,
   "buy_value": 20,
   "stack_max": 10,
-  "icon_path": "",
-  "tags": ["region_2", "consumable", "food"]
+  "icon_path": "res://Assets/_ArtPacks/Potions/PNG/Transperent/Icon33.png",
+  "tags": [
+    "region_2",
+    "consumable",
+    "food"
+  ]
 }

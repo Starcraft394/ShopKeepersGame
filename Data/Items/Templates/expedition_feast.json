@@ -23,6 +23,11 @@
   "base_value": 35,
   "buy_value": 55,
   "stack_max": 3,
-  "icon_path": "",
-  "tags": ["region_2", "consumable", "food", "tier_3"]
+  "icon_path": "res://Assets/_ArtPacks/Food/PNG/Transperent/Icon33.png",
+  "tags": [
+    "region_2",
+    "consumable",
+    "food",
+    "tier_3"
+  ]
 }

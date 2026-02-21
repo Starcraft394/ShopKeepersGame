@@ -9,7 +9,10 @@
   "equip_slot": "bag",
   "category": "equipment",
   "tier": 4,
-  "base_stats": {"defense": 3, "health": 8},
+  "base_stats": {
+    "defense": 3,
+    "health": 8
+  },
   "stat_bonuses": {},
   "bag_capacity_bonus": 8,
   "combat_tag": "dimensional_rift",
@@ -23,7 +26,7 @@
   "base_value": 210,
   "buy_value": 0,
   "can_refine": false,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/fr_void_pack.png",
   "tags": [
     "region_7",
     "backpack",

@@ -23,6 +23,12 @@
   "base_value": 30,
   "buy_value": 50,
   "stack_max": 3,
-  "icon_path": "",
-  "tags": ["region_2", "consumable", "thrown", "poison", "tier_3"]
+  "icon_path": "res://Assets/_ArtPacks/Potions/PNG/Transperent/Icon37.png",
+  "tags": [
+    "region_2",
+    "consumable",
+    "thrown",
+    "poison",
+    "tier_3"
+  ]
 }

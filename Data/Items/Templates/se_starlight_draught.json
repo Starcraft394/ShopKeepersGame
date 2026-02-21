@@ -25,6 +25,14 @@
   "base_value": 110,
   "buy_value": 0,
   "stack_max": 1,
-  "icon_path": "",
-  "tags": ["region_5", "consumable", "draught", "buff", "starfall_expanse", "tier_4", "refillable"]
+  "icon_path": "res://Assets/_ArtPacks/Potions/PNG/Transperent/Icon41.png",
+  "tags": [
+    "region_5",
+    "consumable",
+    "draught",
+    "buff",
+    "starfall_expanse",
+    "tier_4",
+    "refillable"
+  ]
 }

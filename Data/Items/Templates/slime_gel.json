@@ -23,6 +23,11 @@
   "base_value": 5,
   "buy_value": 8,
   "stack_max": 99,
-  "icon_path": "res://Assets/_ArtPacks/Potions/PNG/Transperent/Icon3.png",
-  "tags": ["region_1", "material", "monster_part", "alchemy"]
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/slime_gel.png",
+  "tags": [
+    "region_1",
+    "material",
+    "monster_part",
+    "alchemy"
+  ]
 }

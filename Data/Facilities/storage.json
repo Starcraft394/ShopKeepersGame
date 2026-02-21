@@ -2,7 +2,7 @@
   "id": "storage",
   "display_name": "Storage",
   "description": "A well-organized warehouse where surplus materials and goods are kept safe between expeditions.",
-  "icon_path": "res://Assets/Icons/Facilities/icon_facility_storage.png",
+  "icon_path": "res://Assets/_ArtPacks/RPGThings/PNG/Transperent/icons_30_69.png",
   "facility_type": "storage",
   "max_tier": 4,
   "unlock_region": 1,

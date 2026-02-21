@@ -27,7 +27,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 58,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/se_astral_tunic.png",
   "tags": [
     "region_5",
     "armor",

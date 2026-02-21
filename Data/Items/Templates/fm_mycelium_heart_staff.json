@@ -34,7 +34,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 115,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Spears/PNG/Transperent/Icon30.png",
   "tags": [
     "region_2",
     "weapon",

@@ -1,7 +1,7 @@
 {
   "id": "ss_leviathan_bow",
-  "display_name": "Leviathan Bow",
-  "description": "A bow carved from a leviathan's rib, strung with sea serpent sinew. Arrows fly with the force of a tidal wave.",
+  "display_name": "Leviathan Crossbow",
+  "description": "A heavy crossbow of deep-sea bone and sinew, its bolts pierce even the thickest scales.",
   "icon_hint": "massive curved bone bow carved from a sea creature rib with iridescent blue-green sinew string and barnacle accents",
   "item_type": "weapon",
   "item_subtype": "bow",
@@ -34,7 +34,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 118,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Bows/PNG/Transperent/Icon39.png",
   "tags": [
     "region_3",
     "weapon",

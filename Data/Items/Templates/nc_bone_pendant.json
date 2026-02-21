@@ -24,7 +24,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 58,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Swords/PNG/Transperent/Icon12.png",
   "tags": [
     "region_6",
     "accessory",

@@ -29,7 +29,7 @@
   "base_value": 120,
   "buy_value": 0,
   "can_refine": true,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/nc_spectral_aegis.png",
   "tags": [
     "region_6",
     "offhand",

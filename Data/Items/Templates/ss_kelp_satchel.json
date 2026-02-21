@@ -9,13 +9,16 @@
   "slot": "backpack",
   "equip_slot": "bag",
   "tier": 2,
-  "base_stats": {"defense": 1, "health": 3},
+  "base_stats": {
+    "defense": 1,
+    "health": 3
+  },
   "stat_bonuses": {},
   "bag_capacity_bonus": 4,
   "base_value": 78,
   "buy_value": 0,
   "can_refine": false,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/ss_kelp_satchel.png",
   "tags": [
     "region_3",
     "backpack",

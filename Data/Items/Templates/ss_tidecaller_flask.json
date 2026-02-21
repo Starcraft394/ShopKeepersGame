@@ -25,6 +25,14 @@
   "base_value": 95,
   "buy_value": 0,
   "stack_max": 1,
-  "icon_path": "",
-  "tags": ["region_3", "consumable", "flask", "buff", "sunken_strand", "tier_4", "refillable"]
+  "icon_path": "res://Assets/_ArtPacks/Food/PNG/Transperent/Icon41.png",
+  "tags": [
+    "region_3",
+    "consumable",
+    "flask",
+    "buff",
+    "sunken_strand",
+    "tier_4",
+    "refillable"
+  ]
 }

@@ -2,7 +2,7 @@
   "id": "shop_embercradle",
   "display_name": "Embercradle Forge Market",
   "description": "An open-air market sheltered by obsidian walls. Cindra sells weapons still warm from the volcanic forges.",
-  "icon_path": "res://Assets/Icons/Facilities/icon_facility_shop.png",
+  "icon_path": "res://Assets/_ArtPacks/RPGThings/PNG/Transperent/icons_30_14.png",
   "facility_type": "shop",
   "max_tier": 4,
   "unlock_region": 4,

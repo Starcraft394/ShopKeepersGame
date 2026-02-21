@@ -2,7 +2,7 @@
   "id": "shop_shelldrift",
   "display_name": "Shelldrift Trading Post",
   "description": "Dockside trading post built from an upturned ship hull. Barnacle Bill haggles over salvage and seawater remedies.",
-  "icon_path": "res://Assets/Icons/Facilities/icon_facility_shop.png",
+  "icon_path": "res://Assets/_ArtPacks/RPGThings/PNG/Transperent/icons_30_14.png",
   "facility_type": "shop",
   "max_tier": 4,
   "unlock_region": 3,

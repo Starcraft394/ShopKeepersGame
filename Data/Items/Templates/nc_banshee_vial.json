@@ -24,6 +24,13 @@
   "stack_max": 3,
   "base_value": 35,
   "buy_value": 55,
-  "icon_path": "",
-  "tags": ["region_6", "consumable", "thrown", "utility", "necropolis", "tier_4"]
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/nc_banshee_vial.png",
+  "tags": [
+    "region_6",
+    "consumable",
+    "thrown",
+    "utility",
+    "necropolis",
+    "tier_4"
+  ]
 }

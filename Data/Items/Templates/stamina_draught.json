@@ -23,6 +23,12 @@
   "base_value": 22,
   "buy_value": 30,
   "stack_max": 5,
-  "icon_path": "res://Assets/Icons/Items/icon_item_stamina_draught.png",
-  "tags": ["region_1", "consumable", "potion", "buff", "tier_2"]
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/stamina_draught.png",
+  "tags": [
+    "region_1",
+    "consumable",
+    "potion",
+    "buff",
+    "tier_2"
+  ]
 }

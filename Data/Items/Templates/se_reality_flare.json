@@ -23,6 +23,13 @@
   "base_value": 30,
   "buy_value": 48,
   "stack_max": 3,
-  "icon_path": "",
-  "tags": ["region_5", "consumable", "thrown", "utility", "starfall_expanse", "tier_4"]
+  "icon_path": "res://Assets/_ArtPacks/Potions/PNG/Transperent/Icon38.png",
+  "tags": [
+    "region_5",
+    "consumable",
+    "thrown",
+    "utility",
+    "starfall_expanse",
+    "tier_4"
+  ]
 }

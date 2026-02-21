@@ -24,6 +24,13 @@
   "stack_max": 3,
   "base_value": 42,
   "buy_value": 65,
-  "icon_path": "",
-  "tags": ["region_6", "consumable", "potion", "buff", "necropolis", "tier_4"]
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/nc_spectral_draught.png",
+  "tags": [
+    "region_6",
+    "consumable",
+    "potion",
+    "buff",
+    "necropolis",
+    "tier_4"
+  ]
 }

@@ -12,7 +12,7 @@
   "debuff_amount": 8,
   "debuff_duration": 4,
   "base_value": 80,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/fr_entropy_charge.png",
   "tags": [
     "region_7",
     "consumable",

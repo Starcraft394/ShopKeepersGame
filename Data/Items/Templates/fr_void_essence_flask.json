@@ -25,6 +25,14 @@
   "base_value": 115,
   "buy_value": 0,
   "stack_max": 1,
-  "icon_path": "",
-  "tags": ["region_7", "consumable", "flask", "buff", "final_realm", "tier_4", "refillable"]
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/fr_void_essence_flask.png",
+  "tags": [
+    "region_7",
+    "consumable",
+    "flask",
+    "buff",
+    "final_realm",
+    "tier_4",
+    "refillable"
+  ]
 }

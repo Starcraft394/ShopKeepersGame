@@ -26,7 +26,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 30,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/fm_sporeguard_helm.png",
   "tags": [
     "region_2",
     "armor",

@@ -23,6 +23,11 @@
   "base_value": 32,
   "buy_value": 45,
   "stack_max": 5,
-  "icon_path": "res://Assets/Icons/Items/icon_item_resistance_salve.png",
-  "tags": ["region_1", "consumable", "buff", "crafted"]
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/resistance_salve.png",
+  "tags": [
+    "region_1",
+    "consumable",
+    "buff",
+    "crafted"
+  ]
 }

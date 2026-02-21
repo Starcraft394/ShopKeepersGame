@@ -34,7 +34,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 135,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/se_temporal_dagger.png",
   "tags": [
     "region_5",
     "weapon",

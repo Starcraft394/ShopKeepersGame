@@ -19,6 +19,6 @@
     "potion",
     "base"
   ],
-  "icon_path": "res://Assets/Icons/Items/icon_item_antidote.png",
+  "icon_path": "res://Assets/_ArtPacks/Potions/PNG/Transperent/Icon3.png",
   "tier": 1
 }

@@ -24,7 +24,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 60,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/fm_sporeguard_pendant.png",
   "tags": [
     "region_2",
     "accessory",

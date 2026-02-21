@@ -3490,12 +3490,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		return
 
-	# Close stat inspection on Escape
-	if _inspect_overlay != null and event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
-		_close_stat_inspection()
-		get_viewport().set_input_as_handled()
-		return
-
 	# Loot panel keyboard shortcuts (intercept first)
 	if _loot_panel != null and is_instance_valid(_loot_panel):
 		_loot_panel_input(event)
@@ -5336,6 +5330,7 @@ func _show_stat_inspection(unit_id: String) -> void:
 	_build_stat_inspection_content(vbox, unit_data)
 
 	add_child(_inspect_overlay)
+	UIAudio.register_closeable(_inspect_overlay, _close_stat_inspection)
 	print("[UI] Stat inspection opened for %s" % unit_id)
 
 
@@ -5620,6 +5615,7 @@ func _add_inspect_status_line(vbox: VBoxContainer, status_name: String, duration
 ## Close the stat inspection overlay.
 func _close_stat_inspection() -> void:
 	if _inspect_overlay != null and is_instance_valid(_inspect_overlay):
+		UIAudio.unregister_closeable(_inspect_overlay)
 		_inspect_overlay.queue_free()
 		_inspect_overlay = null
 		_inspect_unit_id = ""

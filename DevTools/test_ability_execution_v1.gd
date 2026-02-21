@@ -1226,6 +1226,62 @@ static func run_tests() -> Dictionary:
 	else:
 		results["failed"] += 1
 
+	var t154 = _test_stock_shop_commits_allocations()
+	results["tests"].append(t154)
+	if t154["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t155 = _test_clear_and_reallocate_clears_state()
+	results["tests"].append(t155)
+	if t155["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t156 = _test_shop_refresh_preserves_allocations()
+	results["tests"].append(t156)
+	if t156["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t157 = _test_closeable_stack_lifo_order()
+	results["tests"].append(t157)
+	if t157["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t158 = _test_closeable_stack_stale_pruning()
+	results["tests"].append(t158)
+	if t158["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t159 = _test_party_card_row_assignment()
+	results["tests"].append(t159)
+	if t159["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t160 = _test_tutorial_party_bar_flag()
+	results["tests"].append(t160)
+	if t160["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t161 = _test_inn_close_block_no_party()
+	results["tests"].append(t161)
+	if t161["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
 	print("")
 	print("=" .repeat(60))
 	print("  TEST RESULTS: %d passed, %d failed" % [results["passed"], results["failed"]])
@@ -8470,3 +8526,308 @@ static func _test_campaign_shown_flag_prevents_retrigger() -> Dictionary:
 	else:
 		print("[FAIL] before=%s after=%s" % [str(found_before), str(found_after)])
 	return {"name": "Shown flag prevents re-trigger", "passed": passed}
+
+
+# ============================================================================
+# TESTS 154-156: Stock Shop Two-State Flow
+# ============================================================================
+
+static func _test_stock_shop_commits_allocations() -> Dictionary:
+	print("--- TEST 154: Stock shop commits allocations ---")
+	var town_id: String = "town_thornhaven"
+
+	# Save existing state
+	var old_allocs: Dictionary = GameContext.shop_slot_allocations.duplicate(true)
+	var old_town: String = GameContext._current_town_id
+
+	# Setup clean state
+	GameContext._current_town_id = town_id
+	GameContext.shop_slot_allocations[town_id] = {}
+
+	# Before stocking: allocations should be 0
+	var before_alloc: int = GameContext.get_shop_allocated_slots(town_id)
+
+	# Simulate stocking: write allocations directly (as _on_stock_shop_pressed does)
+	if not GameContext.shop_slot_allocations.has(town_id):
+		GameContext.shop_slot_allocations[town_id] = {}
+	GameContext.shop_slot_allocations[town_id]["blacksmith"] = 3
+	GameContext.shop_slot_allocations[town_id]["huntsman"] = 2
+
+	# After stocking: allocations should be 5
+	var after_alloc: int = GameContext.get_shop_allocated_slots(town_id)
+	var bs_alloc: int = GameContext.get_facility_slot_allocation(town_id, "blacksmith")
+	var ht_alloc: int = GameContext.get_facility_slot_allocation(town_id, "huntsman")
+
+	# Restore
+	GameContext.shop_slot_allocations = old_allocs
+	GameContext._current_town_id = old_town
+
+	var ok_before: bool = before_alloc == 0
+	var ok_after: bool = after_alloc == 5
+	var ok_detail: bool = bs_alloc == 3 and ht_alloc == 2
+	var passed: bool = ok_before and ok_after and ok_detail
+	if passed:
+		print("[PASS] Stock commits allocations: 0→5 (bs=3, ht=2)")
+	else:
+		print("[FAIL] before=%d after=%d bs=%d ht=%d" % [before_alloc, after_alloc, bs_alloc, ht_alloc])
+	return {"name": "Stock shop commits allocations", "passed": passed}
+
+
+static func _test_clear_and_reallocate_clears_state() -> Dictionary:
+	print("--- TEST 155: Clear & re-allocate clears state and costs refresh ---")
+	var town_id: String = "town_thornhaven"
+	var shop_id: String = "general_store"
+
+	# Save existing state
+	var old_allocs: Dictionary = GameContext.shop_slot_allocations.duplicate(true)
+	var old_purchased: Dictionary = GameContext.shop_purchased_slots.duplicate(true)
+	var old_refresh: Dictionary = GameContext.shop_refresh_counts.duplicate(true)
+	var old_town: String = GameContext._current_town_id
+	var old_gold: int = GameContext.run_gold
+
+	# Setup: stocked state, refresh at 0, gold available
+	GameContext._current_town_id = town_id
+	GameContext.shop_slot_allocations[town_id] = {"blacksmith": 4, "huntsman": 4}
+	GameContext.shop_purchased_slots[shop_id] = ["blacksmith:0", "huntsman:1"]
+	GameContext.shop_refresh_counts[shop_id] = 0
+	GameContext.run_gold = 500
+
+	# Verify stocked
+	var stocked_total: int = GameContext.get_shop_allocated_slots(town_id)
+
+	# Simulate clear: spend a refresh, then zero out allocations (as handler does)
+	var refresh_success: bool = GameContext.spend_shop_refresh(shop_id)
+	GameContext.shop_slot_allocations[town_id] = {}
+	GameContext.clear_shop_purchased_slots(shop_id)
+
+	# Verify: allocations=0, purchased=[], refresh incremented to 1
+	var cleared_total: int = GameContext.get_shop_allocated_slots(town_id)
+	var purchased_empty: bool = GameContext.shop_purchased_slots.get(shop_id, []).size() == 0
+	var refresh_incremented: bool = GameContext.get_shop_refresh_count(shop_id) == 1
+
+	# Restore
+	GameContext.shop_slot_allocations = old_allocs
+	GameContext.shop_purchased_slots = old_purchased
+	GameContext.shop_refresh_counts = old_refresh
+	GameContext._current_town_id = old_town
+	GameContext.run_gold = old_gold
+
+	var passed: bool = stocked_total == 8 and cleared_total == 0 and purchased_empty and refresh_incremented and refresh_success
+	if passed:
+		print("[PASS] Clear & re-allocate: 8→0, purchased=[], refresh=0→1, cost_paid=true")
+	else:
+		print("[FAIL] stocked=%d cleared=%d purchased_empty=%s refresh_incr=%s success=%s" % [stocked_total, cleared_total, str(purchased_empty), str(refresh_incremented), str(refresh_success)])
+	return {"name": "Clear & re-allocate clears state and costs refresh", "passed": passed}
+
+
+static func _test_shop_refresh_preserves_allocations() -> Dictionary:
+	print("--- TEST 156: Shop refresh preserves allocations ---")
+	var town_id: String = "town_thornhaven"
+	var shop_id: String = "general_store"
+
+	# Save existing state
+	var old_allocs: Dictionary = GameContext.shop_slot_allocations.duplicate(true)
+	var old_purchased: Dictionary = GameContext.shop_purchased_slots.duplicate(true)
+	var old_refresh: Dictionary = GameContext.shop_refresh_counts.duplicate(true)
+	var old_town: String = GameContext._current_town_id
+	var old_gold: int = GameContext.run_gold
+
+	# Setup: stocked state with some purchases
+	GameContext._current_town_id = town_id
+	GameContext.shop_slot_allocations[town_id] = {"blacksmith": 5, "huntsman": 3}
+	GameContext.shop_purchased_slots[shop_id] = ["blacksmith:0", "blacksmith:2"]
+	GameContext.shop_refresh_counts[shop_id] = 0
+	GameContext.run_gold = 500  # Enough for refresh
+
+	# Refresh the shop
+	var alloc_before: int = GameContext.get_shop_allocated_slots(town_id)
+	var success: bool = GameContext.spend_shop_refresh(shop_id)
+	# Clear purchased slots as the UI handler does
+	if success:
+		GameContext.clear_shop_purchased_slots(shop_id)
+
+	# Verify: allocations preserved, refresh incremented, purchased cleared
+	var alloc_after: int = GameContext.get_shop_allocated_slots(town_id)
+	var refresh_after: int = GameContext.get_shop_refresh_count(shop_id)
+	var purchased_after: int = GameContext.shop_purchased_slots.get(shop_id, []).size()
+
+	# Restore
+	GameContext.shop_slot_allocations = old_allocs
+	GameContext.shop_purchased_slots = old_purchased
+	GameContext.shop_refresh_counts = old_refresh
+	GameContext._current_town_id = old_town
+	GameContext.run_gold = old_gold
+
+	var passed: bool = success and alloc_before == 8 and alloc_after == 8 and refresh_after == 1 and purchased_after == 0
+	if passed:
+		print("[PASS] Refresh: alloc=8→8, refresh=0→1, purchased=2→0")
+	else:
+		print("[FAIL] success=%s alloc=%d→%d refresh=%d purchased=%d" % [str(success), alloc_before, alloc_after, refresh_after, purchased_after])
+	return {"name": "Shop refresh preserves allocations", "passed": passed}
+
+
+# ============================================================================
+# TESTS 157-158: ESC Closeable Stack
+# ============================================================================
+
+static func _test_closeable_stack_lifo_order() -> Dictionary:
+	print("--- TEST 157: Closeable stack LIFO order ---")
+	# Save existing stack
+	var old_stack: Array = UIAudio._closeable_stack.duplicate(true)
+	UIAudio._closeable_stack = []
+
+	# Create mock nodes
+	var node_a = Node.new()
+	var node_b = Node.new()
+	var node_c = Node.new()
+
+	var close_order: Array = []
+	var fn_a: Callable = func(): close_order.append("a")
+	var fn_b: Callable = func(): close_order.append("b")
+	var fn_c: Callable = func(): close_order.append("c")
+
+	# Register in order a, b, c
+	UIAudio.register_closeable(node_a, fn_a)
+	UIAudio.register_closeable(node_b, fn_b)
+	UIAudio.register_closeable(node_c, fn_c)
+
+	var stack_size: int = UIAudio._closeable_stack.size()
+
+	# Pop top (should be c)
+	var top = UIAudio._closeable_stack.pop_back()
+	top["close"].call()
+
+	# Pop next (should be b)
+	var mid = UIAudio._closeable_stack.pop_back()
+	mid["close"].call()
+
+	# Pop last (should be a)
+	var bot = UIAudio._closeable_stack.pop_back()
+	bot["close"].call()
+
+	# Cleanup
+	node_a.free()
+	node_b.free()
+	node_c.free()
+	UIAudio._closeable_stack = old_stack
+
+	var ok_size: bool = stack_size == 3
+	var ok_order: bool = close_order.size() == 3 and close_order[0] == "c" and close_order[1] == "b" and close_order[2] == "a"
+	var passed: bool = ok_size and ok_order
+	if passed:
+		print("[PASS] LIFO: registered a,b,c — popped c,b,a")
+	else:
+		print("[FAIL] size=%d order=%s" % [stack_size, str(close_order)])
+	return {"name": "Closeable stack LIFO order", "passed": passed}
+
+
+static func _test_closeable_stack_stale_pruning() -> Dictionary:
+	print("--- TEST 158: Closeable stack stale node pruning ---")
+	# Save existing stack
+	var old_stack: Array = UIAudio._closeable_stack.duplicate(true)
+	UIAudio._closeable_stack = []
+
+	var node_alive = Node.new()
+	var node_stale = Node.new()
+
+	var fn_alive: Callable = func(): pass
+	var fn_stale: Callable = func(): pass
+
+	UIAudio.register_closeable(node_stale, fn_stale)
+	UIAudio.register_closeable(node_alive, fn_alive)
+
+	# Free the stale node without unregistering
+	node_stale.free()
+
+	# Prune and check
+	var has_before: bool = UIAudio._closeable_stack.size() == 2
+	UIAudio._prune_stale_closeables()
+	var after_size: int = UIAudio._closeable_stack.size()
+
+	# Remaining entry should be node_alive
+	var remaining_ok: bool = after_size == 1 and UIAudio._closeable_stack[0]["node"] == node_alive
+
+	# Cleanup
+	node_alive.free()
+	UIAudio._closeable_stack = old_stack
+
+	var passed: bool = has_before and remaining_ok
+	if passed:
+		print("[PASS] Stale pruning: 2→1, freed node removed")
+	else:
+		print("[FAIL] before_size=2?%s after_size=%d remaining_ok=%s" % [str(has_before), after_size, str(remaining_ok)])
+	return {"name": "Closeable stack stale node pruning", "passed": passed}
+
+
+static func _test_party_card_row_assignment() -> Dictionary:
+	print("--- TEST 159: Party card row assignment ---")
+	var saved_rows = GameContext.hero_row_assignments.duplicate()
+	var hero_id = "test_row_hero_159"
+
+	GameContext.set_hero_row(hero_id, 0)
+	var row0: int = GameContext.get_hero_row(hero_id)
+	GameContext.set_hero_row(hero_id, 2)
+	var row2: int = GameContext.get_hero_row(hero_id)
+	GameContext.set_hero_row(hero_id, 1)
+	var row1: int = GameContext.get_hero_row(hero_id)
+
+	# Cleanup
+	GameContext.hero_row_assignments = saved_rows
+
+	var passed: bool = row0 == 0 and row2 == 2 and row1 == 1
+	if passed:
+		print("[PASS] Row assignment: 0→0, 2→2, 1→1")
+	else:
+		print("[FAIL] row0=%d row2=%d row1=%d" % [row0, row2, row1])
+	return {"name": "Party card row assignment", "passed": passed}
+
+
+static func _test_tutorial_party_bar_flag() -> Dictionary:
+	print("--- TEST 160: Tutorial party_bar flag tracking ---")
+	var saved = GameContext.completed_tutorials.duplicate()
+
+	GameContext.completed_tutorials = {}
+	var before: bool = GameContext.has_completed_tutorial("tutorial_party_bar")
+	GameContext.complete_tutorial("tutorial_party_bar")
+	var after: bool = GameContext.has_completed_tutorial("tutorial_party_bar")
+
+	# Cleanup
+	GameContext.completed_tutorials = saved
+
+	var passed: bool = not before and after
+	if passed:
+		print("[PASS] tutorial_party_bar flag: false→true")
+	else:
+		print("[FAIL] before=%s after=%s" % [str(before), str(after)])
+	return {"name": "Tutorial party_bar flag tracking", "passed": passed}
+
+
+static func _test_inn_close_block_no_party() -> Dictionary:
+	print("--- TEST 161: Inn close block when no party ---")
+	var saved_tutorials = GameContext.completed_tutorials.duplicate()
+	var saved_party = GameContext.selected_party.duplicate()
+
+	# Scenario 1: No tutorial completed + empty party = should block
+	GameContext.completed_tutorials = {}
+	GameContext.selected_party = []
+	var should_block: bool = not GameContext.has_completed_tutorial("tutorial_party_bar") and GameContext.selected_party.size() == 0
+
+	# Scenario 2: No tutorial completed + hero in party = should allow
+	GameContext.selected_party = ["test_hero_161"]
+	var should_allow: bool = not (not GameContext.has_completed_tutorial("tutorial_party_bar") and GameContext.selected_party.size() == 0)
+
+	# Scenario 3: Tutorial completed + empty party = should allow (returning player)
+	GameContext.completed_tutorials = {"tutorial_party_bar": true}
+	GameContext.selected_party = []
+	var returning_allow: bool = not (not GameContext.has_completed_tutorial("tutorial_party_bar") and GameContext.selected_party.size() == 0)
+
+	# Cleanup
+	GameContext.completed_tutorials = saved_tutorials
+	GameContext.selected_party = saved_party
+
+	var passed: bool = should_block and should_allow and returning_allow
+	if passed:
+		print("[PASS] Inn close: blocked=%s, with_hero=%s, returning=%s" % [str(should_block), str(should_allow), str(returning_allow)])
+	else:
+		print("[FAIL] blocked=%s with_hero=%s returning=%s" % [str(should_block), str(should_allow), str(returning_allow)])
+	return {"name": "Inn close block when no party", "passed": passed}

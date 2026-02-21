@@ -1,6 +1,6 @@
 {
   "id": "fr_void_fang",
-  "display_name": "Void Fang",
+  "display_name": "Void Beast Claw",
   "description": "A shard of absolute nothing sharpened to an edge that cuts between moments.",
   "icon_hint": "translucent black crystalline dagger with edges that distort the space around them and a hilt of frozen void energy",
   "item_type": "weapon",
@@ -36,7 +36,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 152,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Daggers/PNG/Transperent/Icon48.png",
   "tags": [
     "region_7",
     "weapon",

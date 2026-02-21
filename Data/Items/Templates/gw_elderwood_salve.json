@@ -25,6 +25,14 @@
   "base_value": 85,
   "buy_value": 0,
   "stack_max": 1,
-  "icon_path": "",
-  "tags": ["region_1", "consumable", "salve", "healing", "greenwood", "tier_4", "refillable"]
+  "icon_path": "res://Assets/_ArtPacks/FruitsVegetables/PNG/Transperent/Icon43.png",
+  "tags": [
+    "region_1",
+    "consumable",
+    "salve",
+    "healing",
+    "greenwood",
+    "tier_4",
+    "refillable"
+  ]
 }
