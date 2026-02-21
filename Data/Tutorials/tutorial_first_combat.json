@@ -4,14 +4,20 @@
     {
       "speaker": "Thalric",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
-      "title": "Combat Basics",
-      "body": "Combat is turn-based. The fastest units act first, determined by their Speed stat. Each hero has two abilities — a primary attack they use often, and a special skill on a longer cooldown.\n\nWhen both abilities are recharging, heroes fall back to a basic attack."
+      "title": "Brace Yourself!",
+      "body": "Oof — that stings! Monsters are fast. Combat is turn-based and the fastest units act first, based on their Speed stat. Most creatures have higher Speed than your heroes, so expect to take a hit before you can swing back.\n\nKeep an eye on the turn order — it tells you who's coming next."
     },
     {
       "speaker": "Thalric",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
-      "title": "Watch and Learn",
-      "body": "Each turn, you'll pick an action for your heroes — Basic Attack, Ability A, or Ability B. Hit Auto to let them fight on their own if you prefer.\n\nAfter victory, loot drops from defeated enemies. You'll route each piece into your hero bags or shopkeeper bag before moving on.",
+      "title": "Your Heroes' Abilities",
+      "body": "Each hero has two abilities — a primary attack they use often, and a special skill on a longer cooldown. When both are recharging, they fall back to a basic attack.\n\nPick an action each turn: Basic Attack, Ability A, or Ability B. Or hit Auto to let them fight on their own."
+    },
+    {
+      "speaker": "Thalric",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
+      "title": "After the Fight",
+      "body": "After victory, loot drops from defeated enemies. You'll route each piece into your hero bags or shopkeeper bag before moving on.\n\nSpeed gear and buffs can help your heroes act before monsters in later fights — worth investing in!",
       "button_text": "To battle!"
     }
   ]

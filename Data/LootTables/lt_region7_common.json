@@ -5,10 +5,11 @@
   "min_drops": 1,
   "max_drops": 2,
   "entries": [
-    { "item_id": "fr_entropy_residue", "weight": 28, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "fr_null_fragment", "weight": 25, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "fr_corruption_ichor", "weight": 20, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "fr_entropy_residue", "weight": 24, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "fr_null_fragment", "weight": 22, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "fr_corruption_ichor", "weight": 18, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "fr_dimensional_essence", "weight": 12, "min_qty": 1, "max_qty": 1 },
     { "item_id": "cursed_dust", "weight": 12, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "", "weight": 15, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "", "weight": 12, "min_qty": 0, "max_qty": 0 }
   ]
 }

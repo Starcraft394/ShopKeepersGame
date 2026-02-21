@@ -5,10 +5,11 @@
   "min_drops": 1,
   "max_drops": 2,
   "entries": [
-    { "item_id": "starfall_dust", "weight": 30, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "prism_shard", "weight": 25, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "se_crystal_chitin", "weight": 20, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "starfall_dust", "weight": 26, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "prism_shard", "weight": 22, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "se_crystal_chitin", "weight": 18, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "se_echo_essence", "weight": 12, "min_qty": 1, "max_qty": 1 },
     { "item_id": "iron_scrap", "weight": 10, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "", "weight": 15, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "", "weight": 12, "min_qty": 0, "max_qty": 0 }
   ]
 }

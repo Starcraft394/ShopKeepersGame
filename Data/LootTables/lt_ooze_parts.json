@@ -5,7 +5,9 @@
   "min_drops": 1,
   "max_drops": 2,
   "entries": [
-    { "item_id": "slime_gel", "weight": 70, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "", "weight": 30, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "slime_gel", "weight": 55, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "herb_sprig", "weight": 20, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "cursed_dust", "weight": 15, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 10, "min_qty": 0, "max_qty": 0 }
   ]
 }

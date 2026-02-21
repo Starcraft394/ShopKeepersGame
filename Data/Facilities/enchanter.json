@@ -83,11 +83,11 @@
             "qty": 3
           },
           {
-            "item_id": "phoenix_ash",
+            "item_id": "glowing_spore",
             "qty": 3
           },
           {
-            "item_id": "void_essence",
+            "item_id": "mycelium_thread",
             "qty": 2
           }
         ]
@@ -96,12 +96,12 @@
         "gold": 265,
         "items": [
           {
-            "item_id": "phoenix_ash",
+            "item_id": "glowing_spore",
             "qty": 6
           },
           {
-            "item_id": "void_essence",
-            "qty": 5
+            "item_id": "wyvern_scale",
+            "qty": 3
           }
         ]
       },
@@ -109,12 +109,16 @@
         "gold": 660,
         "items": [
           {
-            "item_id": "phoenix_ash",
-            "qty": 12
+            "item_id": "glowing_spore",
+            "qty": 10
           },
           {
-            "item_id": "void_essence",
-            "qty": 10
+            "item_id": "wyvern_scale",
+            "qty": 5
+          },
+          {
+            "item_id": "rare_truffle",
+            "qty": 2
           }
         ]
       }

@@ -1,15 +1,19 @@
 {
   "id": "lt_region7_elite",
   "display_name": "Region 7 Elite Loot",
-  "description": "Materials from Final Realm elites.",
+  "description": "Materials and consumables from Final Realm elites.",
   "min_drops": 2,
   "max_drops": 4,
   "entries": [
-    { "item_id": "fr_rift_membrane", "weight": 22, "min_qty": 2, "max_qty": 3 },
-    { "item_id": "fr_corruption_ichor", "weight": 18, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "fr_null_fragment", "weight": 14, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "void_crystal", "weight": 10, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "strong_healing_tonic", "weight": 12, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "", "weight": 12, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "fr_rift_membrane", "weight": 18, "min_qty": 2, "max_qty": 3 },
+    { "item_id": "fr_corruption_ichor", "weight": 14, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "fr_null_fragment", "weight": 10, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "void_crystal", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "fractured_soulglass", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "primordial_essence", "weight": 6, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "strong_healing_tonic", "weight": 10, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "fr_dimensional_essence", "weight": 6, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "fr_void_essence_flask", "weight": 5, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 6, "min_qty": 0, "max_qty": 0 }
   ]
 }

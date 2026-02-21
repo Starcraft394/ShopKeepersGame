@@ -1,0 +1,18 @@
+{
+  "id": "tutorial_storage",
+  "steps": [
+    {
+      "speaker": "Aldric",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon30.png",
+      "title": "Welcome to the Warehouse",
+      "body": "Everything your heroes bring back from the dungeon ends up here — materials, equipment, potions, the lot. I keep it organized so you don't have to.\n\nYour stash has limited space, so sell what you don't need at Pemberton's shop."
+    },
+    {
+      "speaker": "Aldric",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon30.png",
+      "title": "Upgrades & Capacity",
+      "body": "More shelf space costs gold — visit the Upgrade tab when your stash starts getting cramped. Each tier adds room for more items.\n\nYou can also manage your heroes' equipped gear from here. Handy for swapping weapons between runs.",
+      "button_text": "Got it, thanks"
+    }
+  ]
+}

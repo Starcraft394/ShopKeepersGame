@@ -5,10 +5,11 @@
   "min_drops": 1,
   "max_drops": 2,
   "entries": [
-    { "item_id": "spectral_log", "weight": 28, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "nc_grave_dust", "weight": 25, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "deadmans_grass", "weight": 20, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "spectral_log", "weight": 24, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "nc_grave_dust", "weight": 22, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "deadmans_grass", "weight": 18, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "wailing_shard", "weight": 12, "min_qty": 1, "max_qty": 1 },
     { "item_id": "bone_fragment", "weight": 12, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "", "weight": 15, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "", "weight": 12, "min_qty": 0, "max_qty": 0 }
   ]
 }

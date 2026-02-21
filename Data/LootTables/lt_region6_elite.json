@@ -1,14 +1,17 @@
 {
   "id": "lt_region6_elite",
   "display_name": "Region 6 Elite Loot",
-  "description": "Materials from Necropolis elites.",
+  "description": "Materials and consumables from Necropolis elites.",
   "min_drops": 2,
   "max_drops": 4,
   "entries": [
-    { "item_id": "nc_wraith_thread", "weight": 24, "min_qty": 2, "max_qty": 3 },
-    { "item_id": "nc_bone_marrow", "weight": 19, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "soul_ore", "weight": 19, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "strong_healing_tonic", "weight": 13, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "", "weight": 13, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "nc_wraith_thread", "weight": 20, "min_qty": 2, "max_qty": 3 },
+    { "item_id": "nc_bone_marrow", "weight": 16, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "soul_ore", "weight": 16, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "wailing_shard", "weight": 10, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "strong_healing_tonic", "weight": 10, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "nc_grave_elixir", "weight": 5, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "nc_spectral_draught", "weight": 5, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 8, "min_qty": 0, "max_qty": 0 }
   ]
 }

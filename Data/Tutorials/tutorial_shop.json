@@ -1,0 +1,24 @@
+{
+  "id": "tutorial_shop",
+  "steps": [
+    {
+      "speaker": "Pemberton",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon12.png",
+      "title": "Welcome to the General Store",
+      "body": "I stock everything your heroes need — potions, gear, supplies. But I don't make any of it myself.\n\nThe equipment on my shelves comes from the town's crafters: the Blacksmith, Huntsman, Enchanter, and Alchemist. They forge it, I sell it."
+    },
+    {
+      "speaker": "Pemberton",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon12.png",
+      "title": "Shop Slots",
+      "body": "My shelves only have so much room. Right now I have space for a handful of equipment items — upgrade the store to make room for more.\n\nYou decide how that shelf space is divided. Use the +/- buttons to allocate slots to each facility. Give the Blacksmith 3 slots and he'll send me 3 items. Give the Huntsman 2, that's 2 more."
+    },
+    {
+      "speaker": "Pemberton",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon12.png",
+      "title": "Unlocking Recipes",
+      "body": "A facility can only send me gear it knows how to make. Visit the Blacksmith, Huntsman, or Enchanter and spend materials to unlock new recipes.\n\nEach unlocked recipe adds that item to the pool for that facility's slots. More recipes means more variety on my shelves.",
+      "button_text": "Time to browse"
+    }
+  ]
+}

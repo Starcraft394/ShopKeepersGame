@@ -5,12 +5,13 @@
   "min_drops": 1,
   "max_drops": 3,
   "entries": [
-    { "item_id": "driftwood", "weight": 25, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "ss_crustacean_shell", "weight": 20, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "ss_kelp_sinew", "weight": 15, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "driftwood", "weight": 22, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "ss_crustacean_shell", "weight": 18, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "ss_kelp_sinew", "weight": 14, "min_qty": 1, "max_qty": 2 },
     { "item_id": "ss_brine_venom", "weight": 10, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "ss_tidal_tonic", "weight": 10, "min_qty": 1, "max_qty": 1 },
     { "item_id": "sea_salt_crystal", "weight": 10, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "", "weight": 10, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "stormglass_fragment", "weight": 5, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "ss_tidal_tonic", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 8, "min_qty": 0, "max_qty": 0 }
   ]
 }

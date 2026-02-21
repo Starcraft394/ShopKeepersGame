@@ -8,7 +8,7 @@
     { "item_id": "boss_trophy_starfall_expanse", "weight": 20, "min_qty": 1, "max_qty": 1 },
     { "item_id": "se_crystal_chitin", "weight": 10, "min_qty": 3, "max_qty": 5 },
     { "item_id": "temporal_residue", "weight": 12, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "starfall_core_fragment", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "starfall_core_fragment", "weight": 12, "min_qty": 1, "max_qty": 2 },
     { "item_id": "strong_healing_tonic", "weight": 12, "min_qty": 2, "max_qty": 3 },
     { "item_id": "se_prism_blade", "weight": 8, "min_qty": 1, "max_qty": 1 },
     { "item_id": "se_starfall_bow", "weight": 8, "min_qty": 1, "max_qty": 1 },

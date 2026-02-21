@@ -1,16 +1,19 @@
 {
   "id": "lt_region3_elite",
   "display_name": "Region 3 Elite Loot",
-  "description": "Materials from Sunken Strand elites.",
+  "description": "Materials and consumables from Sunken Strand elites.",
   "min_drops": 2,
   "max_drops": 4,
   "entries": [
-    { "item_id": "ss_crustacean_shell", "weight": 24, "min_qty": 2, "max_qty": 3 },
-    { "item_id": "ss_brine_venom", "weight": 18, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "ss_kelp_sinew", "weight": 18, "min_qty": 2, "max_qty": 3 },
-    { "item_id": "tidal_pearl", "weight": 12, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "ss_crustacean_shell", "weight": 22, "min_qty": 2, "max_qty": 3 },
+    { "item_id": "ss_brine_venom", "weight": 16, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "ss_kelp_sinew", "weight": 16, "min_qty": 2, "max_qty": 3 },
+    { "item_id": "tidal_pearl", "weight": 10, "min_qty": 1, "max_qty": 1 },
     { "item_id": "healing_tonic", "weight": 10, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "stormglass_fragment", "weight": 8, "min_qty": 1, "max_qty": 1 },
     { "item_id": "ancient_bone", "weight": 6, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "", "weight": 7, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "ss_tidal_tonic", "weight": 5, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "ss_brine_salve", "weight": 5, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 5, "min_qty": 0, "max_qty": 0 }
   ]
 }

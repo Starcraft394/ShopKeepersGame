@@ -1,22 +1,67 @@
 {
   "id": "storage",
   "display_name": "Storage",
-  "description": "A secure warehouse for materials and surplus goods.",
+  "description": "A well-organized warehouse where surplus materials and goods are kept safe between expeditions.",
   "icon_path": "res://Assets/Icons/Facilities/icon_facility_storage.png",
   "facility_type": "storage",
-  "max_tier": 1,
+  "max_tier": 4,
   "unlock_region": 1,
+
+  "keeper_name": "Aldric",
+  "keeper_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon30.png",
+  "keeper_description": "Thin bespectacled man in a neat brown vest, quill tucked behind his ear, clipboard in hand, rows of labeled crates behind him",
+  "keeper_greetings": [
+    "Everything in its proper place. What do you need?",
+    "Ah, the ShopKeeper! Your shelves are looking... lively. Shall we organize?",
+    "I've tallied today's inventory twice already. What can I help you with?"
+  ],
 
   "slots_per_tier": {},
 
   "upgrade_costs": {
+    "2": { "gold": 100, "items": [] },
+    "3": { "gold": 250, "items": [] },
+    "4": { "gold": 600, "items": [] }
+  },
+
+  "regional_upgrade_costs": {
     "2": {
-      "wood_bundle": 20
+      "2": { "gold": 200, "items": [] },
+      "3": { "gold": 500, "items": [] },
+      "4": { "gold": 1200, "items": [] }
+    },
+    "3": {
+      "2": { "gold": 300, "items": [] },
+      "3": { "gold": 750, "items": [] },
+      "4": { "gold": 1800, "items": [] }
+    },
+    "4": {
+      "2": { "gold": 400, "items": [] },
+      "3": { "gold": 1000, "items": [] },
+      "4": { "gold": 2400, "items": [] }
+    },
+    "5": {
+      "2": { "gold": 500, "items": [] },
+      "3": { "gold": 1250, "items": [] },
+      "4": { "gold": 3000, "items": [] }
+    },
+    "6": {
+      "2": { "gold": 600, "items": [] },
+      "3": { "gold": 1500, "items": [] },
+      "4": { "gold": 3600, "items": [] }
+    },
+    "7": {
+      "2": { "gold": 700, "items": [] },
+      "3": { "gold": 1750, "items": [] },
+      "4": { "gold": 4200, "items": [] }
     }
   },
 
   "services_per_tier": {
-    "1": ["store_materials", "retrieve_materials"]
+    "1": ["store_materials", "retrieve_materials"],
+    "2": ["store_materials", "retrieve_materials"],
+    "3": ["store_materials", "retrieve_materials"],
+    "4": ["store_materials", "retrieve_materials"]
   },
 
   "produces_item_types": [],

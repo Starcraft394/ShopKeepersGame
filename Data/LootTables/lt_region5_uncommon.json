@@ -5,12 +5,14 @@
   "min_drops": 1,
   "max_drops": 3,
   "entries": [
-    { "item_id": "starfall_dust", "weight": 20, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "se_crystal_chitin", "weight": 20, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "se_echo_essence", "weight": 15, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "starfall_dust", "weight": 18, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "se_crystal_chitin", "weight": 18, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "se_echo_essence", "weight": 14, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "temporal_residue", "weight": 10, "min_qty": 1, "max_qty": 1 },
     { "item_id": "se_void_silk", "weight": 10, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "prism_shard", "weight": 10, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "se_starlight_elixir", "weight": 10, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "", "weight": 10, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "prism_shard", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "starfall_core_fragment", "weight": 5, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "se_starlight_elixir", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 9, "min_qty": 0, "max_qty": 0 }
   ]
 }

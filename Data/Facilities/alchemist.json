@@ -35,21 +35,22 @@
         "gold": 60,
         "items": [
           { "item_id": "spore_cluster", "qty": 3 },
-          { "item_id": "phoenix_ash", "qty": 2 }
+          { "item_id": "glowing_spore", "qty": 2 }
         ]
       },
       "3": {
         "gold": 200,
         "items": [
           { "item_id": "spore_cluster", "qty": 6 },
-          { "item_id": "phoenix_ash", "qty": 5 }
+          { "item_id": "glowing_spore", "qty": 5 }
         ]
       },
       "4": {
         "gold": 530,
         "items": [
           { "item_id": "spore_cluster", "qty": 12 },
-          { "item_id": "phoenix_ash", "qty": 10 }
+          { "item_id": "glowing_spore", "qty": 8 },
+          { "item_id": "wyvern_scale", "qty": 3 }
         ]
       }
     },

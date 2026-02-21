@@ -1,13 +1,15 @@
 {
   "id": "lt_region2_common",
   "display_name": "Region 2 Common Loot",
-  "description": "Materials only from tier 1 Fungalmire monsters.",
+  "description": "Materials from tier 1 Fungalmire monsters.",
   "min_drops": 1,
   "max_drops": 2,
   "entries": [
-    { "item_id": "fungal_fiber", "weight": 35, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "mycelium_thread", "weight": 30, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "iron_scrap", "weight": 15, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "", "weight": 20, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "fungal_fiber", "weight": 28, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "mycelium_thread", "weight": 25, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "spore_cluster", "weight": 18, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "iron_scrap", "weight": 12, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "glowing_spore", "weight": 7, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 10, "min_qty": 0, "max_qty": 0 }
   ]
 }
