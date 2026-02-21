@@ -1,0 +1,348 @@
+EQUIPMENT ICON MAP
+==================
+Fill in the icon filename after each dash.
+284 equippable items across 8 regions, 4 tiers.
+
+=== BASE / STARTER (20 items) ===
+
+-- T1 (20) --
+Apprentice Focus T1 -
+Bone Charm T1 -
+Bone Dagger T1 -
+Cloth Cap T1 -
+Cloth Leggings T1 -
+Cloth Robe T1 -
+Copper Band T1 -
+Hunting Bow T1 -
+Leather Vest T1 -
+Lucky Charm T1 -
+Oak Staff T1 -
+Padded Coif T1 -
+Padded Mail T1 -
+Rusty Sword T1 -
+Simple Ring T1 -
+Small Backpack T1 -
+Tanned Leather Greaves T1 -
+Tanned Leather Hood T1 -
+Wooden Mace T1 -
+Wooden Shield T1 -
+
+=== REGION 1 — THORNHAVEN (36 items) ===
+
+-- T2 (14) --
+Arcane Staff T2 -
+Chainmail Vest T2 -
+Composite Bow T2 -
+Iron Greataxe T2 -
+Iron Greaves T2 -
+Iron Helmet T2 -
+Iron Sword T2 -
+Ranger's Vest T2 -
+Reinforced Shield T2 -
+Silver Ring T2 -
+Sturdy Backpack T2 -
+Thorn Dagger T2 -
+Warrior's Pendant T2 -
+Wooden Focus T2 -
+
+-- T3 (14) --
+Briar Fang T3 -
+Emerald Pendant T3 -
+Emerald Ring T3 -
+Greenwood Longbow T3 -
+Ironbark Greaves T3 -
+Ironbark Helm T3 -
+Ironbark Maul T3 -
+Ironbark Plate T3 -
+Ironbark Shield T3 -
+Living Focus T3 -
+Living Staff T3 -
+Living Vest T3 -
+Ranger's Pack T3 -
+Verdant Blade T3 -
+
+-- T4 (8) --
+Ancient Aegis T4 -
+Ancient Helm T4 -
+Heartwood Ring T4 -
+Heartwood Staff T4 -
+Thornguard Sword T4 -
+Thornhide Pack T4 -
+Thornhide Vest T4 -
+Thornshot Bow T4 -
+
+=== REGION 2 — FUNGAL MARSHES (35 items) ===
+
+-- T2 (14) --
+Bioluminescent Ring T2 -
+Fungal Shortbow T2 -
+Fungal Tunic T2 -
+Mycelium Leggings T2 -
+Mycelium Pendant T2 -
+Mycelium Vest T2 -
+Spore Blade T2 -
+Spore Focus T2 -
+Spore Knife T2 -
+Spore Mace T2 -
+Spore Satchel T2 -
+Spore Staff T2 -
+Sporecap Shield T2 -
+Sporeguard Helm T2 -
+
+-- T3 (14) --
+Fungal Crown T3 -
+Fungal Crusher T3 -
+Fungal Fang T3 -
+Fungal Greaves T3 -
+Fungal Longbow T3 -
+Fungal Plate T3 -
+Fungal Signet T3 -
+Fungal Staff T3 -
+Mycelium Bulwark T3 -
+Mycelium Focus T3 -
+Mycelium Pack T3 -
+Mycelium Saber T3 -
+Mycelium Tunic T3 -
+Sporeguard Pendant T3 -
+
+-- T4 (7) --
+Fungal Heart Focus T4 -
+Fungal Heart Pack T4 -
+Fungal Heart Pendant T4 -
+Mycelium Heart Staff T4 -
+Mycelium Maul T4 -
+Mycelium Ruin Greaves T4 -
+Mycelium Ruin Plate T4 -
+
+=== REGION 3 — SUNKEN SHOALS (34 items) ===
+
+-- T2 (14) --
+Barnacle Mace T2 -
+Coral Focus T2 -
+Coral Knife T2 -
+Driftwood Bow T2 -
+Driftwood Staff T2 -
+Kelp Leggings T2 -
+Kelp Satchel T2 -
+Kelp Tunic T2 -
+Pearl Pendant T2 -
+Pearl Ring T2 -
+Shell Helm T2 -
+Shell Shield T2 -
+Shell Vest T2 -
+Tide Sword T2 -
+
+-- T3 (14) --
+Abalone Shield T3 -
+Barnacle Plate T3 -
+Coral Blade T3 -
+Coral Crusher T3 -
+Coral Staff T3 -
+Kelp Greaves T3 -
+Kelp Vest T3 -
+Pearl Amulet T3 -
+Sea Glass Focus T3 -
+Shell Pack T3 -
+Tide Fang T3 -
+Tidecaller's Ring T3 -
+Tidecrest Helm T3 -
+Tidestriker Bow T3 -
+
+-- T4 (6) --
+Leviathan Bow T4 -
+Leviathan Focus T4 -
+Leviathan Pack T4 -
+Leviathan Ring T4 -
+Leviathan Staff T4 -
+Tidewoven Vest T4 -
+
+=== REGION 4 — ASHEN HORIZONS (36 items) ===
+
+-- T2 (14) --
+Cinder Bow T2 -
+Cinder Focus T2 -
+Cinder Greaves T2 -
+Cinder Helm T2 -
+Cinder Pendant T2 -
+Cinder Satchel T2 -
+Cinder Staff T2 -
+Cinder Tunic T2 -
+Ember Knife T2 -
+Ember Sword T2 -
+Obsidian Mace T2 -
+Obsidian Ring T2 -
+Obsidian Shield T2 -
+Obsidian Vest T2 -
+
+-- T3 (14) --
+Cinder Amulet T3 -
+Cinder Fang T3 -
+Drake Buckler T3 -
+Drake Greaves T3 -
+Drake Jerkin T3 -
+Drake Pack T3 -
+Ember Blade T3 -
+Ember Focus T3 -
+Ember Ring T3 -
+Magma Plate T3 -
+Obsidian Staff T3 -
+Scorched Longbow T3 -
+Volcanic Helm T3 -
+Volcanic Maul T3 -
+
+-- T4 (8) --
+Drake Maul T4 -
+Drakefang Blade T4 -
+Drakeheart Amulet T4 -
+Drakescale Aegis T4 -
+Drakescale Greaves T4 -
+Drakescale Helm T4 -
+Drakescale Plate T4 -
+Draketalon T4 -
+
+=== REGION 5 — STARFALL EXPANSE (41 items) ===
+
+-- T2 (14) --
+Astral Boots T2 -
+Astral Focus T2 -
+Astral Shortbow T2 -
+Astral Tunic T2 -
+Crystal Helm T2 -
+Crystal Knife T2 -
+Crystal Mace T2 -
+Crystal Pendant T2 -
+Crystal Ring T2 -
+Crystal Satchel T2 -
+Crystal Shield T2 -
+Crystal Staff T2 -
+Crystal Sword T2 -
+Crystal Vest T2 -
+
+-- T3 (14) --
+Astral Helm T3 -
+Astral Pack T3 -
+Astral Pendant T3 -
+Astral Plate T3 -
+Astral Ring T3 -
+Astral Staff T3 -
+Crystal Leggings T3 -
+Crystal Robe T3 -
+Prism Edge T3 -
+Prism Fang T3 -
+Prism Focus T3 -
+Prism Shield T3 -
+Starfall Shortbow T3 -
+Temporal Maul T3 -
+
+-- T4 (13) --
+Astral Leggings T4 -
+Astral Robe T4 -
+Chrono Cleaver T4 -
+Crystal Ward T4 -
+Echo Amulet T4 -
+Echo Shield T4 -
+Prism Blade T4 -
+Prism Helm T4 -
+Prism Staff T4 -
+Starfall Bow T4 -
+Starlight Focus T4 -
+Temporal Band T4 -
+Temporal Dagger T4 -
+
+=== REGION 6 — NECROPOLIS CRYPTS (40 items) ===
+
+-- T2 (14) --
+Bone Greaves T2 -
+Bone Helm T2 -
+Bone Knife T2 -
+Bone Mace T2 -
+Bone Pendant T2 -
+Bone Ring T2 -
+Bone Satchel T2 -
+Bone Shield T2 -
+Bone Vest T2 -
+Grave Focus T2 -
+Grave Staff T2 -
+Grave Sword T2 -
+Shroud Tunic T2 -
+Spectral Bow T2 -
+
+-- T3 (14) --
+Deathward Band T3 -
+Ossuary Greaves T3 -
+Ossuary Helm T3 -
+Ossuary Mail T3 -
+Ossuary Maul T3 -
+Ossuary Pendant T3 -
+Ossuary Shield T3 -
+Soul Edge T3 -
+Soul Focus T3 -
+Soul Staff T3 -
+Wraith Fang T3 -
+Wraith Pack T3 -
+Wraith Shortbow T3 -
+Wraith Tunic T3 -
+
+-- T4 (12) --
+Bone Crown T4 -
+Bone Staff T4 -
+Bonecaller Amulet T4 -
+Deathward Ring T4 -
+Grave Dagger T4 -
+Ossuary Plate T4 -
+Soul Reaver T4 -
+Soulfire Focus T4 -
+Spectral Aegis T4 -
+Wraith Bow T4 -
+Wraith Leggings T4 -
+Wraith Robe T4 -
+
+=== REGION 7 — FINAL REALM (42 items) ===
+
+-- T2 (14) --
+Rift Bow T2 -
+Rift Focus T2 -
+Rift Greaves T2 -
+Rift Helm T2 -
+Rift Knife T2 -
+Rift Mace T2 -
+Rift Pendant T2 -
+Rift Ring T2 -
+Rift Satchel T2 -
+Rift Shield T2 -
+Rift Sword T2 -
+Rift Tunic T2 -
+Rift Vest T2 -
+Rift Wand T2 -
+
+-- T3 (14) --
+Null Blade T3 -
+Null Bow T3 -
+Null Fang T3 -
+Null Greaves T3 -
+Null Helm T3 -
+Null Maul T3 -
+Null Orb T3 -
+Null Pack T3 -
+Null Pendant T3 -
+Null Plate T3 -
+Null Ring T3 -
+Null Shield T3 -
+Null Shroud T3 -
+Null Staff T3 -
+
+-- T4 (14) --
+Dimensional Locket T4 -
+Dimensional Plate T4 -
+Entropy Bow T4 -
+Entropy Maul T4 -
+Null Barrier T4 -
+Null Focus T4 -
+Rift Band T4 -
+Rift Staff T4 -
+Void Edge T4 -
+Void Fang T4 -
+Void Greaves T4 -
+Void Helm T4 -
+Void Pack T4 -
+Void Shroud T4 -

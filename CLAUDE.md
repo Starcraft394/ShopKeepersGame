@@ -10,7 +10,7 @@
 # Run tests
 DevTools\run_headless.bat
 
-# Current test count: 148+ tests
+# Current test count: 157 tests (135 unit + 22 playtest)
 # All tests must pass before committing
 ```
 
@@ -92,9 +92,18 @@ See `.claude/skills/godot-gamedev/SKILL.md` for the full skill definition.
 - Storage "To Bag" button for consumables with hero chooser and capacity indicators
 - Camp flee removed (flee only mid-combat on hero death; survivors drop all equipment and bag items)
 - Tutorial system: 11 tutorials with TutorialOverlay (welcome, dungeon, combat, camp, events, extraction, facilities, equipment facilities, training hall, production, manage roster)
-- 148+ passing headless tests
+- 157 passing headless tests
+
+### Facility Tier System
+- **Storage**: Capacity-gated stash (base 30 + 5 per Storage tier). `add_run_item()` returns bool, blocks when full.
+- **Inn**: T1-T2 recruits are region-native races only; T3+ all unlocked races. T2+ recruits get starting equipment.
+- **Training Hall**: +2% global XP bonus per tier across all regions. T3+ = 50% book discount.
+- **Equipment Facility**: T1 = 100% common; T2-T3 = 75/20/5 common/uncommon/rare; T4 = 50/30/15/5. T3+ = 25% price discount.
+- **Shop**: Tier-based refresh limit (T1=1, T2=2, T3=3, T4=4). Refresh button in UI with cost/remaining display.
+- Production facility `slots_per_tier` = mixing/crafting slots, not shop display slots.
 
 ### Recent Changes
+- Facility tier restructure (Storage, Inn, Training Hall, Equipment, Shop all have meaningful tier progression)
 - Tutorial system v1 (11 contextual tutorials with TutorialOverlay component)
 - Party size locked to 4 at all tiers
 - Starting gold raised to 400

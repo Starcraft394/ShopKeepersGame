@@ -10,6 +10,7 @@ The recommended workflow order is:
 Repo Auditor → Implementer → UI Refiner (optional) → Data Curator (optional)
                                                     → Item Curator (optional)
                                                     → Art Director (optional)
+                                                    → Sound Director (optional)
                                                     → Story Architect (optional)
                                                     → Balancer (optional)
                                                     → Gameplay Guide (optional)
@@ -21,9 +22,10 @@ Repo Auditor → Implementer → UI Refiner (optional) → Data Curator (optiona
 4. **Data Curator** extends content (if needed)
 5. **Item Curator** updates item manifest and HTML reference (if items changed)
 6. **Art Director** tracks visual assets, adds icon_hint descriptions, updates HTML (if needed)
-7. **Story Architect** writes narrative content, lore, and campaign arcs (if needed)
-8. **Balancer** audits abilities, passives, equipment, and updates balance reference (if needed)
-9. **Gameplay Guide** maintains game guide, assists with tutorials (if needed)
+7. **Sound Director** tracks audio assets, manages BGM replacement and SFX integration (if needed)
+8. **Story Architect** writes narrative content, lore, and campaign arcs (if needed)
+9. **Balancer** audits abilities, passives, equipment, and updates balance reference (if needed)
+10. **Gameplay Guide** maintains game guide, assists with tutorials (if needed)
 
 ## Available Agents
 
@@ -38,6 +40,7 @@ Repo Auditor → Implementer → UI Refiner (optional) → Data Curator (optiona
 | Story Architect | `story-architect.md` | Narrative content, lore, campaign arcs, event text |
 | Balancer | `balancer.md` | Abilities, passives, equipment balance, reference file |
 | Gameplay Guide | `gameplay-guide.md` | Game guide, tutorials, onboarding, help text |
+| Sound Director | `sound-director.md` | Audio asset tracking, BGM replacement, SFX integration |
 
 ## Usage
 
@@ -52,6 +55,8 @@ Or reference the agent by saying:
 - "Use the Art Director agent to integrate art for [feature]"
 - "Use the Story Architect agent to write lore for [region/event]"
 - "Use the Balancer agent to review balance for [region/tier/category]"
+- "Use the Sound Director agent to replace BGM tracks"
+- "Use the Sound Director agent to map SFX to combat actions"
 - "Use the Gameplay Guide agent to update the game guide"
 
 ## Keyword → Agent Lookup
@@ -74,6 +79,8 @@ When you mention a topic, these keywords auto-map to the relevant agent(s):
 | `tier`, `economy`, `stat curve` | Balancer |
 | `guide`, `tutorial`, `how to play`, `help text`, `tooltip`, `onboarding` | Gameplay Guide |
 | `new player`, `walkthrough`, `game flow`, `first time` | Gameplay Guide + Story Architect |
+| `sound`, `audio`, `music`, `bgm`, `sfx`, `volume`, `track`, `ambience` | Sound Director |
+| `combat sounds`, `music pack`, `jukebox`, `sound effect` | Sound Director |
 
 Multiple agents may trigger for a single request — they work in parallel on their respective duties.
 

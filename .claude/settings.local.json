@@ -80,7 +80,32 @@
       "Bash(DevTools/run_headless.bat)",
       "Bash(fi)",
       "Bash(awk:*)",
-      "Bash(# Count Runes ls \"\"c:/Users/rober/OneDrive/ShopKeepers Game/Assets/_ArtPacks/Runes/PNG/Transperent/\"\"*.png)"
+      "Bash(# Count Runes ls \"\"c:/Users/rober/OneDrive/ShopKeepers Game/Assets/_ArtPacks/Runes/PNG/Transperent/\"\"*.png)",
+      "Bash(\"c:/Users/rober/OneDrive/ShopKeepers Game/Data/Items/Templates/cloth_leggings.json\":*)",
+      "Bash(\"c:/Users/rober/OneDrive/ShopKeepers Game/Data/Items/Templates/copper_band.json\":*)",
+      "Bash(\"c:/Users/rober/OneDrive/ShopKeepers Game/Data/Items/Templates/bone_charm.json\":*)",
+      "Bash({)",
+      "Bash(__NEW_LINE_d55a65c74f4f2c56__ echo -e \"\\\\n=== R2 FUNGALMIRE EQUIPMENT \\(fm_ prefix\\) ===\")",
+      "Bash(__NEW_LINE_15a294ea8644f1d5__ echo -e \"\\\\n=== R3 SEA-SMUGGLERS EQUIPMENT \\(ss_ prefix\\) ===\")",
+      "Bash(__NEW_LINE_3bc24bb903bbc00f__ echo -e \"\\\\n=== R4 ASH-HIGHLANDS EQUIPMENT \\(ah_ prefix\\) ===\")",
+      "Bash(})",
+      "Bash(do test:*)",
+      "Bash([ -f \"$f\" ])",
+      "Bash(do echo \"=== $item ===\")",
+      "Bash(\"c:/Users/rober/OneDrive/ShopKeepers Game/Data/Items/Templates/boss_trophy_fungalmire.json\":*)",
+      "Bash(\"c:/Users/rober/OneDrive/ShopKeepers Game/Data/Items/Templates/boss_trophy_starfall_expanse.json\":*)",
+      "Bash(__NEW_LINE_c2e9c06eb37f913c__ grep '\"\"ability_ids\"\"' Data/Monsters/*.json)",
+      "Bash(__NEW_LINE_714e36b20ae3d33e__ grep '\"\"ability_ids\"\"' Data/Monsters/*.json -A 3)",
+      "Bash(do python3 -c \"import json; d=json.load\\(open\\(''$file''\\)\\); print\\(d.get\\(''item_type'',''?''\\), '':'', d.get\\(''id'',''?''\\)\\)\")",
+      "Bash(for f in *.json)",
+      "Bash(do python3 -c \" import json, sys try: with open\\(''$f'', ''r'', encoding=''utf-8''\\) as file: data = json.load\\(file\\) if ''equip_slot'' in data: print\\(f\"\"{data.get\\(''display_name'', ''UNKNOWN''\\)}|{data.get\\(''tier'', 0\\)}|{data.get\\(''equip_slot'', ''UNKNOWN''\\)}\"\"\\) except: pass \")",
+      "Bash(sort:*)",
+      "Bash(unzip:*)",
+      "Bash(powershell -File:*)",
+      "Bash(powershell -NoProfile -Command:*)",
+      "Bash(xxd:*)",
+      "Bash(xargs cat:*)",
+      "Bash(\"c:/Users/rober/OneDrive/ShopKeepers Game/DevTools/run_headless.bat\")"
     ]
   }
 }
