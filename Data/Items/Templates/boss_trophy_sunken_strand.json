@@ -9,7 +9,7 @@
   "base_stats": {},
   "base_value": 90,
   "buy_value": 0,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/boss_trophy_sunken_strand.png",
   "tags": [
     "region_3",
     "sunken_strand",

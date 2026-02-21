@@ -9,7 +9,7 @@
   "base_stats": {},
   "base_value": 40,
   "buy_value": 0,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Loot_Demon/PNG/Transperent/Icon10.png",
   "tags": [
     "region_5",
     "material",

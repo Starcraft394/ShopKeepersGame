@@ -23,6 +23,6 @@
   "base_value": 25,
   "buy_value": 40,
   "stack_max": 99,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Mushrooms/PNG/Transperent/Icon7.png",
   "tags": ["region_2", "material", "food_material", "plant", "tier_3", "rare"]
 }

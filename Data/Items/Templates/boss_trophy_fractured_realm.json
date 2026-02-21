@@ -9,7 +9,7 @@
   "base_stats": {},
   "base_value": 175,
   "buy_value": 0,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/boss_trophy_fractured_realm.png",
   "tags": [
     "region_7",
     "fractured_realm",

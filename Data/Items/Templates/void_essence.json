@@ -23,6 +23,6 @@
   "base_value": 35,
   "buy_value": 55,
   "stack_max": 99,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/MagicArtifacts/PNG/Transperent/Icon2.png",
   "tags": ["region_2", "material", "monster_part", "alchemy", "tier_3", "rare"]
 }

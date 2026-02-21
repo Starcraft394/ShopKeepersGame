@@ -23,6 +23,6 @@
   "base_value": 10,
   "buy_value": 18,
   "stack_max": 99,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Loot_Chaos/PNG/Transperent/Icon4.png",
   "tags": ["region_1", "material", "food_material", "plant", "tier_2"]
 }

@@ -25,7 +25,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 58,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/gw_emerald_pendant.png",
   "tags": [
     "region_1",
     "accessory",

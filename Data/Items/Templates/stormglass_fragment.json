@@ -9,7 +9,7 @@
   "base_stats": {},
   "base_value": 55,
   "buy_value": 0,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/stormglass_fragment.png",
   "tags": [
     "region_3",
     "material",

@@ -9,7 +9,7 @@
   "base_stats": {},
   "base_value": 75,
   "buy_value": 0,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/boss_trophy_greenwood.png",
   "tags": [
     "region_1",
     "greenwood",

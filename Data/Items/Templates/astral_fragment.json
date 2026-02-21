@@ -9,7 +9,7 @@
   "base_stats": {},
   "base_value": 26,
   "buy_value": 0,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/astral_fragment.png",
   "tags": [
     "region_5",
     "material",

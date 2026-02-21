@@ -23,6 +23,11 @@
   "base_value": 12,
   "buy_value": 20,
   "stack_max": 99,
-  "icon_path": "",
-  "tags": ["region_1", "material", "food_material", "tier_2"]
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/aged_cheese.png",
+  "tags": [
+    "region_1",
+    "material",
+    "food_material",
+    "tier_2"
+  ]
 }

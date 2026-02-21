@@ -9,7 +9,7 @@
   "base_stats": {},
   "base_value": 110,
   "buy_value": 0,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Gems/PNG/Transperent/Icon37.png",
   "tags": [
     "region_4",
     "ashen_horizons",

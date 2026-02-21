@@ -34,7 +34,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 98,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Bows/PNG/Transperent/Icon21.png",
   "tags": [
     "region_1",
     "weapon",

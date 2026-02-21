@@ -9,7 +9,7 @@
   "base_stats": {},
   "base_value": 24,
   "buy_value": 0,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/spectral_log.png",
   "tags": [
     "region_6",
     "material",

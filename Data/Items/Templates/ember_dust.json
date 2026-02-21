@@ -9,7 +9,7 @@
   "base_stats": {},
   "base_value": 16,
   "buy_value": 0,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/ember_dust.png",
   "tags": [
     "region_4",
     "material",

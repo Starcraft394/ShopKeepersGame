@@ -9,7 +9,7 @@
   "base_stats": {},
   "base_value": 38,
   "buy_value": 0,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/CraftingMaterials/PNG/Transperent/Icon19.png",
   "tags": [
     "region_7",
     "material",

@@ -33,7 +33,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 105,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/gw_heartwood_staff.png",
   "tags": [
     "region_1",
     "weapon",

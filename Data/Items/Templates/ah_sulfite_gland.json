@@ -9,7 +9,7 @@
   "base_stats": {},
   "base_value": 22,
   "buy_value": 0,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/ah_sulfite_gland.png",
   "tags": [
     "region_4",
     "material",

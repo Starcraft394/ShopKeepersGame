@@ -23,6 +23,6 @@
   "base_value": 30,
   "buy_value": 50,
   "stack_max": 99,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/LootDrops/PNG/Transperent/Icon1.png",
   "tags": ["region_2", "material", "monster_part", "alchemy", "tier_3", "rare"]
 }

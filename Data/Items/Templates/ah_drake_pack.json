@@ -9,7 +9,7 @@
   "slot": "backpack",
   "equip_slot": "bag",
   "tier": 3,
-  "base_stats": {},
+  "base_stats": {"defense": 2, "health": 5},
   "stat_bonuses": {},
   "bag_capacity_bonus": 6,
   "base_value": 128,

@@ -9,7 +9,7 @@
   "base_stats": {},
   "base_value": 120,
   "buy_value": 0,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/void_crystal.png",
   "tags": [
     "region_7",
     "material",

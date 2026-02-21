@@ -23,6 +23,6 @@
   "base_value": 28,
   "buy_value": 45,
   "stack_max": 99,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Loot_Undead/PNG/Transperent/Icon2.png",
   "tags": ["region_2", "material", "monster_part", "alchemy", "tier_3", "rare"]
 }

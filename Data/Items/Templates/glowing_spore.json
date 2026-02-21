@@ -23,6 +23,6 @@
   "base_value": 14,
   "buy_value": 22,
   "stack_max": 99,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Ingredients/PNG/Transperent/mushroom5.png",
   "tags": ["region_1", "material", "monster_part", "alchemy", "tier_2"]
 }

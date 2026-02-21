@@ -9,7 +9,7 @@
   "base_stats": {},
   "base_value": 35,
   "buy_value": 0,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/MagicArtifacts/PNG/Transperent/Icon6.png",
   "tags": [
     "region_7",
     "material",

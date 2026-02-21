@@ -8,7 +8,7 @@
   "base_stats": {},
   "base_value": 8,
   "buy_value": 0,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Mushrooms/PNG/Transperent/Icon40.png",
   "tags": [
     "region_2",
     "fungalmire",

@@ -33,7 +33,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 65,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/gw_ancient_helm.png",
   "tags": [
     "region_1",
     "armor",

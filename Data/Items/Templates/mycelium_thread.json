@@ -8,7 +8,7 @@
   "base_stats": {},
   "base_value": 5,
   "buy_value": 0,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/mycelium_thread.png",
   "tags": [
     "region_2",
     "fungalmire",

@@ -9,7 +9,7 @@
   "base_stats": {},
   "base_value": 20,
   "buy_value": 0,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/ah_drake_scale.png",
   "tags": [
     "region_4",
     "material",

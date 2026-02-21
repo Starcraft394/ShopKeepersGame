@@ -27,7 +27,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 72,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/gw_ironbark_maul.png",
   "tags": [
     "region_1",
     "weapon",

@@ -26,7 +26,7 @@
   "can_refine": true,
   "max_refinement": 10,
   "base_value": 12,
-  "icon_path": "",
+  "icon_path": "res://Assets/_ArtPacks/Items_Recolored/cloth_robe.png",
   "tags": [
     "base",
     "armor",
