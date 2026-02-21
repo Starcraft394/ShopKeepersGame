@@ -1,0 +1,82 @@
+{
+  "id": "evt_se_astral_pool",
+  "title": "Astral Pool",
+  "description": "A basin of liquid starlight glimmers in a shallow depression, its surface perfectly still despite the wind. The fluid is neither hot nor cold but radiates a gentle pressure against your skin, as though the light itself has weight. Tiny motes drift upward from the pool like inverted rain, dissolving into the sky above.",
+  "kind": "choice",
+  "tags": ["crystal", "starfall"],
+  "choices": [
+    {
+      "id": "drink_starlight",
+      "label": "Drink from the pool",
+      "description": "The liquid starlight might restore vitality — or it might overwhelm mortal senses.",
+      "outcomes": [
+        {
+          "weight": 40,
+          "text": "The starlight flows down your throat like warm honey. Energy surges through the party, mending wounds and clearing minds.",
+          "effects": [
+            { "type": "heal_party", "amount": 15 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The liquid is intoxicating — pure cosmic energy distilled into something drinkable. Your party feels reborn.",
+          "effects": [
+            { "type": "heal_party", "amount": 20 },
+            { "type": "add_item", "item_id": "se_starlight_draught", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The starlight is too potent for mortal bodies. It sears through one hero like liquid lightning, leaving them twitching and dazed.",
+          "effects": [
+            { "type": "heal_party", "amount": 6 },
+            { "type": "damage_hero", "amount": 10 },
+            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "random_hero" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bottle_starlight",
+      "label": "Bottle the liquid starlight",
+      "description": "Carefully decant the luminous fluid into vials for later use or trade.",
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "You fill several vials with the shimmering liquid. It continues to glow faintly even when stoppered.",
+          "effects": [
+            { "type": "add_item", "item_id": "se_starlight_draught", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "As you bottle the starlight, echo essence crystallizes around the rim. You scrape it into a separate vial.",
+          "effects": [
+            { "type": "add_item", "item_id": "se_starlight_draught", "min_qty": 1, "max_qty": 1 },
+            { "type": "add_item", "item_id": "se_echo_essence", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "A vial shatters in your hands as the starlight reacts violently. The flash blinds the nearest hero before you can shield your eyes.",
+          "effects": [
+            { "type": "add_item", "item_id": "se_starlight_draught", "min_qty": 1, "max_qty": 1 },
+            { "type": "apply_status", "status_id": "blinded", "duration": 2, "target": "random_hero" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "leave_pool",
+      "label": "Leave the pool undisturbed",
+      "description": "Liquid starlight feels like something that shouldn't be tampered with.",
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You watch the motes of light drift upward for a quiet moment, then turn away. Some things are beyond mortal hands.",
+          "effects": [{ "type": "nothing" }]
+        }
+      ]
+    }
+  ]
+}

@@ -9,32 +9,74 @@
       "id": "take_relic",
       "label": "Take the cursed relic",
       "description": "A blackened artifact rests at the altar's center, thrumming with power.",
-      "effects": [
-        { "type": "add_item", "item_id": "cursed_relic", "min_qty": 1, "max_qty": 1 }
-      ]
-    },
-    {
-      "id": "harvest_dust",
-      "label": "Harvest the altar dust",
-      "description": "The residue of countless rituals has left a thick layer of potent grave dust.",
-      "effects": [
-        { "type": "add_item", "item_id": "nc_grave_dust", "min_qty": 2, "max_qty": 4 }
+      "outcomes": [
+        {
+          "weight": 40,
+          "text": "You snatch the relic and run. The green flames roar behind you but do not follow. The artifact hums darkly in your pack.",
+          "effects": [
+            { "type": "add_item", "item_id": "cursed_relic", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The relic comes free easily — too easily. A wave of necrotic energy washes over your party as the altar's curse lashes out.",
+          "effects": [
+            { "type": "add_item", "item_id": "cursed_relic", "min_qty": 1, "max_qty": 1 },
+            { "type": "damage_party", "amount": 6 },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The moment you touch the relic, the altar erupts. Bone shards and green flame blast outward. Undead guardians claw their way from the floor.",
+          "effects": [
+            { "type": "damage_party", "amount": 4 },
+            { "type": "trigger_combat", "encounter_type": "elite" }
+          ]
+        }
       ]
     },
     {
       "id": "search_offerings",
       "label": "Search the offerings",
       "description": "The faithful left coin and trinket alike at the altar's feet.",
-      "effects": [
-        { "type": "add_gold_range", "min": 12, "max": 20 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "You scoop up coins and a few small gems from among the grisly offerings. The altar ignores your petty theft.",
+          "effects": [
+            { "type": "add_gold_range", "min": 14, "max": 22 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "A generous haul of coin, plus a pouch of grave dust someone left as an offering. Their loss, your gain.",
+          "effects": [
+            { "type": "add_gold_range", "min": 10, "max": 16 },
+            { "type": "add_item", "item_id": "nc_grave_dust", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "As you reach for the coins, the severed hand twitches and clamps around your wrist. You wrench free, but the grip leaves burns.",
+          "effects": [
+            { "type": "add_gold_range", "min": 8, "max": 12 },
+            { "type": "damage_hero", "amount": 6 },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "move_on",
       "label": "Back away slowly",
       "description": "Cursed altars are best left to their dark purpose.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You retreat from the chamber. The green flames dim as you cross the threshold, as if disappointed.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

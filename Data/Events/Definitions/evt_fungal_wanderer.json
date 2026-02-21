@@ -1,0 +1,105 @@
+{
+  "id": "evt_fungal_wanderer",
+  "title": "The Fungal Wanderer",
+  "description": "A figure steps from behind a massive mushroom stalk -- humanoid, but wrong. Its skin is textured like bark, its eyes glow faint green, and clusters of tiny mushrooms sprout from its shoulders and scalp. It raises a hand in greeting. The myconid speaks in a voice like rustling leaves, offering to trade what it has gathered in its long wandering of the depths.",
+  "kind": "choice",
+  "tags": ["spore", "fungal", "encounter"],
+  "choices": [
+    {
+      "id": "trade",
+      "label": "Trade with the wanderer",
+      "description": "Offer gold for the myconid's gathered materials.",
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "The myconid opens a woven sack and spreads its wares. Quality materials -- it knows its craft. A fair trade for both sides.",
+          "effects": [
+            { "type": "lose_gold", "min": 8, "max": 12 },
+            { "type": "add_item", "item_id": "spore_cluster", "min_qty": 2, "max_qty": 3 },
+            { "type": "add_item", "item_id": "mycelium_thread", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The wanderer's eyes brighten at your coin. It digs deep in its pack and produces something special -- a glowing spore, pulsing with concentrated bioluminescence.",
+          "effects": [
+            { "type": "lose_gold", "min": 10, "max": 15 },
+            { "type": "add_item", "item_id": "glowing_spore", "min_qty": 1, "max_qty": 1 },
+            { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The myconid takes your gold but its wares are... middling. Old fiber, half-dried clusters. You've been had by a mushroom.",
+          "effects": [
+            { "type": "lose_gold", "min": 10, "max": 14 },
+            { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 1, "max_qty": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ask_knowledge",
+      "label": "Ask for knowledge",
+      "description": "The myconid has walked these tunnels for decades. Its knowledge might be more valuable than goods.",
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "The wanderer presses a palm to the tunnel wall. The mycelium network lights up, revealing safe paths ahead. Its parting gift: a healing fungal salve.",
+          "effects": [
+            { "type": "heal_party", "amount": 10 },
+            { "type": "add_item", "item_id": "mycelium_thread", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "The myconid shares the locations of several material deposits it passed. You follow its directions to a rich vein of spore clusters.",
+          "effects": [
+            { "type": "add_item", "item_id": "spore_cluster", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The wanderer speaks in cryptic fungal metaphors for twenty minutes. You learn nothing useful, but it seemed to enjoy the conversation.",
+          "effects": [
+            { "type": "nothing" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "label": "Attack the creature",
+      "description": "A walking mushroom is still a monster. Strike first.",
+      "outcomes": [
+        {
+          "weight": 35,
+          "text": "The myconid shrieks and releases a cloud of stunning spores before you can land a blow. When your vision clears, it's gone -- but it dropped its pack in its flight.",
+          "effects": [
+            { "type": "damage_party", "amount": 4 },
+            { "type": "apply_status", "status_id": "poisoned", "duration": 2, "target": "random_hero" },
+            { "type": "add_item", "item_id": "spore_cluster", "min_qty": 1, "max_qty": 2 },
+            { "type": "add_gold_range", "min": 8, "max": 15 }
+          ]
+        },
+        {
+          "weight": 40,
+          "text": "The wanderer raises its hand and the tunnel floor erupts. Mycelium tendrils lash out as fungal creatures burst from the walls. It was never alone.",
+          "effects": [
+            { "type": "trigger_combat", "encounter_type": "basic" }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "Your blade cuts deep and the myconid collapses, spilling materials from its pack. Its dying breath releases a toxic spore cloud that coats everyone.",
+          "effects": [
+            { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 2, "max_qty": 3 },
+            { "type": "add_item", "item_id": "spore_cluster", "min_qty": 1, "max_qty": 2 },
+            { "type": "damage_party", "amount": 6 },
+            { "type": "apply_status", "status_id": "poisoned", "duration": 2, "target": "party" }
+          ]
+        }
+      ]
+    }
+  ]
+}

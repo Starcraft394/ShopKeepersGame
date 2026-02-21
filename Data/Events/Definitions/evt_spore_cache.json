@@ -1,43 +1,79 @@
 {
   "id": "evt_spore_cache",
   "title": "Forager's Stash",
-  "description": "Tucked beneath a fallen mushroom cap, you find a forager's abandoned stash — woven baskets stuffed with dried fungal fibers, sealed jars of preserved spores, and a leather coin pouch. The owner seems to have left in a hurry.",
+  "description": "Tucked beneath a fallen mushroom cap, you find a forager's abandoned stash -- woven baskets stuffed with dried fungal fibers, sealed jars of preserved spores, and a leather coin pouch. The owner seems to have left in a hurry.",
   "kind": "choice",
   "tags": ["spore", "fungal"],
   "choices": [
     {
       "id": "take_supplies",
       "label": "Take the fibers and threads",
-      "description": "Grab the fungal fiber and mycelium thread — practical materials.",
-      "effects": [
-        { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 1, "max_qty": 2 },
-        { "type": "add_item", "item_id": "mycelium_thread", "min_qty": 1, "max_qty": 2 }
+      "description": "Grab the fungal fiber and mycelium thread -- practical materials.",
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "The baskets are well-packed. You pull out bundles of dried fiber and neatly wound mycelium thread -- someone knew their craft.",
+          "effects": [
+            { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 1, "max_qty": 2 },
+            { "type": "add_item", "item_id": "mycelium_thread", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "Buried beneath the fiber bundles, you find a hidden pouch of rare spore clusters wrapped in wax paper. The forager was collecting more than basics.",
+          "effects": [
+            { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 2, "max_qty": 3 },
+            { "type": "add_item", "item_id": "spore_cluster", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "As you lift the basket lid, a burst of trapped spores hits you in the face. You grab what you can through watering eyes.",
+          "effects": [
+            { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 1, "max_qty": 1 },
+            { "type": "apply_status", "status_id": "poisoned", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "search_valuables",
       "label": "Search for valuables",
       "description": "Check the coin pouch. Foragers always keep emergency gold.",
-      "effects": [
-        { "type": "add_gold_range", "min": 12, "max": 25 }
-      ]
-    },
-    {
-      "id": "take_everything",
-      "label": "Take everything you can carry",
-      "description": "Stuff your packs with fibers, scraps, and coin.",
-      "effects": [
-        { "type": "add_item", "item_id": "iron_scrap", "min_qty": 1, "max_qty": 1 },
-        { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 1, "max_qty": 1 },
-        { "type": "add_gold_range", "min": 5, "max": 10 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "The pouch is heavier than it looks. A decent stash of coin -- the forager won't be needing it.",
+          "effects": [
+            { "type": "add_gold_range", "min": 12, "max": 25 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "Gold coins and a few loose gems tucked into a side pocket. This forager was doing well for themselves.",
+          "effects": [
+            { "type": "add_gold_range", "min": 18, "max": 30 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The pouch is mostly copper -- barely worth the stop. Something already picked through the best of it.",
+          "effects": [
+            { "type": "add_gold_range", "min": 4, "max": 8 }
+          ]
+        }
       ]
     },
     {
       "id": "leave",
       "label": "Move on",
       "description": "Leave the stash. Whoever left it may return.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You step past the stash and continue deeper into the tunnels. Not everything needs to be taken.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

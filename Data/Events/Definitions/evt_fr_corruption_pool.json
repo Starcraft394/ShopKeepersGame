@@ -9,32 +9,71 @@
       "id": "skim_corruption",
       "label": "Skim the corruption",
       "description": "Carefully draw samples of the living corruption into sealed containers.",
-      "effects": [
-        { "type": "add_item", "item_id": "fr_corruption_ichor", "min_qty": 1, "max_qty": 3 }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "Your container fills with sluggish black liquid that writhes against the glass. Potent corruption ichor — alchemists would kill for this.",
+          "effects": [
+            { "type": "add_item", "item_id": "fr_corruption_ichor", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The corruption reaches for your hands as you collect it. You pull back in time, but dark tendrils leave burning marks on your skin.",
+          "effects": [
+            { "type": "add_item", "item_id": "fr_corruption_ichor", "min_qty": 1, "max_qty": 2 },
+            { "type": "apply_status", "status_id": "poisoned", "duration": 2, "target": "random_hero" }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The pool surges upward! Corruption splashes across the party, eating through cloth and searing skin before you can scramble back.",
+          "effects": [
+            { "type": "damage_party", "amount": 7 },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "harvest_crystals",
       "label": "Harvest the crystallized edges",
       "description": "Break off the entropy-saturated crystal formations ringing the pool.",
-      "effects": [
-        { "type": "add_item", "item_id": "fr_entropy_residue", "min_qty": 2, "max_qty": 4 }
-      ]
-    },
-    {
-      "id": "search_debris",
-      "label": "Search the warped debris",
-      "description": "Pick through the distorted remains of objects half-consumed by the corruption.",
-      "effects": [
-        { "type": "add_gold_range", "min": 12, "max": 22 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "The crystals snap free cleanly, humming with trapped entropy. Their edges are razor-sharp and faintly warm.",
+          "effects": [
+            { "type": "add_item", "item_id": "fr_entropy_residue", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "Most of the crystals come free, but one shatters and releases a burst of stored entropy. The blast leaves a ringing in your ears.",
+          "effects": [
+            { "type": "add_item", "item_id": "fr_entropy_residue", "min_qty": 1, "max_qty": 2 },
+            { "type": "damage_hero", "amount": 6 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The crystals crumble to worthless dust at your touch. This close to the pool, everything decays faster than expected.",
+          "effects": [
+            { "type": "add_gold_range", "min": 4, "max": 8 }
+          ]
+        }
       ]
     },
     {
       "id": "leave",
       "label": "Leave it undisturbed",
       "description": "The pool seems to watch you. Better not to linger.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You back away slowly. The pool's surface ripples once — as if acknowledging your departure — then goes still.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

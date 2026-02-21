@@ -1,0 +1,102 @@
+{
+  "id": "evt_forest_wanderer",
+  "title": "The Wandering Herbalist",
+  "description": "A stooped figure in a patchwork cloak picks herbs along the trail, humming tunelessly. A massive wicker basket on their back overflows with dried plants, mushrooms, and glass vials. They notice you and smile with far too many teeth. 'Travelers! Care to trade?'",
+  "kind": "choice",
+  "tags": ["forest", "npc", "trade"],
+  "choices": [
+    {
+      "id": "trade_gold",
+      "label": "Buy their wares",
+      "description": "Pay 12 gold for whatever they're selling.",
+      "requires": { "gold": 12 },
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "The herbalist hands you a bundle of fresh herbs and a mushroom that pulses faintly. 'Good for what ails you!'",
+          "effects": [
+            { "type": "lose_gold", "min": 12, "max": 12 },
+            { "type": "add_item", "item_id": "herb_sprig", "min_qty": 2, "max_qty": 3 },
+            { "type": "add_item", "item_id": "forest_mushroom", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "They rummage through their basket and produce a glowing salve. 'Rub this on wounds — works wonders!' Your heroes feel refreshed.",
+          "effects": [
+            { "type": "lose_gold", "min": 12, "max": 12 },
+            { "type": "heal_party", "amount": 10 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The herbalist hands you unlabeled vials with a wink. 'Trust me.' The contents taste foul but seem... invigorating?",
+          "effects": [
+            { "type": "lose_gold", "min": 12, "max": 12 },
+            { "type": "heal_hero", "amount": 15 },
+            { "type": "add_item", "item_id": "herb_sprig", "min_qty": 1, "max_qty": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ask_directions",
+      "label": "Ask about the path ahead",
+      "description": "Local knowledge could prove valuable.",
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "'Ah, careful through the next stretch — saw beast tracks. Big ones.' They hand you a sprig of wolfsbane. 'For luck.'",
+          "effects": [
+            { "type": "add_item", "item_id": "herb_sprig", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The herbalist draws a crude map in the dirt showing a shortcut. 'Found a hidden stash last week — might still be there.'",
+          "effects": [
+            { "type": "add_gold_range", "min": 6, "max": 12 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "They ramble incoherently about 'the green song' and 'root-whispers' for ten minutes. You learn nothing useful.",
+          "effects": [{ "type": "nothing" }]
+        }
+      ]
+    },
+    {
+      "id": "rob_them",
+      "label": "Demand their supplies",
+      "description": "That basket looks full of valuable ingredients.",
+      "outcomes": [
+        {
+          "weight": 30,
+          "text": "The herbalist drops the basket and flees. Their loss is your gain — herbs, mushrooms, and a few coins.",
+          "effects": [
+            { "type": "add_item", "item_id": "herb_sprig", "min_qty": 2, "max_qty": 4 },
+            { "type": "add_item", "item_id": "forest_mushroom", "min_qty": 1, "max_qty": 2 },
+            { "type": "add_gold_range", "min": 4, "max": 8 }
+          ]
+        },
+        {
+          "weight": 40,
+          "text": "The herbalist's smile vanishes. They hurl a vial that shatters at your feet — choking gas! You grab what you can through streaming eyes.",
+          "effects": [
+            { "type": "damage_party", "amount": 6 },
+            { "type": "apply_status", "status_id": "poisoned", "duration": 2, "target": "party" },
+            { "type": "add_item", "item_id": "herb_sprig", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "They cackle and throw powder in your face. When your vision clears, they're gone — and so is some of your gold.",
+          "effects": [
+            { "type": "lose_gold", "min": 6, "max": 12 },
+            { "type": "damage_hero", "amount": 4 }
+          ]
+        }
+      ]
+    }
+  ]
+}

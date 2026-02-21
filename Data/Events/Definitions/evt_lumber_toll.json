@@ -10,47 +10,89 @@
       "label": "Pay the toll",
       "description": "Hand over 10 gold. At least you spot some wood scraps nearby.",
       "requires": { "gold": 10 },
-      "effects": [
-        { "type": "lose_gold", "min": 10, "max": 10 },
-        { "type": "add_item", "item_id": "wood_bundle", "min_qty": 1, "max_qty": 1 }
-      ]
-    },
-    {
-      "id": "negotiate",
-      "label": "Offer materials instead",
-      "description": "Maybe they'll take trade goods.",
-      "effects": [
-        { "type": "lose_gold", "min": 4, "max": 8 }
+      "outcomes": [
+        {
+          "weight": 60,
+          "text": "The bandit counts the coins and nods. 'Smart choice.' They melt back into the machinery. You grab a wood bundle they missed.",
+          "effects": [
+            { "type": "lose_gold", "min": 10, "max": 10 },
+            { "type": "add_item", "item_id": "wood_bundle", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "'Pleasure doing business.' The leader tosses you a dented flask. 'For the road. No hard feelings, yeah?'",
+          "effects": [
+            { "type": "lose_gold", "min": 10, "max": 10 },
+            { "type": "heal_hero", "amount": 6 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "You pay, but as you pass, one of them trips you and rifles through your pack. They take a bit extra.",
+          "effects": [
+            { "type": "lose_gold", "min": 12, "max": 16 }
+          ]
+        }
       ]
     },
     {
       "id": "intimidate",
       "label": "Stand your ground",
       "description": "Show them you won't be easy prey.",
-      "effects": [
-        { "type": "add_gold_range", "min": 5, "max": 15 }
-      ],
-      "risk": {
-        "fight_chance": 0.4,
-        "damage_amount": 12
-      },
-      "modifier": {
-        "id": "bruised",
-        "label": "Roughed Up",
-        "player_start_damage": 4
-      }
+      "outcomes": [
+        {
+          "weight": 35,
+          "text": "Your party draws weapons. The bandits exchange nervous glances and scatter, dropping a few coins in their haste.",
+          "effects": [
+            { "type": "add_gold_range", "min": 8, "max": 18 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "The leader snarls and lunges! A vicious brawl erupts. You drive them off, but not without bruises.",
+          "effects": [
+            { "type": "damage_party", "amount": 5 },
+            { "type": "add_gold_range", "min": 10, "max": 16 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "They charge in! The fight is desperate and bloody. Your party barely holds the line.",
+          "effects": [
+            { "type": "damage_party", "amount": 8 },
+            { "type": "apply_status", "status_id": "bleeding", "duration": 2, "target": "random_hero" },
+            { "type": "trigger_combat", "encounter_type": "basic" }
+          ]
+        }
+      ]
     },
     {
       "id": "flee",
       "label": "Run for it",
       "description": "They look slow. Maybe you can outrun them.",
-      "effects": [
-        { "type": "nothing" }
-      ],
-      "risk": {
-        "catch_chance": 0.3,
-        "damage_amount": 8
-      }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "You bolt before they can react! Their curses fade behind you as the forest swallows the path.",
+          "effects": [{ "type": "nothing" }]
+        },
+        {
+          "weight": 30,
+          "text": "You almost make it clean, but a thrown axe clips one of your heroes. You keep running.",
+          "effects": [
+            { "type": "damage_hero", "amount": 8 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "One of them is faster than they look! They tackle your rearguard and strip a piece of equipment before you drive them off.",
+          "effects": [
+            { "type": "damage_hero", "amount": 6 },
+            { "type": "remove_equipment" }
+          ]
+        }
+      ]
     }
   ]
 }

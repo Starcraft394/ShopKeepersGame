@@ -9,32 +9,72 @@
       "id": "capture_essence",
       "label": "Capture the dimensional essence",
       "description": "Trap the condensed echoes into a vessel, distilling raw dimensional essence from future-sound.",
-      "effects": [
-        { "type": "add_item", "item_id": "fr_dimensional_essence", "min_qty": 1, "max_qty": 2 }
-      ]
-    },
-    {
-      "id": "collect_ichor",
-      "label": "Collect the corruption ichor",
-      "description": "Scrape the dark residue that the echoes leave behind as they pass through corrupted space.",
-      "effects": [
-        { "type": "add_item", "item_id": "fr_corruption_ichor", "min_qty": 1, "max_qty": 3 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "The echoes compress into shimmering droplets that solidify in your hands. Pure dimensional essence — the distilled memory of boundaries crossed.",
+          "effects": [
+            { "type": "add_item", "item_id": "fr_dimensional_essence", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "You catch most of the essence, but a rogue echo slips through your barrier and shrieks through your mind. The harvest is slim.",
+          "effects": [
+            { "type": "add_item", "item_id": "fr_dimensional_essence", "min_qty": 1, "max_qty": 1 },
+            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "random_hero" }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The echoes resist containment and lash back with psychic force. You salvage only scraps of residue from the attempt.",
+          "effects": [
+            { "type": "damage_hero", "amount": 8 },
+            { "type": "add_item", "item_id": "fr_entropy_residue", "min_qty": 1, "max_qty": 2 }
+          ]
+        }
       ]
     },
     {
       "id": "listen",
       "label": "Listen for guidance",
       "description": "Let the abyss's strange wisdom wash over the party, mending wounds with impossible knowledge.",
-      "effects": [
-        { "type": "heal_party", "value": 12 }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "The echoes carry whispers of healing — memories of wholeness from timelines where you were never hurt. Wounds close as if they never existed.",
+          "effects": [
+            { "type": "heal_party", "amount": 12 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "The wisdom is soothing but incomplete. Some wounds ease while the deeper echoes leave a tingling numbness.",
+          "effects": [
+            { "type": "heal_party", "amount": 6 },
+            { "type": "add_item", "item_id": "fr_corruption_ichor", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The abyss speaks too loudly. Forbidden knowledge hammers into your skulls, leaving everyone dazed and bleeding from their ears.",
+          "effects": [
+            { "type": "damage_party", "amount": 5 },
+            { "type": "apply_status", "status_id": "blinded", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "leave",
       "label": "Move on",
       "description": "The echoes are growing louder. Best not to hear what comes next.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You press your hands over your ears and hurry past. The echoes fade reluctantly, as if disappointed to lose their audience.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

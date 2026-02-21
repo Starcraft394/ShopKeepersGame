@@ -3,13 +3,15 @@
   "display_name": "Sunken Strand Events",
   "description": "Random events among flooded corridors, shipwrecks, and brine-soaked caverns.",
   "entries": [
-    { "event_id": "evt_ss_shipwreck", "weight": 15 },
-    { "event_id": "evt_ss_tide_pool", "weight": 15 },
+    { "event_id": "evt_ss_shipwreck", "weight": 14 },
+    { "event_id": "evt_ss_tide_pool", "weight": 14 },
     { "event_id": "evt_ss_coral_formation", "weight": 12 },
-    { "event_id": "evt_ss_fog_bank", "weight": 12 },
-    { "event_id": "evt_ss_drowned_cache", "weight": 14 },
-    { "event_id": "evt_ss_coastal_shrine", "weight": 10 },
-    { "event_id": "evt_ss_salvage", "weight": 14 },
-    { "event_id": "evt_ss_brine_spring", "weight": 12 }
+    { "event_id": "evt_ss_fog_bank", "weight": 11 },
+    { "event_id": "evt_ss_drowned_cache", "weight": 13 },
+    { "event_id": "evt_ss_coastal_shrine", "weight": 9 },
+    { "event_id": "evt_ss_salvage", "weight": 13 },
+    { "event_id": "evt_ss_brine_spring", "weight": 11 },
+    { "event_id": "evt_ss_sea_cave", "weight": 12 },
+    { "event_id": "evt_ss_hermit", "weight": 10 }
   ]
 }

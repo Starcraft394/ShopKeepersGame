@@ -9,32 +9,89 @@
       "id": "collect_sulfite",
       "label": "Collect sulfite deposits",
       "description": "Scrape the crystallized sulfite growths from around the vent.",
-      "effects": [
-        { "type": "add_item", "item_id": "ah_sulfite_gland", "min_qty": 1, "max_qty": 2 }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "The sulfite crystals snap free in thick clusters, their acrid smell making your eyes water but filling your pouch with valuable reagent.",
+          "effects": [
+            { "type": "add_item", "item_id": "ah_sulfite_gland", "min_qty": 1, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "Only a few deposits are worth harvesting. The rest have been corroded by the constant fumes.",
+          "effects": [
+            { "type": "add_item", "item_id": "ah_sulfite_gland", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "A violent eruption of gas blasts from the vent as you reach for the crystals. Searing fumes engulf your outstretched arm.",
+          "effects": [
+            { "type": "damage_hero", "amount": 9 },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "harvest_crust",
       "label": "Harvest the mineral crust",
       "description": "Chip away the ember-rich mineral deposits ringing the opening.",
-      "effects": [
-        { "type": "add_item", "item_id": "ember_dust", "min_qty": 2, "max_qty": 4 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "The mineral crust crumbles into heaps of ember dust as you chip it free. Rich deposits, easily gathered.",
+          "effects": [
+            { "type": "add_item", "item_id": "ember_dust", "min_qty": 3, "max_qty": 5 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "Thin deposits yield a modest amount of dust, mixed with sulfur and ash.",
+          "effects": [
+            { "type": "add_item", "item_id": "ember_dust", "min_qty": 1, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The vent belches a cloud of choking sulfur. Your party staggers back, eyes streaming and lungs burning.",
+          "effects": [
+            { "type": "damage_party", "amount": 5 },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "brave_the_heat",
       "label": "Brave the heat for coins",
       "description": "Dash through the fumes to grab the scattered coins near the vent.",
-      "effects": [
-        { "type": "add_gold_range", "min": 10, "max": 20 }
-      ]
-    },
-    {
-      "id": "retreat",
-      "label": "Retreat",
-      "description": "The fumes are too dangerous to risk.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 40,
+          "text": "You hold your breath and sprint. Coins clatter into your pouch as you scoop them up. You make it back before the next gas blast.",
+          "effects": [
+            { "type": "add_gold_range", "min": 14, "max": 24 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "You grab a handful of coins but the heat forces a quick retreat. The fumes leave you gasping.",
+          "effects": [
+            { "type": "add_gold_range", "min": 8, "max": 14 },
+            { "type": "damage_hero", "amount": 5 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The vent erupts the moment you reach the coins. Superheated gas sears exposed skin and the blast knocks you backward.",
+          "effects": [
+            { "type": "damage_hero", "amount": 10 },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" },
+            { "type": "add_gold_range", "min": 4, "max": 8 }
+          ]
+        }
       ]
     }
   ]

@@ -9,32 +9,72 @@
       "id": "grab_supplies",
       "label": "Grab the supplies",
       "description": "Snatch coins and trade goods from the cache before it phases out again.",
-      "effects": [
-        { "type": "add_gold_range", "min": 18, "max": 30 }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "You time the phase perfectly. Your hands close on heavy coin pouches just as they solidify, pulling them free before the cache flickers out.",
+          "effects": [
+            { "type": "add_gold_range", "min": 18, "max": 30 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "The cache phases mid-grab. You get some coins, but one hero's hand is briefly trapped between states of reality — an agonizing experience.",
+          "effects": [
+            { "type": "add_gold_range", "min": 10, "max": 18 },
+            { "type": "damage_hero", "amount": 7 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The cache dissolves completely the instant you touch it, releasing a wave of entropic energy that ages everything nearby by a decade in a heartbeat.",
+          "effects": [
+            { "type": "damage_party", "amount": 5 },
+            { "type": "apply_status", "status_id": "poisoned", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "collect_entropy",
       "label": "Collect the entropy residue",
       "description": "Harvest the thick layer of entropy residue coating the cache's dissolving containers.",
-      "effects": [
-        { "type": "add_item", "item_id": "fr_entropy_residue", "min_qty": 3, "max_qty": 5 }
-      ]
-    },
-    {
-      "id": "harvest_null",
-      "label": "Harvest the null fragments",
-      "description": "Break apart the null-space crystals forming where the cache meets empty reality.",
-      "effects": [
-        { "type": "add_item", "item_id": "fr_null_fragment", "min_qty": 2, "max_qty": 3 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "The residue flakes off in thick sheets, dense with concentrated entropy. A rich haul of crafting material.",
+          "effects": [
+            { "type": "add_item", "item_id": "fr_entropy_residue", "min_qty": 3, "max_qty": 5 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "You collect a decent amount, but the residue eats through one of your containers. Some is lost, and fumes leave you lightheaded.",
+          "effects": [
+            { "type": "add_item", "item_id": "fr_entropy_residue", "min_qty": 1, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "The residue is more volatile than expected. It ignites on contact with air, sending corrosive sparks across your party.",
+          "effects": [
+            { "type": "add_item", "item_id": "fr_entropy_residue", "min_qty": 1, "max_qty": 1 },
+            { "type": "damage_party", "amount": 4 },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "leave",
       "label": "Leave it be",
       "description": "Whatever happened to the last traveler, you would rather not share their fate.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "The cache flickers and fades as you watch, the last remnant of someone who thought they could survive this place. A sobering reminder.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

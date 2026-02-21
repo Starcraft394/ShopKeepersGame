@@ -1,0 +1,103 @@
+{
+  "id": "evt_spore_altar",
+  "title": "Spore Altar",
+  "description": "A flat stone slab rises from the swamp floor, carpeted in living fungus that pulses with a slow, rhythmic glow. Carved channels in the stone guide the mycelium growth into spiraling patterns, and the air above the altar shimmers with drifting spores. This is a place of old ritual -- offerings of bone and coin are half-absorbed into the fungal mat. The altar hums with a low, felt vibration.",
+  "kind": "choice",
+  "tags": ["spore", "fungal", "shrine"],
+  "choices": [
+    {
+      "id": "make_offering",
+      "label": "Make an offering",
+      "description": "Place gold on the altar and see what the fungus gives in return.",
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "Your coins sink into the fungal mat and the altar blazes with green light. The mycelium parts, revealing rare materials grown in its depths -- an offering returned tenfold.",
+          "effects": [
+            { "type": "lose_gold", "min": 10, "max": 15 },
+            { "type": "add_item", "item_id": "glowing_spore", "min_qty": 1, "max_qty": 1 },
+            { "type": "add_item", "item_id": "spore_cluster", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The altar accepts your gold and pulses warmly. Healing energy flows up through the stone into your feet and spreads through the party. The fungus seems pleased.",
+          "effects": [
+            { "type": "lose_gold", "min": 8, "max": 12 },
+            { "type": "heal_party", "amount": 12 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The gold vanishes but the altar darkens. The vibration becomes a grinding moan. Your offering was... insufficient. Spore jets erupt from the channels.",
+          "effects": [
+            { "type": "lose_gold", "min": 10, "max": 15 },
+            { "type": "damage_party", "amount": 6 },
+            { "type": "apply_status", "status_id": "poisoned", "duration": 2, "target": "party" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "desecrate",
+      "label": "Desecrate the altar",
+      "description": "Scrape the fungus off and take whatever the growth has absorbed.",
+      "outcomes": [
+        {
+          "weight": 35,
+          "text": "You pry the fungal mat loose and find coins, iron fittings, and old offerings absorbed into the growth. A profitable act of vandalism.",
+          "effects": [
+            { "type": "add_gold_range", "min": 15, "max": 25 },
+            { "type": "add_item", "item_id": "iron_scrap", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 40,
+          "text": "The altar screams. A psychic shriek rips through the cavern and the mycelium network convulses. Creatures come boiling out of the walls, drawn by the altar's distress.",
+          "effects": [
+            { "type": "add_gold_range", "min": 10, "max": 15 },
+            { "type": "trigger_combat", "encounter_type": "elite" }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The fungal mat releases a concentrated burst of toxic spores as you tear it free. You grab what you can through the burning haze.",
+          "effects": [
+            { "type": "add_gold_range", "min": 8, "max": 14 },
+            { "type": "damage_party", "amount": 8 },
+            { "type": "apply_status", "status_id": "poisoned", "duration": 2, "target": "party" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pray_quietly",
+      "label": "Kneel and meditate",
+      "description": "Sit quietly before the altar and let the mycelium's rhythm calm your mind.",
+      "outcomes": [
+        {
+          "weight": 60,
+          "text": "The altar's hum settles into your bones. Tension drains away, wounds feel lighter, and for a moment you understand the vast network beneath your feet.",
+          "effects": [
+            { "type": "heal_party", "amount": 8 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "Visions flash behind your eyes -- paths through the tunnels, hidden caches, safe passages. When you open your eyes, a single glowing spore rests in your palm.",
+          "effects": [
+            { "type": "heal_party", "amount": 5 },
+            { "type": "add_item", "item_id": "glowing_spore", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "The meditation goes too deep. The mycelium network tries to pull your consciousness in. You wrench free with a splitting headache.",
+          "effects": [
+            { "type": "damage_hero", "amount": 6 }
+          ]
+        }
+      ]
+    }
+  ]
+}

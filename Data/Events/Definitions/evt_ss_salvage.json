@@ -9,32 +9,87 @@
       "id": "gather_timber",
       "label": "Gather the timber",
       "description": "Plenty of serviceable wood floats within easy reach.",
-      "effects": [
-        { "type": "add_item", "item_id": "driftwood", "min_qty": 3, "max_qty": 5 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "You wade in and drag out armloads of good timber. Enough to keep any craftsman busy for days.",
+          "effects": [
+            { "type": "add_item", "item_id": "driftwood", "min_qty": 3, "max_qty": 6 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The best planks are waterlogged but usable. A decent haul for minimal effort.",
+          "effects": [
+            { "type": "add_item", "item_id": "driftwood", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "An undertow catches your legs as you reach for a floating plank. You fight free but take a battering against the rocks.",
+          "effects": [
+            { "type": "add_item", "item_id": "driftwood", "min_qty": 1, "max_qty": 2 },
+            { "type": "damage_hero", "amount": 7 }
+          ]
+        }
       ]
     },
     {
       "id": "search_valuables",
       "label": "Search for valuables",
       "description": "A merchant ship means merchant coin, scattered among the debris.",
-      "effects": [
-        { "type": "add_gold_range", "min": 12, "max": 18 }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "A strongbox wedged under the keel still holds a merchant's travel purse. Lucky find.",
+          "effects": [
+            { "type": "add_gold_range", "min": 16, "max": 24 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "Scattered coins glint among the debris. You gather what you can before the tide shifts.",
+          "effects": [
+            { "type": "add_gold_range", "min": 8, "max": 14 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The wreck groans and shifts as you search. A falling mast section clips your shoulder before you roll clear, clutching a fistful of coins.",
+          "effects": [
+            { "type": "add_gold_range", "min": 6, "max": 12 },
+            { "type": "damage_hero", "amount": 6 }
+          ]
+        }
       ]
     },
     {
       "id": "collect_rope",
       "label": "Collect the rope and sinew",
       "description": "Kelp-woven rigging makes excellent binding material.",
-      "effects": [
-        { "type": "add_item", "item_id": "ss_kelp_sinew", "min_qty": 1, "max_qty": 3 }
-      ]
-    },
-    {
-      "id": "leave",
-      "label": "Leave the wreckage",
-      "description": "The tide is rising and the footing is treacherous.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 60,
+          "text": "The rigging is tangled but strong. You cut away generous lengths of kelp-woven cord.",
+          "effects": [
+            { "type": "add_item", "item_id": "ss_kelp_sinew", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "Most of the rigging is frayed beyond use, but you salvage enough to be worthwhile.",
+          "effects": [
+            { "type": "add_item", "item_id": "ss_kelp_sinew", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "A line snaps taut as you pull it, whipping across your hand and leaving a raw welt. The kelp sinew is good quality, at least.",
+          "effects": [
+            { "type": "add_item", "item_id": "ss_kelp_sinew", "min_qty": 1, "max_qty": 3 },
+            { "type": "damage_hero", "amount": 4 }
+          ]
+        }
       ]
     }
   ]

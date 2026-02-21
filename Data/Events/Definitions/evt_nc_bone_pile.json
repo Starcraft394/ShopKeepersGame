@@ -9,32 +9,71 @@
       "id": "harvest_marrow",
       "label": "Harvest the marrow",
       "description": "Necrotic marrow is a prized component for dark crafting.",
-      "effects": [
-        { "type": "add_item", "item_id": "nc_bone_marrow", "min_qty": 1, "max_qty": 3 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "You crack open the larger bones and scrape out thick, dark marrow that pulses faintly with residual energy. Good yield.",
+          "effects": [
+            { "type": "add_item", "item_id": "nc_bone_marrow", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The marrow practically flows out — these bones are saturated with necrotic power. An exceptional find.",
+          "effects": [
+            { "type": "add_item", "item_id": "nc_bone_marrow", "min_qty": 3, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "As you split the bones, a burst of necrotic flame scorches your hands. You salvage what you can through gritted teeth.",
+          "effects": [
+            { "type": "add_item", "item_id": "nc_bone_marrow", "min_qty": 1, "max_qty": 2 },
+            { "type": "damage_hero", "amount": 6 },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "collect_residue",
       "label": "Collect the spectral residue",
       "description": "Threads of wraith-stuff cling to the bones like cobwebs.",
-      "effects": [
-        { "type": "add_item", "item_id": "nc_wraith_thread", "min_qty": 1, "max_qty": 2 }
-      ]
-    },
-    {
-      "id": "search_valuables",
-      "label": "Search for valuables",
-      "description": "Burial goods are sometimes interred with the bones.",
-      "effects": [
-        { "type": "add_gold_range", "min": 10, "max": 20 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "You wind the ghostly strands around a stick, careful not to let them touch your skin. They hum softly with trapped souls.",
+          "effects": [
+            { "type": "add_item", "item_id": "nc_wraith_thread", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The threads are thicker here than usual — an entire cocoon of ectoplasm wraps the largest skull. A treasure trove of wraith material.",
+          "effects": [
+            { "type": "add_item", "item_id": "nc_wraith_thread", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "The threads lash out as you reach for them, searing spectral burns across your fingers. You manage to collect a few.",
+          "effects": [
+            { "type": "add_item", "item_id": "nc_wraith_thread", "min_qty": 1, "max_qty": 1 },
+            { "type": "damage_hero", "amount": 5 }
+          ]
+        }
       ]
     },
     {
       "id": "move_on",
       "label": "Leave the dead be",
       "description": "Disturbing the dead invites their attention.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You step around the pile carefully. The spectral wisps watch you go, drifting lazily in your wake.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

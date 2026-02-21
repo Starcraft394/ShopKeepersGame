@@ -9,33 +9,89 @@
       "id": "meditate",
       "label": "Meditate before the shrine",
       "description": "The shrine's radiance washes over your party, mending wounds and easing fatigue.",
-      "effects": [
-        { "type": "heal_party", "value": 12 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "A warm prismatic glow envelops the party. Bruises fade and breathing steadies as the light does its work.",
+          "effects": [
+            { "type": "heal_party", "amount": 12 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The shrine pulses brighter as you meditate, pouring restorative energy into every wound and weary muscle.",
+          "effects": [
+            { "type": "heal_party", "amount": 18 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The meditation heals your bodies, but the alien colors seep into one hero's vision and refuse to leave.",
+          "effects": [
+            { "type": "heal_party", "amount": 10 },
+            { "type": "apply_status", "status_id": "blinded", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "offer_gold",
       "label": "Offer gold to the shrine",
       "description": "Place coins at the shrine's base. The crystal flares brightly, and deep healing floods through you.",
-      "effects": [
-        { "type": "add_gold_range", "min": -10, "max": -10 },
-        { "type": "heal_party", "value": 20 }
+      "outcomes": [
+        {
+          "weight": 60,
+          "text": "The coins dissolve into light at the shrine's base. A surge of prismatic energy floods through the party, mending all hurts.",
+          "effects": [
+            { "type": "lose_gold", "min": 10, "max": 10 },
+            { "type": "heal_party", "amount": 20 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The shrine accepts your offering and returns it tenfold. Wounds close, exhaustion lifts, and a faint warmth lingers in your bones.",
+          "effects": [
+            { "type": "lose_gold", "min": 10, "max": 10 },
+            { "type": "heal_party", "amount": 25 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "The shrine absorbs the gold but gives nothing in return. Its light dims as though disappointed by the offering.",
+          "effects": [
+            { "type": "lose_gold", "min": 10, "max": 10 }
+          ]
+        }
       ]
     },
     {
       "id": "take_shard",
       "label": "Take a shard from the altar",
       "description": "A sliver of the shrine's crystal hums with trapped temporal energy.",
-      "effects": [
-        { "type": "add_item", "item_id": "temporal_residue", "min_qty": 1, "max_qty": 1 }
-      ]
-    },
-    {
-      "id": "leave",
-      "label": "Leave the shrine in peace",
-      "description": "You bow your head respectfully and continue on your way.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "You pry a sliver free. The shrine's light flickers but holds. The shard vibrates faintly with residual power.",
+          "effects": [
+            { "type": "add_item", "item_id": "temporal_residue", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The shard comes loose easily, as if the shrine offered it willingly. Echo essence drips from the fracture.",
+          "effects": [
+            { "type": "add_item", "item_id": "temporal_residue", "min_qty": 1, "max_qty": 1 },
+            { "type": "add_item", "item_id": "se_echo_essence", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The shrine recoils as you break the shard free. A pulse of angry light shocks you, punishing the desecration.",
+          "effects": [
+            { "type": "damage_hero", "amount": 10 },
+            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     }
   ]

@@ -1,41 +1,99 @@
 {
   "id": "evt_mycelium_vein",
   "title": "Mycelium Vein",
-  "description": "The tunnel wall is shot through with thick veins of glowing mycelium, each strand pulsing with bioluminescent light. The network runs deep into the rock — you could spend hours tracing its branches, or harvest what you can reach and move on.",
+  "description": "The tunnel wall is shot through with thick veins of glowing mycelium, each strand pulsing with bioluminescent light. The network runs deep into the rock -- you could spend hours tracing its branches, or harvest what you can reach and move on.",
   "kind": "choice",
   "tags": ["spore", "fungal"],
   "choices": [
     {
-      "id": "mine_carefully",
+      "id": "harvest_carefully",
       "label": "Harvest carefully",
       "description": "Take your time and extract the fungal fibers properly.",
-      "effects": [
-        { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 2, "max_qty": 4 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "Patience rewards you. The fibers come free in long, unbroken strands -- exactly what crafters pay well for.",
+          "effects": [
+            { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The vein runs deeper than expected. As you follow it, you uncover a pocket of crystallized spore clusters embedded in the rock.",
+          "effects": [
+            { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 2, "max_qty": 3 },
+            { "type": "add_item", "item_id": "spore_cluster", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The vein secretes a sticky, irritating sap as you cut. It stings but you work through it, collecting decent fiber.",
+          "effects": [
+            { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 1, "max_qty": 3 },
+            { "type": "damage_hero", "amount": 4 }
+          ]
+        }
       ]
     },
     {
-      "id": "rush_mining",
+      "id": "rip_veins",
       "label": "Rip the veins out",
       "description": "Tear the mycelium free quickly, but risk a spore burst.",
-      "effects": [
-        { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 1, "max_qty": 3 },
-        { "type": "damage_party", "value": 5 }
+      "outcomes": [
+        {
+          "weight": 40,
+          "text": "The veins tear free with a satisfying rip. Spore dust fills the air but dissipates quickly -- more bark than bite.",
+          "effects": [
+            { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "The wall erupts in a choking cloud of spores. You shield your face but inhale a lungful before the air clears.",
+          "effects": [
+            { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 1, "max_qty": 3 },
+            { "type": "damage_party", "amount": 5 },
+            { "type": "apply_status", "status_id": "poisoned", "duration": 2, "target": "random_hero" }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The veins come free easily and you find a buried cache of fungal materials -- someone tried to hide their haul behind the growth.",
+          "effects": [
+            { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 2, "max_qty": 3 },
+            { "type": "add_item", "item_id": "mycelium_thread", "min_qty": 1, "max_qty": 2 }
+          ]
+        }
       ]
     },
     {
-      "id": "search_crystals",
+      "id": "look_for_clusters",
       "label": "Look for spore clusters",
       "description": "Where mycelium grows thick, spore clusters often form.",
-      "effects": [
-        { "type": "add_item", "item_id": "spore_cluster", "min_qty": 1, "max_qty": 2 }
-      ]
-    },
-    {
-      "id": "leave",
-      "label": "Move on",
-      "description": "Leave the mycelium undisturbed.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "You trace the veins to their thickest junction. Sure enough -- fat spore clusters cling to the convergence point.",
+          "effects": [
+            { "type": "add_item", "item_id": "spore_cluster", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The clusters here are enormous, pulsing with bioluminescent light. Among them you spot a rare glowing spore.",
+          "effects": [
+            { "type": "add_item", "item_id": "spore_cluster", "min_qty": 1, "max_qty": 2 },
+            { "type": "add_item", "item_id": "glowing_spore", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "You reach for a cluster and it bursts on contact, spraying your face with stinging spore fluid. The remaining clusters are smaller than you hoped.",
+          "effects": [
+            { "type": "add_item", "item_id": "spore_cluster", "min_qty": 1, "max_qty": 1 },
+            { "type": "damage_hero", "amount": 5 }
+          ]
+        }
       ]
     }
   ]

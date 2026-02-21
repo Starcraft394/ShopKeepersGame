@@ -1,7 +1,7 @@
 {
   "id": "evt_lumber_cache",
   "title": "Rusted Cache",
-  "description": "Behind a collapsed wall of rotted planks, you spot an iron lockbox half-buried in debris. Rust cakes the hinges, but the lock mechanism looks intact. This was hidden deliberately - someone's emergency fund, perhaps.",
+  "description": "Behind a collapsed wall of rotted planks, you spot an iron lockbox half-buried in debris. Rust cakes the hinges, but the lock mechanism looks intact. This was hidden deliberately — someone's emergency fund, perhaps.",
   "kind": "choice",
   "tags": ["lumber", "loot", "treasure"],
   "choices": [
@@ -9,37 +9,82 @@
       "id": "force_open",
       "label": "Force it open",
       "description": "Brute strength, but risk a trap.",
-      "effects": [
-        { "type": "add_gold_range", "min": 12, "max": 22 },
-        { "type": "add_item", "item_id": "iron_scrap", "min_qty": 1, "max_qty": 2 }
-      ],
-      "risk": {
-        "trap_chance": 0.25,
-        "damage_amount": 10
-      }
+      "outcomes": [
+        {
+          "weight": 40,
+          "text": "The lock snaps with a satisfying crack. Gold coins and iron fittings spill out — jackpot!",
+          "effects": [
+            { "type": "add_gold_range", "min": 14, "max": 22 },
+            { "type": "add_item", "item_id": "iron_scrap", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "A spring-loaded blade slices your palm as you wrench the lid! The gold inside barely compensates.",
+          "effects": [
+            { "type": "damage_hero", "amount": 10 },
+            { "type": "add_gold_range", "min": 10, "max": 18 },
+            { "type": "apply_status", "status_id": "bleeding", "duration": 2, "target": "random_hero" }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "You force it open but the coins are corroded green. Still worth something to a smith, along with the iron box itself.",
+          "effects": [
+            { "type": "add_gold_range", "min": 6, "max": 10 },
+            { "type": "add_item", "item_id": "iron_scrap", "min_qty": 1, "max_qty": 1 }
+          ]
+        }
+      ]
     },
     {
       "id": "pick_lock",
       "label": "Work the corroded lock",
       "description": "Patient effort might open it safely.",
-      "effects": [
-        { "type": "add_gold_range", "min": 10, "max": 18 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "Click. The mechanism gives way to careful manipulation. A tidy sum awaits inside.",
+          "effects": [
+            { "type": "add_gold_range", "min": 10, "max": 18 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The lock yields, but the contents are disappointing. Mostly corroded copper with a few silver pieces.",
+          "effects": [
+            { "type": "add_gold_range", "min": 5, "max": 10 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "Your improvised lockpick snaps inside. Frustrated, you pry the box open anyway — and find a hidden tray beneath!",
+          "effects": [
+            { "type": "add_gold_range", "min": 16, "max": 24 }
+          ]
+        }
       ]
     },
     {
       "id": "salvage_box",
       "label": "Just take the iron box",
       "description": "The box itself is worth something.",
-      "effects": [
-        { "type": "add_item", "item_id": "iron_scrap", "min_qty": 2, "max_qty": 3 }
-      ]
-    },
-    {
-      "id": "leave_it",
-      "label": "Leave it alone",
-      "description": "Could be trapped. Not worth the risk.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 70,
+          "text": "Good iron is hard to find. The lockbox breaks down into quality scrap.",
+          "effects": [
+            { "type": "add_item", "item_id": "iron_scrap", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "As you lift the box, coins rattle inside. Bonus! The lock pops open from the jostling.",
+          "effects": [
+            { "type": "add_item", "item_id": "iron_scrap", "min_qty": 2, "max_qty": 3 },
+            { "type": "add_gold_range", "min": 4, "max": 8 }
+          ]
+        }
       ]
     }
   ]

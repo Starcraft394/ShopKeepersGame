@@ -9,33 +9,73 @@
       "id": "pray",
       "label": "Pray at the shrine",
       "description": "The death lord's blessing is a cold comfort, but comfort nonetheless.",
-      "effects": [
-        { "type": "heal_party", "value": 12 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "A wave of cold calm washes through your party. Wounds close and aches fade. The death lord accepts your supplication.",
+          "effects": [
+            { "type": "heal_party", "amount": 12 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The skull's weeping light intensifies, and a profound stillness settles over your party. You feel restored beyond measure.",
+          "effects": [
+            { "type": "heal_party", "amount": 16 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "The death lord's attention is a double-edged sword. You feel healed, but a mark of cold fire burns itself into one hero's skin.",
+          "effects": [
+            { "type": "heal_party", "amount": 10 },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "offer_gold",
       "label": "Offer gold for a greater blessing",
       "description": "A generous offering earns a deeper restoration from the lord of the dead.",
-      "effects": [
-        { "type": "add_gold_range", "min": -10, "max": -10 },
-        { "type": "heal_party", "value": 20 }
-      ]
-    },
-    {
-      "id": "take_ore",
-      "label": "Pry the soul ore from the altar",
-      "description": "The ore set into the stonework is valuable, if you dare desecrate the shrine.",
-      "effects": [
-        { "type": "add_item", "item_id": "soul_ore", "min_qty": 2, "max_qty": 3 }
+      "requires": { "gold": 10 },
+      "outcomes": [
+        {
+          "weight": 60,
+          "text": "You place gold in the offering bowl. The coins dissolve into pale light, and a surge of restorative energy floods through your entire party.",
+          "effects": [
+            { "type": "lose_gold", "min": 10, "max": 10 },
+            { "type": "heal_party", "amount": 20 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The death lord is generous today. Your gold vanishes and your wounds knit shut completely. Even old scars fade.",
+          "effects": [
+            { "type": "lose_gold", "min": 10, "max": 10 },
+            { "type": "heal_party", "amount": 25 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "The death lord takes the gold — and a little extra. Your wounds heal, but your purse feels lighter than it should.",
+          "effects": [
+            { "type": "lose_gold", "min": 14, "max": 18 },
+            { "type": "heal_party", "amount": 20 }
+          ]
+        }
       ]
     },
     {
       "id": "move_on",
       "label": "Pass the shrine in silence",
       "description": "The death lord's gaze is not something to invite lightly.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You lower your eyes and walk past. The skull's weeping light dims as you leave the clearing.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

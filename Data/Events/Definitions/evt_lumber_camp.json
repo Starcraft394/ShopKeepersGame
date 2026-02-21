@@ -9,33 +9,71 @@
       "id": "search_tents",
       "label": "Search the tents",
       "description": "Workers sometimes hid savings.",
-      "effects": [
-        { "type": "add_gold_range", "min": 4, "max": 12 }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "Under a moldy bedroll, you find a cloth pouch of silver coins. The worker who hid this never came back.",
+          "effects": [
+            { "type": "add_gold_range", "min": 6, "max": 14 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "You find coins scattered among the debris, plus a sealed jar of healing salve tucked in a tent pocket.",
+          "effects": [
+            { "type": "add_gold_range", "min": 4, "max": 10 },
+            { "type": "heal_hero", "amount": 8 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "Rats swarm out of the bedrolls! One bites before you stamp it away. Only a few coppers for your trouble.",
+          "effects": [
+            { "type": "add_gold_range", "min": 2, "max": 6 },
+            { "type": "damage_hero", "amount": 4 }
+          ]
+        }
       ]
     },
     {
       "id": "check_lumber",
       "label": "Take the cut lumber",
       "description": "Pre-cut wood is valuable.",
-      "effects": [
-        { "type": "add_item", "item_id": "wood_bundle", "min_qty": 2, "max_qty": 4 }
-      ]
-    },
-    {
-      "id": "salvage_tools",
-      "label": "Look for abandoned tools",
-      "description": "Iron tools can be melted down.",
-      "effects": [
-        { "type": "add_item", "item_id": "iron_scrap", "min_qty": 1, "max_qty": 2 },
-        { "type": "add_gold_range", "min": 2, "max": 5 }
+      "outcomes": [
+        {
+          "weight": 60,
+          "text": "Good timber, already seasoned. This will fetch a fair price or serve well at the workbench.",
+          "effects": [
+            { "type": "add_item", "item_id": "wood_bundle", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The lumber is better than expected — someone had a talented eye for timber. Iron nails scattered nearby are useful too.",
+          "effects": [
+            { "type": "add_item", "item_id": "wood_bundle", "min_qty": 3, "max_qty": 4 },
+            { "type": "add_item", "item_id": "iron_scrap", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "Half the pile is rotten through. You salvage what you can from the top layers.",
+          "effects": [
+            { "type": "add_item", "item_id": "wood_bundle", "min_qty": 1, "max_qty": 2 }
+          ]
+        }
       ]
     },
     {
       "id": "move_on",
       "label": "Keep moving",
       "description": "This place feels wrong.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "A cold draft blows through the camp, carrying the scent of something dead. You don't look back.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

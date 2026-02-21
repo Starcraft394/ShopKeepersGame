@@ -1,0 +1,86 @@
+{
+  "id": "evt_nc_spirit_gate",
+  "title": "Spirit Gate",
+  "description": "A towering archway of fused bone and black iron stands free of any wall, its interior filled with a shimmering curtain of pale, translucent light. Ghostly faces press against the barrier from the other side, mouths open in silent screams. The air around the gate is freezing, and frost crystals form on any metal brought close. This is a threshold between the living world and whatever lies beyond.",
+  "kind": "choice",
+  "tags": ["necro", "crypt"],
+  "choices": [
+    {
+      "id": "reach_through",
+      "label": "Reach through the veil",
+      "description": "The spirits on the other side may hold treasures from their past lives.",
+      "outcomes": [
+        {
+          "weight": 40,
+          "text": "Your hand passes through the icy barrier. Ghostly fingers press something into your palm — coins and a shard of crystallized soul energy, offered freely.",
+          "effects": [
+            { "type": "add_gold_range", "min": 16, "max": 24 },
+            { "type": "add_item", "item_id": "soul_ore", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The spirits are generous. Wraith thread winds itself around your arm like a gift, and a cold benediction settles over your wounds.",
+          "effects": [
+            { "type": "add_item", "item_id": "nc_wraith_thread", "min_qty": 2, "max_qty": 3 },
+            { "type": "heal_hero", "amount": 8 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The spirits grab hold and pull. You wrench your arm free, but the frostburn runs bone-deep. Spectral claws leave bleeding wounds that refuse to close.",
+          "effects": [
+            { "type": "damage_hero", "amount": 10 },
+            { "type": "apply_status", "status_id": "bleeding", "duration": 2, "target": "random_hero" },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "offer_gold",
+      "label": "Offer gold to the spirits",
+      "description": "Payment for the dead may earn their favor.",
+      "requires": { "gold": 8 },
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "You toss gold coins through the veil. They dissolve into light, and the spirits calm. A wave of restorative energy pulses outward from the gate.",
+          "effects": [
+            { "type": "lose_gold", "min": 8, "max": 8 },
+            { "type": "heal_party", "amount": 14 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The spirits accept your tribute and push treasures back through the veil in exchange. Spirit commerce at its finest.",
+          "effects": [
+            { "type": "lose_gold", "min": 8, "max": 8 },
+            { "type": "add_item", "item_id": "nc_bone_marrow", "min_qty": 2, "max_qty": 3 },
+            { "type": "add_item", "item_id": "nc_grave_dust", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The spirits snatch the gold and howl for more. The gate flares and a blast of necrotic cold sweeps your party.",
+          "effects": [
+            { "type": "lose_gold", "min": 8, "max": 8 },
+            { "type": "damage_party", "amount": 5 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "move_on",
+      "label": "Leave the gate alone",
+      "description": "Some thresholds should not be crossed.",
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You give the spirit gate a wide berth. The ghostly faces watch you go, pressing harder against the veil before slowly fading back into the light.",
+          "effects": [{ "type": "nothing" }]
+        }
+      ]
+    }
+  ]
+}

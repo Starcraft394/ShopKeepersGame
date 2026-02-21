@@ -9,33 +9,89 @@
       "id": "pray",
       "label": "Pray at the shrine",
       "description": "Kneel before the flame and feel its warmth mend body and spirit.",
-      "effects": [
-        { "type": "heal_party", "value": 12 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "The flame flares gently as you kneel. Warmth floods through your party — not the searing heat of the wastes, but something deeper and kinder.",
+          "effects": [
+            { "type": "heal_party", "amount": 14 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "A faint voice whispers from the flame: 'Your path burns bright.' The warmth is mild but calming.",
+          "effects": [
+            { "type": "heal_party", "amount": 8 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "The flame dims as you approach, as if judging you. It offers nothing. Perhaps you are found wanting.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     },
     {
       "id": "offer_gold",
       "label": "Offer gold to the flame",
       "description": "Cast coins into the fire as tribute. The flame flares and its healing warmth intensifies.",
-      "effects": [
-        { "type": "add_gold_range", "min": -10, "max": -10 },
-        { "type": "heal_party", "value": 20 }
+      "requires": { "gold": 10 },
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "The coins melt instantly, and the flame erupts in a pillar of golden light. Every wound and ache in your party vanishes in the radiance.",
+          "effects": [
+            { "type": "lose_gold", "min": 10, "max": 10 },
+            { "type": "heal_party", "amount": 22 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The flame consumes your offering and pulses warmly. Healing light washes over the party, though it fades quickly.",
+          "effects": [
+            { "type": "lose_gold", "min": 10, "max": 10 },
+            { "type": "heal_party", "amount": 14 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The flame accepts your gold but gives only a flicker of warmth in return. The shrine's power seems diminished.",
+          "effects": [
+            { "type": "lose_gold", "min": 10, "max": 10 },
+            { "type": "heal_party", "amount": 6 }
+          ]
+        }
       ]
     },
     {
       "id": "take_core",
       "label": "Take the magma core",
       "description": "Seize the pulsing magma core from beneath the altar flame.",
-      "effects": [
-        { "type": "add_item", "item_id": "magma_core", "min_qty": 1, "max_qty": 1 }
-      ]
-    },
-    {
-      "id": "leave",
-      "label": "Leave the shrine undisturbed",
-      "description": "Some things are better left alone.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 40,
+          "text": "You snatch the core and the flame gutters violently. The shrine goes dark, but the magma core throbs with captured power in your hands.",
+          "effects": [
+            { "type": "add_item", "item_id": "magma_core", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "As you wrench the core free, the flame lashes out like a living thing. Burns sear your arms, but you hold on. The shrine crumbles.",
+          "effects": [
+            { "type": "add_item", "item_id": "magma_core", "min_qty": 1, "max_qty": 1 },
+            { "type": "damage_hero", "amount": 10 },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The flame detonates the moment you touch the altar. Sacred fire engulfs the shrine and blasts your party backward. When the smoke clears, the core is cracked and dim.",
+          "effects": [
+            { "type": "damage_party", "amount": 8 },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "party" }
+          ]
+        }
       ]
     }
   ]

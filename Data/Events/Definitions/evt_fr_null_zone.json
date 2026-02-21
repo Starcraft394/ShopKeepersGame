@@ -9,32 +9,72 @@
       "id": "gather_null",
       "label": "Gather null fragments",
       "description": "Collect the solidified pieces of nothingness that crumble away from the zone's edges.",
-      "effects": [
-        { "type": "add_item", "item_id": "fr_null_fragment", "min_qty": 2, "max_qty": 4 }
-      ]
-    },
-    {
-      "id": "collect_entropy",
-      "label": "Collect the entropy residue",
-      "description": "Scrape the fine powder of dissolved reality from the boundary where existence ends.",
-      "effects": [
-        { "type": "add_item", "item_id": "fr_entropy_residue", "min_qty": 2, "max_qty": 3 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "The fragments feel like holding frozen silence. They weigh nothing and everything at once. Your collection vessel fills quickly at the zone's crumbling edge.",
+          "effects": [
+            { "type": "add_item", "item_id": "fr_null_fragment", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "You gather a handful, but one fragment collapses inward and creates a brief vacuum that pulls at your lungs. You stagger back gasping.",
+          "effects": [
+            { "type": "add_item", "item_id": "fr_null_fragment", "min_qty": 1, "max_qty": 2 },
+            { "type": "damage_hero", "amount": 6 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The null zone surges outward as you disturb its edge. For a terrifying moment, everyone ceases to exist — then reality snaps back, leaving you shaken and numb.",
+          "effects": [
+            { "type": "damage_party", "amount": 6 },
+            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "party" }
+          ]
+        }
       ]
     },
     {
       "id": "meditate",
       "label": "Meditate in the void",
       "description": "Sit within the absolute silence and let the absence wash away pain and exhaustion.",
-      "effects": [
-        { "type": "heal_party", "value": 10 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "In the silence, pain has no meaning. Wounds forget they exist. You emerge feeling restored in ways medicine cannot explain.",
+          "effects": [
+            { "type": "heal_party", "amount": 12 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The meditation soothes your bodies, but the void leaves an unsettling emptiness in your thoughts. Something was taken along with the pain.",
+          "effects": [
+            { "type": "heal_party", "amount": 8 },
+            { "type": "apply_status", "status_id": "blinded", "duration": 2, "target": "random_hero" }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The nothingness reaches too deep. One hero snaps awake screaming, unable to remember their own name for several terrible seconds.",
+          "effects": [
+            { "type": "heal_party", "amount": 4 },
+            { "type": "damage_hero", "amount": 8 }
+          ]
+        }
       ]
     },
     {
       "id": "retreat",
       "label": "Retreat",
       "description": "The nothingness is crawling into your thoughts. Time to leave.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You back away from the boundary. Sound and sensation return like a wave breaking, and you breathe in the chaos of existence with gratitude.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

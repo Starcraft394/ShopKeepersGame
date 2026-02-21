@@ -1,42 +1,102 @@
 {
   "id": "evt_rotting_caravan",
   "title": "Rotting Caravan",
-  "description": "A merchant's caravan lies half-consumed by fungal growth, its wooden frame sprouting shelf mushrooms and draped in mycelium webbing. Crates of goods have burst open, their contents scattered across the damp ground. The fungi have been feeding well — but not everything has been consumed.",
+  "description": "A merchant's caravan lies half-consumed by fungal growth, its wooden frame sprouting shelf mushrooms and draped in mycelium webbing. Crates of goods have burst open, their contents scattered across the damp ground. The fungi have been feeding well -- but not everything has been consumed.",
   "kind": "choice",
   "tags": ["spore", "fungal"],
   "choices": [
     {
-      "id": "salvage_tools",
+      "id": "salvage_hardware",
       "label": "Salvage the hardware",
       "description": "Strip the caravan for metal fittings and anything salvageable.",
-      "effects": [
-        { "type": "add_item", "item_id": "iron_scrap", "min_qty": 1, "max_qty": 2 },
-        { "type": "add_gold_range", "min": 5, "max": 10 }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "The axle fittings and wheel rims are still good iron. You pry them free along with a handful of coin from the driver's seat.",
+          "effects": [
+            { "type": "add_item", "item_id": "iron_scrap", "min_qty": 1, "max_qty": 2 },
+            { "type": "add_gold_range", "min": 5, "max": 12 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "Under the driver's bench you find a hidden strongbox, still locked but rusted enough to pry open. Good coin inside.",
+          "effects": [
+            { "type": "add_item", "item_id": "iron_scrap", "min_qty": 1, "max_qty": 2 },
+            { "type": "add_gold_range", "min": 12, "max": 20 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The frame gives way as you pull at the fittings. The crash disturbs something nesting in the wreckage -- spores blast outward from the collapsing wood.",
+          "effects": [
+            { "type": "add_item", "item_id": "iron_scrap", "min_qty": 1, "max_qty": 1 },
+            { "type": "damage_party", "amount": 4 },
+            { "type": "apply_status", "status_id": "poisoned", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
-      "id": "search_materials",
+      "id": "harvest_fungi",
       "label": "Harvest the fungi",
       "description": "The mushrooms growing on the caravan are mature and valuable.",
-      "effects": [
-        { "type": "add_item", "item_id": "mycelium_thread", "min_qty": 2, "max_qty": 3 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "The shelf mushrooms yield excellent mycelium thread -- thick, fibrous, and already partly dried by the air currents.",
+          "effects": [
+            { "type": "add_item", "item_id": "mycelium_thread", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "Beneath the largest shelf mushroom, spore clusters have formed in perfect conditions. A premium harvest.",
+          "effects": [
+            { "type": "add_item", "item_id": "mycelium_thread", "min_qty": 1, "max_qty": 2 },
+            { "type": "add_item", "item_id": "spore_cluster", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The mushrooms look healthy but release a pungent, stinging vapor when cut. Your throat burns for an hour afterward.",
+          "effects": [
+            { "type": "add_item", "item_id": "mycelium_thread", "min_qty": 1, "max_qty": 2 },
+            { "type": "damage_hero", "amount": 5 }
+          ]
+        }
       ]
     },
     {
-      "id": "light_the_forge",
+      "id": "search_cargo",
       "label": "Search the cargo",
       "description": "Dig through the scattered crate contents for useful materials.",
-      "effects": [
-        { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 1, "max_qty": 2 },
-        { "type": "add_item", "item_id": "iron_scrap", "min_qty": 1, "max_qty": 1 }
-      ]
-    },
-    {
-      "id": "leave",
-      "label": "Move on",
-      "description": "Leave the caravan to the fungi.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "Most of the cargo is ruined, but you salvage usable fiber and a few iron fittings from the packing crates.",
+          "effects": [
+            { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 1, "max_qty": 2 },
+            { "type": "add_item", "item_id": "iron_scrap", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "One crate was sealed tight enough to resist the fungus. Inside: preserved trading goods worth decent coin.",
+          "effects": [
+            { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 1, "max_qty": 2 },
+            { "type": "add_gold_range", "min": 8, "max": 15 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "You pry open a crate and fungal tendrils lash out, wrapping around your arm. You tear free, but the skin welts immediately.",
+          "effects": [
+            { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 1, "max_qty": 1 },
+            { "type": "damage_hero", "amount": 6 },
+            { "type": "apply_status", "status_id": "poisoned", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     }
   ]

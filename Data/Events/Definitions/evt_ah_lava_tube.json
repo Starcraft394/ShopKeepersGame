@@ -9,32 +9,88 @@
       "id": "explore_deeper",
       "label": "Explore deeper",
       "description": "Push further into the tunnel where forgotten valuables may have been trapped by the flow.",
-      "effects": [
-        { "type": "add_gold_range", "min": 15, "max": 25 }
+      "outcomes": [
+        {
+          "weight": 40,
+          "text": "The tunnel opens into a chamber where a traveler's camp was frozen in time by the flow. Their coin purse survived, fused to the stone. You pry it free.",
+          "effects": [
+            { "type": "add_gold_range", "min": 18, "max": 28 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "A narrow side passage yields a few scattered coins and a shard of obsidian worth keeping.",
+          "effects": [
+            { "type": "add_gold_range", "min": 8, "max": 14 },
+            { "type": "add_item", "item_id": "obsidian_shard", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The tunnel narrows suddenly and the air turns searing. A hidden vent blasts superheated gas into the passage. You scramble back, choking.",
+          "effects": [
+            { "type": "damage_party", "amount": 6 },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "harvest_obsidian",
       "label": "Harvest cooled obsidian",
       "description": "Break free a shard of the obsidian ridges lining the tunnel walls.",
-      "effects": [
-        { "type": "add_item", "item_id": "obsidian_shard", "min_qty": 1, "max_qty": 1 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "The obsidian cracks cleanly from the wall in a single satisfying piece. Its edges gleam like black glass.",
+          "effects": [
+            { "type": "add_item", "item_id": "obsidian_shard", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The ridge crumbles more than you expected, but the fragments are still usable. Some ember dust sifts out as well.",
+          "effects": [
+            { "type": "add_item", "item_id": "obsidian_shard", "min_qty": 1, "max_qty": 1 },
+            { "type": "add_item", "item_id": "ember_dust", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "A chunk breaks free and slashes across your forearm. The obsidian edge is sharper than any blade.",
+          "effects": [
+            { "type": "damage_hero", "amount": 6 },
+            { "type": "add_item", "item_id": "obsidian_shard", "min_qty": 1, "max_qty": 1 }
+          ]
+        }
       ]
     },
     {
       "id": "rest_in_warmth",
       "label": "Rest in the warmth",
       "description": "The steady heat soothes aching muscles and weary bones.",
-      "effects": [
-        { "type": "heal_party", "value": 8 }
-      ]
-    },
-    {
-      "id": "turn_back",
-      "label": "Turn back",
-      "description": "The tunnel could collapse at any moment.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 60,
+          "text": "You settle against the warm stone walls and let the gentle heat seep into tired muscles. Everyone feels better.",
+          "effects": [
+            { "type": "heal_party", "amount": 10 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The warmth is pleasant at first, but the sulfur fumes give everyone a headache. Still, some rest is better than none.",
+          "effects": [
+            { "type": "heal_party", "amount": 5 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "You doze off in the warmth, only to wake to a low rumble. The tunnel trembles and dust rains down. Time to go — now.",
+          "effects": [
+            { "type": "damage_hero", "amount": 4 }
+          ]
+        }
       ]
     }
   ]

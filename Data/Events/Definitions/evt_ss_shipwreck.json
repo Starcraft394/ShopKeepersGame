@@ -9,32 +9,89 @@
       "id": "salvage_cargo",
       "label": "Salvage the cargo hold",
       "description": "Waterlogged timber still has value if you can haul it out.",
-      "effects": [
-        { "type": "add_item", "item_id": "driftwood", "min_qty": 2, "max_qty": 4 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "You wade through knee-deep brine and drag out armfuls of usable timber. The hold was well-packed.",
+          "effects": [
+            { "type": "add_item", "item_id": "driftwood", "min_qty": 3, "max_qty": 5 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The timber is salvageable, but a hidden eel nest gives one of your party a nasty shock as they reach between the crates.",
+          "effects": [
+            { "type": "add_item", "item_id": "driftwood", "min_qty": 2, "max_qty": 3 },
+            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "random_hero" }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "A section of hull gives way as you climb inside. You scramble out with only a few planks before the whole cargo hold floods.",
+          "effects": [
+            { "type": "add_item", "item_id": "driftwood", "min_qty": 1, "max_qty": 2 },
+            { "type": "damage_hero", "amount": 6 }
+          ]
+        }
       ]
     },
     {
       "id": "search_quarters",
       "label": "Search the captain's quarters",
       "description": "The captain's lockbox might still hold coin.",
-      "effects": [
-        { "type": "add_gold_range", "min": 12, "max": 22 }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "The lockbox is rusted but intact. Inside: a pouch of salt-crusted coins and a tidal pearl tucked in velvet.",
+          "effects": [
+            { "type": "add_gold_range", "min": 14, "max": 22 },
+            { "type": "add_item", "item_id": "tidal_pearl", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "You find a modest stash of coin beneath the captain's bunk. The rest was already looted.",
+          "effects": [
+            { "type": "add_gold_range", "min": 10, "max": 16 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The floor collapses as you step inside. You crash through to the lower deck, soaked and bruised, clutching a few coins.",
+          "effects": [
+            { "type": "add_gold_range", "min": 5, "max": 10 },
+            { "type": "damage_hero", "amount": 8 }
+          ]
+        }
       ]
     },
     {
       "id": "pry_barnacles",
       "label": "Pry barnacles from the hull",
       "description": "The thick crustacean shells have use in crafting.",
-      "effects": [
-        { "type": "add_item", "item_id": "ss_crustacean_shell", "min_qty": 1, "max_qty": 3 }
-      ]
-    },
-    {
-      "id": "leave",
-      "label": "Leave the wreck",
-      "description": "The groaning hull sounds ready to collapse.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "The shells come off in clean slabs. Excellent crafting material, and the work is oddly satisfying.",
+          "effects": [
+            { "type": "add_item", "item_id": "ss_crustacean_shell", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "You harvest a decent haul, but a venomous sea-snail hidden among the barnacles stings your hand.",
+          "effects": [
+            { "type": "add_item", "item_id": "ss_crustacean_shell", "min_qty": 1, "max_qty": 3 },
+            { "type": "damage_hero", "amount": 5 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "The barnacles shatter into useless fragments. At least some kelp sinew tangled in the hull is still usable.",
+          "effects": [
+            { "type": "add_item", "item_id": "ss_kelp_sinew", "min_qty": 1, "max_qty": 2 }
+          ]
+        }
       ]
     }
   ]

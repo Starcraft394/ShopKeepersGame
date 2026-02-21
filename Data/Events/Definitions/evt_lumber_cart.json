@@ -1,7 +1,7 @@
 {
   "id": "evt_lumber_cart",
   "title": "Broken Supply Cart",
-  "description": "A supply cart lies overturned, its wheel shattered against a jutting rock. Crates of lumber supplies and tool parts have spilled across the muddy path. Drag marks lead into the underbrush - something hauled the driver away.",
+  "description": "A supply cart lies overturned, its wheel shattered against a jutting rock. Crates of lumber supplies and tool parts have spilled across the muddy path. Drag marks lead into the underbrush — something hauled the driver away.",
   "kind": "choice",
   "tags": ["lumber", "loot", "exploration"],
   "choices": [
@@ -9,37 +9,72 @@
       "id": "search_crates",
       "label": "Search the crates",
       "description": "Lumber supplies are useful.",
-      "effects": [
-        { "type": "add_item", "item_id": "wood_bundle", "min_qty": 2, "max_qty": 4 },
-        { "type": "add_gold_range", "min": 3, "max": 8 }
-      ]
-    },
-    {
-      "id": "salvage_metal",
-      "label": "Salvage metal fittings",
-      "description": "Strip the cart for iron parts.",
-      "effects": [
-        { "type": "add_item", "item_id": "iron_scrap", "min_qty": 1, "max_qty": 3 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "You pry open two intact crates. Good lumber and a handful of coins — the driver won't need them anymore.",
+          "effects": [
+            { "type": "add_item", "item_id": "wood_bundle", "min_qty": 2, "max_qty": 4 },
+            { "type": "add_gold_range", "min": 3, "max": 8 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "Most of the crates are smashed, but one holds quality timber wrapped in oilcloth. Premium stock.",
+          "effects": [
+            { "type": "add_item", "item_id": "wood_bundle", "min_qty": 3, "max_qty": 5 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "A crate lid splinters under your weight and crashes onto your foot. You limp away with what you can carry.",
+          "effects": [
+            { "type": "add_item", "item_id": "wood_bundle", "min_qty": 1, "max_qty": 2 },
+            { "type": "damage_hero", "amount": 5 }
+          ]
+        }
       ]
     },
     {
       "id": "follow_tracks",
       "label": "Follow the drag marks",
       "description": "The driver might have valuables... or need help.",
-      "effects": [
-        { "type": "add_gold_range", "min": 8, "max": 16 }
-      ],
-      "risk": {
-        "ambush_chance": 0.25,
-        "damage_amount": 10
-      }
+      "outcomes": [
+        {
+          "weight": 35,
+          "text": "You find the driver's coin purse where he dropped it during the struggle. No sign of the man himself.",
+          "effects": [
+            { "type": "add_gold_range", "min": 10, "max": 18 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "The trail leads to a beast's feeding ground. You grab scattered valuables and retreat before the creature returns.",
+          "effects": [
+            { "type": "add_gold_range", "min": 8, "max": 14 },
+            { "type": "add_item", "item_id": "iron_scrap", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "Something large and angry is still here! It charges from the undergrowth!",
+          "effects": [
+            { "type": "damage_party", "amount": 6 },
+            { "type": "trigger_combat", "encounter_type": "basic" }
+          ]
+        }
+      ]
     },
     {
       "id": "leave_scene",
       "label": "Leave quickly",
       "description": "Whatever did this might return.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You hear a branch snap in the underbrush and decide discretion is the better part of valor.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

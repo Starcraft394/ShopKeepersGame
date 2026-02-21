@@ -9,33 +9,90 @@
       "id": "pray",
       "label": "Pray at the shrine",
       "description": "The sea god's blessing washes over you like a warm current.",
-      "effects": [
-        { "type": "heal_party", "value": 12 }
+      "outcomes": [
+        {
+          "weight": 60,
+          "text": "A warm current of energy flows through the party as you kneel. The shrine's coral glows softly, and your wounds begin to close.",
+          "effects": [
+            { "type": "heal_party", "amount": 14 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "A faint warmth touches you, but the shrine's power feels distant. A modest blessing, but welcome.",
+          "effects": [
+            { "type": "heal_party", "amount": 8 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "The shrine rejects your prayer. A pulse of cold energy crackles through the grotto, leaving your nerves raw and tingling.",
+          "effects": [
+            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "offer_gold",
       "label": "Offer gold at the altar",
       "description": "A generous offering earns a deeper blessing.",
-      "effects": [
-        { "type": "add_gold_range", "min": -8, "max": -8 },
-        { "type": "heal_party", "value": 18 }
+      "requires": { "gold": 8 },
+      "outcomes": [
+        {
+          "weight": 60,
+          "text": "The coins dissolve into the altar like rain into sand. The shrine blazes with light, and every wound in the party knits shut. The Drowned God is pleased.",
+          "effects": [
+            { "type": "lose_gold", "min": 8, "max": 8 },
+            { "type": "heal_party", "amount": 20 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The altar accepts your gold. The blessing is warm and thorough, though perhaps not as potent as the tales promised.",
+          "effects": [
+            { "type": "lose_gold", "min": 8, "max": 8 },
+            { "type": "heal_party", "amount": 14 }
+          ]
+        },
+        {
+          "weight": 10,
+          "text": "The gold vanishes into the shrine but the blessing never comes. The Drowned God is capricious, it seems.",
+          "effects": [
+            { "type": "lose_gold", "min": 8, "max": 8 }
+          ]
+        }
       ]
     },
     {
       "id": "take_pearl",
       "label": "Take the pearl offering",
       "description": "The pearl gleams with iridescent light. Surely no god will miss it.",
-      "effects": [
-        { "type": "add_item", "item_id": "tidal_pearl", "min_qty": 1, "max_qty": 1 }
-      ]
-    },
-    {
-      "id": "leave",
-      "label": "Leave the shrine undisturbed",
-      "description": "Some things are better left to the deep.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 40,
+          "text": "You pocket the pearl and nothing happens. Perhaps the Drowned God sleeps, or perhaps it simply does not care.",
+          "effects": [
+            { "type": "add_item", "item_id": "tidal_pearl", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "The pearl comes free easily, but a chill passes through you as you take it. An uncomfortable feeling of being watched lingers.",
+          "effects": [
+            { "type": "add_item", "item_id": "tidal_pearl", "min_qty": 1, "max_qty": 1 },
+            { "type": "damage_hero", "amount": 4 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The moment your fingers close around the pearl, a bolt of energy cracks through the shrine. The Drowned God does not forgive thieves lightly.",
+          "effects": [
+            { "type": "add_item", "item_id": "tidal_pearl", "min_qty": 1, "max_qty": 1 },
+            { "type": "damage_party", "amount": 6 },
+            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "party" }
+          ]
+        }
       ]
     }
   ]

@@ -1,7 +1,7 @@
 {
   "id": "evt_spore_deposit",
   "title": "Spore Cluster Colony",
-  "description": "The tunnel opens into a chamber carpeted with bioluminescent spore clusters. Pulsing green and violet light radiates from the largest formations, casting eerie shadows. The spores drift lazily in the still air — beautiful but potentially reactive. Disturbing them could release a concentrated burst.",
+  "description": "The tunnel opens into a chamber carpeted with bioluminescent spore clusters. Pulsing green and violet light radiates from the largest formations, casting eerie shadows. The spores drift lazily in the still air -- beautiful but potentially reactive. Disturbing them could release a concentrated burst.",
   "kind": "choice",
   "tags": ["spore", "fungal"],
   "choices": [
@@ -9,25 +9,73 @@
       "id": "careful_extraction",
       "label": "Careful extraction",
       "description": "Gently harvest individual spore clusters with patience.",
-      "effects": [
-        { "type": "add_item", "item_id": "spore_cluster", "min_qty": 1, "max_qty": 3 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "Steady hands pay off. You twist each cluster free without bursting a single cap. Clean, valuable specimens.",
+          "effects": [
+            { "type": "add_item", "item_id": "spore_cluster", "min_qty": 1, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The largest cluster comes free and reveals a glowing spore nestled beneath -- a rare find usually hidden deep in the colony.",
+          "effects": [
+            { "type": "add_item", "item_id": "spore_cluster", "min_qty": 2, "max_qty": 3 },
+            { "type": "add_item", "item_id": "glowing_spore", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "Your knife slips and punctures a ripe cluster. A cloud of spores erupts into your face. You stagger back coughing, clutching what you managed to save.",
+          "effects": [
+            { "type": "add_item", "item_id": "spore_cluster", "min_qty": 1, "max_qty": 1 },
+            { "type": "apply_status", "status_id": "poisoned", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "break_formation",
       "label": "Disturb the colony",
       "description": "Shake the clusters loose for a bigger haul. The spore burst will sting.",
-      "effects": [
-        { "type": "add_item", "item_id": "spore_cluster", "min_qty": 2, "max_qty": 4 },
-        { "type": "damage_party", "value": 8 }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "You slam the colony wall and clusters rain down. The spore burst stings your lungs, but the haul is impressive.",
+          "effects": [
+            { "type": "add_item", "item_id": "spore_cluster", "min_qty": 2, "max_qty": 4 },
+            { "type": "damage_party", "amount": 5 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The entire colony erupts in a chain reaction of bursting caps. Toxic spore fog fills the chamber. Everyone is choking.",
+          "effects": [
+            { "type": "add_item", "item_id": "spore_cluster", "min_qty": 1, "max_qty": 2 },
+            { "type": "damage_party", "amount": 8 },
+            { "type": "apply_status", "status_id": "poisoned", "duration": 2, "target": "party" }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "Clusters scatter everywhere and you scramble to gather them. The burst is smaller than expected -- mostly harmless pollen.",
+          "effects": [
+            { "type": "add_item", "item_id": "spore_cluster", "min_qty": 3, "max_qty": 5 }
+          ]
+        }
       ]
     },
     {
       "id": "admire",
       "label": "Admire and move on",
       "description": "The bioluminescence is mesmerizing. You leave it undisturbed.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "The pulsing light follows you down the corridor, fading slowly behind you like a living sunset. Some things are worth leaving whole.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

@@ -9,32 +9,72 @@
       "id": "extract_essence",
       "label": "Extract dimensional essence",
       "description": "Carefully siphon the raw dimensional energy bleeding from the rift's stable edges.",
-      "effects": [
-        { "type": "add_item", "item_id": "fr_dimensional_essence", "min_qty": 1, "max_qty": 2 }
-      ]
-    },
-    {
-      "id": "collect_membrane",
-      "label": "Collect the rift membrane",
-      "description": "Peel the thin layers of compressed space that separate this dimension from the next.",
-      "effects": [
-        { "type": "add_item", "item_id": "fr_rift_membrane", "min_qty": 2, "max_qty": 3 }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "The energy flows smoothly into your collection vessel, thrumming with the pulse of two overlapping realities. A clean extraction.",
+          "effects": [
+            { "type": "add_item", "item_id": "fr_dimensional_essence", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "The rift flickers as you drain it, spitting sparks of displaced energy. You get the essence, but one hero catches a bolt square in the chest.",
+          "effects": [
+            { "type": "add_item", "item_id": "fr_dimensional_essence", "min_qty": 1, "max_qty": 1 },
+            { "type": "damage_hero", "amount": 7 },
+            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "random_hero" }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The rift destabilizes! A shockwave of compressed space slams outward, bruising everyone and scattering your tools.",
+          "effects": [
+            { "type": "damage_party", "amount": 6 }
+          ]
+        }
       ]
     },
     {
       "id": "reach_through",
       "label": "Reach through for valuables",
       "description": "Blindly fish through the rift, hoping to pull back something worth the risk.",
-      "effects": [
-        { "type": "add_gold_range", "min": 18, "max": 30 }
+      "outcomes": [
+        {
+          "weight": 40,
+          "text": "Your arm stretches impossibly as it crosses the threshold. You grab something heavy and yank it back — a pouch of coins from some other reality.",
+          "effects": [
+            { "type": "add_gold_range", "min": 18, "max": 30 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "You pull back a handful of rift membrane and some null fragments caught between dimensions. Not gold, but valuable in their own right.",
+          "effects": [
+            { "type": "add_item", "item_id": "fr_rift_membrane", "min_qty": 1, "max_qty": 2 },
+            { "type": "add_item", "item_id": "fr_null_fragment", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "Something on the other side grabs back! Your arm is wrenched violently before you tear free. The rift pulses with malevolent hunger.",
+          "effects": [
+            { "type": "damage_hero", "amount": 10 },
+            { "type": "apply_status", "status_id": "bleeding", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "leave",
       "label": "Leave it alone",
       "description": "Stable does not mean safe. You move on.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You give the rift a wide berth. It hums indifferently as you pass, neither inviting nor threatening — simply existing where it should not.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

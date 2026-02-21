@@ -9,32 +9,71 @@
       "id": "pry_open",
       "label": "Pry it open",
       "description": "The lock is rusted through and gives way easily.",
-      "effects": [
-        { "type": "add_gold_range", "min": 10, "max": 20 }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "The lid bursts open with a spray of rust. Gold coins glimmer beneath a layer of damp cloth. A fine haul from the deep.",
+          "effects": [
+            { "type": "add_gold_range", "min": 14, "max": 24 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "A modest pouch of coin and some waterlogged supplies. Not the treasure you hoped for, but useful.",
+          "effects": [
+            { "type": "add_gold_range", "min": 8, "max": 14 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "A trapped mechanism fires a corroded needle into your thumb. Whatever venom coated it still carries a jolt. You pocket the coins through gritted teeth.",
+          "effects": [
+            { "type": "add_gold_range", "min": 10, "max": 16 },
+            { "type": "damage_hero", "amount": 6 },
+            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "search_bodies",
       "label": "Search the bodies nearby",
-      "description": "Their belt pouches hold vials of concentrated brine venom.",
-      "effects": [
-        { "type": "add_item", "item_id": "ss_brine_venom", "min_qty": 1, "max_qty": 2 }
-      ]
-    },
-    {
-      "id": "salvage_wood",
-      "label": "Salvage the wood",
-      "description": "The chest itself is built from solid timber, still usable.",
-      "effects": [
-        { "type": "add_item", "item_id": "driftwood", "min_qty": 2, "max_qty": 3 }
+      "description": "Their belt pouches might hold something useful.",
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "Among the remains you find vials of concentrated brine venom, still sealed. Alchemists pay well for this.",
+          "effects": [
+            { "type": "add_item", "item_id": "ss_brine_venom", "min_qty": 1, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The bodies yield a single vial and a few coins. The crabs picked them fairly clean.",
+          "effects": [
+            { "type": "add_item", "item_id": "ss_brine_venom", "min_qty": 1, "max_qty": 1 },
+            { "type": "add_gold_range", "min": 4, "max": 8 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "Disturbing the dead draws attention. A pack of shore crawlers scuttle from behind the rocks, drawn by the movement.",
+          "effects": [
+            { "type": "trigger_combat", "encounter_type": "basic" }
+          ]
+        }
       ]
     },
     {
       "id": "leave",
       "label": "Leave the dead in peace",
       "description": "Disturbing the drowned invites bad luck.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You step around the bodies and move on. Some things are not worth the risk.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

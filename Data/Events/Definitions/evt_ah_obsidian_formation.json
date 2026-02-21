@@ -9,32 +9,88 @@
       "id": "break_shards",
       "label": "Break off shards",
       "description": "Carefully fracture pieces from the obsidian pillars.",
-      "effects": [
-        { "type": "add_item", "item_id": "obsidian_shard", "min_qty": 1, "max_qty": 2 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "Clean strikes split the obsidian into razor-edged shards perfect for crafting. You wrap them carefully.",
+          "effects": [
+            { "type": "add_item", "item_id": "obsidian_shard", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The pillar fractures unevenly, yielding only a single usable shard. The rest crumbles to dust.",
+          "effects": [
+            { "type": "add_item", "item_id": "obsidian_shard", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The pillar explodes into fragments! Razor-sharp obsidian shrapnel peppers your party. You salvage what you can through bleeding fingers.",
+          "effects": [
+            { "type": "damage_party", "amount": 5 },
+            { "type": "add_item", "item_id": "obsidian_shard", "min_qty": 1, "max_qty": 2 }
+          ]
+        }
       ]
     },
     {
       "id": "harvest_glass",
       "label": "Harvest the glass deposits",
       "description": "Collect the volcanic glass wedged between the pillars.",
-      "effects": [
-        { "type": "add_item", "item_id": "volcanic_glass", "min_qty": 2, "max_qty": 4 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "Intact sheets of volcanic glass sit sheltered between the pillars, protected from wind and ash. An excellent find.",
+          "effects": [
+            { "type": "add_item", "item_id": "volcanic_glass", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "Some glass has cracked from thermal stress, but enough remains intact to be worth collecting.",
+          "effects": [
+            { "type": "add_item", "item_id": "volcanic_glass", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "You squeeze between the pillars and get cut by the razor edges. Blood trickles as you grab what glass you can.",
+          "effects": [
+            { "type": "damage_hero", "amount": 6 },
+            { "type": "add_item", "item_id": "volcanic_glass", "min_qty": 1, "max_qty": 2 }
+          ]
+        }
       ]
     },
     {
       "id": "search_between",
       "label": "Search between the pillars",
       "description": "Rummage through the debris caught in the narrow gaps.",
-      "effects": [
-        { "type": "add_gold_range", "min": 8, "max": 16 }
-      ]
-    },
-    {
-      "id": "leave",
-      "label": "Leave them standing",
-      "description": "The edges look dangerously sharp.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "Wind-blown coins, a lost traveler's purse, and bits of ember dust have accumulated in the gaps. A lucky find.",
+          "effects": [
+            { "type": "add_gold_range", "min": 10, "max": 18 },
+            { "type": "add_item", "item_id": "ember_dust", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "A few coins and scraps of charred cloth. Not much, but it didn't cost anything either.",
+          "effects": [
+            { "type": "add_gold_range", "min": 6, "max": 12 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "Your arm wedges tight between pillars as you reach for something glinting. It takes painful effort to wrench free.",
+          "effects": [
+            { "type": "damage_hero", "amount": 5 },
+            { "type": "add_gold_range", "min": 4, "max": 8 }
+          ]
+        }
       ]
     }
   ]

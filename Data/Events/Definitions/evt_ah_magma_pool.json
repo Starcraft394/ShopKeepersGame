@@ -9,32 +9,89 @@
       "id": "skim_edges",
       "label": "Skim the cooled edges",
       "description": "Scrape the ember-rich crust from the hardened margins of the pool.",
-      "effects": [
-        { "type": "add_item", "item_id": "ember_dust", "min_qty": 3, "max_qty": 5 }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "The crusted edges break apart into piles of fine ember dust, still warm and faintly glowing. You fill every pouch you have.",
+          "effects": [
+            { "type": "add_item", "item_id": "ember_dust", "min_qty": 3, "max_qty": 5 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "A decent amount of dust, though the best deposits are dangerously close to the molten surface.",
+          "effects": [
+            { "type": "add_item", "item_id": "ember_dust", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The crust gives way underfoot! You lurch backward as your boot plunges into searing heat. Burns race up your leg.",
+          "effects": [
+            { "type": "damage_hero", "amount": 10 },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" },
+            { "type": "add_item", "item_id": "ember_dust", "min_qty": 1, "max_qty": 2 }
+          ]
+        }
       ]
     },
     {
       "id": "fish_debris",
       "label": "Fish out debris",
       "description": "Use a long pole to drag floating debris to the edge before it melts.",
-      "effects": [
-        { "type": "add_gold_range", "min": 10, "max": 18 }
+      "outcomes": [
+        {
+          "weight": 40,
+          "text": "You hook something heavy — a half-melted chest! Inside, coins have fused together but are still valuable. A scorched fang floats nearby.",
+          "effects": [
+            { "type": "add_gold_range", "min": 14, "max": 22 },
+            { "type": "add_item", "item_id": "ah_scorched_fang", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "A few coins and a lump of volcanic glass bob to the surface. You drag them to safety before they sink.",
+          "effects": [
+            { "type": "add_gold_range", "min": 8, "max": 14 },
+            { "type": "add_item", "item_id": "volcanic_glass", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The pole catches fire before you reach anything useful. A splatter of magma arcs toward your party.",
+          "effects": [
+            { "type": "damage_hero", "amount": 7 },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "rest_near",
       "label": "Rest near the warmth",
       "description": "Sit at a safe distance and let the deep heat ease the party's wounds.",
-      "effects": [
-        { "type": "heal_party", "value": 10 }
-      ]
-    },
-    {
-      "id": "move_on",
-      "label": "Move on",
-      "description": "The ground here feels unstable.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 60,
+          "text": "At a comfortable distance, the radiant warmth is almost pleasant. Tension melts from tired bodies as you rest.",
+          "effects": [
+            { "type": "heal_party", "amount": 12 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The heat helps, though the sulfur smell makes breathing difficult. A brief rest, then back to the march.",
+          "effects": [
+            { "type": "heal_party", "amount": 6 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "A bubble of magma bursts nearby, spraying droplets that sizzle against exposed skin. So much for resting.",
+          "effects": [
+            { "type": "damage_party", "amount": 4 }
+          ]
+        }
       ]
     }
   ]

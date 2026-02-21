@@ -9,32 +9,71 @@
       "id": "mine_embers",
       "label": "Mine the ember dust",
       "description": "Scrape the glowing veins free and collect the smoldering powder.",
-      "effects": [
-        { "type": "add_item", "item_id": "ember_dust", "min_qty": 2, "max_qty": 4 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "The veins crack apart easily, spilling fine ember dust into your collection pouches. The warmth lingers in your fingers.",
+          "effects": [
+            { "type": "add_item", "item_id": "ember_dust", "min_qty": 3, "max_qty": 5 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "You scrape a decent amount of powder free, though the deeper veins are too hot to reach safely.",
+          "effects": [
+            { "type": "add_item", "item_id": "ember_dust", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "A vein ruptures as you chip at it, spraying superheated dust across your face. Your eyes sting and skin blisters.",
+          "effects": [
+            { "type": "damage_hero", "amount": 8 },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" },
+            { "type": "add_item", "item_id": "ember_dust", "min_qty": 1, "max_qty": 2 }
+          ]
+        }
       ]
     },
     {
       "id": "chip_glass",
       "label": "Chip out the volcanic glass",
       "description": "Pry loose the dark, glassy deposits fused into the basalt.",
-      "effects": [
-        { "type": "add_item", "item_id": "volcanic_glass", "min_qty": 2, "max_qty": 3 }
-      ]
-    },
-    {
-      "id": "search_ash",
-      "label": "Search the ash below",
-      "description": "Sift through the accumulated ash for anything the heat has left behind.",
-      "effects": [
-        { "type": "add_gold_range", "min": 10, "max": 18 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "Clean fractures split the glass free in usable sheets. A glassblower would pay well for these.",
+          "effects": [
+            { "type": "add_item", "item_id": "volcanic_glass", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The glass shatters unevenly, but a few good pieces survive. Better than nothing.",
+          "effects": [
+            { "type": "add_item", "item_id": "volcanic_glass", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "A razor-thin shard slices deep into your palm as the formation collapses. Blood hisses on the hot stone.",
+          "effects": [
+            { "type": "damage_hero", "amount": 7 },
+            { "type": "add_item", "item_id": "volcanic_glass", "min_qty": 1, "max_qty": 1 }
+          ]
+        }
       ]
     },
     {
       "id": "leave",
       "label": "Leave it alone",
       "description": "The heat is too intense to linger.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You shield your face from the pulsing heat and press on. The basalt wall continues to glow behind you like an angry wound.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

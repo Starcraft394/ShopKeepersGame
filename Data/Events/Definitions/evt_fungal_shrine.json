@@ -1,7 +1,7 @@
 {
   "id": "evt_fungal_shrine",
   "title": "Mycelium Shrine",
-  "description": "In a natural alcove, bioluminescent mushrooms have grown into the shape of a towering figure — arms spread wide, cap-like crown glowing soft green. Offerings of dried spores and woven fiber sit at its base. The air here feels warm and alive, as if the mycelium network itself pulses with ancient awareness.",
+  "description": "In a natural alcove, bioluminescent mushrooms have grown into the shape of a towering figure -- arms spread wide, cap-like crown glowing soft green. Offerings of dried spores and woven fiber sit at its base. The air here feels warm and alive, as if the mycelium network itself pulses with ancient awareness.",
   "kind": "choice",
   "tags": ["spore", "fungal"],
   "choices": [
@@ -9,33 +9,89 @@
       "id": "pray",
       "label": "Kneel before the shrine",
       "description": "Bow your head and let the warmth of the mycelium wash over you.",
-      "effects": [
-        { "type": "heal_party", "value": 10 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "Warmth floods through your body as the bioluminescence brightens. Aches fade, wounds close. The shrine's blessing is real.",
+          "effects": [
+            { "type": "heal_party", "amount": 10 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The shrine pulses with intense light and you feel vitality surge through the entire party. Even old scars tingle with warmth.",
+          "effects": [
+            { "type": "heal_party", "amount": 15 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The glow flickers and darkens. A cold draft replaces the warmth. The shrine demands more than reverence -- it takes a tithe of life force.",
+          "effects": [
+            { "type": "damage_hero", "amount": 6 },
+            { "type": "heal_party", "amount": 5 }
+          ]
+        }
       ]
     },
     {
       "id": "offer_gold",
       "label": "Offer gold",
-      "description": "Place coins among the offerings. The glow brightens and warmth floods through you.",
-      "effects": [
-        { "type": "add_gold_range", "min": -5, "max": -5 },
-        { "type": "heal_party", "value": 15 }
+      "description": "Place coins among the offerings. The glow brightens.",
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "The coins sink into the mycelium and the shrine blazes with light. Healing warmth washes over everyone -- a generous blessing.",
+          "effects": [
+            { "type": "lose_gold", "min": 5, "max": 10 },
+            { "type": "heal_party", "amount": 15 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The shrine accepts your offering and the mycelium figure seems to nod. Beneath its feet, a cluster of rare spores pushes up from the earth as a gift.",
+          "effects": [
+            { "type": "lose_gold", "min": 5, "max": 8 },
+            { "type": "heal_party", "amount": 10 },
+            { "type": "add_item", "item_id": "glowing_spore", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The coins vanish into the fungus but nothing happens. The glow dims slightly. Perhaps the shrine wanted something else.",
+          "effects": [
+            { "type": "lose_gold", "min": 8, "max": 12 }
+          ]
+        }
       ]
     },
     {
-      "id": "study_runes",
+      "id": "study_patterns",
       "label": "Study the growth patterns",
       "description": "The mushrooms grew in deliberate patterns. Rare spore clusters nestle within.",
-      "effects": [
-        { "type": "add_item", "item_id": "spore_cluster", "min_qty": 1, "max_qty": 1 }
-      ]
-    },
-    {
-      "id": "leave",
-      "label": "Move on",
-      "description": "Leave the shrine in peace.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "The patterns reveal deliberately cultivated spore clusters, nestled in the folds of the mushroom figure. You extract them with care.",
+          "effects": [
+            { "type": "add_item", "item_id": "spore_cluster", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "Your study reveals the shrine's growth follows mathematical spirals. At their center, a single glowing spore pulses like a heartbeat.",
+          "effects": [
+            { "type": "add_item", "item_id": "glowing_spore", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "As you probe the growth patterns, the shrine reacts defensively. Spore jets erupt from the figure's hands, burning your skin.",
+          "effects": [
+            { "type": "damage_hero", "amount": 8 },
+            { "type": "apply_status", "status_id": "poisoned", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     }
   ]

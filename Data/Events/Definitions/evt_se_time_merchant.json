@@ -1,0 +1,102 @@
+{
+  "id": "evt_se_time_merchant",
+  "title": "Time-Displaced Merchant",
+  "description": "A hunched figure sits behind a blanket spread with impossible wares — coins from unborn empires, fabrics woven from colors that won't be discovered for centuries, and trinkets that flicker between existing and not. The merchant's eyes are milky with temporal cataracts, but they track your movement with unsettling precision. 'Trade?' they rasp, in an accent from nowhere you recognize.",
+  "kind": "choice",
+  "tags": ["crystal", "starfall"],
+  "choices": [
+    {
+      "id": "buy_wares",
+      "label": "Buy from the merchant",
+      "description": "The strange wares might be valuable — if they hold together in this timeline.",
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "You hand over gold and receive a vial of temporal residue. 'Will be useful,' the merchant says. 'Was useful. Same thing, really.'",
+          "effects": [
+            { "type": "lose_gold", "min": 12, "max": 18 },
+            { "type": "add_item", "item_id": "temporal_residue", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The merchant rummages through wares that haven't been invented yet and produces a chrono draught. 'Bargain price. I remember you'll want it.'",
+          "effects": [
+            { "type": "lose_gold", "min": 15, "max": 20 },
+            { "type": "add_item", "item_id": "se_chrono_draught", "min_qty": 1, "max_qty": 1 },
+            { "type": "add_item", "item_id": "temporal_residue", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The coins vanish from your hand before you finish counting. The merchant shrugs. 'Temporal tax. Here, take this.' They hand you a pittance in return.",
+          "effects": [
+            { "type": "lose_gold", "min": 15, "max": 22 },
+            { "type": "add_item", "item_id": "starfall_dust", "min_qty": 1, "max_qty": 2 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "trade_materials",
+      "label": "Offer materials in trade",
+      "description": "The merchant's milky eyes linger on the astral reagents in your pack.",
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "The merchant accepts your offer and slides a pouch of displaced coins across the blanket. 'Fair trade. Was fair. Will be fair.'",
+          "effects": [
+            { "type": "add_gold_range", "min": 18, "max": 28 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The merchant produces a reality flare from thin air. 'Equivalent exchange,' they whisper. 'Across all timelines, balance holds.'",
+          "effects": [
+            { "type": "add_gold_range", "min": 10, "max": 15 },
+            { "type": "add_item", "item_id": "se_reality_flare", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The merchant frowns and waves dismissively. 'Wrong era for these. I can offer little.' You walk away with barely anything.",
+          "effects": [
+            { "type": "add_gold_range", "min": 3, "max": 6 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rob_merchant",
+      "label": "Grab the wares and run",
+      "description": "The merchant looks frail. A quick grab and you could be gone before they react.",
+      "outcomes": [
+        {
+          "weight": 35,
+          "text": "You snatch a handful of wares and bolt. The merchant doesn't even flinch. 'I already knew,' they call after you. 'Already didn't care.'",
+          "effects": [
+            { "type": "add_item", "item_id": "temporal_residue", "min_qty": 1, "max_qty": 2 },
+            { "type": "add_gold_range", "min": 10, "max": 16 }
+          ]
+        },
+        {
+          "weight": 40,
+          "text": "The merchant's hand darts out impossibly fast — they saw this moment centuries ago. Time stutters and armed figures materialize from the rift behind them.",
+          "effects": [
+            { "type": "damage_party", "amount": 6 },
+            { "type": "trigger_combat", "encounter_type": "elite" }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "As you reach for the wares, the merchant's eyes flash. A bolt of temporal energy shocks you backward, scrambling your senses.",
+          "effects": [
+            { "type": "damage_hero", "amount": 12 },
+            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "random_hero" },
+            { "type": "apply_status", "status_id": "blinded", "duration": 2, "target": "random_hero" }
+          ]
+        }
+      ]
+    }
+  ]
+}

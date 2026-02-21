@@ -9,32 +9,72 @@
       "id": "search_wagons",
       "label": "Search the wagons",
       "description": "Dig through the buried wagons for coin purses and strongboxes.",
-      "effects": [
-        { "type": "add_gold_range", "min": 15, "max": 25 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "You pry open a scorched strongbox wedged beneath the driver's seat. Coins spill out, still warm from the ash.",
+          "effects": [
+            { "type": "add_gold_range", "min": 18, "max": 28 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "A few scattered coin purses turn up, but most have already been looted. You salvage what you can.",
+          "effects": [
+            { "type": "add_gold_range", "min": 8, "max": 14 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "As you reach into the wreckage, a pocket of superheated air bursts from the ash. Embers sear exposed skin.",
+          "effects": [
+            { "type": "damage_hero", "amount": 8 },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" },
+            { "type": "add_gold_range", "min": 5, "max": 10 }
+          ]
+        }
       ]
     },
     {
       "id": "salvage_cargo",
       "label": "Salvage the cargo",
       "description": "Recover intact volcanic glass from the shattered trade goods.",
-      "effects": [
-        { "type": "add_item", "item_id": "volcanic_glass", "min_qty": 2, "max_qty": 3 }
-      ]
-    },
-    {
-      "id": "strip_materials",
-      "label": "Strip leather and bone",
-      "description": "Salvage drake-hide panels and bone reinforcements from the wagon frames.",
-      "effects": [
-        { "type": "add_item", "item_id": "ah_drake_scale", "min_qty": 1, "max_qty": 2 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "Wrapped in fireproof cloth, several pieces of volcanic glass survived the eruption intact. A fine haul.",
+          "effects": [
+            { "type": "add_item", "item_id": "volcanic_glass", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "Most of the cargo is ruined, but you find a few salvageable pieces of glass and some ember dust packed in clay jars.",
+          "effects": [
+            { "type": "add_item", "item_id": "volcanic_glass", "min_qty": 1, "max_qty": 2 },
+            { "type": "add_item", "item_id": "ember_dust", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The crates crumble as you touch them, sending a cascade of hot ash over your hands. Little of value remains.",
+          "effects": [
+            { "type": "damage_hero", "amount": 5 },
+            { "type": "add_item", "item_id": "volcanic_glass", "min_qty": 1, "max_qty": 1 }
+          ]
+        }
       ]
     },
     {
       "id": "leave",
       "label": "Leave the dead in peace",
       "description": "There is nothing worth disturbing here.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You bow your head briefly and move on. The ash settles back over the caravan like a funeral shroud.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

@@ -3,13 +3,15 @@
   "display_name": "Final Realm Events",
   "description": "Random events among void tears, reality fractures, and dimensional anomalies.",
   "entries": [
-    { "event_id": "evt_fr_void_tear", "weight": 15 },
+    { "event_id": "evt_fr_void_tear", "weight": 14 },
     { "event_id": "evt_fr_reality_fracture", "weight": 12 },
-    { "event_id": "evt_fr_corruption_pool", "weight": 14 },
+    { "event_id": "evt_fr_corruption_pool", "weight": 13 },
     { "event_id": "evt_fr_dimensional_rift", "weight": 10 },
     { "event_id": "evt_fr_null_zone", "weight": 12 },
     { "event_id": "evt_fr_void_shrine", "weight": 10 },
-    { "event_id": "evt_fr_entropy_cache", "weight": 14 },
-    { "event_id": "evt_fr_abyss_echo", "weight": 12 }
+    { "event_id": "evt_fr_entropy_cache", "weight": 13 },
+    { "event_id": "evt_fr_abyss_echo", "weight": 11 },
+    { "event_id": "evt_fr_void_merchant", "weight": 8 },
+    { "event_id": "evt_fr_last_stand", "weight": 10 }
   ]
 }

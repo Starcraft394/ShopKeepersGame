@@ -10,44 +10,81 @@
       "label": "Offer gold tribute",
       "description": "Pay 15 gold for the fae's favor.",
       "requires": { "gold": 15 },
-      "effects": [
-        { "type": "lose_gold", "min": 15, "max": 15 },
-        { "type": "add_item", "item_id": "herb_sprig", "min_qty": 2, "max_qty": 3 },
-        { "type": "add_item", "item_id": "forest_mushroom", "min_qty": 1, "max_qty": 2 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "The sprite's eyes widen with delight. 'Generous! The forest thanks you.' Herbs and mushrooms materialize at your feet.",
+          "effects": [
+            { "type": "lose_gold", "min": 15, "max": 15 },
+            { "type": "add_item", "item_id": "herb_sprig", "min_qty": 2, "max_qty": 3 },
+            { "type": "add_item", "item_id": "forest_mushroom", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The sprite giggles and waves its hand. Golden light suffuses your party. 'A blessing for your kindness!'",
+          "effects": [
+            { "type": "lose_gold", "min": 15, "max": 15 },
+            { "type": "heal_party", "amount": 12 },
+            { "type": "add_item", "item_id": "herb_sprig", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "The sprite pockets your gold and vanishes with a cackle. 'Fae bargains are final, mortal!' A few herbs drift down as consolation.",
+          "effects": [
+            { "type": "lose_gold", "min": 15, "max": 15 },
+            { "type": "add_item", "item_id": "herb_sprig", "min_qty": 1, "max_qty": 1 }
+          ]
+        }
       ]
     },
     {
       "id": "play_game",
       "label": "Play its guessing game",
       "description": "Risk your wits against fae cunning.",
-      "effects": [
-        { "type": "add_gold_range", "min": 0, "max": 25 }
-      ],
-      "risk": {
-        "trick_chance": 0.4,
-        "gold_loss": 10
-      }
+      "outcomes": [
+        {
+          "weight": 40,
+          "text": "You answer three riddles correctly. The sprite claps with childlike glee and showers you in gold dust that becomes real coins!",
+          "effects": [
+            { "type": "add_gold_range", "min": 15, "max": 25 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "The sprite outsmarts you on the final riddle. 'Close! But not close enough.' It plucks gold from your pouch with invisible fingers.",
+          "effects": [
+            { "type": "lose_gold", "min": 8, "max": 12 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The game ends in a draw. The sprite shrugs and fades away, leaving behind a single mushroom. 'For your effort, mortal.'",
+          "effects": [
+            { "type": "add_item", "item_id": "forest_mushroom", "min_qty": 1, "max_qty": 1 }
+          ]
+        }
+      ]
     },
     {
       "id": "polite_decline",
       "label": "Bow and withdraw",
       "description": "Show respect but make no deals.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 70,
+          "text": "The sprite tilts its head, surprised by courtesy. 'Wise for a mortal.' It fades without incident.",
+          "effects": [{ "type": "nothing" }]
+        },
+        {
+          "weight": 30,
+          "text": "The sprite nods approvingly. 'Manners! How refreshing.' A small herb bundle appears in your hands as a parting gift.",
+          "effects": [
+            { "type": "add_item", "item_id": "herb_sprig", "min_qty": 1, "max_qty": 1 }
+          ]
+        }
       ]
-    },
-    {
-      "id": "insult_fae",
-      "label": "Dismiss it rudely",
-      "description": "You have no time for tricksters.",
-      "effects": [
-        { "type": "nothing" }
-      ],
-      "modifier": {
-        "id": "fae_curse",
-        "label": "Fae's Spite",
-        "enemy_spd_bonus": 3
-      }
     }
   ]
 }

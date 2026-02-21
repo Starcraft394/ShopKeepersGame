@@ -10,6 +10,8 @@
     { "event_id": "evt_se_starfall_site", "weight": 14 },
     { "event_id": "evt_se_prismatic_shrine", "weight": 10 },
     { "event_id": "evt_se_timelost_camp", "weight": 12 },
-    { "event_id": "evt_se_refraction_pool", "weight": 12 }
+    { "event_id": "evt_se_refraction_pool", "weight": 12 },
+    { "event_id": "evt_se_astral_pool", "weight": 10 },
+    { "event_id": "evt_se_time_merchant", "weight": 8 }
   ]
 }

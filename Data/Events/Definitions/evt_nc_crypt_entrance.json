@@ -9,32 +9,72 @@
       "id": "explore_crypt",
       "label": "Explore the crypt",
       "description": "The dead sometimes leave their wealth behind.",
-      "effects": [
-        { "type": "add_gold_range", "min": 15, "max": 25 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "You duck through the low archway and find a ransacked burial chamber — but the looters missed a coin pouch wedged beneath a collapsed shelf.",
+          "effects": [
+            { "type": "add_gold_range", "min": 15, "max": 25 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The crypt opens into a surprisingly intact vault. Gold and grave dust coat every surface — a rich haul.",
+          "effects": [
+            { "type": "add_gold_range", "min": 20, "max": 30 },
+            { "type": "add_item", "item_id": "nc_grave_dust", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "Something stirs in the darkness as you enter. Cold hands claw at your arms before you stumble back into the light, bleeding and shaken.",
+          "effects": [
+            { "type": "damage_hero", "amount": 8 },
+            { "type": "apply_status", "status_id": "bleeding", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "collect_dust",
       "label": "Collect the grave dust",
       "description": "Fine grey dust coats every surface — alchemists pay well for it.",
-      "effects": [
-        { "type": "add_item", "item_id": "nc_grave_dust", "min_qty": 2, "max_qty": 4 }
-      ]
-    },
-    {
-      "id": "pry_fittings",
-      "label": "Pry the iron fittings",
-      "description": "The corroded iron still holds traces of soul-forged ore.",
-      "effects": [
-        { "type": "add_item", "item_id": "soul_ore", "min_qty": 1, "max_qty": 3 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "You scrape the grey powder into pouches. It smells of old death and copper — exactly what the alchemists want.",
+          "effects": [
+            { "type": "add_item", "item_id": "nc_grave_dust", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "Beneath the dust you find a layer of crystallized bone marrow. A lucky bonus.",
+          "effects": [
+            { "type": "add_item", "item_id": "nc_grave_dust", "min_qty": 2, "max_qty": 3 },
+            { "type": "add_item", "item_id": "nc_bone_marrow", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The dust clouds your vision and burns your lungs. You cough and wheeze, managing only a meager handful.",
+          "effects": [
+            { "type": "add_item", "item_id": "nc_grave_dust", "min_qty": 1, "max_qty": 2 },
+            { "type": "damage_hero", "amount": 5 }
+          ]
+        }
       ]
     },
     {
       "id": "move_on",
       "label": "Leave it alone",
       "description": "Some crypts are best left undisturbed.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You give the crypt a wide berth. The runes pulse once more as you pass, then dim to nothing.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

@@ -1,7 +1,7 @@
 {
   "id": "evt_forest_satchel",
   "title": "Lost Adventurer's Satchel",
-  "description": "Half-buried beneath rotting leaves, a leather satchel lies forgotten. Dark stains mark one side - blood or mud, you cannot tell. The brass buckles are tarnished but intact. Whoever owned this never came back for it.",
+  "description": "Half-buried beneath rotting leaves, a leather satchel lies forgotten. Dark stains mark one side — blood or mud, you cannot tell. The brass buckles are tarnished but intact. Whoever owned this never came back for it.",
   "kind": "choice",
   "tags": ["forest", "loot", "exploration"],
   "choices": [
@@ -9,37 +9,72 @@
       "id": "search_thoroughly",
       "label": "Search thoroughly",
       "description": "Take time to check every pocket.",
-      "effects": [
-        { "type": "add_gold_range", "min": 5, "max": 12 },
-        { "type": "add_item", "item_id": "herb_sprig", "min_qty": 1, "max_qty": 2 }
-      ]
-    },
-    {
-      "id": "quick_check",
-      "label": "Quick grab and go",
-      "description": "Just take what's obvious.",
-      "effects": [
-        { "type": "add_gold_range", "min": 3, "max": 8 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "Inside you find a few scattered coins and a carefully wrapped herb bundle. Not bad for someone else's misfortune.",
+          "effects": [
+            { "type": "add_gold_range", "min": 5, "max": 12 },
+            { "type": "add_item", "item_id": "herb_sprig", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The satchel holds a full coin purse and a sealed healing salve. This adventurer was well-supplied.",
+          "effects": [
+            { "type": "add_gold_range", "min": 10, "max": 16 },
+            { "type": "heal_hero", "amount": 10 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "A centipede bursts from a side pocket and bites your hand. You shake it off and grab what coins you can.",
+          "effects": [
+            { "type": "add_gold_range", "min": 3, "max": 8 },
+            { "type": "damage_hero", "amount": 4 }
+          ]
+        }
       ]
     },
     {
       "id": "check_hidden",
       "label": "Check for hidden compartments",
       "description": "Adventurers often hide their best finds.",
-      "effects": [
-        { "type": "add_gold_range", "min": 8, "max": 18 }
-      ],
-      "risk": {
-        "trap_chance": 0.15,
-        "damage_amount": 8
-      }
+      "outcomes": [
+        {
+          "weight": 40,
+          "text": "Your fingers find a false bottom! A stash of gold glints inside.",
+          "effects": [
+            { "type": "add_gold_range", "min": 14, "max": 22 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "The hidden pocket holds a few coins and a faded map — worthless, but the gold is real.",
+          "effects": [
+            { "type": "add_gold_range", "min": 6, "max": 12 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "A needle trap springs from the lining! Whoever hid this didn't want it found.",
+          "effects": [
+            { "type": "damage_hero", "amount": 8 },
+            { "type": "add_gold_range", "min": 8, "max": 14 }
+          ]
+        }
+      ]
     },
     {
       "id": "leave_it",
       "label": "Leave it alone",
       "description": "The stains make you uneasy.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You leave the dead man's things where they lie. Some finds aren't worth the trouble.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

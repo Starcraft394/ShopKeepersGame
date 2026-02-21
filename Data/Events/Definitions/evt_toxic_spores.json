@@ -7,26 +7,75 @@
   "choices": [
     {
       "id": "hold_breath",
-      "label": "Hold breath and pass through",
+      "label": "Hold breath and dash through",
       "description": "Rush past the spore cloud to grab whatever was left behind.",
-      "effects": [
-        { "type": "add_gold_range", "min": 8, "max": 18 }
+      "outcomes": [
+        {
+          "weight": 40,
+          "text": "You burst through the cloud in one breath and snatch the coin pouch from the ground. Not bad for ten seconds of terror.",
+          "effects": [
+            { "type": "add_gold_range", "min": 12, "max": 22 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "You make it through, but the explorer's pack holds more than coin -- dried spore samples and a bundle of mycelium thread.",
+          "effects": [
+            { "type": "add_gold_range", "min": 8, "max": 14 },
+            { "type": "add_item", "item_id": "mycelium_thread", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "Halfway through, you gasp involuntarily. The spores burn like fire in your lungs. You grab the pouch and stumble clear, retching.",
+          "effects": [
+            { "type": "add_gold_range", "min": 6, "max": 12 },
+            { "type": "damage_hero", "amount": 8 },
+            { "type": "apply_status", "status_id": "poisoned", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
-      "id": "seal_crack",
+      "id": "harvest_puffballs",
       "label": "Harvest the puffballs",
       "description": "Carefully cut the puffball fungi from the walls. Their threads are useful.",
-      "effects": [
-        { "type": "add_item", "item_id": "mycelium_thread", "min_qty": 1, "max_qty": 2 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "You approach from upwind and slice the puffballs free. The mycelium threads inside are thick and strong -- good material.",
+          "effects": [
+            { "type": "add_item", "item_id": "mycelium_thread", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The puffballs yield fine thread, and buried in the wall behind them you spot a cluster of mature spores.",
+          "effects": [
+            { "type": "add_item", "item_id": "mycelium_thread", "min_qty": 1, "max_qty": 2 },
+            { "type": "add_item", "item_id": "spore_cluster", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "Your blade nicks a swollen cap and it bursts point-blank. You reel back, eyes streaming, barely saving the threads you cut.",
+          "effects": [
+            { "type": "add_item", "item_id": "mycelium_thread", "min_qty": 1, "max_qty": 1 },
+            { "type": "damage_hero", "amount": 5 }
+          ]
+        }
       ]
     },
     {
       "id": "retreat",
       "label": "Retreat",
       "description": "Back away before the spores reach you.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You pull your collar over your nose and back away. The cloud drifts past, indifferent to your retreat.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

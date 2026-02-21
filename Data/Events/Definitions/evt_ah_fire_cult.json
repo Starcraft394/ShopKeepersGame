@@ -1,0 +1,102 @@
+{
+  "id": "evt_ah_fire_cult",
+  "title": "The Ember Congregation",
+  "description": "Hooded figures in crimson robes kneel around a circle of volcanic stones, chanting in a guttural tongue as flames leap between their outstretched hands. The air shimmers with heat that seems to bend unnaturally, and the ground beneath the ritual circle glows like molten glass. They notice your approach but do not stop their ceremony.",
+  "kind": "choice",
+  "tags": ["volcanic", "fire", "npc"],
+  "choices": [
+    {
+      "id": "join_ritual",
+      "label": "Join the ritual",
+      "description": "Step into the circle and add your voice to theirs. The fire calls to you.",
+      "outcomes": [
+        {
+          "weight": 35,
+          "text": "The cultists welcome you with outstretched arms. The flames wash over your party without burning — instead, they heal. 'The Mountain blesses you,' their leader intones, pressing a warm vial into your hands.",
+          "effects": [
+            { "type": "heal_party", "amount": 16 },
+            { "type": "add_item", "item_id": "ah_magma_tonic", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "The ritual fire spirals around you in a mesmerizing dance. When it fades, you feel strangely invigorated, though your coin purse feels lighter — the fire took its tithe.",
+          "effects": [
+            { "type": "heal_party", "amount": 10 },
+            { "type": "lose_gold", "min": 8, "max": 14 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The ritual surges out of control! Fire erupts from the circle and the cultists scatter, screaming. Sacred flames cling to your armor and skin.",
+          "effects": [
+            { "type": "damage_party", "amount": 7 },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "party" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "disrupt_ritual",
+      "label": "Disrupt the ceremony",
+      "description": "These fanatics are dangerous. Scatter their ritual stones and seize their supplies.",
+      "outcomes": [
+        {
+          "weight": 35,
+          "text": "You kick the stones apart and the flames die instantly. The cultists flee in terror, leaving behind their ritual components and coin offerings.",
+          "effects": [
+            { "type": "add_gold_range", "min": 15, "max": 25 },
+            { "type": "add_item", "item_id": "ah_sulfite_gland", "min_qty": 1, "max_qty": 2 },
+            { "type": "add_item", "item_id": "ember_dust", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "The cultists fight back with fire magic! A vicious skirmish erupts around the ritual circle. You drive them off and claim their supplies.",
+          "effects": [
+            { "type": "damage_party", "amount": 6 },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" },
+            { "type": "add_gold_range", "min": 10, "max": 18 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "Their leader whirls on you, eyes blazing with literal fire. 'You dare profane the Mountain's work?!' The congregation attacks as one.",
+          "effects": [
+            { "type": "damage_hero", "amount": 8 },
+            { "type": "trigger_combat", "encounter_type": "basic" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "observe_quietly",
+      "label": "Observe from a distance",
+      "description": "Watch the ritual from safety. Perhaps you can learn something useful.",
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "The ritual concludes peacefully. The leader spots you and nods, tossing a small pouch your way. 'For your silence, stranger.' It contains ember dust and a few coins.",
+          "effects": [
+            { "type": "add_item", "item_id": "ember_dust", "min_qty": 1, "max_qty": 2 },
+            { "type": "add_gold_range", "min": 5, "max": 10 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "You watch the entire ceremony in silence. When it ends, the cultists file away without acknowledging you. The warmth lingers pleasantly.",
+          "effects": [
+            { "type": "heal_party", "amount": 5 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The ritual sends a shockwave of heat across the landscape. Even at a distance, the blast singes your eyebrows and dries your throat.",
+          "effects": [
+            { "type": "damage_party", "amount": 3 }
+          ]
+        }
+      ]
+    }
+  ]
+}

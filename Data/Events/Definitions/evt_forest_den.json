@@ -9,43 +9,73 @@
       "id": "reach_in",
       "label": "Reach in carefully",
       "description": "Risk a bite for the best loot.",
-      "effects": [
-        { "type": "add_gold_range", "min": 6, "max": 14 },
-        { "type": "add_item", "item_id": "herb_sprig", "min_qty": 1, "max_qty": 2 }
-      ],
-      "risk": {
-        "bite_chance": 0.3,
-        "damage_amount": 8
-      },
-      "modifier": {
-        "id": "bitten",
-        "label": "Wounded",
-        "player_start_damage": 5
-      }
-    },
-    {
-      "id": "use_stick",
-      "label": "Use a long stick",
-      "description": "Safer but you'll miss the pouch.",
-      "effects": [
-        { "type": "add_gold_range", "min": 4, "max": 10 }
+      "outcomes": [
+        {
+          "weight": 40,
+          "text": "Your hand closes around cold coin and dried herbs. The den's occupant is out hunting — lucky you.",
+          "effects": [
+            { "type": "add_gold_range", "min": 8, "max": 14 },
+            { "type": "add_item", "item_id": "herb_sprig", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "A massive badger lunges from the darkness! Its teeth sink into your forearm before you wrench free with the coin pouch.",
+          "effects": [
+            { "type": "add_gold_range", "min": 6, "max": 10 },
+            { "type": "damage_hero", "amount": 8 },
+            { "type": "apply_status", "status_id": "bleeding", "duration": 2, "target": "random_hero" }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "You reach in too far and the whole burrow collapses. You dig out muddy but unharmed, clutching a few coins.",
+          "effects": [
+            { "type": "add_gold_range", "min": 4, "max": 8 }
+          ]
+        }
       ]
     },
     {
       "id": "smoke_out",
-      "label": "Smoke the creature out first",
+      "label": "Smoke the creature out",
       "description": "Wait for it to flee, then search freely.",
-      "effects": [
-        { "type": "add_gold_range", "min": 8, "max": 12 },
-        { "type": "add_item", "item_id": "forest_mushroom", "min_qty": 1, "max_qty": 1 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "The creature bolts into the undergrowth. You search at leisure and find a modest hoard.",
+          "effects": [
+            { "type": "add_gold_range", "min": 8, "max": 12 },
+            { "type": "add_item", "item_id": "forest_mushroom", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "Smoke billows out... and so does a furious bear. It swipes at your party before crashing into the forest.",
+          "effects": [
+            { "type": "damage_party", "amount": 5 },
+            { "type": "add_gold_range", "min": 10, "max": 14 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "The smoke triggers a nest of angry hornets. Everyone scatters, covered in welts!",
+          "effects": [
+            { "type": "damage_party", "amount": 4 }
+          ]
+        }
       ]
     },
     {
       "id": "leave_alone",
       "label": "Leave it alone",
       "description": "Those claw marks look fresh.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "Wisdom prevails. You back away as a low growl rumbles from within the den.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

@@ -9,32 +9,71 @@
       "id": "capture_echoes",
       "label": "Capture the echoes",
       "description": "Use a vial to trap the concentrated echo essence swirling in the chamber.",
-      "effects": [
-        { "type": "add_item", "item_id": "se_echo_essence", "min_qty": 1, "max_qty": 3 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "You cork the vial at just the right moment. The trapped echoes swirl inside like liquid sound.",
+          "effects": [
+            { "type": "add_item", "item_id": "se_echo_essence", "min_qty": 1, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The echoes resist capture, but you manage to seal a concentrated dose. As a bonus, a prism shard tumbles from the wall.",
+          "effects": [
+            { "type": "add_item", "item_id": "se_echo_essence", "min_qty": 1, "max_qty": 2 },
+            { "type": "add_item", "item_id": "prism_shard", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The echoes surge as you open the vial, hitting you with a cacophony of amplified sound that leaves your ears ringing and vision swimming.",
+          "effects": [
+            { "type": "add_item", "item_id": "se_echo_essence", "min_qty": 1, "max_qty": 1 },
+            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "gather_crystals",
       "label": "Gather crystallized sound",
       "description": "Some echoes have hardened into delicate prismatic formations on the walls.",
-      "effects": [
-        { "type": "add_item", "item_id": "prism_shard", "min_qty": 1, "max_qty": 3 }
-      ]
-    },
-    {
-      "id": "listen",
-      "label": "Listen for hidden messages",
-      "description": "Among the layered echoes, some carry the words of past travelers who spoke of hidden caches.",
-      "effects": [
-        { "type": "add_gold_range", "min": 10, "max": 20 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "The crystallized echoes come away cleanly, chiming with stored resonance. They'll fetch a fine price.",
+          "effects": [
+            { "type": "add_item", "item_id": "prism_shard", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "You find a large formation of hardened sound-crystal, dense and heavy with trapped vibrations.",
+          "effects": [
+            { "type": "add_item", "item_id": "prism_shard", "min_qty": 3, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The crystal shatters with a deafening shriek that reverberates endlessly. Your vision blurs from the sensory assault.",
+          "effects": [
+            { "type": "damage_hero", "amount": 6 },
+            { "type": "apply_status", "status_id": "blinded", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "leave",
       "label": "Leave the echoes behind",
       "description": "The overlapping voices are disorienting. Best to move on before losing your way.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You plug your ears and retrace your steps. The whispers follow you for a while, then fade to nothing.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

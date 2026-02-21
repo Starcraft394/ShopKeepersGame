@@ -9,32 +9,87 @@
       "id": "break_coral",
       "label": "Break open the coral",
       "description": "A pearl is lodged inside, worth the effort to extract.",
-      "effects": [
-        { "type": "add_item", "item_id": "tidal_pearl", "min_qty": 1, "max_qty": 1 }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "The coral cracks cleanly and a lustrous pearl rolls into your palm. It pulses faintly with tidal energy.",
+          "effects": [
+            { "type": "add_item", "item_id": "tidal_pearl", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "The pearl shatters as you pry it free, but the coral fragments themselves are valuable crafting stock.",
+          "effects": [
+            { "type": "add_item", "item_id": "ss_crustacean_shell", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The formation collapses in a shower of sharp fragments. A jagged shard slashes across your arm before you can shield yourself.",
+          "effects": [
+            { "type": "damage_hero", "amount": 7 },
+            { "type": "add_item", "item_id": "ss_crustacean_shell", "min_qty": 1, "max_qty": 2 }
+          ]
+        }
       ]
     },
     {
       "id": "harvest_branches",
       "label": "Harvest the coral branches",
       "description": "Dried coral is sturdy enough to use as structural wood.",
-      "effects": [
-        { "type": "add_item", "item_id": "driftwood", "min_qty": 1, "max_qty": 3 }
+      "outcomes": [
+        {
+          "weight": 60,
+          "text": "The outer branches snap off cleanly. Coral-wood is surprisingly light and strong.",
+          "effects": [
+            { "type": "add_item", "item_id": "driftwood", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "Decent haul, though the inner branches are too calcified to be useful.",
+          "effects": [
+            { "type": "add_item", "item_id": "driftwood", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "A nest of electric eels lurks in a hollow at the coral's base. One lashes out with a crackling discharge before you stumble back.",
+          "effects": [
+            { "type": "add_item", "item_id": "driftwood", "min_qty": 1, "max_qty": 2 },
+            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "search_sand",
       "label": "Search the sand nearby",
       "description": "Coins and trinkets wash up and settle around formations like this.",
-      "effects": [
-        { "type": "add_gold_range", "min": 8, "max": 16 }
-      ]
-    },
-    {
-      "id": "leave",
-      "label": "Leave it be",
-      "description": "Destroying coral this old feels unwise.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "Your fingers close around coin after coin. The currents have been depositing treasure here for years.",
+          "effects": [
+            { "type": "add_gold_range", "min": 12, "max": 20 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "A few corroded coins and a shell fragment. The sand yields less than you hoped.",
+          "effects": [
+            { "type": "add_gold_range", "min": 5, "max": 10 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "You dig up a buried crab that clamps onto your finger. After shaking it off, you find a modest pouch of coin underneath.",
+          "effects": [
+            { "type": "add_gold_range", "min": 8, "max": 14 },
+            { "type": "damage_hero", "amount": 3 }
+          ]
+        }
       ]
     }
   ]

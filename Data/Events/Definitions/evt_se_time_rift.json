@@ -9,32 +9,71 @@
       "id": "reach_through",
       "label": "Reach through the rift",
       "description": "Plunge your hand into the temporal distortion and pull back whatever you can grasp.",
-      "effects": [
-        { "type": "add_item", "item_id": "temporal_residue", "min_qty": 1, "max_qty": 2 }
+      "outcomes": [
+        {
+          "weight": 40,
+          "text": "Your fingers close around something solid. You pull back a vial of congealed temporal residue, still warm.",
+          "effects": [
+            { "type": "add_item", "item_id": "temporal_residue", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "You snatch a handful of displaced coins and a crystalline fragment that doesn't belong to any era you recognize.",
+          "effects": [
+            { "type": "add_item", "item_id": "temporal_residue", "min_qty": 1, "max_qty": 1 },
+            { "type": "add_gold_range", "min": 8, "max": 14 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The rift snaps shut on your arm. Time itself lurches through your body — your vision fractures into a thousand overlapping moments.",
+          "effects": [
+            { "type": "damage_hero", "amount": 10 },
+            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "study_patterns",
       "label": "Study the temporal patterns",
       "description": "Carefully observe the rift's oscillations to collect the echo essence it sheds.",
-      "effects": [
-        { "type": "add_item", "item_id": "se_echo_essence", "min_qty": 1, "max_qty": 2 }
-      ]
-    },
-    {
-      "id": "wait_stabilize",
-      "label": "Wait for it to stabilize",
-      "description": "As the rift collapses, it deposits coins from a dozen different eras on the ground.",
-      "effects": [
-        { "type": "add_gold_range", "min": 15, "max": 25 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "Patient observation reveals the rift's rhythm. You catch falling drops of echo essence as they crystallize in midair.",
+          "effects": [
+            { "type": "add_item", "item_id": "se_echo_essence", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The patterns are mesmerizing. You gather essence, but the overlapping timelines leave you dizzy and disoriented.",
+          "effects": [
+            { "type": "add_item", "item_id": "se_echo_essence", "min_qty": 2, "max_qty": 3 },
+            { "type": "apply_status", "status_id": "blinded", "duration": 2, "target": "random_hero" }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The rift pulses with a steady rhythm. You collect a modest amount of essence before the shimmer fades.",
+          "effects": [
+            { "type": "add_item", "item_id": "se_echo_essence", "min_qty": 1, "max_qty": 1 }
+          ]
+        }
       ]
     },
     {
       "id": "back_away",
       "label": "Back away carefully",
       "description": "Temporal anomalies are unpredictable. Discretion is the wiser choice.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You retreat from the crackling distortion. The rift shudders once, then folds silently in on itself.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

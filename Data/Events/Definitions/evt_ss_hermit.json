@@ -1,0 +1,85 @@
+{
+  "id": "evt_ss_hermit",
+  "title": "Beach Hermit",
+  "description": "A weathered figure sits cross-legged before a shelter of driftwood and kelp, watching the tide with milky eyes. Sun-bleached shells hang from the eaves on sinew strings, clinking softly. The hermit turns toward you and grins, showing teeth filed to points. 'Visitors! How delightful. What brings you to my shore?'",
+  "kind": "choice",
+  "tags": ["coastal", "tidal"],
+  "choices": [
+    {
+      "id": "trade",
+      "label": "Offer gold for supplies",
+      "description": "The hermit clearly knows these waters. Perhaps they have materials to trade.",
+      "requires": { "gold": 12 },
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "'A fair trade! Here, take these -- the sea provides.' The hermit produces brine venom and salt crystals from beneath a tattered blanket with surprising generosity.",
+          "effects": [
+            { "type": "lose_gold", "min": 12, "max": 12 },
+            { "type": "add_item", "item_id": "ss_brine_venom", "min_qty": 1, "max_qty": 2 },
+            { "type": "add_item", "item_id": "sea_salt_crystal", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "'Coin for kelp and shell? You drive a hard bargain, friend.' The hermit chuckles and hands over a bundle of useful materials.",
+          "effects": [
+            { "type": "lose_gold", "min": 12, "max": 12 },
+            { "type": "add_item", "item_id": "ss_kelp_sinew", "min_qty": 2, "max_qty": 3 },
+            { "type": "add_item", "item_id": "ss_crustacean_shell", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "'Gold, you say? I have just the thing.' The hermit hands over a single withered kelp strand and pockets your coin with a cackle. You've been swindled.",
+          "effects": [
+            { "type": "lose_gold", "min": 12, "max": 12 },
+            { "type": "add_item", "item_id": "ss_kelp_sinew", "min_qty": 1, "max_qty": 1 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ask_prophecy",
+      "label": "Ask for a prophecy",
+      "description": "Those milky eyes might see more than they let on.",
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "'The tides favor you today,' the hermit whispers, pressing a pearl into your hand. 'Keep it close. The deep watches those who carry its gifts.' A strange calm settles over the party.",
+          "effects": [
+            { "type": "add_item", "item_id": "tidal_pearl", "min_qty": 1, "max_qty": 1 },
+            { "type": "heal_party", "amount": 6 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "'I see salt and struggle ahead. Steel your nerves.' The hermit's words carry unexpected weight, and the party feels oddly prepared.",
+          "effects": [
+            { "type": "heal_party", "amount": 10 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The hermit seizes your wrist with startling strength. 'BEWARE THE DEEP!' A jolt of energy arcs through your arm. The hermit blinks, confused, as if waking from a trance.",
+          "effects": [
+            { "type": "damage_hero", "amount": 6 },
+            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "random_hero" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "leave_alone",
+      "label": "Leave the hermit be",
+      "description": "Those filed teeth are unsettling. Best to move on.",
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You nod politely and continue down the shore. The hermit's laughter follows you on the wind, but nothing else.",
+          "effects": [{ "type": "nothing" }]
+        }
+      ]
+    }
+  ]
+}

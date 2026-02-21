@@ -9,32 +9,71 @@
       "id": "break_wards",
       "label": "Break the wards",
       "description": "The wards are weak enough to crack — coin and supplies wait inside.",
-      "effects": [
-        { "type": "add_gold_range", "min": 12, "max": 20 }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "The wards shatter with a dull pop. Inside you find a wraith-hunter's field kit: coins, bandages, and a vial of purifying salve.",
+          "effects": [
+            { "type": "add_gold_range", "min": 14, "max": 22 },
+            { "type": "heal_hero", "amount": 6 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "The wards break cleanly. A generous stash of gold and supplies — this hunter was well-funded.",
+          "effects": [
+            { "type": "add_gold_range", "min": 18, "max": 26 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The wards discharge violently as you force them. A blast of spectral energy scorches your hands before you can pull them back.",
+          "effects": [
+            { "type": "add_gold_range", "min": 8, "max": 14 },
+            { "type": "damage_hero", "amount": 7 },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "collect_ore",
       "label": "Collect the soul ore",
       "description": "Wraith-hunters always carry soul ore for ammunition and wards.",
-      "effects": [
-        { "type": "add_item", "item_id": "soul_ore", "min_qty": 2, "max_qty": 4 }
-      ]
-    },
-    {
-      "id": "gather_grass",
-      "label": "Gather the deadman's grass",
-      "description": "Bundles of dried deadman's grass are packed alongside the other supplies.",
-      "effects": [
-        { "type": "add_item", "item_id": "deadmans_grass", "min_qty": 1, "max_qty": 3 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "You unwrap bundles of dull grey ore that pulses with trapped soul energy. Standard wraith-hunter kit — valuable stuff.",
+          "effects": [
+            { "type": "add_item", "item_id": "soul_ore", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The cache holds more ore than expected. This hunter was preparing for something big.",
+          "effects": [
+            { "type": "add_item", "item_id": "soul_ore", "min_qty": 3, "max_qty": 5 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "The ore is partially corroded by the ward magic. You salvage what you can from the ruined bundles.",
+          "effects": [
+            { "type": "add_item", "item_id": "soul_ore", "min_qty": 1, "max_qty": 2 }
+          ]
+        }
       ]
     },
     {
       "id": "move_on",
       "label": "Leave the cache",
       "description": "Those wards were placed for a reason.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You leave the cache undisturbed. The ward-glyphs flicker gratefully as you pass.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

@@ -1,0 +1,98 @@
+{
+  "id": "evt_ss_sea_cave",
+  "title": "Echoing Sea Cave",
+  "description": "A dark cave mouth opens in the cliff face, half-submerged at high tide. Strange echoes ripple outward -- dripping water, distant clicks, and something that might be breathing. The air smells of brine and old stone. Phosphorescent lichen traces the walls in pale green lines.",
+  "kind": "choice",
+  "tags": ["coastal", "tidal"],
+  "choices": [
+    {
+      "id": "explore_depths",
+      "label": "Explore the depths",
+      "description": "The echoes suggest a large chamber deeper inside.",
+      "outcomes": [
+        {
+          "weight": 40,
+          "text": "The cave opens into a vast grotto. Tidal pearls cluster on the ceiling like stars, and old crates from some forgotten cache lie stacked against the far wall.",
+          "effects": [
+            { "type": "add_item", "item_id": "tidal_pearl", "min_qty": 1, "max_qty": 2 },
+            { "type": "add_gold_range", "min": 10, "max": 18 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "You find a side passage lined with salt crystal deposits. Not the grand discovery you hoped for, but valuable nonetheless.",
+          "effects": [
+            { "type": "add_item", "item_id": "sea_salt_crystal", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The cave narrows and the echoes grow hostile. Something large stirs in the darkness, its shell scraping against stone. You barely make it back to the entrance.",
+          "effects": [
+            { "type": "trigger_combat", "encounter_type": "elite" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "swim_tunnel",
+      "label": "Swim through the flooded tunnel",
+      "description": "A submerged passage leads somewhere. The water is clear enough to see the far side.",
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "You surface in a hidden air pocket filled with driftwood and kelp. The previous tide deposited a treasure trove of materials.",
+          "effects": [
+            { "type": "add_item", "item_id": "driftwood", "min_qty": 2, "max_qty": 4 },
+            { "type": "add_item", "item_id": "ss_kelp_sinew", "min_qty": 1, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The tunnel is longer than it looked. You make it through gasping, and find a small cache of shells on the other side.",
+          "effects": [
+            { "type": "add_item", "item_id": "ss_crustacean_shell", "min_qty": 1, "max_qty": 3 },
+            { "type": "damage_hero", "amount": 4 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "An electric eel nests in the tunnel. The shock paralyzes your muscles and you barely drag yourself back to air, coughing and numb.",
+          "effects": [
+            { "type": "damage_hero", "amount": 8 },
+            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "random_hero" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "call_out",
+      "label": "Call into the cave",
+      "description": "Test the echoes. Maybe something calls back.",
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "Your voice bounces deep into the cave and dislodges loose crystals from the ceiling. They rain down harmlessly, glittering with salt.",
+          "effects": [
+            { "type": "add_item", "item_id": "sea_salt_crystal", "min_qty": 1, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "Something calls back -- a low, resonant hum that vibrates through your bones. It feels ancient and wise. The party feels strangely refreshed.",
+          "effects": [
+            { "type": "heal_party", "amount": 8 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The echoes amplify into a deafening shriek. Everyone clutches their ears as the sound reverberates through the cave mouth.",
+          "effects": [
+            { "type": "damage_party", "amount": 5 },
+            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "party" }
+          ]
+        }
+      ]
+    }
+  ]
+}

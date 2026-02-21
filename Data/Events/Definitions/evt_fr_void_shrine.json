@@ -9,33 +9,73 @@
       "id": "commune",
       "label": "Commune with the void",
       "description": "Open your mind to the vast emptiness and let its strange peace flow through the party.",
-      "effects": [
-        { "type": "heal_party", "value": 15 }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "The void answers — not with words, but with absence. Pain, fatigue, and fear drain away like water through sand. You feel impossibly light.",
+          "effects": [
+            { "type": "heal_party", "amount": 15 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "Peace washes through the party, but the void's touch lingers in one hero's eyes. They stare at nothing for too long before snapping back.",
+          "effects": [
+            { "type": "heal_party", "amount": 10 },
+            { "type": "apply_status", "status_id": "blinded", "duration": 2, "target": "random_hero" }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The void's hunger surges forward the moment you open your mind. It feeds on your vitality before you can slam your mental defenses shut.",
+          "effects": [
+            { "type": "damage_party", "amount": 6 },
+            { "type": "apply_status", "status_id": "poisoned", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "offer_gold",
       "label": "Offer gold to the shrine",
       "description": "Place coins upon the flickering altar and receive the void's deeper blessing.",
-      "effects": [
-        { "type": "add_gold_range", "min": -12, "max": -12 },
-        { "type": "heal_party", "value": 25 }
-      ]
-    },
-    {
-      "id": "take_crystal",
-      "label": "Take the void crystal",
-      "description": "Seize the crystallized void from the altar before the shrine flickers out of existence.",
-      "effects": [
-        { "type": "add_item", "item_id": "void_crystal", "min_qty": 1, "max_qty": 1 }
+      "requires": { "gold": 12 },
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "The coins dissolve into black motes that swirl around the party. Warmth floods through you — the void's rare gift of restoration.",
+          "effects": [
+            { "type": "lose_gold", "min": 12, "max": 12 },
+            { "type": "heal_party", "amount": 25 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The shrine consumes your offering and grants a crystallized void fragment in return. A fair exchange, by the void's reckoning.",
+          "effects": [
+            { "type": "lose_gold", "min": 12, "max": 12 },
+            { "type": "add_item", "item_id": "fr_null_fragment", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "The shrine takes your gold and gives nothing. The black flames flicker mockingly. The void is not known for fairness.",
+          "effects": [
+            { "type": "lose_gold", "min": 12, "max": 12 }
+          ]
+        }
       ]
     },
     {
       "id": "leave",
       "label": "Leave the shrine",
       "description": "The shrine's hunger is patient, but you are not willing to feed it.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You turn your back on the flickering shrine. Its black candles gutter once, twice, then resume their eternal vigil over nothing.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

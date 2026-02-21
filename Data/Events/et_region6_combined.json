@@ -10,6 +10,8 @@
     { "event_id": "evt_nc_grave_offering", "weight": 14 },
     { "event_id": "evt_nc_death_shrine", "weight": 10 },
     { "event_id": "evt_nc_restless_tomb", "weight": 12 },
-    { "event_id": "evt_nc_wraith_cache", "weight": 14 }
+    { "event_id": "evt_nc_wraith_cache", "weight": 14 },
+    { "event_id": "evt_nc_grave_robber", "weight": 10 },
+    { "event_id": "evt_nc_spirit_gate", "weight": 10 }
   ]
 }

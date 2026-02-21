@@ -9,37 +9,72 @@
       "id": "careful_harvest",
       "label": "Harvest carefully",
       "description": "Take time to gather them properly.",
-      "effects": [
-        { "type": "add_item", "item_id": "herb_sprig", "min_qty": 2, "max_qty": 3 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "Your patience pays off. The herbs come free with roots intact — perfect for alchemical use.",
+          "effects": [
+            { "type": "add_item", "item_id": "herb_sprig", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "You find an exceptionally vibrant cluster hidden beneath the feverfew. A rare find!",
+          "effects": [
+            { "type": "add_item", "item_id": "herb_sprig", "min_qty": 3, "max_qty": 4 },
+            { "type": "add_item", "item_id": "forest_mushroom", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "As you kneel to harvest, thorns hidden in the undergrowth scratch your hands deeply. You gather what you can through the pain.",
+          "effects": [
+            { "type": "add_item", "item_id": "herb_sprig", "min_qty": 1, "max_qty": 2 },
+            { "type": "damage_hero", "amount": 5 }
+          ]
+        }
       ]
     },
     {
       "id": "quick_grab",
       "label": "Grab everything quickly",
       "description": "Rip up the whole patch before something finds you.",
-      "effects": [
-        { "type": "add_item", "item_id": "herb_sprig", "min_qty": 1, "max_qty": 4 }
-      ],
-      "risk": {
-        "damage_chance": 0.25,
-        "damage_amount": 6
-      }
-    },
-    {
-      "id": "search_nearby",
-      "label": "Search for mushrooms too",
-      "description": "Rich soil like this often has fungi nearby.",
-      "effects": [
-        { "type": "add_item", "item_id": "herb_sprig", "min_qty": 1, "max_qty": 2 },
-        { "type": "add_item", "item_id": "forest_mushroom", "min_qty": 1, "max_qty": 2 }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "You tear handfuls free in seconds. Quantity over quality, but it's a solid haul.",
+          "effects": [
+            { "type": "add_item", "item_id": "herb_sprig", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "A venomous snake strikes from beneath the leaves! You stumble back, herbs scattering.",
+          "effects": [
+            { "type": "add_item", "item_id": "herb_sprig", "min_qty": 1, "max_qty": 1 },
+            { "type": "damage_hero", "amount": 8 },
+            { "type": "apply_status", "status_id": "poisoned", "duration": 2, "target": "random_hero" }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "Your haste damages most of the roots, but you salvage a decent bundle.",
+          "effects": [
+            { "type": "add_item", "item_id": "herb_sprig", "min_qty": 1, "max_qty": 2 }
+          ]
+        }
       ]
     },
     {
       "id": "leave_them",
       "label": "Leave them be",
       "description": "The stillness unnerves you. Best to move on.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You back away slowly. The clearing watches you go in silence.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

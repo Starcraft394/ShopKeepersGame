@@ -1,0 +1,88 @@
+{
+  "id": "evt_fr_void_merchant",
+  "title": "Void Merchant",
+  "description": "A figure materializes from the darkness — or perhaps the darkness takes the shape of a figure. It wears a cloak of shifting absence and speaks in a voice that seems to come from inside your own skull. 'I deal in what was, what is, and what will never be,' it says, spreading hands that hold impossible wares. 'Everything has a price. Even nothing.'",
+  "kind": "choice",
+  "tags": ["void", "merchant"],
+  "choices": [
+    {
+      "id": "trade",
+      "label": "Trade with the entity",
+      "description": "Pay 15 gold for whatever the void merchant considers a fair exchange.",
+      "requires": { "gold": 15 },
+      "outcomes": [
+        {
+          "weight": 40,
+          "text": "The merchant's grin widens impossibly. It takes your gold — the coins dissolving into its palm — and produces a cache of rare void materials. 'A bargain,' it hisses. 'For both of us.'",
+          "effects": [
+            { "type": "lose_gold", "min": 15, "max": 15 },
+            { "type": "add_item", "item_id": "fr_dimensional_essence", "min_qty": 1, "max_qty": 2 },
+            { "type": "add_item", "item_id": "fr_null_fragment", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "The merchant nods approvingly and hands you a pouch that weighs more than it should. Inside: entropy residue and rift membrane, neatly bundled. 'Come again,' it whispers. 'I am always here. I am always nowhere.'",
+          "effects": [
+            { "type": "lose_gold", "min": 15, "max": 15 },
+            { "type": "add_item", "item_id": "fr_entropy_residue", "min_qty": 2, "max_qty": 3 },
+            { "type": "add_item", "item_id": "fr_rift_membrane", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The merchant takes your gold and hands you... nothing. Literally nothing — a small sphere of absolute void. Then it laughs, the sound echoing from dimensions away, and you realize something has been taken from you beyond coin.",
+          "effects": [
+            { "type": "lose_gold", "min": 15, "max": 15 },
+            { "type": "add_item", "item_id": "fr_null_fragment", "min_qty": 1, "max_qty": 1 },
+            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "random_hero" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "threaten",
+      "label": "Demand its wares by force",
+      "description": "Draw weapons and take what you want from this thing.",
+      "outcomes": [
+        {
+          "weight": 30,
+          "text": "The merchant recoils with a shriek that tears at reality. It drops a scattering of materials as it dissolves into the darkness, fleeing your aggression.",
+          "effects": [
+            { "type": "add_item", "item_id": "fr_corruption_ichor", "min_qty": 2, "max_qty": 3 },
+            { "type": "add_gold_range", "min": 10, "max": 20 }
+          ]
+        },
+        {
+          "weight": 40,
+          "text": "The merchant laughs — a sound like glass shattering underwater. 'You wish to rob the void?' Its form splits into hostile shapes that lunge at your party.",
+          "effects": [
+            { "type": "damage_party", "amount": 8 },
+            { "type": "trigger_combat", "encounter_type": "elite" }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "Your blade passes through the merchant like smoke. It reforms behind you and places a cold hand on one hero's shoulder. 'A lesson, then. Free of charge.' Agony lances through the hero's body.",
+          "effects": [
+            { "type": "damage_hero", "amount": 12 },
+            { "type": "apply_status", "status_id": "bleeding", "duration": 2, "target": "random_hero" },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "decline",
+      "label": "Decline and walk away",
+      "description": "Dealing with void entities never ends well. You move on.",
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "'Perhaps next time,' the merchant says, already fading. 'I will remember your face. All of your faces. Even the ones you haven't worn yet.' It vanishes, leaving behind only the faint scent of burnt ozone.",
+          "effects": [{ "type": "nothing" }]
+        }
+      ]
+    }
+  ]
+}

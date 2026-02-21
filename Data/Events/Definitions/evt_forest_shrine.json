@@ -1,7 +1,7 @@
 {
   "id": "evt_forest_shrine",
   "title": "Moss-Covered Shrine",
-  "description": "Weathered stone rises from a carpet of emerald moss - an ancient shrine to forgotten forest spirits. Coins, dried flowers, and small trinkets lie scattered at its base. The air thrums with old power, and you feel unseen eyes upon you.",
+  "description": "Weathered stone rises from a carpet of emerald moss — an ancient shrine to forgotten forest spirits. Coins, dried flowers, and small trinkets lie scattered at its base. The air thrums with old power, and you feel unseen eyes upon you.",
   "kind": "choice",
   "tags": ["forest", "shrine", "magic"],
   "choices": [
@@ -9,47 +9,83 @@
       "id": "pray",
       "label": "Kneel and pray",
       "description": "Show reverence to the old spirits.",
-      "effects": [
-        { "type": "add_item", "item_id": "herb_sprig", "min_qty": 1, "max_qty": 2 }
-      ],
-      "modifier": {
-        "id": "blessing",
-        "label": "Spirit's Blessing",
-        "bonus_gold": 10
-      }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "Warmth floods through you as the spirits acknowledge your respect. You feel blessed for the trials ahead.",
+          "effects": [
+            { "type": "add_item", "item_id": "herb_sprig", "min_qty": 1, "max_qty": 2 },
+            { "type": "modifier", "id": "blessing", "label": "Spirit's Blessing", "bonus_gold": 10 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The moss glows emerald green. Healing warmth flows into your party's aches and wounds.",
+          "effects": [
+            { "type": "heal_party", "amount": 8 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The shrine remains cold and silent. Perhaps the spirits have moved on. You find a few herbs growing at its base.",
+          "effects": [
+            { "type": "add_item", "item_id": "herb_sprig", "min_qty": 1, "max_qty": 1 }
+          ]
+        }
+      ]
     },
     {
       "id": "take_offerings",
       "label": "Take the offerings",
       "description": "The spirits won't miss a few coins...",
-      "effects": [
-        { "type": "add_gold_range", "min": 12, "max": 22 }
-      ],
-      "risk": {
-        "curse_chance": 0.35
-      },
-      "modifier": {
-        "id": "curse",
-        "label": "Spirit's Curse",
-        "enemy_spd_bonus": 4
-      }
+      "outcomes": [
+        {
+          "weight": 40,
+          "text": "You sweep the coins into your pouch. Nothing happens — the spirits are truly gone.",
+          "effects": [
+            { "type": "add_gold_range", "min": 14, "max": 22 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "As your fingers touch the coins, a chill runs through you. The gold is yours, but something watches with displeasure.",
+          "effects": [
+            { "type": "add_gold_range", "min": 10, "max": 18 },
+            { "type": "apply_status", "status_id": "bleeding", "duration": 2, "target": "random_hero" }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The shrine pulses with angry red light! A burst of force hurls you backward. The spirits are NOT gone.",
+          "effects": [
+            { "type": "damage_party", "amount": 6 },
+            { "type": "add_gold_range", "min": 6, "max": 10 }
+          ]
+        }
+      ]
     },
     {
       "id": "leave_offering",
       "label": "Leave an offering",
       "description": "Pay 8 gold for the spirits' favor.",
       "requires": { "gold": 8 },
-      "effects": [
-        { "type": "lose_gold", "min": 8, "max": 8 },
-        { "type": "add_item", "item_id": "forest_mushroom", "min_qty": 2, "max_qty": 3 }
-      ]
-    },
-    {
-      "id": "pass_by",
-      "label": "Walk past quietly",
-      "description": "Best not to disturb old things.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 60,
+          "text": "As your gold touches the stone, mushrooms sprout in a perfect circle around you. The spirits accept your gift.",
+          "effects": [
+            { "type": "lose_gold", "min": 8, "max": 8 },
+            { "type": "add_item", "item_id": "forest_mushroom", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 40,
+          "text": "The shrine flares with warm light. You feel invigorated — the spirits are pleased by your generosity.",
+          "effects": [
+            { "type": "lose_gold", "min": 8, "max": 8 },
+            { "type": "heal_party", "amount": 10 }
+          ]
+        }
       ]
     }
   ]

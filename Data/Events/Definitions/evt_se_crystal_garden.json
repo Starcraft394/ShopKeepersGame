@@ -9,32 +9,70 @@
       "id": "harvest_shards",
       "label": "Harvest crystal shards",
       "description": "Carefully break off smaller growths from the base of the formations.",
-      "effects": [
-        { "type": "add_item", "item_id": "prism_shard", "min_qty": 2, "max_qty": 4 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "The smaller crystals snap cleanly from the base. They chime like bells as you tuck them away.",
+          "effects": [
+            { "type": "add_item", "item_id": "prism_shard", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "You find an unusually dense cluster — the shards here are richer in color and hum with stored light.",
+          "effects": [
+            { "type": "add_item", "item_id": "prism_shard", "min_qty": 3, "max_qty": 5 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "A crystal shatters violently as you strike it, releasing a blinding prismatic flash that leaves your party reeling.",
+          "effects": [
+            { "type": "add_item", "item_id": "prism_shard", "min_qty": 1, "max_qty": 2 },
+            { "type": "apply_status", "status_id": "blinded", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "collect_dust",
       "label": "Collect the resonant dust",
       "description": "Sweep up the sparkling dust that gathers in the hollows between crystals.",
-      "effects": [
-        { "type": "add_item", "item_id": "starfall_dust", "min_qty": 2, "max_qty": 3 }
-      ]
-    },
-    {
-      "id": "search_formations",
-      "label": "Search between the formations",
-      "description": "Previous visitors may have dropped belongings while mesmerized by the light.",
-      "effects": [
-        { "type": "add_gold_range", "min": 10, "max": 18 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "The dust is plentiful in the sheltered hollows. You fill several pouches with the glittering powder.",
+          "effects": [
+            { "type": "add_item", "item_id": "starfall_dust", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "Beneath the dust you uncover a cache of coins left by a previous traveler, half-buried in crystalline sediment.",
+          "effects": [
+            { "type": "add_item", "item_id": "starfall_dust", "min_qty": 1, "max_qty": 2 },
+            { "type": "add_gold_range", "min": 8, "max": 14 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The dust swirls into a miniature vortex as you disturb it, coating everything but yielding only a thin layer.",
+          "effects": [
+            { "type": "add_item", "item_id": "starfall_dust", "min_qty": 1, "max_qty": 2 }
+          ]
+        }
       ]
     },
     {
       "id": "leave",
       "label": "Leave the garden undisturbed",
       "description": "The crystals seem almost alive. It feels wrong to take from them.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You watch the light play across the formations for a long moment, then move on. Some beauty is best left intact.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

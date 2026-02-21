@@ -1,0 +1,102 @@
+{
+  "id": "evt_ah_forge_ruins",
+  "title": "Ruins of the Dwarven Forge",
+  "description": "Half-buried in hardened lava flow, the remains of an ancient dwarven forge jut from the scorched earth. The anvil still stands, cracked but intact, and the forge pit glows faintly — as if the mountain itself keeps the coals alive. Scattered tools, warped ingots, and the skeletons of long-dead smiths litter the workshop floor.",
+  "kind": "choice",
+  "tags": ["volcanic", "fire", "ruin"],
+  "choices": [
+    {
+      "id": "salvage_tools",
+      "label": "Salvage the forge tools",
+      "description": "Pry loose intact tools and materials from the ancient workshop.",
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "A masterwork tong and several usable ingots survive beneath a collapsed beam. Dwarven steel holds up even after centuries.",
+          "effects": [
+            { "type": "add_gold_range", "min": 16, "max": 26 },
+            { "type": "add_item", "item_id": "obsidian_shard", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "Most tools have fused to the stone, but you pry a few salvageable pieces free. Better than nothing.",
+          "effects": [
+            { "type": "add_gold_range", "min": 8, "max": 14 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "A beam collapses as you pull at the tools, sending a shower of hot coals across the floor. You scramble clear, singed but alive.",
+          "effects": [
+            { "type": "damage_hero", "amount": 7 },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" },
+            { "type": "add_gold_range", "min": 4, "max": 8 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "activate_forge",
+      "label": "Rekindle the forge",
+      "description": "Feed fuel into the ancient forge pit and see if the dwarven enchantments still hold.",
+      "outcomes": [
+        {
+          "weight": 35,
+          "text": "The forge roars to life with a sound like thunder! Ancient runes blaze along the anvil. The magical heat tempers your gear and mends your wounds.",
+          "effects": [
+            { "type": "heal_party", "amount": 15 },
+            { "type": "add_item", "item_id": "ah_magma_tonic", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "The coals catch and the forge pit fills with steady heat. Not as powerful as it once was, but the warmth feels restorative.",
+          "effects": [
+            { "type": "heal_party", "amount": 8 },
+            { "type": "add_item", "item_id": "ember_dust", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The forge detonates! Ancient wards, weakened by time, discharge in a blast of fire and shrapnel. The ruin collapses inward.",
+          "effects": [
+            { "type": "damage_party", "amount": 8 },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "party" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "loot_skeletons",
+      "label": "Search the fallen smiths",
+      "description": "The dead may still carry valuables from a more prosperous age.",
+      "outcomes": [
+        {
+          "weight": 40,
+          "text": "One skeleton clutches a pouch of fire opals, preserved by the heat. Another wears a ring fused to bone — priceless drake scale inlay.",
+          "effects": [
+            { "type": "add_item", "item_id": "ah_drake_scale", "min_qty": 1, "max_qty": 2 },
+            { "type": "add_gold_range", "min": 10, "max": 18 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "A few coins and a vial of preserved drakeblood sit in a leather satchel, remarkably intact despite the heat.",
+          "effects": [
+            { "type": "add_gold_range", "min": 6, "max": 12 },
+            { "type": "add_item", "item_id": "ah_drakeblood_vial", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "As you disturb the bones, something stirs in the forge pit. Embers coalesce into a shape — the forge guardian still watches over its masters.",
+          "effects": [
+            { "type": "damage_hero", "amount": 6 },
+            { "type": "trigger_combat", "encounter_type": "elite" }
+          ]
+        }
+      ]
+    }
+  ]
+}

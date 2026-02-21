@@ -9,32 +9,72 @@
       "id": "take_supplies",
       "label": "Take the preserved supplies",
       "description": "The food, coin purses, and trade goods are all in pristine condition.",
-      "effects": [
-        { "type": "add_gold_range", "min": 15, "max": 25 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "The coins are from an era long past, but gold is gold. You pocket a tidy sum from the frozen purses.",
+          "effects": [
+            { "type": "add_gold_range", "min": 15, "max": 25 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "Along with the coins, you find preserved rations and a crystal fruit that somehow still glows with vitality.",
+          "effects": [
+            { "type": "add_gold_range", "min": 10, "max": 16 },
+            { "type": "add_item", "item_id": "se_crystal_fruit", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "As you grab the supplies, the time bubble collapses. Decades of entropy hit everything at once — including you. A wave of temporal shock surges through your body.",
+          "effects": [
+            { "type": "add_gold_range", "min": 5, "max": 10 },
+            { "type": "damage_hero", "amount": 8 },
+            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "gather_residue",
       "label": "Gather the temporal residue",
       "description": "The edges of the time bubble shed flakes of solidified temporal energy.",
-      "effects": [
-        { "type": "add_item", "item_id": "temporal_residue", "min_qty": 1, "max_qty": 2 }
-      ]
-    },
-    {
-      "id": "search_explorer",
-      "label": "Search the frozen explorer",
-      "description": "The explorer's pack contains trophies from creatures of the Expanse.",
-      "effects": [
-        { "type": "add_item", "item_id": "se_crystal_chitin", "min_qty": 1, "max_qty": 2 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "You carefully peel temporal residue from the shimmering boundary. It crumbles like frozen light between your fingers.",
+          "effects": [
+            { "type": "add_item", "item_id": "temporal_residue", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The residue is rich here — whole sheets of crystallized time peel away from the bubble's edge.",
+          "effects": [
+            { "type": "add_item", "item_id": "temporal_residue", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "A shard of solidified time cuts your hand as you collect it. The wound ages and heals in rapid succession, leaving you dizzy.",
+          "effects": [
+            { "type": "add_item", "item_id": "temporal_residue", "min_qty": 1, "max_qty": 1 },
+            { "type": "damage_hero", "amount": 5 }
+          ]
+        }
       ]
     },
     {
       "id": "leave",
       "label": "Leave the camp untouched",
       "description": "Disturbing a time-frozen site feels like tampering with something best left alone.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You step back from the shimmering boundary. The frozen explorer stares forever at a meal they will never finish.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

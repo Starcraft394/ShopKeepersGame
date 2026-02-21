@@ -9,32 +9,72 @@
       "id": "harvest_kelp",
       "label": "Harvest the kelp",
       "description": "The fibrous strands make excellent sinew for binding.",
-      "effects": [
-        { "type": "add_item", "item_id": "ss_kelp_sinew", "min_qty": 2, "max_qty": 3 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "The kelp pulls free in long, strong strands. Perfect material for cord and bindings.",
+          "effects": [
+            { "type": "add_item", "item_id": "ss_kelp_sinew", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "You gather a decent bundle, but a tiny bioluminescent jellyfish stings your wrist as you reach deeper.",
+          "effects": [
+            { "type": "add_item", "item_id": "ss_kelp_sinew", "min_qty": 1, "max_qty": 2 },
+            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "random_hero" }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "The kelp is brittle and sun-bleached. You salvage what you can from the deeper strands.",
+          "effects": [
+            { "type": "add_item", "item_id": "ss_kelp_sinew", "min_qty": 1, "max_qty": 1 }
+          ]
+        }
       ]
     },
     {
       "id": "collect_salt",
       "label": "Collect salt crystals from the rim",
       "description": "The crystallized deposits are pure and valuable.",
-      "effects": [
-        { "type": "add_item", "item_id": "sea_salt_crystal", "min_qty": 2, "max_qty": 4 }
+      "outcomes": [
+        {
+          "weight": 60,
+          "text": "The crystals break off in satisfying chunks. Pure sea salt, worth good coin to any alchemist.",
+          "effects": [
+            { "type": "add_item", "item_id": "sea_salt_crystal", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "You chip away at the deposits, but half crumble to powder. Still a worthwhile haul.",
+          "effects": [
+            { "type": "add_item", "item_id": "sea_salt_crystal", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "A sharp crystal shard slices your palm as it breaks free. The salt stings fiercely in the wound.",
+          "effects": [
+            { "type": "add_item", "item_id": "sea_salt_crystal", "min_qty": 1, "max_qty": 3 },
+            { "type": "damage_hero", "amount": 4 }
+          ]
+        }
       ]
     },
     {
       "id": "watch_pool",
       "label": "Wait and watch",
       "description": "The gentle light soothes aching muscles and frayed nerves.",
-      "effects": [
-        { "type": "heal_party", "value": 8 }
-      ]
-    },
-    {
-      "id": "leave",
-      "label": "Leave the pool",
-      "description": "Better not to linger near strange lights.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "The party rests beside the pool, mesmerized by the drifting lights. The warmth of the bioluminescence eases aches and lifts spirits.",
+          "effects": [
+            { "type": "heal_party", "amount": 8 }
+          ]
+        }
       ]
     }
   ]

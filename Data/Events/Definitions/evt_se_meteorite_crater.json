@@ -9,32 +9,71 @@
       "id": "collect_dust",
       "label": "Collect the starfall dust",
       "description": "The iridescent dust coating the crater is a valuable reagent.",
-      "effects": [
-        { "type": "add_item", "item_id": "starfall_dust", "min_qty": 2, "max_qty": 4 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "You scoop handfuls of shimmering dust from the crater basin. It hums faintly in your pouch.",
+          "effects": [
+            { "type": "add_item", "item_id": "starfall_dust", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The dust is thicker than expected — entire drifts of it have settled in the crevices. A generous haul.",
+          "effects": [
+            { "type": "add_item", "item_id": "starfall_dust", "min_qty": 3, "max_qty": 5 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "A burst of residual cosmic energy flares as you reach in. The flash sears your eyes, leaving spots dancing across your vision.",
+          "effects": [
+            { "type": "add_item", "item_id": "starfall_dust", "min_qty": 1, "max_qty": 2 },
+            { "type": "apply_status", "status_id": "blinded", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "harvest_fragments",
       "label": "Harvest meteorite fragments",
       "description": "Pry loose the crystallized fragments embedded in the crater wall.",
-      "effects": [
-        { "type": "add_item", "item_id": "astral_fragment", "min_qty": 1, "max_qty": 1 }
-      ]
-    },
-    {
-      "id": "search_rim",
-      "label": "Search the crater rim",
-      "description": "The impact scattered valuables from the earth across the surrounding ground.",
-      "effects": [
-        { "type": "add_gold_range", "min": 12, "max": 20 }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "You wrench a chunk of astral metal free from the scorched rock. It gleams with an inner light.",
+          "effects": [
+            { "type": "add_item", "item_id": "astral_fragment", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The fragment comes loose easily, and behind it you find a vein of crystal chitin fused into the wall.",
+          "effects": [
+            { "type": "add_item", "item_id": "astral_fragment", "min_qty": 1, "max_qty": 1 },
+            { "type": "add_item", "item_id": "se_crystal_chitin", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The crater wall collapses inward as you pry. Superheated debris rains down, shocking you with a jolt of cosmic static.",
+          "effects": [
+            { "type": "damage_hero", "amount": 8 },
+            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "leave",
       "label": "Leave the crater",
       "description": "The cosmic radiation feels unsafe. Better to move on.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You back away from the pulsing heat. Some treasures aren't worth the risk.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

@@ -8,33 +8,75 @@
     {
       "id": "reach_into_void",
       "label": "Reach into the void",
-      "description": "Plunge your hand past the boundary of reality to seize a crystallized shard of nothingness.",
-      "effects": [
-        { "type": "add_item", "item_id": "void_crystal", "min_qty": 1, "max_qty": 1 }
+      "description": "Plunge your hand past the boundary of reality to seize what lies within the tear.",
+      "outcomes": [
+        {
+          "weight": 35,
+          "text": "Your fingers close around something impossibly cold. You wrench it free — a crystallized shard of pure void, thrumming with dark potential.",
+          "effects": [
+            { "type": "add_item", "item_id": "fr_dimensional_essence", "min_qty": 1, "max_qty": 2 },
+            { "type": "add_item", "item_id": "fr_null_fragment", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "The tear bites back. Something inside claws at your arm as you reach through. You pull free with entropy residue clinging to your skin like burning tar.",
+          "effects": [
+            { "type": "add_item", "item_id": "fr_entropy_residue", "min_qty": 1, "max_qty": 2 },
+            { "type": "damage_hero", "amount": 9 },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The tear widens as you disturb it. A wave of void energy blasts outward, and shapes move in the darkness beyond — something is coming through!",
+          "effects": [
+            { "type": "damage_party", "amount": 5 },
+            { "type": "trigger_combat", "encounter_type": "elite" }
+          ]
+        }
       ]
     },
     {
       "id": "collect_residue",
       "label": "Collect the leaking residue",
       "description": "Scrape the condensed entropy dripping from the tear's edges into a container.",
-      "effects": [
-        { "type": "add_item", "item_id": "fr_entropy_residue", "min_qty": 2, "max_qty": 4 }
-      ]
-    },
-    {
-      "id": "search_ground",
-      "label": "Search the distorted ground",
-      "description": "Sift through the warped debris scattered beneath the tear for anything of value.",
-      "effects": [
-        { "type": "add_gold_range", "min": 15, "max": 25 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "The entropy drips in thick, slow drops that hiss against your container. A generous collection of potent material.",
+          "effects": [
+            { "type": "add_item", "item_id": "fr_entropy_residue", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "You collect a good amount, but the fumes make your head swim. The entropy seems to feed on your focus.",
+          "effects": [
+            { "type": "add_item", "item_id": "fr_entropy_residue", "min_qty": 1, "max_qty": 3 },
+            { "type": "apply_status", "status_id": "poisoned", "duration": 2, "target": "random_hero" }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "A sudden surge from the tear sprays entropy across your party. It clings and burns, dissolving fabric and searing exposed skin.",
+          "effects": [
+            { "type": "damage_party", "amount": 6 },
+            { "type": "add_item", "item_id": "fr_entropy_residue", "min_qty": 1, "max_qty": 1 }
+          ]
+        }
       ]
     },
     {
       "id": "leave",
       "label": "Leave it alone",
       "description": "Some wounds in reality are best left undisturbed.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You give the tear a wide berth, feeling the pull of oblivion tugging at your clothes as you pass. It breathes in, disappointed, and you hurry on.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

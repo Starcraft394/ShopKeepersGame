@@ -9,32 +9,71 @@
       "id": "collect_scales",
       "label": "Collect shed scales",
       "description": "Gather the discarded drake scales scattered around the nest.",
-      "effects": [
-        { "type": "add_item", "item_id": "ah_drake_scale", "min_qty": 1, "max_qty": 3 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "You fill a pouch with gleaming drake scales, each one hard as iron and warm to the touch. Excellent crafting material.",
+          "effects": [
+            { "type": "add_item", "item_id": "ah_drake_scale", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "A few scales are worth keeping, but many have cracked in the heat. You grab what you can.",
+          "effects": [
+            { "type": "add_item", "item_id": "ah_drake_scale", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The drake hasn't moved on after all. A furious screech echoes from above as it dives at the intruders!",
+          "effects": [
+            { "type": "damage_party", "amount": 6 },
+            { "type": "trigger_combat", "encounter_type": "elite" }
+          ]
+        }
       ]
     },
     {
       "id": "search_nest",
       "label": "Search the nest",
       "description": "Dig through the debris for anything the drake may have hoarded.",
-      "effects": [
-        { "type": "add_gold_range", "min": 12, "max": 22 }
-      ]
-    },
-    {
-      "id": "gather_fangs",
-      "label": "Gather fang fragments",
-      "description": "Pry loose the scorched fangs embedded in the prey bones.",
-      "effects": [
-        { "type": "add_item", "item_id": "ah_scorched_fang", "min_qty": 1, "max_qty": 2 }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "Beneath a pile of charred bones, you find coins and a scorched fang lodged in a prey skull. The drake was a prolific killer.",
+          "effects": [
+            { "type": "add_gold_range", "min": 14, "max": 24 },
+            { "type": "add_item", "item_id": "ah_scorched_fang", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "A few coins glint among the wreckage, but the hoard is mostly bones and ash.",
+          "effects": [
+            { "type": "add_gold_range", "min": 8, "max": 16 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "You disturb a clutch of ember beetles nesting in the debris. They swarm over your hands before you can pull back.",
+          "effects": [
+            { "type": "damage_hero", "amount": 6 },
+            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "leave_quietly",
       "label": "Leave quietly",
       "description": "The drake may not be far. Best not to linger.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You back away slowly, eyes scanning the sky. Nothing follows. Wisdom, for once, wins over greed.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

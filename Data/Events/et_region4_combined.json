@@ -10,6 +10,8 @@
     { "event_id": "evt_ah_volcanic_vent", "weight": 12 },
     { "event_id": "evt_ah_ash_caravan", "weight": 14 },
     { "event_id": "evt_ah_fire_shrine", "weight": 10 },
-    { "event_id": "evt_ah_magma_pool", "weight": 12 }
+    { "event_id": "evt_ah_magma_pool", "weight": 12 },
+    { "event_id": "evt_ah_forge_ruins", "weight": 10 },
+    { "event_id": "evt_ah_fire_cult", "weight": 10 }
   ]
 }

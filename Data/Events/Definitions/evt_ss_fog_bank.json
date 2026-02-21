@@ -8,33 +8,64 @@
     {
       "id": "follow_whispers",
       "label": "Follow the whispers",
-      "description": "The voices lead to a forgotten alcove full of scattered coin.",
-      "effects": [
-        { "type": "add_gold_range", "min": 15, "max": 25 }
+      "description": "The voices might lead to hidden treasure -- or hidden danger.",
+      "outcomes": [
+        {
+          "weight": 40,
+          "text": "The voices lead you through a maze of fog to a forgotten alcove. Coin and salt crystals are scattered across the stone shelf.",
+          "effects": [
+            { "type": "add_gold_range", "min": 15, "max": 25 },
+            { "type": "add_item", "item_id": "sea_salt_crystal", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The whispers lead to a modest cache of coins wedged in a rock crevice. Not bad for trusting the fog.",
+          "effects": [
+            { "type": "add_gold_range", "min": 10, "max": 18 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The fog thickens and the whispers become screams. A spectral chill courses through your party before the mist clears, leaving everyone shaken and numb.",
+          "effects": [
+            { "type": "damage_party", "amount": 6 },
+            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "party" }
+          ]
+        }
       ]
     },
     {
       "id": "collect_condensation",
       "label": "Collect the condensation",
       "description": "The fog leaves behind pure salt residue on stone.",
-      "effects": [
-        { "type": "add_item", "item_id": "sea_salt_crystal", "min_qty": 1, "max_qty": 3 }
-      ]
-    },
-    {
-      "id": "shelter_rest",
-      "label": "Shelter and rest",
-      "description": "The fog muffles all sound, granting a rare moment of peace.",
-      "effects": [
-        { "type": "heal_party", "value": 6 }
+      "outcomes": [
+        {
+          "weight": 65,
+          "text": "You scrape crystallized salt from the walls. The fog deposits are unusually pure.",
+          "effects": [
+            { "type": "add_item", "item_id": "sea_salt_crystal", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "The deposits are thin here. You gather what you can before the fog begins to dissipate.",
+          "effects": [
+            { "type": "add_item", "item_id": "sea_salt_crystal", "min_qty": 1, "max_qty": 2 }
+          ]
+        }
       ]
     },
     {
       "id": "retreat",
-      "label": "Retreat",
+      "label": "Retreat from the fog",
       "description": "Nothing good follows voices in the fog.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You back away from the fog bank. The whispers fade behind you, disappointed.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

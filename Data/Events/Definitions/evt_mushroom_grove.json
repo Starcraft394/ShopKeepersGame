@@ -6,35 +6,94 @@
   "tags": ["spore", "fungal"],
   "choices": [
     {
-      "id": "take_ore",
+      "id": "harvest_fibers",
       "label": "Harvest the fibers",
       "description": "Strip the thick fungal fibers from the mushroom stalks.",
-      "effects": [
-        { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 2, "max_qty": 4 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "The fibers peel away in long, strong strips. Good quality material -- whoever set up camp here knew this was a prime spot.",
+          "effects": [
+            { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "As you strip the stalks, you disturb a colony of luminescent beetles. They scatter, revealing a thick deposit of glowing spores beneath the bark.",
+          "effects": [
+            { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 2, "max_qty": 3 },
+            { "type": "add_item", "item_id": "glowing_spore", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The stalk you're stripping suddenly splits, releasing a pocket of trapped gas. The stench is overwhelming and your eyes burn for minutes.",
+          "effects": [
+            { "type": "add_item", "item_id": "fungal_fiber", "min_qty": 1, "max_qty": 2 },
+            { "type": "damage_hero", "amount": 4 }
+          ]
+        }
       ]
     },
     {
-      "id": "take_coal",
+      "id": "gather_threads",
       "label": "Gather the threads",
       "description": "Collect the fine mycelium threads from the root network.",
-      "effects": [
-        { "type": "add_item", "item_id": "mycelium_thread", "min_qty": 2, "max_qty": 3 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "The root network here is dense and well-established. You pull free armfuls of quality mycelium thread.",
+          "effects": [
+            { "type": "add_item", "item_id": "mycelium_thread", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "Excellent threads, and the root system has trapped bits of metal -- old nails and fittings from the camp, absorbed by the mycelium.",
+          "effects": [
+            { "type": "add_item", "item_id": "mycelium_thread", "min_qty": 2, "max_qty": 3 },
+            { "type": "add_item", "item_id": "iron_scrap", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The threads are tangled with stinging tendrils. Your hands swell and itch, but you manage a decent bundle.",
+          "effects": [
+            { "type": "add_item", "item_id": "mycelium_thread", "min_qty": 1, "max_qty": 2 },
+            { "type": "damage_hero", "amount": 3 }
+          ]
+        }
       ]
     },
     {
-      "id": "search_seat",
+      "id": "search_camp",
       "label": "Search the old camp",
       "description": "Someone left supplies in that hollowed stump.",
-      "effects": [
-        { "type": "add_gold_range", "min": 8, "max": 15 }
-      ]
-    },
-    {
-      "id": "leave",
-      "label": "Move on",
-      "description": "Leave the grove undisturbed.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "Inside the stump you find a traveler's lockbox, rusted but intact. A decent pile of coin and a few dried provisions.",
+          "effects": [
+            { "type": "add_gold_range", "min": 10, "max": 18 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The stump holds more than expected -- coin, fiber bundles, and a carefully sealed jar of spore clusters.",
+          "effects": [
+            { "type": "add_gold_range", "min": 8, "max": 12 },
+            { "type": "add_item", "item_id": "spore_cluster", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "You reach inside and something bites. A cave spider! You jerk back with a few coins and a throbbing hand.",
+          "effects": [
+            { "type": "add_gold_range", "min": 4, "max": 8 },
+            { "type": "damage_hero", "amount": 6 },
+            { "type": "apply_status", "status_id": "poisoned", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     }
   ]

@@ -9,32 +9,79 @@
       "id": "harvest_salt",
       "label": "Harvest the salt deposits",
       "description": "The crusted mineral formations break off in clean chunks.",
-      "effects": [
-        { "type": "add_item", "item_id": "sea_salt_crystal", "min_qty": 3, "max_qty": 5 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "The deposits crack away in satisfying slabs. Pure crystallized sea salt, dense and valuable.",
+          "effects": [
+            { "type": "add_item", "item_id": "sea_salt_crystal", "min_qty": 3, "max_qty": 5 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The outer crust yields decent crystals, though the deeper layers are too fused to the rock.",
+          "effects": [
+            { "type": "add_item", "item_id": "sea_salt_crystal", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "A sudden geyser erupts from the crack as you chip too close. Scalding brine sprays across the party.",
+          "effects": [
+            { "type": "add_item", "item_id": "sea_salt_crystal", "min_qty": 1, "max_qty": 2 },
+            { "type": "damage_party", "amount": 5 }
+          ]
+        }
       ]
     },
     {
       "id": "bottle_brine",
       "label": "Bottle the brine",
       "description": "Concentrated brine from a thermal vent holds potent venom properties.",
-      "effects": [
-        { "type": "add_item", "item_id": "ss_brine_venom", "min_qty": 1, "max_qty": 2 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "You carefully fill vials with the concentrated brine. The liquid practically hums with toxic potency.",
+          "effects": [
+            { "type": "add_item", "item_id": "ss_brine_venom", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "The brine is potent but the spring flow is slow. You fill what vials you can.",
+          "effects": [
+            { "type": "add_item", "item_id": "ss_brine_venom", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "The sulphurous fumes grow thick as you lean in. Your head swims and your hands shake, but you manage to fill a single vial.",
+          "effects": [
+            { "type": "add_item", "item_id": "ss_brine_venom", "min_qty": 1, "max_qty": 1 },
+            { "type": "damage_hero", "amount": 5 }
+          ]
+        }
       ]
     },
     {
       "id": "bathe",
       "label": "Bathe in the spring",
       "description": "The warm mineral water eases wounds and restores vitality.",
-      "effects": [
-        { "type": "heal_party", "value": 10 }
-      ]
-    },
-    {
-      "id": "move_on",
-      "label": "Move on",
-      "description": "No time for soaking when the strand awaits.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 70,
+          "text": "The party soaks in the warm brine. Cuts close, bruises fade, and even old aches melt away. Bliss.",
+          "effects": [
+            { "type": "heal_party", "amount": 12 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The water soothes some wounds, though the sulphur smell clings to everyone for hours afterward.",
+          "effects": [
+            { "type": "heal_party", "amount": 6 }
+          ]
+        }
       ]
     }
   ]

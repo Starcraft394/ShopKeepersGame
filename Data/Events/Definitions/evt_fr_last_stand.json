@@ -1,0 +1,84 @@
+{
+  "id": "evt_fr_last_stand",
+  "title": "Last Stand",
+  "description": "The remains of a previous expedition lie scattered across a small plateau — broken weapons, torn packs, and the ashen outlines of bodies that the void has already begun to reclaim. A makeshift barricade of dimensional debris suggests they fought hard before the end. Among the wreckage, supplies and equipment glint in the un-light.",
+  "kind": "choice",
+  "tags": ["void", "exploration"],
+  "choices": [
+    {
+      "id": "salvage",
+      "label": "Salvage their equipment",
+      "description": "Search the fallen expedition's gear for anything still usable.",
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "Their packs still hold coin and crafting materials, protected by void-warded containers. You whisper thanks to the dead and take what they no longer need.",
+          "effects": [
+            { "type": "add_gold_range", "min": 15, "max": 28 },
+            { "type": "add_item", "item_id": "fr_rift_membrane", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "Most of the supplies are corrupted beyond use, but you find entropy residue crystallized in their shattered flasks. The dead have no use for it now.",
+          "effects": [
+            { "type": "add_item", "item_id": "fr_entropy_residue", "min_qty": 2, "max_qty": 3 },
+            { "type": "add_item", "item_id": "fr_corruption_ichor", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "As you search the bodies, one of them moves. Not alive — reanimated by the void's residual energy. It claws at your hero before crumbling to ash.",
+          "effects": [
+            { "type": "damage_hero", "amount": 8 },
+            { "type": "add_gold_range", "min": 8, "max": 14 },
+            { "type": "apply_status", "status_id": "bleeding", "duration": 2, "target": "random_hero" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "honor_dead",
+      "label": "Honor the fallen",
+      "description": "Take a moment to pay respects. Perhaps the dead will reward mercy.",
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "You arrange the remains with dignity and speak words for the lost. A warmth rises from the ground — not void energy, but something older. Something grateful. Your wounds ease.",
+          "effects": [
+            { "type": "heal_party", "amount": 10 },
+            { "type": "modifier", "id": "fallen_blessing", "label": "Blessing of the Fallen", "bonus_gold": 12 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The dead cannot hear you, but the act of kindness steadies your party's nerves. You notice a cache the fallen hid beneath a stone — their final insurance, now yours.",
+          "effects": [
+            { "type": "heal_party", "amount": 5 },
+            { "type": "add_item", "item_id": "fr_dimensional_essence", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "Your vigil draws unwanted attention. The scent of living flesh in the void is rare, and predators are always hunting. Something approaches from the darkness.",
+          "effects": [
+            { "type": "heal_party", "amount": 4 },
+            { "type": "trigger_combat", "encounter_type": "basic" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "move_on",
+      "label": "Move on quickly",
+      "description": "Whatever killed them could still be nearby. You do not linger.",
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You step carefully around the remains, eyes scanning the darkness. The dead watch you go with empty sockets, and you quicken your pace without looking back.",
+          "effects": [{ "type": "nothing" }]
+        }
+      ]
+    }
+  ]
+}

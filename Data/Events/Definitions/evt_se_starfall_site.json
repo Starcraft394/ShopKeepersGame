@@ -9,32 +9,72 @@
       "id": "gather_stardust",
       "label": "Gather the stardust",
       "description": "Scoop up the luminous powder that coats every surface of the impact zone.",
-      "effects": [
-        { "type": "add_item", "item_id": "starfall_dust", "min_qty": 3, "max_qty": 5 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "The stardust is thick here, coating your gloves in golden light. You fill your pouches easily.",
+          "effects": [
+            { "type": "add_item", "item_id": "starfall_dust", "min_qty": 3, "max_qty": 5 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "Beneath the dust layer you find veins of void silk, the cosmic fabric formed when starlight weaves with shadow.",
+          "effects": [
+            { "type": "add_item", "item_id": "starfall_dust", "min_qty": 2, "max_qty": 3 },
+            { "type": "add_item", "item_id": "se_void_silk", "min_qty": 1, "max_qty": 1 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "A dormant fragment suddenly flares to life as you disturb it. The blast of cosmic energy sends you staggering backward.",
+          "effects": [
+            { "type": "damage_party", "amount": 5 },
+            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "pry_crystals",
       "label": "Pry out embedded crystals",
       "description": "Small prismatic crystals formed where the cosmic heat fused with the earth.",
-      "effects": [
-        { "type": "add_item", "item_id": "prism_shard", "min_qty": 1, "max_qty": 2 }
-      ]
-    },
-    {
-      "id": "search_debris",
-      "label": "Search for valuables in the debris",
-      "description": "The stellar bombardment churned up buried artifacts and old coins from beneath the surface.",
-      "effects": [
-        { "type": "add_gold_range", "min": 12, "max": 22 }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "The fused crystals pop free with satisfying cracks. Each one refracts the starlight beautifully.",
+          "effects": [
+            { "type": "add_item", "item_id": "prism_shard", "min_qty": 1, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "The crystals come loose along with some coins melted into the scorched earth by the impact.",
+          "effects": [
+            { "type": "add_item", "item_id": "prism_shard", "min_qty": 1, "max_qty": 2 },
+            { "type": "add_gold_range", "min": 8, "max": 14 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "Your prying awakens something in the crater. A creature formed of living starfire rises from the debris, crackling with fury.",
+          "effects": [
+            { "type": "damage_party", "amount": 4 },
+            { "type": "trigger_combat", "encounter_type": "basic" }
+          ]
+        }
       ]
     },
     {
       "id": "leave",
       "label": "Leave the site",
       "description": "The residual energy makes your teeth ache. You decide not to linger.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You give the scorched impact zone a wide berth. The pulsing fragments watch you go with dying light.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

@@ -9,32 +9,70 @@
       "id": "harvest_edges",
       "label": "Harvest the crystallized edges",
       "description": "The rim of the pool is crusted with hardened prism shards where the liquid evaporated.",
-      "effects": [
-        { "type": "add_item", "item_id": "prism_shard", "min_qty": 2, "max_qty": 4 }
-      ]
-    },
-    {
-      "id": "skim_surface",
-      "label": "Skim the surface dust",
-      "description": "A fine layer of starfall dust floats on the pool's surface like golden pollen.",
-      "effects": [
-        { "type": "add_item", "item_id": "starfall_dust", "min_qty": 2, "max_qty": 3 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "The crystal crust crumbles away in satisfying chunks. The shards ring softly as they clink together.",
+          "effects": [
+            { "type": "add_item", "item_id": "prism_shard", "min_qty": 2, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "You find an especially thick deposit where the pool once overflowed. The shards here are larger and more vibrant.",
+          "effects": [
+            { "type": "add_item", "item_id": "prism_shard", "min_qty": 3, "max_qty": 5 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The pool flares with sudden light as you disturb its edge. Refracted beams lance into your eyes like needles.",
+          "effects": [
+            { "type": "add_item", "item_id": "prism_shard", "min_qty": 1, "max_qty": 2 },
+            { "type": "apply_status", "status_id": "blinded", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "bathe_in_light",
       "label": "Bathe in the refracted light",
       "description": "The pool's prismatic radiance soothes aches and closes wounds with gentle warmth.",
-      "effects": [
-        { "type": "heal_party", "value": 10 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "The light washes over your party like warm rain. Aches fade, cuts close, and fatigue melts away.",
+          "effects": [
+            { "type": "heal_party", "amount": 10 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "The pool's light intensifies as you approach, bathing the party in brilliant restorative energy.",
+          "effects": [
+            { "type": "heal_party", "amount": 15 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The light soothes most of you, but one hero catches a concentrated beam that leaves spots dancing in their vision.",
+          "effects": [
+            { "type": "heal_party", "amount": 8 },
+            { "type": "apply_status", "status_id": "blinded", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "move_on",
       "label": "Move on",
       "description": "The pool is beautiful, but there are more pressing matters ahead.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You admire the dancing light for a moment, then press onward through the Expanse.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

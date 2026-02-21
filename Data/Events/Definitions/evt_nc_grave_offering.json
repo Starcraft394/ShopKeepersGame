@@ -9,32 +9,71 @@
       "id": "take_coins",
       "label": "Take the coins",
       "description": "The dead have no use for gold, but the living do.",
-      "effects": [
-        { "type": "add_gold_range", "min": 12, "max": 22 }
-      ]
-    },
-    {
-      "id": "gather_grass",
-      "label": "Gather the deadman's grass",
-      "description": "The dark grass woven into the charms grows only on graves — herbalists covet it.",
-      "effects": [
-        { "type": "add_item", "item_id": "deadmans_grass", "min_qty": 2, "max_qty": 3 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "You pocket the coin pouches quickly. The graves remain silent — whoever left these won't miss them.",
+          "effects": [
+            { "type": "add_gold_range", "min": 14, "max": 24 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "A generous take. One pouch holds twice the gold you expected, along with a small gem wrapped in cloth.",
+          "effects": [
+            { "type": "add_gold_range", "min": 20, "max": 28 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "As you grab the last pouch, a spectral hand erupts from the grave and rakes across your arm. The dead take their offerings seriously.",
+          "effects": [
+            { "type": "add_gold_range", "min": 10, "max": 16 },
+            { "type": "damage_hero", "amount": 7 },
+            { "type": "apply_status", "status_id": "bleeding", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "collect_dust",
       "label": "Collect the grave dust",
       "description": "Fine dust from freshly tended graves holds potent alchemical properties.",
-      "effects": [
-        { "type": "add_item", "item_id": "nc_grave_dust", "min_qty": 2, "max_qty": 3 }
+      "outcomes": [
+        {
+          "weight": 55,
+          "text": "You kneel beside the graves and carefully brush the dust into pouches. The headstones watch you impassively.",
+          "effects": [
+            { "type": "add_item", "item_id": "nc_grave_dust", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The dust here is unusually pure — the grave tenders clearly keep these plots well maintained. An excellent yield.",
+          "effects": [
+            { "type": "add_item", "item_id": "nc_grave_dust", "min_qty": 3, "max_qty": 4 }
+          ]
+        },
+        {
+          "weight": 15,
+          "text": "A whiff of the dust makes your head spin and your vision blur. You gather what you can before staggering away.",
+          "effects": [
+            { "type": "add_item", "item_id": "nc_grave_dust", "min_qty": 1, "max_qty": 2 },
+            { "type": "damage_hero", "amount": 4 }
+          ]
+        }
       ]
     },
     {
       "id": "move_on",
       "label": "Respect the dead",
       "description": "Grave robbing carries its own kind of curse.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You tip your head to the headstones and walk on. Some debts are not worth collecting.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

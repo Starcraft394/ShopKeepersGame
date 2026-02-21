@@ -9,32 +9,69 @@
       "id": "follow_echo",
       "label": "Follow the echo",
       "description": "The dead sometimes guard forgotten treasure.",
-      "effects": [
-        { "type": "add_gold_range", "min": 15, "max": 25 }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "The warrior's ghost leads you through a maze of corridors to a collapsed alcove. Behind the rubble, a strongbox gleams with old gold.",
+          "effects": [
+            { "type": "add_gold_range", "min": 18, "max": 28 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "The echo leads you to a hidden cache — the warrior's own burial hoard, undisturbed for centuries.",
+          "effects": [
+            { "type": "add_gold_range", "min": 12, "max": 18 },
+            { "type": "add_item", "item_id": "nc_wraith_thread", "min_qty": 1, "max_qty": 2 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "It was a lure. The passage ends in a pit trap, and spectral claws rake your party from the walls as you scramble to escape.",
+          "effects": [
+            { "type": "damage_party", "amount": 6 },
+            { "type": "apply_status", "status_id": "bleeding", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "capture_thread",
       "label": "Capture the spectral thread",
       "description": "A quick hand can snare the ectoplasmic strands that trail behind it.",
-      "effects": [
-        { "type": "add_item", "item_id": "nc_wraith_thread", "min_qty": 2, "max_qty": 3 }
-      ]
-    },
-    {
-      "id": "listen_whispers",
-      "label": "Listen to its whispers",
-      "description": "The echo's murmuring carries a strange, restorative calm.",
-      "effects": [
-        { "type": "heal_party", "value": 8 }
+      "outcomes": [
+        {
+          "weight": 50,
+          "text": "You lunge and grab a fistful of ectoplasm as the echo drifts past. It shrieks silently and dissolves, leaving the precious threads in your hand.",
+          "effects": [
+            { "type": "add_item", "item_id": "nc_wraith_thread", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "You snare a thick strand, but the echo recoils violently. A pulse of necrotic cold burns through your arm.",
+          "effects": [
+            { "type": "add_item", "item_id": "nc_wraith_thread", "min_qty": 1, "max_qty": 2 },
+            { "type": "damage_hero", "amount": 7 }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The echo flickers and you grab only air. A chill settles over your party as the spirit fades, leaving nothing behind.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     },
     {
       "id": "move_on",
       "label": "Ignore the apparition",
       "description": "Spectral echoes are unreliable guides at best.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You avert your gaze and take a different passage. The echo continues its silent pantomime behind you, indifferent to your departure.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]

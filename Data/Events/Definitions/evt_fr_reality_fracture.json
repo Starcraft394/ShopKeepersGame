@@ -9,32 +9,71 @@
       "id": "harvest_edges",
       "label": "Harvest the fracture edges",
       "description": "Carefully peel thin membranes of compressed space from along the fracture lines.",
-      "effects": [
-        { "type": "add_item", "item_id": "fr_rift_membrane", "min_qty": 2, "max_qty": 3 }
-      ]
-    },
-    {
-      "id": "collect_null",
-      "label": "Collect the null particles",
-      "description": "Gather the drifting motes of un-matter that fall from the cracks in reality.",
-      "effects": [
-        { "type": "add_item", "item_id": "fr_null_fragment", "min_qty": 2, "max_qty": 3 }
+      "outcomes": [
+        {
+          "weight": 45,
+          "text": "The membranes peel away like translucent sheets of compressed reality. They fold into impossibly small shapes for easy carrying.",
+          "effects": [
+            { "type": "add_item", "item_id": "fr_rift_membrane", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "Most membranes come free cleanly, but one fracture snaps shut on your fingers. The compressed space leaves deep cuts that bleed in strange colors.",
+          "effects": [
+            { "type": "add_item", "item_id": "fr_rift_membrane", "min_qty": 1, "max_qty": 2 },
+            { "type": "apply_status", "status_id": "bleeding", "duration": 2, "target": "random_hero" }
+          ]
+        },
+        {
+          "weight": 20,
+          "text": "The fracture web destabilizes as you pull. Shards of broken reality rain down, cutting through armor and flesh alike.",
+          "effects": [
+            { "type": "damage_party", "amount": 7 },
+            { "type": "add_item", "item_id": "fr_rift_membrane", "min_qty": 1, "max_qty": 1 }
+          ]
+        }
       ]
     },
     {
       "id": "peer_through",
       "label": "Peer through for treasure",
       "description": "Look through the fractured reflections for objects caught between dimensions.",
-      "effects": [
-        { "type": "add_gold_range", "min": 15, "max": 30 }
+      "outcomes": [
+        {
+          "weight": 40,
+          "text": "Between two cracks, a coin purse floats in frozen suspension. You carefully extract it — still heavy with gold from a world that no longer exists.",
+          "effects": [
+            { "type": "add_gold_range", "min": 15, "max": 30 }
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "You spot null fragments drifting in the spaces between — solidified pieces of the void visible only through the fractures. You snag several.",
+          "effects": [
+            { "type": "add_item", "item_id": "fr_null_fragment", "min_qty": 2, "max_qty": 3 }
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "You peer too deeply and vertigo seizes you. The fractures show a thousand versions of your own death. Your party drags you back, retching and shaking.",
+          "effects": [
+            { "type": "damage_hero", "amount": 8 },
+            { "type": "apply_status", "status_id": "blinded", "duration": 2, "target": "random_hero" }
+          ]
+        }
       ]
     },
     {
       "id": "back_away",
       "label": "Back away",
       "description": "The geometry here is wrong in ways that hurt to comprehend.",
-      "effects": [
-        { "type": "nothing" }
+      "outcomes": [
+        {
+          "weight": 100,
+          "text": "You avert your eyes from the fractures and navigate by sound alone until the geometry straightens itself. Some sights cannot be unseen.",
+          "effects": [{ "type": "nothing" }]
+        }
       ]
     }
   ]
