@@ -9,7 +9,7 @@
   "boss_id": "fm_spiral_mycelium",
   "alt_boss_id": "",
   "min_rooms_per_floor": 3,
-  "max_rooms_per_floor": 5,
+  "max_rooms_per_floor": 6,
   "choice_b_event_weight": 0.6,
   "choice_b_elite_weight": 0.4,
   "event_table_id": "et_region2_combined",

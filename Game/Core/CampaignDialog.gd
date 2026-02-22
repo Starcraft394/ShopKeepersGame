@@ -25,11 +25,20 @@ static func get_pending_dialogs(trigger: String, region_id: String = "", floor_n
 		if trigger == "dungeon_camp_story" and floor_num >= 0:
 			var dialog_floor: int = dialog.dungeon_floor
 			if dialog_floor == -1:
-				# -1 means final floor before boss
+				# -1 means the camp immediately before the boss fight
 				var dungeon_id: String = GameContext.get_current_dungeon_id()
 				var dungeon_data = DataRegistry.get_dungeon(dungeon_id)
 				var total_floors: int = dungeon_data.floor_count if dungeon_data != null else 4
 				if floor_num != total_floors:
+					continue
+				# Must also be the camp where next room is the boss
+				var choices: Dictionary = GameContext.get_pending_room_choices()
+				var is_boss_next: bool = false
+				for c in choices.get("choices", []):
+					if c.get("forced_boss", false):
+						is_boss_next = true
+						break
+				if not is_boss_next:
 					continue
 			elif dialog_floor != floor_num:
 				continue
@@ -170,7 +179,7 @@ class _CampaignPanel extends CanvasLayer:
 
 		# Speaker name
 		_speaker_label = Label.new()
-		_speaker_label.add_theme_font_size_override("font_size", 14)
+		_speaker_label.add_theme_font_size_override("font_size", GameContext.fs(16))
 		_speaker_label.add_theme_color_override("font_color", SPEAKER_COLOR)
 		text_col.add_child(_speaker_label)
 
@@ -180,7 +189,7 @@ class _CampaignPanel extends CanvasLayer:
 		_body_label.fit_content = true
 		_body_label.scroll_active = false
 		_body_label.custom_minimum_size = Vector2(0, 60)
-		_body_label.add_theme_font_size_override("normal_font_size", 15)
+		_body_label.add_theme_font_size_override("normal_font_size", GameContext.fs(17))
 		_body_label.add_theme_color_override("default_color", BODY_COLOR)
 		text_col.add_child(_body_label)
 
@@ -238,7 +247,7 @@ class _CampaignPanel extends CanvasLayer:
 
 		# Speaker name
 		_speaker_label = Label.new()
-		_speaker_label.add_theme_font_size_override("font_size", 13)
+		_speaker_label.add_theme_font_size_override("font_size", GameContext.fs(15))
 		_speaker_label.add_theme_color_override("font_color", SPEAKER_COLOR)
 		text_col.add_child(_speaker_label)
 
@@ -248,7 +257,7 @@ class _CampaignPanel extends CanvasLayer:
 		_body_label.fit_content = true
 		_body_label.scroll_active = false
 		_body_label.custom_minimum_size = Vector2(0, 40)
-		_body_label.add_theme_font_size_override("normal_font_size", 14)
+		_body_label.add_theme_font_size_override("normal_font_size", GameContext.fs(16))
 		_body_label.add_theme_color_override("default_color", BODY_COLOR)
 		text_col.add_child(_body_label)
 
@@ -263,7 +272,7 @@ class _CampaignPanel extends CanvasLayer:
 
 		# Line indicator
 		_indicator_label = Label.new()
-		_indicator_label.add_theme_font_size_override("font_size", 12)
+		_indicator_label.add_theme_font_size_override("font_size", GameContext.fs(14))
 		_indicator_label.add_theme_color_override("font_color", SKIP_COLOR)
 		_indicator_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn_row.add_child(_indicator_label)
@@ -272,7 +281,7 @@ class _CampaignPanel extends CanvasLayer:
 		var skip_btn := Button.new()
 		skip_btn.text = "Skip"
 		skip_btn.flat = true
-		skip_btn.add_theme_font_size_override("font_size", 12)
+		skip_btn.add_theme_font_size_override("font_size", GameContext.fs(14))
 		skip_btn.add_theme_color_override("font_color", SKIP_COLOR)
 		skip_btn.add_theme_color_override("font_hover_color", Color(0.7, 0.7, 0.7, 1.0))
 		skip_btn.pressed.connect(_on_skip_pressed)
@@ -280,7 +289,7 @@ class _CampaignPanel extends CanvasLayer:
 
 		# Continue button
 		_continue_btn = Button.new()
-		_continue_btn.add_theme_font_size_override("font_size", 15)
+		_continue_btn.add_theme_font_size_override("font_size", GameContext.fs(17))
 		_continue_btn.pressed.connect(_on_continue_pressed)
 		btn_row.add_child(_continue_btn)
 

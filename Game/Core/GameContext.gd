@@ -164,9 +164,30 @@ var loot_pref: Dictionary = {}
 
 # Gameplay option: auto-deposit loot to shopkeeper bag → hero bags → stash
 var auto_loot: bool = false
+# Audio preference: use alternate region soundtrack set
+var use_alt_bgm: bool = false
+# Tester mode: enables dev/debug buttons in release builds
+var tester_mode: bool = false
+# Text size: 0=Small, 1=Medium (default), 2=Large
+var text_size: int = 1
 
 # UI preferences (persisted across sessions)
 var loot_panel_size: Vector2 = Vector2(620, 400)
+
+
+## Returns font size adjusted for text_size setting: Small=-2, Medium=0, Large=+2
+func fs(base: int) -> int:
+	return base + (text_size - 1) * 2
+
+
+func apply_text_size_to_theme() -> void:
+	var t: Theme = preload("res://Themes/CraftPix/craftpix_ui_tinted.tres")
+	t.default_font_size = fs(17)
+	t.set_font_size("font_size", "Button", fs(17))
+	t.set_font_size("font_size", "Label", fs(17))
+	t.set_font_size("font_size", "LineEdit", fs(17))
+	t.set_font_size("normal_font_size", "RichTextLabel", fs(16))
+	t.set_font_size("font_size", "TooltipLabel", fs(15))
 
 # ============================================================================
 # GROUP UNLOCKS (persistent, controls what Shop can sell)
@@ -412,9 +433,13 @@ var bonus_stash_capacity: int = 0
 # SHOP REFRESH COUNTERS (controls deterministic inventory generation)
 # ============================================================================
 
-# Tracks refresh count per shop: "shop_id" -> refresh_count (int)
-# Used to change shop inventory deterministically on refresh
+# Tracks manual refresh uses per shop: "shop_id" -> uses (int)
+# Reset on dungeon return so player gets fresh allowance each visit
 var shop_refresh_counts: Dictionary = {}
+
+# Monotonically increasing restock version per shop: "shop_id" -> version (int)
+# Used as seed component for deterministic inventory generation
+var shop_restock_version: Dictionary = {}
 
 # ============================================================================
 # SHOP SLOT ALLOCATION (General Store v2 - Facility-based slots)
@@ -479,6 +504,7 @@ func _initialize_default_state() -> void:
 
 	# Load saved game data (floor unlocks, selected floors, etc.)
 	load_game()
+	apply_text_size_to_theme()
 
 
 # ============================================================================
@@ -591,26 +617,23 @@ func is_region_unlocked(region_id: String) -> bool:
 	return is_region_completed(req)
 
 
-## Check if the player can challenge the dungeon boss in a given town.
-## Requires at least half of the T4-capable facilities to be at Tier 4.
+## Get the sum of all facility tiers for a town.
+func get_total_facility_tiers(town_id: String) -> int:
+	var total: int = 0
+	for key in facility_tiers.keys():
+		if key.begins_with(town_id + ":"):
+			total += int(facility_tiers[key])
+	return total
+
+## Boss floor gate constant: total facility tiers required to enter Floor 4.
+const BOSS_FLOOR_TIER_REQUIREMENT: int = 9
+
+## Check if the player can enter the boss floor (Floor 4) in a given town.
+## Requires 9+ total facility tier upgrades in that region.
 ## Returns { "ready": bool, "current": int, "required": int }
 func can_challenge_boss(town_id: String) -> Dictionary:
-	var town_data = DataRegistry.get_town(town_id)
-	if town_data == null:
-		return {"ready": true, "current": 0, "required": 0}
-
-	var t4_capable: int = 0
-	var at_t4: int = 0
-
-	for fac_id in town_data.facility_ids:
-		var max_tier: int = get_facility_max_tier(fac_id)
-		if max_tier >= 4:
-			t4_capable += 1
-			if get_facility_tier(town_id, fac_id) >= 4:
-				at_t4 += 1
-
-	var required: int = ceili(t4_capable / 2.0)
-	return {"ready": at_t4 >= required, "current": at_t4, "required": required}
+	var current: int = get_total_facility_tiers(town_id)
+	return {"ready": current >= BOSS_FLOOR_TIER_REQUIREMENT, "current": current, "required": BOSS_FLOOR_TIER_REQUIREMENT}
 
 
 ## Strip all equipment and bag items from a hero (used on flee).
@@ -920,24 +943,40 @@ func get_max_stash_capacity() -> int:
 			total += facility_tiers[key] * STASH_CAPACITY_PER_STORAGE_TIER
 	return total + bonus_stash_capacity
 
-## Get current stash item count.
+## Get distinct item_id set from run_items (for stack-based capacity counting).
+func _get_distinct_stash_ids() -> Dictionary:
+	var ids: Dictionary = {}
+	for item in run_items:
+		var tid: String = ""
+		if item is ItemInstance:
+			tid = item.template_id
+		elif item is Dictionary:
+			tid = item.get("item_id", "")
+		if tid != "":
+			ids[tid] = true
+	return ids
+
+## Get current stash stack count (distinct item types).
 func get_current_stash_count() -> int:
-	return run_items.size()
+	return _get_distinct_stash_ids().size()
 
-## Check if stash has room for additional items.
-func can_add_to_stash(qty: int = 1) -> bool:
-	return get_current_stash_count() + qty <= get_max_stash_capacity()
+## Check if stash has room. If item_id already stacks in stash, always true.
+func can_add_to_stash(item_id: String = "") -> bool:
+	if item_id != "":
+		if _get_distinct_stash_ids().has(item_id):
+			return true
+	return get_current_stash_count() < get_max_stash_capacity()
 
-## Add item to run stash. Returns false if stash is full.
+## Add item to run stash. Returns false if stash is full (no room for new stack).
 func add_run_item(item_id: String, qty: int = 1) -> bool:
 	if item_id == "" or qty <= 0:
 		return false
-	if not can_add_to_stash(qty):
-		print("[RunStash] FULL: cannot add %d %s (current=%d max=%d)" % [qty, item_id, get_current_stash_count(), get_max_stash_capacity()])
+	if not can_add_to_stash(item_id):
+		print("[RunStash] FULL: cannot add %d %s (stacks=%d max=%d)" % [qty, item_id, get_current_stash_count(), get_max_stash_capacity()])
 		return false
 	for i in range(qty):
 		run_items.append({ "item_id": item_id, "qty": 1 })
-	print("[RunStash] +%d %s => %d/%d items" % [qty, item_id, run_items.size(), get_max_stash_capacity()])
+	print("[RunStash] +%d %s => %d/%d stacks" % [qty, item_id, get_current_stash_count(), get_max_stash_capacity()])
 	return true
 
 
@@ -1869,9 +1908,9 @@ func resolve_acquisition_at(index: int, recipient_type: String, hero_id: String 
 		if _current_phase != GamePhase.TOWN:
 			print("[Acquire] reject to=stash item=%s reason=banked_stash_locked (phase=%s)" % [item_id, get_phase_name()])
 			return false
-		# Check stash capacity
-		if get_current_stash_count() >= get_max_stash_capacity():
-			print("[Acquire] reject to=stash item=%s reason=stash_full (%d/%d)" % [item_id, get_current_stash_count(), get_max_stash_capacity()])
+		# Check stash capacity (stack-based)
+		if not can_add_to_stash(item_id):
+			print("[Acquire] reject to=stash item=%s reason=stash_full (%d/%d stacks)" % [item_id, get_current_stash_count(), get_max_stash_capacity()])
 			return false
 		# In town: route to run_items (banked stash) — stash CAN stack
 		var stash_entry: Dictionary = {"item_id": item_id, "qty": qty, "quality_tier": quality}
@@ -3322,10 +3361,13 @@ const SHOP_REFRESH_LIMIT_BY_TIER: Dictionary = {
 	4: 4
 }
 
-## Get shop refresh count for a specific shop.
+## Get shop manual refresh uses for a specific shop (resets each town visit).
 func get_shop_refresh_count(shop_id: String) -> int:
 	return shop_refresh_counts.get(shop_id, 0)
 
+## Get shop restock version (monotonically increasing, used for seed generation).
+func get_shop_restock_version(shop_id: String) -> int:
+	return shop_restock_version.get(shop_id, 0)
 
 ## Get the gold cost to refresh a shop.
 ## Cost formula: base + scale * refresh_count, capped at max.
@@ -3354,7 +3396,8 @@ func has_shop_refreshes_remaining(shop_id: String) -> bool:
 	return get_shop_refresh_count(shop_id) < get_shop_refresh_limit(shop_id)
 
 
-## Spend gold and refresh the shop inventory.
+## Spend gold and manually refresh the shop inventory.
+## Increments both refresh uses (for limit) and restock version (for seed).
 ## Returns true if successful, false if insufficient gold or limit reached.
 func spend_shop_refresh(shop_id: String) -> bool:
 	# Check refresh limit
@@ -3376,29 +3419,27 @@ func spend_shop_refresh(shop_id: String) -> bool:
 	spend_run_gold(cost)
 	var gold_after = get_run_gold()
 
-	# Increment refresh count
-	var current = get_shop_refresh_count(shop_id)
-	var new_count = current + 1
-	shop_refresh_counts[shop_id] = new_count
+	# Increment manual refresh uses (for tier limit tracking)
+	shop_refresh_counts[shop_id] = get_shop_refresh_count(shop_id) + 1
+	# Increment restock version (for seed change)
+	shop_restock_version[shop_id] = get_shop_restock_version(shop_id) + 1
 
-	print("[ShopRNG] refresh_pressed shop=%s cost=%d success=true gold_before=%d gold_after=%d" % [
-		shop_id, cost, gold_before, gold_after
-	])
+	print("[ShopRNG] refresh shop=%s cost=%d gold=%d->%d uses=%d/%d version=%d" % [
+		shop_id, cost, gold_before, gold_after,
+		get_shop_refresh_count(shop_id), get_shop_refresh_limit(shop_id),
+		get_shop_restock_version(shop_id)])
 
 	save_game()
 	return true
 
 
-## Increment shop refresh count to change inventory (legacy - use spend_shop_refresh instead).
-func increment_shop_refresh(shop_id: String) -> int:
-	var current = get_shop_refresh_count(shop_id)
-	var new_count = current + 1
-	shop_refresh_counts[shop_id] = new_count
-	# Clear purchased slots on refresh since new items are generated
+## Restock shop on dungeon return: new inventory + fresh refresh allowance.
+## Increments restock version (new seed), clears purchases, resets manual refresh uses.
+func restock_shop(shop_id: String) -> void:
+	shop_restock_version[shop_id] = get_shop_restock_version(shop_id) + 1
 	shop_purchased_slots[shop_id] = []
-	print("[ShopRNG] refresh_pressed shop=%s new_refresh=%d (legacy call)" % [shop_id, new_count])
-	save_game()
-	return new_count
+	shop_refresh_counts[shop_id] = 0
+	print("[ShopRNG] restock shop=%s version=%d (refresh uses reset)" % [shop_id, get_shop_restock_version(shop_id)])
 
 
 ## Mark a shop slot as purchased (shows empty slot instead of item)
@@ -3428,7 +3469,8 @@ func clear_shop_purchased_slots(shop_id: String) -> void:
 
 ## Get max shop slots for current town based on General Store tier.
 func get_shop_max_slots(town_id: String) -> int:
-	var shop_tier = get_facility_tier(town_id, "shop_thornhaven")  # General Store facility ID
+	var shop_id: String = town_id.replace("town_", "shop_")
+	var shop_tier = get_facility_tier(town_id, shop_id)
 	return SHOP_TIER_MAX_SLOTS.get(shop_tier, SHOP_TIER_MAX_SLOTS[1])
 
 
@@ -3934,7 +3976,7 @@ func find_cleanse_consumable(for_effect: String, hero_id: String = "") -> Dictio
 func _is_healing_consumable(template: ItemTemplate) -> bool:
 	if template.item_type != "consumable":
 		return false
-	return template.use_effect in ["heal", "heal_small", "heal_large"]
+	return template.use_effect in ["heal", "heal_small", "heal_large", "heal_and_buff", "heal_and_buff_all", "heal_and_cure", "heal_and_regen", "heal_shield", "hot_heal"]
 
 ## Helper: Extract item_id from stash entry (ItemInstance or Dictionary).
 func _get_item_id_from_entry(item) -> String:
@@ -4033,7 +4075,7 @@ func use_consumable_on_hero(item_id: String, hero_id: String, source: String = "
 	# Apply effect based on use_effect string
 	var result: Dictionary = {}
 	match use_effect:
-		"heal", "heal_small", "heal_large":
+		"heal", "heal_small", "heal_large", "heal_and_buff", "heal_and_buff_all", "heal_and_cure", "heal_and_regen", "heal_shield", "hot_heal":
 			result = _apply_camp_heal(hero_id, use_value)
 		"cure_poison":
 			result = _apply_camp_cleanse(hero_id, ["poisoned"])
@@ -4611,6 +4653,7 @@ func save_game() -> void:
 		"housing_upgrades": housing_upgrades,
 		"bonus_stash_capacity": bonus_stash_capacity,
 		"shop_refresh_counts": shop_refresh_counts,
+		"shop_restock_version": shop_restock_version,
 		"shop_purchased_slots": shop_purchased_slots,
 		"shop_slot_allocations": shop_slot_allocations,
 		# Player gold (town persistent)
@@ -4626,6 +4669,9 @@ func save_game() -> void:
 		# Loot routing preferences (v5)
 		"loot_pref": loot_pref,
 		"auto_loot": auto_loot,
+		"use_alt_bgm": use_alt_bgm,
+		"tester_mode": tester_mode,
+		"text_size": text_size,
 		"loot_panel_size": [loot_panel_size.x, loot_panel_size.y],
 		# Region progression
 		"current_region": current_region,
@@ -4750,8 +4796,9 @@ func reset_save_game() -> void:
 	housing_upgrades = {}
 	bonus_stash_capacity = 0
 
-	# Shop refresh counts
+	# Shop refresh counts + restock version
 	shop_refresh_counts = {}
+	shop_restock_version = {}
 
 	# Shop purchased slots (empty slots after purchase)
 	shop_purchased_slots = {}
@@ -4990,9 +5037,11 @@ func load_game() -> void:
 		if save_data.has("bonus_stash_capacity"):
 			bonus_stash_capacity = int(save_data.bonus_stash_capacity)
 		# Migration: bonus_starting_gold removed - old saves safely ignored
-		# Load shop refresh counts
+		# Load shop refresh counts + restock version
 		if save_data.has("shop_refresh_counts") and save_data.shop_refresh_counts is Dictionary:
 			shop_refresh_counts = save_data.shop_refresh_counts
+		if save_data.has("shop_restock_version") and save_data.shop_restock_version is Dictionary:
+			shop_restock_version = save_data.shop_restock_version
 		# Load shop purchased slots (empty slots after purchase)
 		if save_data.has("shop_purchased_slots") and save_data.shop_purchased_slots is Dictionary:
 			shop_purchased_slots = save_data.shop_purchased_slots
@@ -5024,6 +5073,12 @@ func load_game() -> void:
 		# Auto-loot gameplay option
 		if save_data.has("auto_loot"):
 			auto_loot = bool(save_data.auto_loot)
+		if save_data.has("use_alt_bgm"):
+			use_alt_bgm = bool(save_data.use_alt_bgm)
+		if save_data.has("tester_mode"):
+			tester_mode = bool(save_data.tester_mode)
+		if save_data.has("text_size"):
+			text_size = clampi(int(save_data.text_size), 0, 2)
 		if save_data.has("loot_panel_size") and save_data.loot_panel_size is Array and save_data.loot_panel_size.size() == 2:
 			loot_panel_size = Vector2(float(save_data.loot_panel_size[0]), float(save_data.loot_panel_size[1]))
 		# Load region progression
@@ -5406,10 +5461,10 @@ func exit_to_town() -> void:
 	# TownReset: heal all heroes and clear status effects
 	apply_town_entry_reset()
 
-	# Refresh shop inventory on dungeon return
+	# Restock shop on dungeon return: new inventory + fresh refresh allowance
 	var shop_id = _current_town_id.replace("town_", "shop_")
-	increment_shop_refresh(shop_id)
-	print("[GameContext] Shop inventory refreshed on dungeon return (shop_id=%s)" % shop_id)
+	restock_shop(shop_id)
+	print("[GameContext] Shop restocked on dungeon return (shop_id=%s)" % shop_id)
 
 	# Unlock saves and persist town-return state
 	_dungeon_save_lock = false
@@ -5553,8 +5608,25 @@ func prepare_room_event_payload() -> void:
 
 
 # ============================================================================
-# 2-CHOICE ROOM SYSTEM
+# ROOM CHOICE SYSTEM (1-3 independent options per room)
 # ============================================================================
+
+# Per-floor event and elite independent roll chances.
+# Key = floor number (1-indexed). Floors beyond max key use the max key's values.
+const FLOOR_ROOM_CHANCES: Dictionary = {
+	1: {"event": 0.50, "elite": 0.25},
+	2: {"event": 0.40, "elite": 0.30},
+	3: {"event": 0.30, "elite": 0.35},
+	4: {"event": 0.25, "elite": 0.40},
+}
+
+
+## Get event/elite chances for a floor, clamping to max defined floor.
+func _get_floor_chances(floor_num: int) -> Dictionary:
+	var max_key: int = 4
+	var clamped: int = clampi(floor_num, 1, max_key)
+	return FLOOR_ROOM_CHANCES.get(clamped, {"event": 0.25, "elite": 0.40})
+
 
 ## Generate dynamic rooms_per_floor using dungeon's min/max.
 ## Called when entering dungeon.
@@ -5573,40 +5645,62 @@ func generate_rooms_per_floor(rng: RandomNumberGenerator) -> int:
 	return rng.randi_range(min_r, max_r)
 
 
-## Roll what Choice B should be (event or elite combat).
-## Returns: { "type": "combat"|"event", "is_elite": bool, "is_boss": bool, "display": String }
-func roll_choice_b(rng: RandomNumberGenerator) -> Dictionary:
-	var dungeon = DataRegistry.get_dungeon(current_dungeon_id) if DataRegistry.has_method("get_dungeon") else null
-	var event_weight = 0.65
-	var elite_weight = 0.35
+## Roll independent room choices for the current floor.
+## Returns an Array of choice Dictionaries: always includes Combat,
+## plus Event and/or Elite if their independent rolls succeed.
+func _roll_room_choices(rng: RandomNumberGenerator, floor_num: int) -> Array:
+	var choices: Array = []
 
-	if dungeon != null:
-		event_weight = dungeon.choice_b_event_weight if dungeon.choice_b_event_weight > 0 else 0.65
-		elite_weight = dungeon.choice_b_elite_weight if dungeon.choice_b_elite_weight > 0 else 0.35
+	# Combat is ALWAYS present
+	choices.append({
+		"type": "combat",
+		"is_elite": false,
+		"is_boss": false,
+		"forced_elite": false,
+		"forced_boss": false,
+		"display": "Combat"
+	})
 
-	# Normalize weights
-	var total = event_weight + elite_weight
-	if total <= 0:
-		total = 1.0
-	var event_chance = event_weight / total
+	var chances: Dictionary = _get_floor_chances(floor_num)
 
-	var roll = rng.randf()
-	if roll < event_chance:
-		return { "type": "event", "is_elite": false, "is_boss": false, "display": "Event" }
-	else:
-		return { "type": "combat", "is_elite": true, "is_boss": false, "display": "Elite Combat" }
+	# Independent event roll (skip if last room was event — no consecutive events)
+	if not _last_room_was_event:
+		var event_roll: float = rng.randf()
+		if event_roll < chances.get("event", 0.0):
+			choices.append({
+				"type": "event",
+				"is_elite": false,
+				"is_boss": false,
+				"forced_elite": false,
+				"forced_boss": false,
+				"display": "Event"
+			})
+
+	# Independent elite roll
+	var elite_roll: float = rng.randf()
+	if elite_roll < chances.get("elite", 0.0):
+		choices.append({
+			"type": "combat",
+			"is_elite": true,
+			"is_boss": false,
+			"forced_elite": false,
+			"forced_boss": false,
+			"display": "Elite Combat"
+		})
+
+	return choices
 
 
-## Generate both room choices for camp display.
+## Generate room choices for camp display.
 ## Choices are for the NEXT room (current_room_index + 1).
 ## Rules:
 ##   - If not in dungeon -> return empty
 ##   - If currently on last room of floor -> set "descend" mode (no room choices)
-##   - Choice A: ALWAYS labeled "Combat", but includes forced_elite/forced_boss flags
-##   - Choice B: Event or Elite (weighted roll), disabled when next is last/boss room
-##   - No 2 events in a row: if _last_room_was_event, force B = Elite
-##   - Last room of floor: forced_elite=true (actual encounter is Elite)
-##   - Final floor + last room: forced_boss=true (Boss overrides Elite)
+##   - Combat always present as an option
+##   - Event and Elite are independent rolls per floor (FLOOR_ROOM_CHANCES)
+##   - No 2 events in a row: if _last_room_was_event, skip event roll
+##   - Last room of floor: forced_elite=true (only one option)
+##   - Final floor + last room: forced_boss=true (only one option)
 func generate_pending_room_choices(rng: RandomNumberGenerator) -> void:
 	# Not in dungeon -> return empty
 	if current_dungeon_id == "":
@@ -5614,11 +5708,11 @@ func generate_pending_room_choices(rng: RandomNumberGenerator) -> void:
 		return
 
 	var dungeon = DataRegistry.get_dungeon(current_dungeon_id) if DataRegistry.has_method("get_dungeon") else null
-	var floor_count = dungeon.floor_count if dungeon != null else 4
+	var floor_count: int = dungeon.floor_count if dungeon != null else 4
 
 	# If currently on last room of floor -> no room choices, show descend
 	if is_last_room_on_floor():
-		var is_final_floor = current_floor >= floor_count
+		var is_final_floor: bool = current_floor >= floor_count
 		pending_room_choices = {
 			"mode": "descend",
 			"is_final_floor": is_final_floor
@@ -5629,68 +5723,59 @@ func generate_pending_room_choices(rng: RandomNumberGenerator) -> void:
 		return
 
 	# Calculate what the NEXT room will be
-	var next_room_index = current_room_index + 1
-	var next_is_last_room_on_floor = (next_room_index >= rooms_per_floor - 1)
-	var next_is_boss_room = (current_floor >= floor_count) and next_is_last_room_on_floor
+	var next_room_index: int = current_room_index + 1
+	var next_is_last_room_on_floor: bool = (next_room_index >= rooms_per_floor - 1)
+	var next_is_boss_room: bool = (current_floor >= floor_count) and next_is_last_room_on_floor
 
-	# Determine forced flags for Choice A
-	var forced_elite = false
-	var forced_boss = false
+	# Forced scenarios: single-option rooms
 	if next_is_boss_room:
-		forced_boss = true  # Boss overrides elite
-	elif next_is_last_room_on_floor:
-		forced_elite = true  # Last room of floor is elite
-
-	# Choice A: ALWAYS labeled "Combat", but may force elite/boss encounter
-	var choice_a = {
-		"type": "combat",
-		"is_elite": false,
-		"is_boss": false,
-		"forced_elite": forced_elite,
-		"forced_boss": forced_boss,
-		"display": "Combat"
-	}
-
-	# Choice B: Depends on next room position and event history
-	var choice_b: Dictionary
-	if next_is_boss_room or next_is_last_room_on_floor:
-		# Next room is forced (Boss or Elite) -> B is disabled, mirrors A's actual encounter
-		choice_b = {
-			"type": "combat",
-			"is_elite": false,
-			"is_boss": false,
-			"forced_elite": forced_elite,
-			"forced_boss": forced_boss,
-			"display": "Boss" if forced_boss else "Elite Combat",
-			"disabled": true
+		pending_room_choices = {
+			"mode": "choose",
+			"choices": [{
+				"type": "combat",
+				"is_elite": false,
+				"is_boss": false,
+				"forced_elite": false,
+				"forced_boss": true,
+				"display": "Boss"
+			}]
 		}
-	elif _last_room_was_event:
-		# No consecutive events -> force Elite for B
-		choice_b = {
-			"type": "combat",
-			"is_elite": true,
-			"is_boss": false,
-			"forced_elite": false,
-			"forced_boss": false,
-			"display": "Elite Combat"
+		print("[Choices] next_room=%d/%d floor=%d/%d -> FORCED BOSS" % [
+			next_room_index + 1, rooms_per_floor, current_floor, floor_count
+		])
+		return
+
+	if next_is_last_room_on_floor:
+		pending_room_choices = {
+			"mode": "choose",
+			"choices": [{
+				"type": "combat",
+				"is_elite": false,
+				"is_boss": false,
+				"forced_elite": true,
+				"forced_boss": false,
+				"display": "Elite Combat"
+			}]
 		}
-	else:
-		# Normal: roll between Event and Elite
-		choice_b = roll_choice_b(rng)
-		choice_b["forced_elite"] = false
-		choice_b["forced_boss"] = false
+		print("[Choices] next_room=%d/%d floor=%d/%d -> FORCED ELITE" % [
+			next_room_index + 1, rooms_per_floor, current_floor, floor_count
+		])
+		return
+
+	# Normal room: independent rolls for event and elite
+	var choices: Array = _roll_room_choices(rng, current_floor)
 
 	pending_room_choices = {
 		"mode": "choose",
-		"choice_a": choice_a,
-		"choice_b": choice_b
+		"choices": choices
 	}
 
-	var actual_a = "Boss" if forced_boss else ("Elite" if forced_elite else "Normal")
-	print("[Choices] next_room=%d/%d floor=%d/%d A=%s(actual:%s) B=%s%s%s" % [
+	var displays: Array = []
+	for c in choices:
+		displays.append(c.get("display", "?"))
+	print("[Choices] next_room=%d/%d floor=%d/%d options=[%s]%s" % [
 		next_room_index + 1, rooms_per_floor, current_floor, floor_count,
-		choice_a.display, actual_a, choice_b.display,
-		" (B disabled)" if choice_b.get("disabled", false) else "",
+		", ".join(displays),
 		" (no-event-streak)" if _last_room_was_event else ""
 	])
 

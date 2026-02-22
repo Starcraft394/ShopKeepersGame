@@ -1282,6 +1282,97 @@ static func run_tests() -> Dictionary:
 	else:
 		results["failed"] += 1
 
+	var t162 = _test_text_size_fs_helper()
+	results["tests"].append(t162)
+	if t162["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t163 = _test_text_size_save_roundtrip()
+	results["tests"].append(t163)
+	if t163["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t164 = _test_floor_room_chances_constant()
+	results["tests"].append(t164)
+	if t164["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t165 = _test_room_choices_always_include_combat()
+	results["tests"].append(t165)
+	if t165["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t166 = _test_forced_boss_single_choice()
+	results["tests"].append(t166)
+	if t166["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t167 = _test_no_consecutive_events()
+	results["tests"].append(t167)
+	if t167["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t168 = _test_heal_and_buff_consumable()
+	results["tests"].append(t168)
+	if t168["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t169 = _test_t3_craft_recipe_in_shop_pool()
+	results["tests"].append(t169)
+	if t169["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t170 = _test_floor_minus1_only_fires_at_boss_camp()
+	results["tests"].append(t170)
+	if t170["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t171 = _test_epilogue_dialogs_fire_with_flags()
+	results["tests"].append(t171)
+	if t171["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t172 = _test_hot_tick_heals_unit()
+	results["tests"].append(t172)
+	if t172["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t173 = _test_hot_potion_camp_instant()
+	results["tests"].append(t173)
+	if t173["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t174 = _test_ranged_targeting_uses_hp_percent()
+	results["tests"].append(t174)
+	if t174["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
 	print("")
 	print("=" .repeat(60))
 	print("  TEST RESULTS: %d passed, %d failed" % [results["passed"], results["failed"]])
@@ -7581,41 +7672,48 @@ static func _test_stash_capacity_calculation() -> Dictionary:
 
 
 static func _test_stash_add_blocked_when_full() -> Dictionary:
-	print("--- TEST 128: Stash add blocked when full ---")
+	print("--- TEST 128: Stash stack-based capacity ---")
 	var saved_items = GameContext.run_items.duplicate(true)
 	var saved_ft = GameContext.facility_tiers.duplicate()
 	var saved_bonus = GameContext.bonus_stash_capacity
 
-	# Set up minimal capacity: base 30, no storage = max 30
+	# Set up minimal capacity: base 30, no storage = max 30 stacks
 	GameContext.facility_tiers = {}
 	GameContext.bonus_stash_capacity = 0
 	GameContext.run_items = []
 
-	# Fill to max
+	# Fill with 30 DISTINCT item_ids (30 stacks)
 	for i in range(30):
-		GameContext.run_items.append({"item_id": "test_item", "qty": 1})
+		GameContext.run_items.append({"item_id": "test_item_%d" % i, "qty": 1})
 
 	var at_max: int = GameContext.get_current_stash_count()
 	var pass_1: bool = (at_max == 30)
 
-	# Attempt to add past max
-	var result: bool = GameContext.add_run_item("test_overflow", 1)
-	var pass_2: bool = (result == false)
+	# Adding to an EXISTING stack should succeed (no new stack needed)
+	var stack_result: bool = GameContext.add_run_item("test_item_0", 1)
+	var pass_2: bool = (stack_result == true)
+	# Stack count stays 30 (same item_id)
 	var pass_3: bool = (GameContext.get_current_stash_count() == 30)
 
-	# can_add_to_stash should also return false
-	var pass_4: bool = (GameContext.can_add_to_stash(1) == false)
+	# Adding a NEW item_id should fail (would be 31st stack)
+	var overflow_result: bool = GameContext.add_run_item("test_overflow", 1)
+	var pass_4: bool = (overflow_result == false)
+	var pass_5: bool = (GameContext.get_current_stash_count() == 30)
+
+	# can_add_to_stash with existing id = true, new id = false
+	var pass_6: bool = (GameContext.can_add_to_stash("test_item_0") == true)
+	var pass_7: bool = (GameContext.can_add_to_stash("test_new") == false)
 
 	GameContext.run_items = saved_items
 	GameContext.facility_tiers = saved_ft
 	GameContext.bonus_stash_capacity = saved_bonus
 
-	var passed: bool = pass_1 and pass_2 and pass_3 and pass_4
+	var passed: bool = pass_1 and pass_2 and pass_3 and pass_4 and pass_5 and pass_6 and pass_7
 	if passed:
-		print("[PASS] Stash full: count=%d add_result=%s overflow_count=%d can_add=%s" % [at_max, result, GameContext.run_items.size(), false])
+		print("[PASS] Stash stacks: count=%d add_existing=%s add_new=%s can_existing=%s can_new=%s" % [at_max, stack_result, overflow_result, true, false])
 	else:
-		print("[FAIL] Stash full: at_max=%d(exp 30) add=%s(exp false) count_after=%d(exp 30) can_add=%s(exp false)" % [at_max, result, pass_3, pass_4])
-	return {"name": "Stash add blocked when full", "passed": passed}
+		print("[FAIL] Stash stacks: p1=%s p2=%s p3=%s p4=%s p5=%s p6=%s p7=%s" % [pass_1, pass_2, pass_3, pass_4, pass_5, pass_6, pass_7])
+	return {"name": "Stash stack-based capacity", "passed": passed}
 
 
 static func _test_inn_race_filter_region_native() -> Dictionary:
@@ -8831,3 +8929,532 @@ static func _test_inn_close_block_no_party() -> Dictionary:
 	else:
 		print("[FAIL] blocked=%s with_hero=%s returning=%s" % [str(should_block), str(should_allow), str(returning_allow)])
 	return {"name": "Inn close block when no party", "passed": passed}
+
+
+static func _test_text_size_fs_helper() -> Dictionary:
+	print("--- TEST 162: Text size fs() helper ---")
+	var old_size: int = GameContext.text_size
+
+	# Small (0): base - 2
+	GameContext.text_size = 0
+	var small_result: int = GameContext.fs(17)
+	var small_ok: bool = small_result == 15
+
+	# Medium (1): base unchanged
+	GameContext.text_size = 1
+	var med_result: int = GameContext.fs(17)
+	var med_ok: bool = med_result == 17
+
+	# Large (2): base + 2
+	GameContext.text_size = 2
+	var large_result: int = GameContext.fs(17)
+	var large_ok: bool = large_result == 19
+
+	# Edge case: small base value
+	GameContext.text_size = 0
+	var edge_result: int = GameContext.fs(9)
+	var edge_ok: bool = edge_result == 7
+
+	GameContext.text_size = old_size
+	var passed: bool = small_ok and med_ok and large_ok and edge_ok
+	if passed:
+		print("[PASS] Small(17)=%d Medium(17)=%d Large(17)=%d Edge(9)=%d" % [small_result, med_result, large_result, edge_result])
+	else:
+		print("[FAIL] Small(17)=%d(exp15) Med(17)=%d(exp17) Large(17)=%d(exp19) Edge(9)=%d(exp7)" % [small_result, med_result, large_result, edge_result])
+	return {"name": "Text size fs() helper", "passed": passed}
+
+
+static func _test_text_size_save_roundtrip() -> Dictionary:
+	print("--- TEST 163: Text size save/load round-trip ---")
+	var old_size: int = GameContext.text_size
+
+	GameContext.text_size = 2
+	GameContext.save_game()
+	GameContext.text_size = 0
+	GameContext.load_game()
+	var restored: int = GameContext.text_size
+	var passed: bool = restored == 2
+
+	GameContext.text_size = old_size
+	GameContext.save_game()
+	if passed:
+		print("[PASS] Saved 2, loaded back %d" % restored)
+	else:
+		print("[FAIL] Saved 2, loaded back %d" % restored)
+	return {"name": "Text size save/load round-trip", "passed": passed}
+
+
+# ============================================================================
+# ROOM CHOICE SYSTEM TESTS (164-167)
+# ============================================================================
+
+static func _test_floor_room_chances_constant() -> Dictionary:
+	print("--- TEST 164: Floor room chances constant ---")
+	var checks: Array = []
+
+	# Verify FLOOR_ROOM_CHANCES has F1-F4
+	checks.append(GameContext.FLOOR_ROOM_CHANCES.has(1))
+	checks.append(GameContext.FLOOR_ROOM_CHANCES.has(2))
+	checks.append(GameContext.FLOOR_ROOM_CHANCES.has(3))
+	checks.append(GameContext.FLOOR_ROOM_CHANCES.has(4))
+
+	# Verify F1 event=0.50, elite=0.25
+	var f1: Dictionary = GameContext.FLOOR_ROOM_CHANCES.get(1, {})
+	checks.append(is_equal_approx(f1.get("event", 0.0), 0.50))
+	checks.append(is_equal_approx(f1.get("elite", 0.0), 0.25))
+
+	# Verify _get_floor_chances clamps: floor 5+ returns F4 values
+	var f5: Dictionary = GameContext._get_floor_chances(5)
+	var f4: Dictionary = GameContext.FLOOR_ROOM_CHANCES.get(4, {})
+	checks.append(is_equal_approx(f5.get("event", 0.0), f4.get("event", -1.0)))
+	checks.append(is_equal_approx(f5.get("elite", 0.0), f4.get("elite", -1.0)))
+
+	# Verify floor 0 clamps to F1
+	var f0: Dictionary = GameContext._get_floor_chances(0)
+	checks.append(is_equal_approx(f0.get("event", 0.0), 0.50))
+
+	var passed: bool = true
+	for c in checks:
+		if not c:
+			passed = false
+			break
+
+	if passed:
+		print("[PASS] FLOOR_ROOM_CHANCES F1-F4 present, clamp works")
+	else:
+		print("[FAIL] FLOOR_ROOM_CHANCES validation failed: %s" % str(checks))
+	return {"name": "Floor room chances constant", "passed": passed}
+
+
+static func _test_room_choices_always_include_combat() -> Dictionary:
+	print("--- TEST 165: Room choices always include combat ---")
+	# Save state
+	var old_dungeon: String = GameContext.current_dungeon_id
+	var old_floor: int = GameContext.current_floor
+	var old_room: int = GameContext.current_room_index
+	var old_rooms: int = GameContext.rooms_per_floor
+	var old_event: bool = GameContext._last_room_was_event
+
+	# Set up mid-dungeon state (not last room, not descend)
+	GameContext.current_dungeon_id = "dungeon_thornhaven"
+	GameContext.current_floor = 1
+	GameContext.current_room_index = 0  # Room 1 of 5 — next is room 2
+	GameContext.rooms_per_floor = 5
+	GameContext._last_room_was_event = false
+
+	var rng = RandomNumberGenerator.new()
+	rng.seed = 12345
+	GameContext.generate_pending_room_choices(rng)
+
+	var data: Dictionary = GameContext.get_pending_room_choices()
+	var choices: Array = data.get("choices", [])
+
+	# Check: at least one choice with type=="combat" and is_elite==false
+	var has_combat: bool = false
+	for c in choices:
+		if c.get("type") == "combat" and not c.get("is_elite", false):
+			has_combat = true
+			break
+
+	# Also check mode is "choose" not "descend"
+	var mode_ok: bool = data.get("mode", "") == "choose"
+	var passed: bool = has_combat and mode_ok
+
+	# Restore
+	GameContext.current_dungeon_id = old_dungeon
+	GameContext.current_floor = old_floor
+	GameContext.current_room_index = old_room
+	GameContext.rooms_per_floor = old_rooms
+	GameContext._last_room_was_event = old_event
+	GameContext.pending_room_choices = {}
+
+	if passed:
+		print("[PASS] choices=%d, has combat, mode=choose" % choices.size())
+	else:
+		print("[FAIL] has_combat=%s mode_ok=%s choices=%s" % [str(has_combat), str(mode_ok), str(choices)])
+	return {"name": "Room choices always include combat", "passed": passed}
+
+
+static func _test_forced_boss_single_choice() -> Dictionary:
+	print("--- TEST 166: Forced boss produces single choice ---")
+	# Save state
+	var old_dungeon: String = GameContext.current_dungeon_id
+	var old_floor: int = GameContext.current_floor
+	var old_room: int = GameContext.current_room_index
+	var old_rooms: int = GameContext.rooms_per_floor
+
+	# Set up: final floor, second-to-last room (next is last = boss)
+	GameContext.current_dungeon_id = "dungeon_thornhaven"
+	GameContext.current_floor = 4  # Final floor (floor_count=4)
+	GameContext.current_room_index = 2  # Room 3 of 4, next is room 4 = last
+	GameContext.rooms_per_floor = 4
+
+	var rng = RandomNumberGenerator.new()
+	rng.seed = 99999
+	GameContext.generate_pending_room_choices(rng)
+
+	var data: Dictionary = GameContext.get_pending_room_choices()
+	var choices: Array = data.get("choices", [])
+
+	var passed: bool = choices.size() == 1 and choices[0].get("forced_boss", false)
+
+	# Restore
+	GameContext.current_dungeon_id = old_dungeon
+	GameContext.current_floor = old_floor
+	GameContext.current_room_index = old_room
+	GameContext.rooms_per_floor = old_rooms
+	GameContext.pending_room_choices = {}
+
+	if passed:
+		print("[PASS] Single forced_boss choice")
+	else:
+		print("[FAIL] choices=%s" % str(choices))
+	return {"name": "Forced boss produces single choice", "passed": passed}
+
+
+static func _test_no_consecutive_events() -> Dictionary:
+	print("--- TEST 167: No consecutive events ---")
+	# Save state
+	var old_dungeon: String = GameContext.current_dungeon_id
+	var old_floor: int = GameContext.current_floor
+	var old_room: int = GameContext.current_room_index
+	var old_rooms: int = GameContext.rooms_per_floor
+	var old_event: bool = GameContext._last_room_was_event
+
+	# Set up mid-dungeon with _last_room_was_event = true
+	GameContext.current_dungeon_id = "dungeon_thornhaven"
+	GameContext.current_floor = 1
+	GameContext.current_room_index = 1  # Room 2 of 5
+	GameContext.rooms_per_floor = 5
+	GameContext._last_room_was_event = true
+
+	var found_event: bool = false
+	for seed_val in range(100):
+		var rng = RandomNumberGenerator.new()
+		rng.seed = seed_val
+		GameContext.generate_pending_room_choices(rng)
+		var data: Dictionary = GameContext.get_pending_room_choices()
+		var choices: Array = data.get("choices", [])
+		for c in choices:
+			if c.get("type") == "event":
+				found_event = true
+				break
+		if found_event:
+			break
+
+	var passed: bool = not found_event
+
+	# Restore
+	GameContext.current_dungeon_id = old_dungeon
+	GameContext.current_floor = old_floor
+	GameContext.current_room_index = old_room
+	GameContext.rooms_per_floor = old_rooms
+	GameContext._last_room_was_event = old_event
+	GameContext.pending_room_choices = {}
+
+	if passed:
+		print("[PASS] No event choice when _last_room_was_event=true (100 seeds)")
+	else:
+		print("[FAIL] Found event choice despite _last_room_was_event=true")
+	return {"name": "No consecutive events", "passed": passed}
+
+
+static func _test_heal_and_buff_consumable() -> Dictionary:
+	print("--- TEST 168: heal_and_buff consumable applies heal portion ---")
+	# Save state
+	var old_run_items: Array = GameContext.run_items.duplicate(true)
+	var old_hero_hp: Dictionary = GameContext.hero_hp.duplicate(true)
+
+	var hero_id: String = "test_hero_168"
+	GameContext.set_hero_hp(hero_id, 50, 100)
+
+	# Add a heal_and_buff consumable to run_items (honey_roast has use_effect=heal_and_buff, use_value=30)
+	GameContext.run_items.clear()
+	GameContext.add_run_item("honey_roast", 1)
+
+	# Use the consumable
+	var result: Dictionary = GameContext.use_consumable_on_hero("honey_roast", hero_id, "run")
+
+	# Verify: should succeed and heal
+	var pass_1: bool = result.get("success", false)
+
+	# Verify: HP should have increased from 50 to 75 (honey_roast use_value=25)
+	var hp_data: Dictionary = GameContext.get_hero_hp(hero_id)
+	var new_hp: int = int(hp_data.get("current", 0))
+	var pass_2: bool = (new_hp == 75)
+
+	var passed: bool = pass_1 and pass_2
+
+	# Restore
+	GameContext.run_items = old_run_items
+	GameContext.hero_hp = old_hero_hp
+
+	if passed:
+		print("[PASS] heal_and_buff consumable healed 25 HP (50→75)")
+	else:
+		print("[FAIL] heal_and_buff: success=%s new_hp=%d (expected 75)" % [str(pass_1), new_hp])
+	return {"name": "heal_and_buff consumable applies heal", "passed": passed}
+
+
+static func _test_t3_craft_recipe_in_shop_pool() -> Dictionary:
+	print("--- TEST 169: T3 craft recipe appears in facility unlocked recipes ---")
+	# Save state
+	var old_recipes: Dictionary = GameContext.unlocked_recipes.duplicate(true)
+
+	# Unlock a T3 recipe for blacksmith
+	GameContext.unlock_recipe("iron_sword", "blacksmith", 3, 3)
+
+	# Verify it appears in facility unlocked recipes
+	var recipes: Array = GameContext.get_facility_unlocked_recipes("blacksmith")
+	var found: bool = false
+	for entry in recipes:
+		if entry.get("item_id", "") == "iron_sword" and int(entry.get("upgrade_tier", 0)) == 3:
+			found = true
+			break
+
+	var passed: bool = found
+
+	# Restore
+	GameContext.unlocked_recipes = old_recipes
+
+	if passed:
+		print("[PASS] T3 craft recipe found in facility unlocked recipes")
+	else:
+		print("[FAIL] T3 craft recipe NOT found in facility unlocked recipes")
+	return {"name": "T3 craft recipe in shop pool", "passed": passed}
+
+
+static func _test_floor_minus1_only_fires_at_boss_camp() -> Dictionary:
+	print("--- TEST 170: Floor -1 dialog only fires at boss camp ---")
+	# Save state
+	var old_flags: Dictionary = GameContext.campaign_flags.duplicate()
+	var old_dungeon: String = GameContext.current_dungeon_id
+	var old_floor: int = GameContext.current_floor
+	var old_room_idx: int = GameContext.current_room_index
+	var old_rooms_per: int = GameContext.rooms_per_floor
+	var old_region: String = GameContext._current_region_id
+	var old_choices: Dictionary = GameContext.pending_room_choices.duplicate(true)
+
+	# Setup: final floor of void_threshold (6 floors), story flag set
+	GameContext.campaign_flags = {}
+	GameContext.set_campaign_flag("story_r7_arrived")
+	GameContext.current_dungeon_id = "dungeon_void_threshold"
+	GameContext.current_floor = 6
+	GameContext._current_region_id = "region_7"
+	GameContext.rooms_per_floor = 4
+
+	# Case A: Non-boss camp (regular combat choice, not forced_boss)
+	GameContext.pending_room_choices = {
+		"mode": "choose",
+		"choices": [{"type": "combat", "is_elite": false, "is_boss": false, "forced_elite": false, "forced_boss": false, "display": "Combat"}]
+	}
+	var dialogs_a: Array = CampaignDialog.get_pending_dialogs("dungeon_camp_story", "region_7", 6)
+	var found_sovereign_a: bool = false
+	for d in dialogs_a:
+		if d.id == "r7_sovereign_final_speech":
+			found_sovereign_a = true
+
+	# Case B: Boss camp (forced_boss = true)
+	GameContext.pending_room_choices = {
+		"mode": "choose",
+		"choices": [{"type": "combat", "is_elite": false, "is_boss": false, "forced_elite": false, "forced_boss": true, "display": "Boss"}]
+	}
+	var dialogs_b: Array = CampaignDialog.get_pending_dialogs("dungeon_camp_story", "region_7", 6)
+	var found_sovereign_b: bool = false
+	for d in dialogs_b:
+		if d.id == "r7_sovereign_final_speech":
+			found_sovereign_b = true
+
+	# Restore
+	GameContext.campaign_flags = old_flags
+	GameContext.current_dungeon_id = old_dungeon
+	GameContext.current_floor = old_floor
+	GameContext.current_room_index = old_room_idx
+	GameContext.rooms_per_floor = old_rooms_per
+	GameContext._current_region_id = old_region
+	GameContext.pending_room_choices = old_choices
+
+	var passed: bool = not found_sovereign_a and found_sovereign_b
+	if passed:
+		print("[PASS] Floor -1 dialog skipped at non-boss camp, fires at boss camp")
+	else:
+		print("[FAIL] found_at_non_boss=%s found_at_boss=%s" % [str(found_sovereign_a), str(found_sovereign_b)])
+	return {"name": "Floor -1 only fires at boss camp", "passed": passed}
+
+
+static func _test_epilogue_dialogs_fire_with_flags() -> Dictionary:
+	print("--- TEST 171: Epilogue dialogs fire with story_r7_boss_killed flag ---")
+	# Save state
+	var old_flags: Dictionary = GameContext.campaign_flags.duplicate()
+	var old_region: String = GameContext._current_region_id
+
+	GameContext._current_region_id = "region_7"
+
+	# Case A: Without flag — epilogues should NOT appear
+	GameContext.campaign_flags = {}
+	var herald_without: Array = CampaignDialog.get_pending_dialogs("herald_visit", "region_7")
+	var keeper_without: Array = CampaignDialog.get_pending_dialogs("keeper_story", "region_7")
+	var cedric_without: bool = false
+	var merchant_without: bool = false
+	for d in herald_without:
+		if d.id == "r7_cedric_epilogue":
+			cedric_without = true
+	for d in keeper_without:
+		if d.id == "r7_merchant_epilogue":
+			merchant_without = true
+
+	# Case B: With flag — epilogues SHOULD appear
+	GameContext.set_campaign_flag("story_r7_boss_killed")
+	var herald_with: Array = CampaignDialog.get_pending_dialogs("herald_visit", "region_7")
+	var keeper_with: Array = CampaignDialog.get_pending_dialogs("keeper_story", "region_7")
+	var cedric_with: bool = false
+	var merchant_with: bool = false
+	for d in herald_with:
+		if d.id == "r7_cedric_epilogue":
+			cedric_with = true
+	for d in keeper_with:
+		if d.id == "r7_merchant_epilogue":
+			merchant_with = true
+
+	# Restore
+	GameContext.campaign_flags = old_flags
+	GameContext._current_region_id = old_region
+
+	var passed: bool = not cedric_without and not merchant_without and cedric_with and merchant_with
+	if passed:
+		print("[PASS] Epilogue dialogs gated by story_r7_boss_killed flag")
+	else:
+		print("[FAIL] cedric_without=%s merchant_without=%s cedric_with=%s merchant_with=%s" % [str(cedric_without), str(merchant_without), str(cedric_with), str(merchant_with)])
+	return {"name": "Epilogue dialogs fire with flags", "passed": passed}
+
+
+static func _test_hot_tick_heals_unit() -> Dictionary:
+	print("--- TEST 172: HOT tick heals CombatUnit each turn ---")
+	var unit = CombatUnit.new()
+	unit.unit_id = "test_hot_172"
+	unit.display_name = "HotTester"
+	unit.max_health = 100
+	unit.current_health = 50
+	unit.is_alive = true
+	unit.active_statuses = []
+
+	# Apply HOT: 3 rounds = 3 ticks of healing, then status expires
+	unit.apply_hot_v1("regenerating", 3, 15, "test_potion")
+
+	# Tick 1: should heal 15 HP (50 → 65)
+	unit.tick_statuses()
+	var hp_after_1: int = unit.current_health
+	var pass_1: bool = (hp_after_1 == 65)
+
+	# Tick 2: should heal 15 HP (65 → 80)
+	unit.tick_statuses()
+	var hp_after_2: int = unit.current_health
+	var pass_2: bool = (hp_after_2 == 80)
+
+	# Tick 3: should heal 15 HP (80 → 95)
+	unit.tick_statuses()
+	var hp_after_3: int = unit.current_health
+	var pass_3: bool = (hp_after_3 == 95)
+
+	# Tick 4: status should have expired after tick 3 consumed the last round, no more healing
+	var has_status: bool = unit.has_status_v1("regenerating")
+	var pass_4: bool = not has_status
+
+	var passed: bool = pass_1 and pass_2 and pass_3 and pass_4
+	if passed:
+		print("[PASS] HOT healed 15/tick over 3 ticks (50→65→80→95), status expired")
+	else:
+		print("[FAIL] hp1=%d(exp65) hp2=%d(exp80) hp3=%d(exp95) status_gone=%s" % [hp_after_1, hp_after_2, hp_after_3, str(not has_status)])
+	return {"name": "HOT tick heals unit each turn", "passed": passed}
+
+
+static func _test_hot_potion_camp_instant() -> Dictionary:
+	print("--- TEST 173: HOT potion at camp delivers full HP instantly ---")
+	# Save state
+	var old_run_items: Array = GameContext.run_items.duplicate(true)
+	var old_hero_hp: Dictionary = GameContext.hero_hp.duplicate(true)
+
+	var hero_id: String = "test_hero_173"
+	GameContext.set_hero_hp(hero_id, 40, 100)
+
+	# Add a hot_heal potion (healing_tonic: use_effect=hot_heal, use_value=30, hot_turns=2)
+	GameContext.run_items.clear()
+	GameContext.add_run_item("healing_tonic", 1)
+
+	# Use at camp — should deliver full use_value instantly
+	var result: Dictionary = GameContext.use_consumable_on_hero("healing_tonic", hero_id, "run")
+
+	var pass_1: bool = result.get("success", false)
+
+	var hp_data: Dictionary = GameContext.get_hero_hp(hero_id)
+	var new_hp: int = int(hp_data.get("current", 0))
+	# 40 + 30 = 70
+	var pass_2: bool = (new_hp == 70)
+
+	var passed: bool = pass_1 and pass_2
+
+	# Restore
+	GameContext.run_items = old_run_items
+	GameContext.hero_hp = old_hero_hp
+
+	if passed:
+		print("[PASS] HOT potion at camp healed 30 HP instantly (40→70)")
+	else:
+		print("[FAIL] hot_camp: success=%s new_hp=%d (expected 70)" % [str(pass_1), new_hp])
+	return {"name": "HOT potion at camp delivers full HP", "passed": passed}
+
+
+static func _test_ranged_targeting_uses_hp_percent() -> Dictionary:
+	print("--- TEST 174: Ranged targeting uses %HP not absolute HP ---")
+	# Setup: Defender at 50/100 (50%) and Striker at 49/49 (100%)
+	# Bug was: ranged picked Striker (49 < 50 absolute) even though Striker is full HP
+	# Fix: ranged should pick Defender (50% < 100%)
+	var defender = CombatUnit.new()
+	defender.unit_id = "hero_defender"
+	defender.display_name = "Defender"
+	defender.max_health = 100
+	defender.current_health = 50
+	defender.attack = 8
+	defender.defense = 15
+	defender.speed = 6
+	defender.team = CombatUnit.Team.PLAYER
+	defender.set_position(0, 0)
+
+	var striker = CombatUnit.new()
+	striker.unit_id = "hero_striker"
+	striker.display_name = "Striker"
+	striker.max_health = 49
+	striker.current_health = 49
+	striker.attack = 14
+	striker.defense = 5
+	striker.speed = 12
+	striker.team = CombatUnit.Team.PLAYER
+	striker.set_position(1, 0)
+
+	var ranged_enemy = CombatUnit.new()
+	ranged_enemy.unit_id = "enemy_archer"
+	ranged_enemy.display_name = "Archer"
+	ranged_enemy.max_health = 60
+	ranged_enemy.current_health = 60
+	ranged_enemy.attack = 10
+	ranged_enemy.defense = 3
+	ranged_enemy.speed = 12
+	ranged_enemy.attack_type = "ranged"
+	ranged_enemy.team = CombatUnit.Team.ENEMY
+	ranged_enemy.set_position(0, 0)
+
+	var heroes: Array = [defender, striker]
+	var policy = TargetingPolicy.new(TargetingPolicy.TargetMode.GRID_DEFAULT)
+	var target = policy.select_target(ranged_enemy, heroes)
+
+	var pass_1: bool = target != null
+	var pass_2: bool = target == defender  # Should pick 50% HP defender, not 100% HP striker
+
+	var passed: bool = pass_1 and pass_2
+
+	if passed:
+		print("[PASS] Ranged targeting picked Defender (50%%) over Striker (100%%)")
+	else:
+		var picked_name: String = target.display_name if target != null else "null"
+		print("[FAIL] Ranged targeting picked %s (expected Defender)" % picked_name)
+	return {"name": "Ranged targeting uses %%HP not absolute HP", "passed": passed}

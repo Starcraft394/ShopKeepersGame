@@ -22,6 +22,7 @@ var _bgm_player: AudioStreamPlayer = null
 var _bgm_tracks: Dictionary = {}  # key -> AudioStream
 var _bgm_track_keys: Array[String] = []  # ordered list of track keys
 var _current_track_key: String = ""  # currently playing track key
+var _use_alt_bgm: bool = false  # toggle between original and alt region soundtracks
 
 # Closeable Stack — LIFO overlay close system for ESC key
 var _closeable_stack: Array = []  # [{node: Node, close: Callable}]
@@ -49,6 +50,17 @@ const REGION_BGM: Dictionary = {
 	"region_7": "Region/bgm_region_7_final_realm.mp3",
 }
 
+# Alternate region-to-track mapping (toggled via ESC menu)
+const ALT_REGION_BGM: Dictionary = {
+	"region_1": "AHHHH SHIT.mp3",
+	"region_2": "Broken Memories.mp3",
+	"region_3": "Deep smooth.mp3",
+	"region_4": "Fuck if i know.mp3",
+	"region_5": "Galaxy Party.mp3",
+	"region_6": "hmmmmm mayybeee.mp3",
+	"region_7": "The Xperience.mp3",
+}
+
 # Scene BGM keys (not region-specific)
 const SCENE_BGM: Dictionary = {
 	"town": "Region/bgm_town.wav",
@@ -74,6 +86,17 @@ const BGM_DISPLAY_NAMES: Dictionary = {
 	"Region/bgm_dungeon_camp.wav": "Dungeon Camp Theme",
 	"Combat/bgm_combat_normal.wav": "Combat Theme",
 	"Combat/bgm_combat_boss.wav": "Boss Battle Theme",
+}
+
+# Display names for alt tracks
+const ALT_BGM_DISPLAY_NAMES: Dictionary = {
+	"AHHHH SHIT.mp3": "Alt: Greenwood Theme",
+	"Broken Memories.mp3": "Alt: Fungalmire Theme",
+	"Deep smooth.mp3": "Alt: Sunken Strand Theme",
+	"Fuck if i know.mp3": "Alt: Ashen Horizons Theme",
+	"Galaxy Party.mp3": "Alt: Starfall Expanse Theme",
+	"hmmmmm mayybeee.mp3": "Alt: Necropolis Theme",
+	"The Xperience.mp3": "Alt: Fractured Realm Theme",
 }
 
 # SFX Registry: slot_name -> file path relative to SFX_DIR
@@ -190,6 +213,8 @@ func _ready() -> void:
 	add_child(_bgm_player)
 
 	_load_bgm_tracks()
+	# Restore BGM set preference from save
+	_use_alt_bgm = GameContext.use_alt_bgm
 	# Play region-appropriate track on startup
 	if _bgm_tracks.size() > 0:
 		var region_id: String = ""
@@ -285,6 +310,10 @@ func _load_bgm_tracks() -> void:
 		var track_key: String = REGION_BGM[region_key]
 		if track_key not in _bgm_track_keys:
 			_bgm_track_keys.append(track_key)
+	for region_key in ALT_REGION_BGM:
+		var alt_key: String = ALT_REGION_BGM[region_key]
+		if alt_key not in _bgm_track_keys:
+			_bgm_track_keys.append(alt_key)
 	for scene_key in SCENE_BGM:
 		var track_key: String = SCENE_BGM[scene_key]
 		if track_key not in _bgm_track_keys:
@@ -299,20 +328,26 @@ func _load_bgm_tracks() -> void:
 	print("[UIAudio] Loaded %d BGM tracks" % _bgm_tracks.size())
 
 
+## Returns the active region BGM dict based on the toggle state.
+func get_active_region_bgm() -> Dictionary:
+	return ALT_REGION_BGM if _use_alt_bgm else REGION_BGM
+
+
 ## Play the BGM track assigned to a region. Loops the track.
 ## If the same track is already playing, does nothing.
 func play_region_bgm(region_id: String) -> void:
-	var track_key: String = REGION_BGM.get(region_id, "")
+	var active_bgm: Dictionary = get_active_region_bgm()
+	var track_key: String = active_bgm.get(region_id, "")
 	if track_key == "":
 		# Fallback to region_1 track
-		track_key = REGION_BGM.get("region_1", "")
+		track_key = active_bgm.get("region_1", "")
 	if track_key == "" or not _bgm_tracks.has(track_key):
 		return
 	if track_key == _current_track_key and _bgm_player.playing:
 		return  # Already playing this track
 
 	_play_track(track_key)
-	var dname: String = BGM_DISPLAY_NAMES.get(track_key, track_key)
+	var dname: String = _get_display_name(track_key)
 	print("[UIAudio] Playing region BGM: %s (%s)" % [region_id, dname])
 
 
@@ -326,7 +361,7 @@ func play_bgm(scene_key: String) -> void:
 	if track_key == _current_track_key and _bgm_player.playing:
 		return
 	_play_track(track_key)
-	var dname: String = BGM_DISPLAY_NAMES.get(track_key, track_key)
+	var dname: String = _get_display_name(track_key)
 	print("[UIAudio] Playing BGM: %s (%s)" % [scene_key, dname])
 
 
@@ -346,9 +381,34 @@ func _on_bgm_finished() -> void:
 		_bgm_player.play()
 
 
+## Get display name for any track key (checks both original and alt dicts).
+func _get_display_name(track_key: String) -> String:
+	if ALT_BGM_DISPLAY_NAMES.has(track_key):
+		return ALT_BGM_DISPLAY_NAMES[track_key]
+	return BGM_DISPLAY_NAMES.get(track_key, track_key)
+
+
 ## Get the display name of the currently playing track.
 func get_current_track_display_name() -> String:
-	return BGM_DISPLAY_NAMES.get(_current_track_key, _current_track_key)
+	return _get_display_name(_current_track_key)
+
+
+## Toggle between original and alt region soundtracks.
+## Swaps the currently playing region track to its counterpart in the other set.
+func toggle_bgm_set() -> void:
+	_use_alt_bgm = not _use_alt_bgm
+	GameContext.use_alt_bgm = _use_alt_bgm
+	GameContext.save_game()
+	# Find which region the current track belongs to in the OLD set and swap
+	var active_bgm: Dictionary = get_active_region_bgm()
+	var other_bgm: Dictionary = REGION_BGM if _use_alt_bgm else ALT_REGION_BGM
+	for region_key in other_bgm:
+		if other_bgm[region_key] == _current_track_key:
+			var new_key: String = active_bgm.get(region_key, "")
+			if new_key != "" and _bgm_tracks.has(new_key):
+				_play_track(new_key)
+			break
+	print("[UIAudio] BGM set toggled to %s" % ("Alt" if _use_alt_bgm else "Original"))
 
 
 ## Set BGM volume (0.0 = silent, 1.0 = full volume).
@@ -468,7 +528,7 @@ func _open_pause_menu() -> void:
 	# Title
 	var title = Label.new()
 	title.text = "Menu"
-	title.add_theme_font_size_override("font_size", 20)
+	title.add_theme_font_size_override("font_size", GameContext.fs(22))
 	title.add_theme_color_override("font_color", Color(0.96, 0.91, 0.82))
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(title)
@@ -479,7 +539,7 @@ func _open_pause_menu() -> void:
 	# --- Music Volume ---
 	var bgm_label = Label.new()
 	bgm_label.text = "Music Volume"
-	bgm_label.add_theme_font_size_override("font_size", 13)
+	bgm_label.add_theme_font_size_override("font_size", GameContext.fs(15))
 	bgm_label.add_theme_color_override("font_color", Color(0.8, 0.75, 0.6))
 	vbox.add_child(bgm_label)
 
@@ -499,14 +559,14 @@ func _open_pause_menu() -> void:
 
 	_bgm_value_label = Label.new()
 	_bgm_value_label.text = "%d%%" % roundi(get_bgm_volume() * 100)
-	_bgm_value_label.add_theme_font_size_override("font_size", 12)
+	_bgm_value_label.add_theme_font_size_override("font_size", GameContext.fs(14))
 	_bgm_value_label.custom_minimum_size.x = 40
 	bgm_row.add_child(_bgm_value_label)
 
 	# --- SFX Volume ---
 	var sfx_label = Label.new()
 	sfx_label.text = "SFX Volume"
-	sfx_label.add_theme_font_size_override("font_size", 13)
+	sfx_label.add_theme_font_size_override("font_size", GameContext.fs(15))
 	sfx_label.add_theme_color_override("font_color", Color(0.8, 0.75, 0.6))
 	vbox.add_child(sfx_label)
 
@@ -526,17 +586,54 @@ func _open_pause_menu() -> void:
 
 	_sfx_value_label = Label.new()
 	_sfx_value_label.text = "%d%%" % roundi(get_sfx_volume() * 100)
-	_sfx_value_label.add_theme_font_size_override("font_size", 12)
+	_sfx_value_label.add_theme_font_size_override("font_size", GameContext.fs(14))
 	_sfx_value_label.custom_minimum_size.x = 40
 	sfx_row.add_child(_sfx_value_label)
 
-	var sep2 = HSeparator.new()
-	vbox.add_child(sep2)
+	# --- Display ---
+	var display_sep = HSeparator.new()
+	vbox.add_child(display_sep)
+
+	var ts_row = HBoxContainer.new()
+	ts_row.add_theme_constant_override("separation", 8)
+	vbox.add_child(ts_row)
+
+	var ts_label = Label.new()
+	ts_label.text = "Text Size:"
+	ts_label.add_theme_font_size_override("font_size", GameContext.fs(15))
+	ts_label.add_theme_color_override("font_color", Color(0.8, 0.75, 0.6))
+	ts_row.add_child(ts_label)
+
+	var size_names: Array = ["S", "M", "L"]
+	for i in 3:
+		var btn = Button.new()
+		btn.text = size_names[i]
+		btn.custom_minimum_size = Vector2(40, 28)
+		btn.add_theme_font_size_override("font_size", GameContext.fs(14))
+		if i == GameContext.text_size:
+			btn.disabled = true
+			btn.modulate = Color(0.5, 1.0, 0.8, 1)
+		else:
+			var idx: int = i
+			btn.pressed.connect(func():
+				GameContext.text_size = idx
+				GameContext.apply_text_size_to_theme()
+				GameContext.save_game()
+				print("[Options] Text size -> %s" % size_names[idx])
+				var was_paused = get_tree().paused
+				_close_pause_menu()
+				get_tree().paused = was_paused
+				_open_pause_menu()
+			)
+		ts_row.add_child(btn)
+
+	var display_sep2 = HSeparator.new()
+	vbox.add_child(display_sep2)
 
 	# --- Gameplay Options ---
 	var gameplay_label = Label.new()
 	gameplay_label.text = "Gameplay"
-	gameplay_label.add_theme_font_size_override("font_size", 13)
+	gameplay_label.add_theme_font_size_override("font_size", GameContext.fs(15))
 	gameplay_label.add_theme_color_override("font_color", Color(0.8, 0.75, 0.6))
 	vbox.add_child(gameplay_label)
 
@@ -551,47 +648,19 @@ func _open_pause_menu() -> void:
 	)
 	vbox.add_child(auto_loot_check)
 
+	var tester_check = CheckButton.new()
+	tester_check.text = "Tester Mode"
+	tester_check.tooltip_text = "Show dev/debug buttons (e.g. +100 Gold) in town screens."
+	tester_check.button_pressed = GameContext.tester_mode
+	tester_check.toggled.connect(func(on: bool):
+		GameContext.tester_mode = on
+		GameContext.save_game()
+		print("[Options] Tester Mode %s" % ("ON" if on else "OFF"))
+	)
+	vbox.add_child(tester_check)
+
 	var sep_gameplay = HSeparator.new()
 	vbox.add_child(sep_gameplay)
-
-	# --- Jukebox: Music Selection ---
-	var jukebox_label = Label.new()
-	jukebox_label.text = "Music Selection"
-	jukebox_label.add_theme_font_size_override("font_size", 13)
-	jukebox_label.add_theme_color_override("font_color", Color(0.8, 0.75, 0.6))
-	vbox.add_child(jukebox_label)
-
-	var now_playing = Label.new()
-	now_playing.text = "Now Playing: %s" % get_current_track_display_name()
-	now_playing.add_theme_font_size_override("font_size", 11)
-	now_playing.add_theme_color_override("font_color", Color(0.5, 0.9, 0.7, 1))
-	now_playing.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(now_playing)
-
-	# Track buttons in region order
-	for region_idx in range(1, 8):
-		var region_key: String = "region_%d" % region_idx
-		var track_key: String = REGION_BGM.get(region_key, "")
-		if track_key == "" or not _bgm_tracks.has(track_key):
-			continue
-
-		var dname: String = BGM_DISPLAY_NAMES.get(track_key, track_key)
-		var track_btn = Button.new()
-		track_btn.text = dname
-		track_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		track_btn.custom_minimum_size = Vector2(0, 26)
-		track_btn.add_theme_font_size_override("font_size", 11)
-
-		if track_key == _current_track_key:
-			track_btn.disabled = true
-			track_btn.modulate = Color(0.5, 1.0, 0.8, 1)
-		else:
-			track_btn.pressed.connect(_on_jukebox_track_pressed.bind(track_key))
-
-		vbox.add_child(track_btn)
-
-	var sep3 = HSeparator.new()
-	vbox.add_child(sep3)
 
 	# --- Buttons ---
 	var btn_resume = Button.new()
@@ -610,7 +679,7 @@ func _open_pause_menu() -> void:
 	# Hint
 	var hint = Label.new()
 	hint.text = "Press ESC to resume"
-	hint.add_theme_font_size_override("font_size", 10)
+	hint.add_theme_font_size_override("font_size", GameContext.fs(12))
 	hint.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(hint)

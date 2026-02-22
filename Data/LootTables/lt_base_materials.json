@@ -2,16 +2,15 @@
   "id": "lt_base_materials",
   "display_name": "Base Materials",
   "description": "Foundational crafting materials available on Floor 1 of all dungeons.",
-  "min_drops": 0,
-  "max_drops": 1,
+  "min_drops": 1,
+  "max_drops": 2,
   "entries": [
-    { "item_id": "wood_bundle", "weight": 18, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "wood_bundle", "weight": 25, "min_qty": 1, "max_qty": 2 },
     { "item_id": "herb_sprig", "weight": 18, "min_qty": 1, "max_qty": 2 },
     { "item_id": "iron_scrap", "weight": 15, "min_qty": 1, "max_qty": 1 },
     { "item_id": "bone_fragment", "weight": 10, "min_qty": 1, "max_qty": 1 },
     { "item_id": "raw_meat", "weight": 8, "min_qty": 1, "max_qty": 1 },
     { "item_id": "forest_mushroom", "weight": 8, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "wild_berries", "weight": 8, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "", "weight": 15, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "wild_berries", "weight": 8, "min_qty": 1, "max_qty": 2 }
   ]
 }

@@ -8,7 +8,7 @@
   "category": "consumable",
   "tier": 5,
   "use_effect": "heal_and_buff",
-  "heal_amount": 100,
+  "use_value": 75,
   "buff_stat": "health",
   "buff_amount": 25,
   "buff_duration": 5,

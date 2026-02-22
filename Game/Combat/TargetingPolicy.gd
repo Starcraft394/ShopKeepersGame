@@ -165,13 +165,13 @@ func _select_melee_target(enemies: Array) -> CombatUnit:
 	return null
 
 
-## Ranged targeting: can target any row, picks lowest HP.
+## Ranged targeting: can target any row, picks lowest %HP.
 func _select_ranged_target(enemies: Array) -> CombatUnit:
 	if enemies.is_empty():
 		return null
 
 	var sorted = enemies.duplicate()
-	sorted.sort_custom(_compare_by_hp_then_id)
+	sorted.sort_custom(_compare_by_hp_pct_then_id)
 	return sorted[0]
 
 
@@ -251,6 +251,16 @@ static func can_target(attacker: CombatUnit, target: CombatUnit, all_enemies: Ar
 static func _compare_by_hp_then_id(a: CombatUnit, b: CombatUnit) -> bool:
 	if a.current_health != b.current_health:
 		return a.current_health < b.current_health
+	return a.unit_id < b.unit_id
+
+
+## Compare by HP percentage first, then by unit_id for stable ordering.
+## Used by ranged targeting to focus the most-injured unit by %, not absolute HP.
+static func _compare_by_hp_pct_then_id(a: CombatUnit, b: CombatUnit) -> bool:
+	var pct_a: float = float(a.current_health) / float(a.max_health)
+	var pct_b: float = float(b.current_health) / float(b.max_health)
+	if not is_equal_approx(pct_a, pct_b):
+		return pct_a < pct_b
 	return a.unit_id < b.unit_id
 
 

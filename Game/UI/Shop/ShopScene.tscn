@@ -64,7 +64,7 @@ layout_mode = 2
 text = "Inventory"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 15
 
 [node name="GridBg" type="PanelContainer" parent="MainLayout/InventoryPanel/InvMargin/InvVBox"]
 layout_mode = 2
@@ -171,7 +171,7 @@ layout_mode = 2
 text = "Item Details"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 15
 
 [node name="ItemLabel" type="Label" parent="MainLayout/DetailsPanel/DetMargin/DetVBox"]
 unique_name_in_owner = true

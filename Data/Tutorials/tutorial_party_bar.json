@@ -17,13 +17,13 @@
       "speaker": "Mira",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
       "title": "Row Formations",
-      "body": "Below the Gear button you'll see three position buttons — F, M, and B — for Front, Middle, and Back rows.\n\nFront row heroes get targeted first by melee attacks, so put your toughest fighters there. Ranged and support heroes are safer in the Back."
+      "body": "Below the Gear button you'll see three position buttons — F, M, and B — for Front, Middle, and Back rows.\n\nMelee enemies target your Front row first, so put your toughest fighters there. But beware — ranged enemies can target any row and will pick off your weakest hero. Keep everyone healthy, not just your front line."
     },
     {
       "speaker": "Mira",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
       "title": "One More Thing",
-      "body": "Before you head into the dungeon, visit the Shop! You can buy healing potions and other consumables to keep your heroes alive.\n\nGood luck out there, Shopkeeper. The inn's warm and the ale's cold when you get back.",
+      "body": "Before you head into the dungeon, visit the Shop! You'll find consumables like healing potions as well as weapons and armor. What's available depends on your facility tiers and unlocked recipes, so invest in upgrades when you can.\n\nGood luck out there, Shopkeeper. I'll keep an eye out for fresh recruits while you're gone — there's always a few brave souls drifting through the Inn looking for work.",
       "button_text": "Let's get started!"
     }
   ]

@@ -372,3 +372,35 @@
 - **T3 monsters are predominantly bosses/elites** (14 bosses + 1 elite out of 15 total), explaining the large stat jump.
 - **Hero base ATK** (14-18 for DPS) vs **T1 monster DEF** (11.0 avg) suggests roughly 3-7 effective damage per unscaled hit at level 1.
 - **Equipment stat budgets** roughly double per tier: T1 weapon ~4, T2 ~9, T3 ~16, T4 ~24, T5 ~30.
+
+---
+
+## 7. Monster Combat Overview
+
+### Targeting Rules
+- **Melee (GRID_DEFAULT)**: Must target frontmost alive row. Within row, targets lowest absolute HP.
+- **Ranged (GRID_DEFAULT)**: Can target any row. Targets lowest %HP hero.
+
+### AI Tier System (infrastructure ready, abilities TBD)
+
+| ai_tier | Name | Intended Behavior |
+|---------|------|-------------------|
+| 0 | Feral | Basic/weapon only |
+| 1 | Basic | Fixed priority: A → B → weapon → basic |
+| 2 | Tactical | Random selection from ready abilities |
+| 3 | Strategic | Context-aware (heal priority when ally low) |
+
+### AI Tier Distribution
+
+| ai_tier | Count | Notes |
+|---------|-------|-------|
+| 0 (none) | 7 | R1 original monsters (no ai_tier field) |
+| 1 | 38 | Low-tier normals |
+| 2 | 53 | Mid/high-tier normals + elites |
+| 3 | 14 | Bosses |
+
+### Ability Coverage
+
+**Current state:** All 112 monsters have only `basic_attack`. No monsters have passives.
+AI tier differentiation requires assigning monster abilities first (separate pass).
+See `Docs/MONSTER_MANIFEST.md` for complete per-monster data.

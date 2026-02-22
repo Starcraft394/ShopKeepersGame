@@ -49,8 +49,9 @@ var icon_path: String = ""
 var tags: Array[String] = []
 
 # Consumable-specific (for camp/combat use)
-var use_effect: String = ""  # "heal", "cure_poison", "cure_bleeding", etc.
-var use_value: int = 0  # Effect magnitude (heal amount, etc.)
+var use_effect: String = ""  # "heal", "cure_poison", "cure_bleeding", "hot_heal", etc.
+var use_value: int = 0  # Effect magnitude (heal amount, or total HOT HP)
+var hot_turns: int = 0  # HOT consumables: number of turns to deliver use_value over
 
 # Equipment stat bonuses (v2: explicit stat grants for weapons/offhands)
 # Falls back to base_stats for backwards compatibility
@@ -222,6 +223,7 @@ static func from_dict(data: Dictionary) -> ItemTemplate:
 	# v1: Consumable use effect fields
 	instance.use_effect = data.get("use_effect", "")
 	instance.use_value = data.get("use_value", 0)
+	instance.hot_turns = int(data.get("hot_turns", 0))
 
 	# v2: Equipment stat bonuses (separate from base_stats for clarity)
 	var stat_bonuses_val = data.get("stat_bonuses", {})

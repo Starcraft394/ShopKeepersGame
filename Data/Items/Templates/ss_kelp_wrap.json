@@ -12,7 +12,7 @@
   "max_quality": 3,
   "base_stats": {},
   "use_effect": "heal_and_buff",
-  "use_value": 40,
+  "use_value": 35,
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,

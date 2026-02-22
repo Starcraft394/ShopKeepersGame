@@ -959,7 +959,7 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 
 	var name_label = Label.new()
 	name_label.text = display_name
-	name_label.add_theme_font_size_override("font_size", 12)
+	name_label.add_theme_font_size_override("font_size", GameContext.fs(14))
 	if unit_data["is_alive"]:
 		name_label.add_theme_color_override("font_color", Color(0.96, 0.91, 0.82, 1))
 	else:
@@ -974,7 +974,7 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 			cls_name = cls_data.display_name
 		var class_label = Label.new()
 		class_label.text = cls_name
-		class_label.add_theme_font_size_override("font_size", 10)
+		class_label.add_theme_font_size_override("font_size", GameContext.fs(12))
 		class_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7, 0.8))
 		info_vbox.add_child(class_label)
 
@@ -983,7 +983,7 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 		var turn_label = Label.new()
 		turn_label.name = "TurnCounter"
 		turn_label.text = ""
-		turn_label.add_theme_font_size_override("font_size", 9)
+		turn_label.add_theme_font_size_override("font_size", GameContext.fs(11))
 		turn_label.add_theme_color_override("font_color", Color(0.8, 0.8, 0.6, 0.7))
 		turn_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		info_vbox.add_child(turn_label)
@@ -1004,7 +1004,7 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 			var stat_label = Label.new()
 			var val: int = int(unit_data.get(stat_def.key, 0))
 			stat_label.text = "%s:%d" % [stat_def.label, val]
-			stat_label.add_theme_font_size_override("font_size", 9)
+			stat_label.add_theme_font_size_override("font_size", GameContext.fs(11))
 			stat_label.add_theme_color_override("font_color", stat_def.color)
 			stat_label.mouse_filter = Control.MOUSE_FILTER_STOP
 			stat_label.tooltip_text = _build_combat_card_stat_tooltip(stat_def.key, stat_def.label, unit_data)
@@ -1057,7 +1057,7 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 	var hp_label = Label.new()
 	hp_label.name = "HPLabel"
 	hp_label.text = "%d/%d" % [int(unit_data["hp"]), int(unit_data["max_hp"])]
-	hp_label.add_theme_font_size_override("font_size", 9)
+	hp_label.add_theme_font_size_override("font_size", GameContext.fs(11))
 	hp_label.add_theme_color_override("font_color", Color.WHITE)
 	hp_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hp_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -1485,7 +1485,7 @@ func _create_or_update_badge(snapshot: Dictionary, kind: String, existing_badge:
 
 		var label = Label.new()
 		label.text = badge_text
-		label.add_theme_font_size_override("font_size", 10)
+		label.add_theme_font_size_override("font_size", GameContext.fs(12))
 		label.add_theme_color_override("font_color", badge_color)
 		container.add_child(label)
 
@@ -1495,7 +1495,7 @@ func _create_or_update_badge(snapshot: Dictionary, kind: String, existing_badge:
 		# Text-only badge (fallback)
 		var label = Label.new()
 		label.text = badge_text
-		label.add_theme_font_size_override("font_size", 10)
+		label.add_theme_font_size_override("font_size", GameContext.fs(12))
 		label.add_theme_color_override("font_color", badge_color)
 		label.tooltip_text = tooltip
 		badge = label
@@ -1801,7 +1801,7 @@ static func create_status_badge_from_snapshot(status: Dictionary) -> Control:
 		container.add_child(icon_rect)
 		var label = Label.new()
 		label.text = badge_text
-		label.add_theme_font_size_override("font_size", 10)
+		label.add_theme_font_size_override("font_size", GameContext.fs(12))
 		label.add_theme_color_override("font_color", badge_color)
 		container.add_child(label)
 		container.tooltip_text = tooltip
@@ -1809,7 +1809,7 @@ static func create_status_badge_from_snapshot(status: Dictionary) -> Control:
 	else:
 		var label = Label.new()
 		label.text = badge_text
-		label.add_theme_font_size_override("font_size", 10)
+		label.add_theme_font_size_override("font_size", GameContext.fs(12))
 		label.add_theme_color_override("font_color", badge_color)
 		label.tooltip_text = tooltip
 		badge = label
@@ -2188,7 +2188,7 @@ func _show_loot_panel() -> void:
 	var gold_earned = _loot_result.gold_earned if _loot_result != null else 0
 	var title = Label.new()
 	title.text = "COMBAT LOOT  (+%d gold)" % gold_earned
-	title.add_theme_font_size_override("font_size", 18)
+	title.add_theme_font_size_override("font_size", GameContext.fs(20))
 	title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.5))
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(title)
@@ -2197,7 +2197,7 @@ func _show_loot_panel() -> void:
 	if not pending.is_empty():
 		var drops_label = Label.new()
 		drops_label.text = "Drops:"
-		drops_label.add_theme_font_size_override("font_size", 12)
+		drops_label.add_theme_font_size_override("font_size", GameContext.fs(14))
 		drops_label.add_theme_color_override("font_color", Color(0.8, 0.7, 0.55))
 		vbox.add_child(drops_label)
 
@@ -2215,7 +2215,7 @@ func _show_loot_panel() -> void:
 		# Distinguish "no items ever dropped" from "all items assigned"
 		var had_items: bool = _loot_result != null and _loot_result.items_dropped.size() > 0
 		done_lbl.text = "All items assigned!" if had_items else "No items dropped."
-		done_lbl.add_theme_font_size_override("font_size", 13)
+		done_lbl.add_theme_font_size_override("font_size", GameContext.fs(15))
 		done_lbl.add_theme_color_override("font_color", Color(0.5, 0.9, 0.5) if had_items else Color(0.7, 0.65, 0.55))
 		done_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		vbox.add_child(done_lbl)
@@ -2238,7 +2238,7 @@ func _show_loot_panel() -> void:
 	var shop_cap = GameContext.get_shopkeeper_bag_capacity()
 	var shop_header = Label.new()
 	shop_header.text = "Shop Bag (%d/%d):" % [shop_used, shop_cap]
-	shop_header.add_theme_font_size_override("font_size", 12)
+	shop_header.add_theme_font_size_override("font_size", GameContext.fs(14))
 	shop_header.add_theme_color_override("font_color", Color(0.6, 0.85, 0.6))
 	vbox.add_child(shop_header)
 
@@ -2272,7 +2272,7 @@ func _show_loot_panel() -> void:
 
 		var hero_lbl = Label.new()
 		hero_lbl.text = "%s (%d/%d):" % [hero_name, bag.size(), bag_cap]
-		hero_lbl.add_theme_font_size_override("font_size", 12)
+		hero_lbl.add_theme_font_size_override("font_size", GameContext.fs(14))
 		hero_lbl.add_theme_color_override("font_color", Color(0.85, 0.75, 0.55))
 		hero_lbl.custom_minimum_size = Vector2(120, 0)
 		hero_row.add_child(hero_lbl)
@@ -2301,7 +2301,7 @@ func _show_loot_panel() -> void:
 			var swap_hero = GameContext.get_hero(_loot_swap_hero_id)
 			var swap_hero_name: String = swap_hero.get("name", _loot_swap_hero_id) if not swap_hero.is_empty() else _loot_swap_hero_id
 			swap_warn.text = "Click a slot in %s's bag to replace it (item will be DISCARDED)" % swap_hero_name
-		swap_warn.add_theme_font_size_override("font_size", 11)
+		swap_warn.add_theme_font_size_override("font_size", GameContext.fs(13))
 		swap_warn.add_theme_color_override("font_color", Color(1.0, 0.5, 0.4))
 		swap_warn.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		vbox.add_child(swap_warn)
@@ -2551,7 +2551,7 @@ func _update_routing_bar() -> void:
 			hint.text = ""
 		else:
 			hint.text = "Click an item above to assign it  (or press B / 1-4)"
-			hint.add_theme_font_size_override("font_size", 11)
+			hint.add_theme_font_size_override("font_size", GameContext.fs(13))
 			hint.add_theme_color_override("font_color", Color(0.6, 0.6, 0.5))
 		_loot_routing_bar.add_child(hint)
 		return
@@ -2566,7 +2566,7 @@ func _update_routing_bar() -> void:
 
 	var send_label = Label.new()
 	send_label.text = "Send %s to:" % display_name
-	send_label.add_theme_font_size_override("font_size", 12)
+	send_label.add_theme_font_size_override("font_size", GameContext.fs(14))
 	send_label.add_theme_color_override("font_color", Color(0.9, 0.85, 0.7))
 	_loot_routing_bar.add_child(send_label)
 
@@ -2995,7 +2995,7 @@ func _show_flee_dialog(fallen_name: String) -> void:
 	var title = Label.new()
 	title.text = "%s has fallen!" % fallen_name
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 20)
+	title.add_theme_font_size_override("font_size", GameContext.fs(22))
 	title.add_theme_color_override("font_color", Color(1.0, 0.4, 0.3))
 	vbox.add_child(title)
 
@@ -3003,14 +3003,14 @@ func _show_flee_dialog(fallen_name: String) -> void:
 	var desc = Label.new()
 	desc.text = "Flee the dungeon to save your remaining heroes?"
 	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	desc.add_theme_font_size_override("font_size", 14)
+	desc.add_theme_font_size_override("font_size", GameContext.fs(16))
 	desc.add_theme_color_override("font_color", Color(0.8, 0.7, 0.6))
 	vbox.add_child(desc)
 
 	# Consequences
 	var consequences = Label.new()
 	consequences.text = "If you flee:\n  - Surviving heroes lose ALL equipment and bag items\n  - Shopkeeper bag items are kept (insurance)\n  - Dungeon progress and unbanked loot are lost\n\nIf you continue:\n  - Fight on with remaining heroes\n  - Total party wipe = permadeath for all"
-	consequences.add_theme_font_size_override("font_size", 12)
+	consequences.add_theme_font_size_override("font_size", GameContext.fs(14))
 	consequences.add_theme_color_override("font_color", Color(0.65, 0.6, 0.55))
 	consequences.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	vbox.add_child(consequences)
@@ -3111,7 +3111,7 @@ func _show_victory_panel() -> void:
 	var title = Label.new()
 	title.text = "CAMPAIGN COMPLETE!"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 28)
+	title.add_theme_font_size_override("font_size", GameContext.fs(30))
 	title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.3))
 	vbox.add_child(title)
 
@@ -3119,7 +3119,7 @@ func _show_victory_panel() -> void:
 	var subtitle = Label.new()
 	subtitle.text = "You have defeated the Void Threshold and saved the realm!"
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	subtitle.add_theme_font_size_override("font_size", 14)
+	subtitle.add_theme_font_size_override("font_size", GameContext.fs(16))
 	subtitle.add_theme_color_override("font_color", Color(0.8, 0.75, 0.5))
 	subtitle.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	vbox.add_child(subtitle)
@@ -3130,7 +3130,7 @@ func _show_victory_panel() -> void:
 	var hero_count: int = GameContext.owned_heroes.size()
 	stats_label.text = "Regions Conquered: %d/7\nHeroes in Roster: %d" % [regions_done, hero_count]
 	stats_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	stats_label.add_theme_font_size_override("font_size", 13)
+	stats_label.add_theme_font_size_override("font_size", GameContext.fs(15))
 	stats_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.6))
 	vbox.add_child(stats_label)
 
@@ -3202,14 +3202,14 @@ func _show_defeat_panel() -> void:
 	# Title
 	var title = Label.new()
 	title.text = "DEFEAT"
-	title.add_theme_font_size_override("font_size", 32)
+	title.add_theme_font_size_override("font_size", GameContext.fs(34))
 	title.modulate = Color(1.0, 0.3, 0.3)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(title)
 
 	var subtitle = Label.new()
 	subtitle.text = "Your party has fallen..."
-	subtitle.add_theme_font_size_override("font_size", 14)
+	subtitle.add_theme_font_size_override("font_size", GameContext.fs(16))
 	subtitle.modulate = Color(0.8, 0.6, 0.6)
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(subtitle)
@@ -3220,7 +3220,7 @@ func _show_defeat_panel() -> void:
 	# Section: Heroes Lost
 	var heroes_header = Label.new()
 	heroes_header.text = "— Heroes Lost Forever —"
-	heroes_header.add_theme_font_size_override("font_size", 18)
+	heroes_header.add_theme_font_size_override("font_size", GameContext.fs(20))
 	heroes_header.modulate = Color(1.0, 0.5, 0.5)
 	heroes_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(heroes_header)
@@ -3249,7 +3249,7 @@ func _show_defeat_panel() -> void:
 	# Section: Items Saved (Shopkeeper Bag)
 	var saved_header = Label.new()
 	saved_header.text = "— Items Saved (Shop Bag) —"
-	saved_header.add_theme_font_size_override("font_size", 16)
+	saved_header.add_theme_font_size_override("font_size", GameContext.fs(18))
 	saved_header.modulate = Color(0.5, 0.8, 0.5)
 	saved_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(saved_header)
@@ -3334,14 +3334,14 @@ func _create_lost_hero_panel(hero_id: String) -> PanelContainer:
 	# Hero name and info
 	var name_label = Label.new()
 	name_label.text = "%s — Lv%d %s %s" % [hero_name, level, race_name, cls_name]
-	name_label.add_theme_font_size_override("font_size", 16)
+	name_label.add_theme_font_size_override("font_size", GameContext.fs(18))
 	name_label.modulate = Color(1.0, 0.7, 0.7)
 	vbox.add_child(name_label)
 
 	# Equipment lost
 	var equip_header = Label.new()
 	equip_header.text = "Equipment Lost:"
-	equip_header.add_theme_font_size_override("font_size", 12)
+	equip_header.add_theme_font_size_override("font_size", GameContext.fs(14))
 	equip_header.modulate = Color(0.8, 0.6, 0.6)
 	vbox.add_child(equip_header)
 
@@ -3360,7 +3360,7 @@ func _create_lost_hero_panel(hero_id: String) -> PanelContainer:
 
 			var equip_label = Label.new()
 			equip_label.text = "  • %s: Q%d %s%s" % [slot.capitalize(), quality, prefix, display_name]
-			equip_label.add_theme_font_size_override("font_size", 11)
+			equip_label.add_theme_font_size_override("font_size", GameContext.fs(13))
 			equip_label.modulate = Color(0.9, 0.6, 0.5)
 			vbox.add_child(equip_label)
 
@@ -3375,7 +3375,7 @@ func _create_lost_hero_panel(hero_id: String) -> PanelContainer:
 
 		var bag_label = Label.new()
 		bag_label.text = "  • Bag: Q%d %s%s" % [bag_quality, prefix, bag_name]
-		bag_label.add_theme_font_size_override("font_size", 11)
+		bag_label.add_theme_font_size_override("font_size", GameContext.fs(13))
 		bag_label.modulate = Color(0.9, 0.6, 0.5)
 		vbox.add_child(bag_label)
 
@@ -3389,14 +3389,14 @@ func _create_lost_hero_panel(hero_id: String) -> PanelContainer:
 
 			var content_label = Label.new()
 			content_label.text = "      └ %s x%d" % [entry_name, entry_qty]
-			content_label.add_theme_font_size_override("font_size", 10)
+			content_label.add_theme_font_size_override("font_size", GameContext.fs(12))
 			content_label.modulate = Color(0.7, 0.5, 0.4)
 			vbox.add_child(content_label)
 
 	if not has_equipment:
 		var no_equip = Label.new()
 		no_equip.text = "  (No equipment)"
-		no_equip.add_theme_font_size_override("font_size", 11)
+		no_equip.add_theme_font_size_override("font_size", GameContext.fs(13))
 		no_equip.modulate = Color(0.5, 0.5, 0.5)
 		vbox.add_child(no_equip)
 
@@ -3752,7 +3752,7 @@ func _show_pop_text(unit_id: String, text: String, kind: String) -> void:
 ## v1.9A: Create a new pop text label.
 func _create_pop_text_label() -> Label:
 	var label = Label.new()
-	label.add_theme_font_size_override("font_size", 14)
+	label.add_theme_font_size_override("font_size", GameContext.fs(16))
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.z_index = 100  # Render above other UI
 	return label
@@ -3815,7 +3815,7 @@ func _show_cast_callout(unit_id: String, ability_name: String) -> void:
 	# Create callout label
 	var label = Label.new()
 	label.text = ability_name + "!"
-	label.add_theme_font_size_override("font_size", 12)
+	label.add_theme_font_size_override("font_size", GameContext.fs(14))
 	label.add_theme_color_override("font_color", Color.CYAN)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.position = Vector2(display.size.x / 2 - 40, -25)
@@ -4049,7 +4049,7 @@ func _create_v19b_ui() -> void:
 	# v1.9C: Intent label placed inside timeline panel (right side)
 	_current_intent_label = Label.new()
 	_current_intent_label.name = "IntentLabel"
-	_current_intent_label.add_theme_font_size_override("font_size", 12)
+	_current_intent_label.add_theme_font_size_override("font_size", GameContext.fs(14))
 	_current_intent_label.add_theme_color_override("font_color", Color(1.0, 0.75, 0.5, 0.9))
 	_current_intent_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_current_intent_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -4091,7 +4091,7 @@ func _create_v19b_ui() -> void:
 
 	var log_title = Label.new()
 	log_title.text = "Log"
-	log_title.add_theme_font_size_override("font_size", 10)
+	log_title.add_theme_font_size_override("font_size", GameContext.fs(12))
 	log_title.add_theme_color_override("font_color", Color.DIM_GRAY)
 	log_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header_row.add_child(log_title)
@@ -4101,7 +4101,7 @@ func _create_v19b_ui() -> void:
 	_log_pin_button.text = "Pin"
 	_log_pin_button.toggle_mode = true
 	_log_pin_button.custom_minimum_size = Vector2(40, 18)
-	_log_pin_button.add_theme_font_size_override("font_size", 9)
+	_log_pin_button.add_theme_font_size_override("font_size", GameContext.fs(11))
 	_log_pin_button.toggled.connect(_on_log_pin_toggled)
 	header_row.add_child(_log_pin_button)
 
@@ -4205,7 +4205,7 @@ func _create_timeline_pill(entry: Dictionary) -> PanelContainer:
 	if is_active:
 		var arrow = Label.new()
 		arrow.text = "▼"
-		arrow.add_theme_font_size_override("font_size", 7)
+		arrow.add_theme_font_size_override("font_size", GameContext.fs(9))
 		arrow.add_theme_color_override("font_color", Color(1.0, 0.85, 0.4, 0.9))
 		arrow.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		vbox.add_child(arrow)
@@ -4303,7 +4303,7 @@ func _refresh_log_overlay() -> void:
 		var entry = _log_ring_buffer[i]
 		var label = Label.new()
 		label.text = entry
-		label.add_theme_font_size_override("font_size", 10)
+		label.add_theme_font_size_override("font_size", GameContext.fs(12))
 
 		# v1.9D: Pin mode keeps all entries at full opacity
 		if _log_overlay_pinned:
@@ -4409,7 +4409,7 @@ func _create_action_panel() -> void:
 	_action_label = Label.new()
 	_action_label.text = "Choose Action:"
 	_action_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.5, 0.9))
-	_action_label.add_theme_font_size_override("font_size", 12)
+	_action_label.add_theme_font_size_override("font_size", GameContext.fs(14))
 	hbox.add_child(_action_label)
 
 	_btn_basic = Button.new()
@@ -4457,7 +4457,7 @@ func _create_action_panel() -> void:
 	var equip_label = Label.new()
 	equip_label.text = "Equipment:"
 	equip_label.add_theme_color_override("font_color", Color(0.7, 0.9, 1.0, 0.9))
-	equip_label.add_theme_font_size_override("font_size", 12)
+	equip_label.add_theme_font_size_override("font_size", GameContext.fs(14))
 	_equip_row.add_child(equip_label)
 
 	_btn_equip_0 = Button.new()
@@ -5500,7 +5500,7 @@ func _build_stat_inspection_content(vbox: VBoxContainer, unit_data: Dictionary) 
 	_add_inspect_separator(vbox)
 	var hint = Label.new()
 	hint.text = "Click outside or press Escape to close"
-	hint.add_theme_font_size_override("font_size", 10)
+	hint.add_theme_font_size_override("font_size", GameContext.fs(12))
 	hint.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(hint)
@@ -5510,7 +5510,7 @@ func _build_stat_inspection_content(vbox: VBoxContainer, unit_data: Dictionary) 
 func _add_inspect_header(vbox: VBoxContainer, text: String) -> void:
 	var lbl = Label.new()
 	lbl.text = text
-	lbl.add_theme_font_size_override("font_size", 16)
+	lbl.add_theme_font_size_override("font_size", GameContext.fs(18))
 	lbl.add_theme_color_override("font_color", Color(0.96, 0.91, 0.82))
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(lbl)
@@ -5528,7 +5528,7 @@ func _add_inspect_stat(vbox: VBoxContainer, stat_name: String, value_text: Strin
 	var hbox = HBoxContainer.new()
 	var name_lbl = Label.new()
 	name_lbl.text = stat_name
-	name_lbl.add_theme_font_size_override("font_size", 13)
+	name_lbl.add_theme_font_size_override("font_size", GameContext.fs(15))
 	name_lbl.add_theme_color_override("font_color", color)
 	name_lbl.custom_minimum_size.x = 50
 	name_lbl.tooltip_text = tooltip
@@ -5536,7 +5536,7 @@ func _add_inspect_stat(vbox: VBoxContainer, stat_name: String, value_text: Strin
 
 	var val_lbl = Label.new()
 	val_lbl.text = value_text
-	val_lbl.add_theme_font_size_override("font_size", 13)
+	val_lbl.add_theme_font_size_override("font_size", GameContext.fs(15))
 	val_lbl.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9))
 	val_lbl.tooltip_text = tooltip
 	val_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -5548,7 +5548,7 @@ func _add_inspect_stat(vbox: VBoxContainer, stat_name: String, value_text: Strin
 func _add_inspect_section_label(vbox: VBoxContainer, text: String) -> void:
 	var lbl = Label.new()
 	lbl.text = text
-	lbl.add_theme_font_size_override("font_size", 13)
+	lbl.add_theme_font_size_override("font_size", GameContext.fs(15))
 	lbl.add_theme_color_override("font_color", Color(0.8, 0.75, 0.6))
 	vbox.add_child(lbl)
 
@@ -5558,13 +5558,13 @@ func _add_inspect_ability(vbox: VBoxContainer, ability_name: String, cd_text: St
 	var hbox = HBoxContainer.new()
 	var name_lbl = Label.new()
 	name_lbl.text = ability_name
-	name_lbl.add_theme_font_size_override("font_size", 12)
+	name_lbl.add_theme_font_size_override("font_size", GameContext.fs(14))
 	name_lbl.add_theme_color_override("font_color", Color(0.9, 0.85, 0.7))
 	hbox.add_child(name_lbl)
 
 	var cd_lbl = Label.new()
 	cd_lbl.text = "  [%s]" % cd_text
-	cd_lbl.add_theme_font_size_override("font_size", 11)
+	cd_lbl.add_theme_font_size_override("font_size", GameContext.fs(13))
 	cd_lbl.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
 	hbox.add_child(cd_lbl)
 	vbox.add_child(hbox)
@@ -5572,7 +5572,7 @@ func _add_inspect_ability(vbox: VBoxContainer, ability_name: String, cd_text: St
 	if description != "":
 		var desc_lbl = Label.new()
 		desc_lbl.text = "  %s" % description
-		desc_lbl.add_theme_font_size_override("font_size", 10)
+		desc_lbl.add_theme_font_size_override("font_size", GameContext.fs(12))
 		desc_lbl.add_theme_color_override("font_color", Color(0.65, 0.65, 0.65))
 		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
 		vbox.add_child(desc_lbl)
@@ -5582,14 +5582,14 @@ func _add_inspect_ability(vbox: VBoxContainer, ability_name: String, cd_text: St
 func _add_inspect_passive(vbox: VBoxContainer, passive_name: String, description: String) -> void:
 	var name_lbl = Label.new()
 	name_lbl.text = passive_name
-	name_lbl.add_theme_font_size_override("font_size", 12)
+	name_lbl.add_theme_font_size_override("font_size", GameContext.fs(14))
 	name_lbl.add_theme_color_override("font_color", Color(0.7, 0.8, 0.9))
 	vbox.add_child(name_lbl)
 
 	if description != "":
 		var desc_lbl = Label.new()
 		desc_lbl.text = "  %s" % description
-		desc_lbl.add_theme_font_size_override("font_size", 10)
+		desc_lbl.add_theme_font_size_override("font_size", GameContext.fs(12))
 		desc_lbl.add_theme_color_override("font_color", Color(0.65, 0.65, 0.65))
 		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
 		vbox.add_child(desc_lbl)
@@ -5600,13 +5600,13 @@ func _add_inspect_status_line(vbox: VBoxContainer, status_name: String, duration
 	var hbox = HBoxContainer.new()
 	var name_lbl = Label.new()
 	name_lbl.text = status_name
-	name_lbl.add_theme_font_size_override("font_size", 12)
+	name_lbl.add_theme_font_size_override("font_size", GameContext.fs(14))
 	name_lbl.add_theme_color_override("font_color", color)
 	hbox.add_child(name_lbl)
 
 	var dur_lbl = Label.new()
 	dur_lbl.text = "  (%s)" % duration_text
-	dur_lbl.add_theme_font_size_override("font_size", 11)
+	dur_lbl.add_theme_font_size_override("font_size", GameContext.fs(13))
 	dur_lbl.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
 	hbox.add_child(dur_lbl)
 	vbox.add_child(hbox)
@@ -5703,7 +5703,7 @@ func _show_item_select_overlay(hero_id: String, consumables: Array) -> void:
 	# Header
 	var header = Label.new()
 	header.text = "Use Item (Free Action)"
-	header.add_theme_font_size_override("font_size", 16)
+	header.add_theme_font_size_override("font_size", GameContext.fs(18))
 	header.add_theme_color_override("font_color", Color(0.4, 0.9, 0.4))
 	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(header)
@@ -5808,22 +5808,29 @@ func _show_combat_consumable_hero_picker(item_id: String, source_hero_id: String
 	# Title
 	var title = Label.new()
 	title.text = "Use %s on:" % item_name
-	title.add_theme_font_size_override("font_size", 15)
+	title.add_theme_font_size_override("font_size", GameContext.fs(17))
 	title.add_theme_color_override("font_color", Color(0.4, 0.9, 0.4))
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(title)
 
 	vbox.add_child(HSeparator.new())
 
-	# Hero buttons - show all alive party heroes with HP
+	# Hero buttons - show all alive party heroes with HP (read from live CombatUnit)
 	var party: Array = GameContext.get_selected_party()
 	for pid in party:
 		var hero: Dictionary = GameContext.get_hero(pid)
 		if hero.is_empty():
 			continue
-		var hp_data: Dictionary = GameContext.get_hero_hp(pid)
-		var current_hp: int = int(hp_data.get("current", 1))
-		var max_hp: int = int(hp_data.get("max", 1))
+		var current_hp: int = 0
+		var max_hp: int = 0
+		var unit: CombatUnit = _combat_controller.get_unit_by_source_id(pid)
+		if unit != null:
+			current_hp = unit.current_health
+			max_hp = unit.max_health
+		else:
+			var hp_data: Dictionary = GameContext.get_hero_hp(pid)
+			current_hp = int(hp_data.get("current", 1))
+			max_hp = int(hp_data.get("max", 1))
 		if current_hp <= 0:
 			continue  # Skip dead heroes
 
@@ -6076,7 +6083,7 @@ func _populate_stats_window(hero_id: String) -> void:
 	# === HERO NAME AND CLASS ===
 	var name_label = Label.new()
 	name_label.text = "%s (%s %s)" % [hero_name, race_display_name, cls_display_name]
-	name_label.add_theme_font_size_override("font_size", 16)
+	name_label.add_theme_font_size_override("font_size", GameContext.fs(18))
 	name_label.add_theme_color_override("font_color", Color.CYAN)
 	vbox.add_child(name_label)
 
@@ -6086,7 +6093,7 @@ func _populate_stats_window(hero_id: String) -> void:
 	var xp_for_next = GameContext.get_xp_for_level(hero_level + 1) if GameContext.has_method("get_xp_for_level") else 100
 	var level_label = Label.new()
 	level_label.text = "Level %d  |  XP: %d / %d" % [hero_level, hero_xp, xp_for_next]
-	level_label.add_theme_font_size_override("font_size", 12)
+	level_label.add_theme_font_size_override("font_size", GameContext.fs(14))
 	level_label.add_theme_color_override("font_color", Color.LIGHT_GRAY)
 	vbox.add_child(level_label)
 
@@ -6095,7 +6102,7 @@ func _populate_stats_window(hero_id: String) -> void:
 	# === COMBAT STATS (effective) ===
 	var stats_title = Label.new()
 	stats_title.text = "Combat Stats (Effective)"
-	stats_title.add_theme_font_size_override("font_size", 14)
+	stats_title.add_theme_font_size_override("font_size", GameContext.fs(16))
 	stats_title.add_theme_color_override("font_color", Color.GOLD)
 	vbox.add_child(stats_title)
 
@@ -6135,7 +6142,7 @@ func _populate_stats_window(hero_id: String) -> void:
 	# === EQUIPMENT ===
 	var equip_title = Label.new()
 	equip_title.text = "Equipment"
-	equip_title.add_theme_font_size_override("font_size", 14)
+	equip_title.add_theme_font_size_override("font_size", GameContext.fs(16))
 	equip_title.add_theme_color_override("font_color", Color.GOLD)
 	vbox.add_child(equip_title)
 
@@ -6171,7 +6178,7 @@ func _populate_stats_window(hero_id: String) -> void:
 		vbox.add_child(bonus_sep)
 		var bonus_title = Label.new()
 		bonus_title.text = "Gear Bonuses"
-		bonus_title.add_theme_font_size_override("font_size", 14)
+		bonus_title.add_theme_font_size_override("font_size", GameContext.fs(16))
 		bonus_title.add_theme_color_override("font_color", Color.GOLD)
 		vbox.add_child(bonus_title)
 
@@ -6191,7 +6198,7 @@ func _populate_stats_window(hero_id: String) -> void:
 	# === ABILITIES ===
 	var ability_title = Label.new()
 	ability_title.text = "Abilities"
-	ability_title.add_theme_font_size_override("font_size", 14)
+	ability_title.add_theme_font_size_override("font_size", GameContext.fs(16))
 	ability_title.add_theme_color_override("font_color", Color.GOLD)
 	vbox.add_child(ability_title)
 
@@ -6238,7 +6245,7 @@ func _populate_stats_window(hero_id: String) -> void:
 	# === PASSIVES (Class + Race) ===
 	var passive_title = Label.new()
 	passive_title.text = "Passives"
-	passive_title.add_theme_font_size_override("font_size", 14)
+	passive_title.add_theme_font_size_override("font_size", GameContext.fs(16))
 	passive_title.add_theme_color_override("font_color", Color.GOLD)
 	vbox.add_child(passive_title)
 
@@ -6302,12 +6309,12 @@ func _add_stat_line(container: VBoxContainer, stat_name: String, value: String, 
 	var name_lbl = Label.new()
 	name_lbl.text = stat_name + ":"
 	name_lbl.custom_minimum_size = Vector2(100, 0)
-	name_lbl.add_theme_font_size_override("font_size", 12)
+	name_lbl.add_theme_font_size_override("font_size", GameContext.fs(14))
 	hbox.add_child(name_lbl)
 
 	var val_lbl = Label.new()
 	val_lbl.text = value
-	val_lbl.add_theme_font_size_override("font_size", 12)
+	val_lbl.add_theme_font_size_override("font_size", GameContext.fs(14))
 	val_lbl.add_theme_color_override("font_color", color)
 	hbox.add_child(val_lbl)
 
@@ -6322,12 +6329,12 @@ func _add_stat_line_with_tooltip(container: VBoxContainer, stat_name: String, va
 	var name_lbl = Label.new()
 	name_lbl.text = stat_name + ":"
 	name_lbl.custom_minimum_size = Vector2(100, 0)
-	name_lbl.add_theme_font_size_override("font_size", 12)
+	name_lbl.add_theme_font_size_override("font_size", GameContext.fs(14))
 	hbox.add_child(name_lbl)
 
 	var val_lbl = Label.new()
 	val_lbl.text = value
-	val_lbl.add_theme_font_size_override("font_size", 12)
+	val_lbl.add_theme_font_size_override("font_size", GameContext.fs(14))
 	val_lbl.add_theme_color_override("font_color", color)
 	if tooltip != "":
 		val_lbl.tooltip_text = tooltip
@@ -6387,14 +6394,14 @@ func _add_ability_line(container: VBoxContainer, ability_name: String, desc: Str
 	var name_hbox = HBoxContainer.new()
 	var name_lbl = Label.new()
 	name_lbl.text = ability_name
-	name_lbl.add_theme_font_size_override("font_size", 12)
+	name_lbl.add_theme_font_size_override("font_size", GameContext.fs(14))
 	name_lbl.add_theme_color_override("font_color", Color.WHITE)
 	name_hbox.add_child(name_lbl)
 
 	if cd != "":
 		var cd_lbl = Label.new()
 		cd_lbl.text = "  [%s]" % cd
-		cd_lbl.add_theme_font_size_override("font_size", 10)
+		cd_lbl.add_theme_font_size_override("font_size", GameContext.fs(12))
 		cd_lbl.add_theme_color_override("font_color", Color.DIM_GRAY)
 		name_hbox.add_child(cd_lbl)
 
@@ -6403,7 +6410,7 @@ func _add_ability_line(container: VBoxContainer, ability_name: String, desc: Str
 	if desc != "":
 		var desc_lbl = Label.new()
 		desc_lbl.text = desc
-		desc_lbl.add_theme_font_size_override("font_size", 10)
+		desc_lbl.add_theme_font_size_override("font_size", GameContext.fs(12))
 		desc_lbl.add_theme_color_override("font_color", Color.LIGHT_GRAY)
 		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		desc_lbl.custom_minimum_size = Vector2(280, 0)
@@ -6452,7 +6459,7 @@ func _create_shopkeeper_bag_display() -> void:
 	# Header label
 	_shopkeeper_bag_label = Label.new()
 	_shopkeeper_bag_label.text = "Shopkeeper Bag (0/6)"
-	_shopkeeper_bag_label.add_theme_font_size_override("font_size", 11)
+	_shopkeeper_bag_label.add_theme_font_size_override("font_size", GameContext.fs(13))
 	_shopkeeper_bag_label.add_theme_color_override("font_color", Color(0.85, 0.75, 0.55, 0.9))
 	vbox.add_child(_shopkeeper_bag_label)
 

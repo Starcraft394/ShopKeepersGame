@@ -2335,6 +2335,30 @@ func _use_healing_consumable(unit: CombatUnit, heal_info: Dictionary) -> void:
 	var source = heal_info.get("source", "dungeon")
 	var bag_hero_id = heal_info.get("hero_id", "")
 
+	# HOT potion: apply regenerating status instead of instant heal (Status v1.5)
+	var item_template = DataRegistry.get_item_template(item_id)
+	if item_template != null and item_template.use_effect == "hot_heal":
+		GameContext.consume_stash_item(item_id, source, bag_hero_id)
+		GameContext.mark_consumable_used(unit.unit_id)
+		var ht: int = item_template.hot_turns if item_template.hot_turns > 0 else 3
+		var heal_per_tick: int = ceili(float(item_template.use_value) / float(ht))
+		var internal_duration: int = _compute_internal_status_duration(ht)
+		unit.apply_hot_v1("regenerating", internal_duration, heal_per_tick, item_id)
+		status_changed.emit(unit.unit_id)
+		print("[Consumable] hot_use unit=%s hero=%s item=%s hpt=%d turns=%d source=%s" % [
+			unit.display_name, unit.unit_id, item_id, heal_per_tick, ht, source])
+		var action = CombatAction.new()
+		action.action_type = CombatAction.ActionType.ITEM_USE
+		action.actor_id = unit.unit_id
+		action.actor_name = unit.display_name
+		action.target_id = unit.unit_id
+		action.target_name = unit.display_name
+		action.healing_done = 0
+		_pending_actions.append(action)
+		_result.add_action(action)
+		action_performed.emit(action)
+		return
+
 	var hp_before = unit.current_health
 	var actual_heal = unit.heal(heal_amount)
 	var hp_after = unit.current_health
@@ -2711,9 +2735,9 @@ func run_smoke_test() -> bool:
 ## More conservative formula to prevent action spam:
 ## Speed 0-9: 1 action, 10-19: 2 actions, 20+: 3 actions (cap)
 func _calculate_actions_for_speed(speed: int) -> int:
-	if speed >= 20:
+	if speed >= 80:
 		return 3
-	elif speed >= 10:
+	elif speed >= 40:
 		return 2
 	else:
 		return 1
@@ -2952,11 +2976,76 @@ func submit_consumable_use(item_id: String, hero_id: String, free_action: bool =
 
 	# Determine which hero's bag to consume from
 	var bag_owner: String = source_hero_id if source_hero_id != "" else hero_id
+
+	# HOT potion in combat: apply regenerating status instead of instant heal (Status v1.5)
+	var template = DataRegistry.get_item_template(item_id)
+	if template != null and template.use_effect == "hot_heal":
+		var consumed = GameContext.consume_stash_item(item_id, "hero_bag", bag_owner)
+		if consumed:
+			GameContext.mark_consumable_used(bag_owner)
+			var target_unit: CombatUnit = get_unit_by_source_id(hero_id)
+			if target_unit != null:
+				var ht: int = template.hot_turns if template.hot_turns > 0 else 3
+				var heal_per_tick: int = ceili(float(template.use_value) / float(ht))
+				var internal_duration: int = _compute_internal_status_duration(ht)
+				target_unit.apply_hot_v1("regenerating", internal_duration, heal_per_tick, item_id)
+				status_changed.emit(target_unit.unit_id)
+				print("[Combat] HOT consumable: %s on %s from %s's bag hpt=%d turns=%d (free=%s)" % [
+					item_id, hero_id, bag_owner, heal_per_tick, ht, str(free_action)])
+				# CombatAction for UI
+				var action = CombatAction.new()
+				action.action_type = CombatAction.ActionType.ITEM_USE
+				action.actor_id = _input_unit.unit_id if _input_unit else target_unit.unit_id
+				action.actor_name = _input_unit.display_name if _input_unit else target_unit.display_name
+				action.target_id = target_unit.unit_id
+				action.target_name = target_unit.display_name
+				action.healing_done = 0
+				_pending_actions.append(action)
+				_result.add_action(action)
+				action_performed.emit(action)
+
+			if free_action:
+				if _input_unit != null:
+					var available = _get_available_actions(_input_unit)
+					player_input_required.emit(_input_unit, available)
+			else:
+				_finish_unit_action(_input_unit)
+				_awaiting_player_input = false
+				_input_unit = null
+				if not _check_combat_end():
+					_continue_to_next_turn()
+		else:
+			_check_combat_end()
+		return
+
+	# Sync target hero's combat HP to persistence before using consumable,
+	# so _apply_camp_heal() has accurate HP data (not stale "full HP" default)
+	var pre_unit: CombatUnit = get_unit_by_source_id(hero_id)
+	if pre_unit != null:
+		GameContext.set_hero_hp(hero_id, pre_unit.current_health, pre_unit.max_health)
+
 	var result = GameContext.use_consumable_on_hero(item_id, hero_id, "hero_bag", bag_owner)
 	if result.get("success", false):
 		print("[Combat] Consumable used: %s on %s from %s's bag - %s (free=%s)" % [item_id, hero_id, bag_owner, result.get("detail", ""), str(free_action)])
 		# Mark the bag owner (acting hero) as having used their consumable this combat
 		GameContext.mark_consumable_used(bag_owner)
+
+		# Update CombatUnit HP and emit action for UI refresh
+		var target_unit: CombatUnit = get_unit_by_source_id(hero_id)
+		var effect: String = result.get("effect", "")
+		if target_unit != null and effect in ["heal", "heal_small", "heal_large", "heal_and_buff"]:
+			var actual_heal: int = target_unit.heal(result.get("amount", 0))
+			# Create CombatAction so UI shows heal pop text and refreshes HP
+			var action = CombatAction.new()
+			action.action_type = CombatAction.ActionType.ITEM_USE
+			action.actor_id = _input_unit.unit_id if _input_unit else target_unit.unit_id
+			action.actor_name = _input_unit.display_name if _input_unit else target_unit.display_name
+			action.target_id = target_unit.unit_id
+			action.target_name = target_unit.display_name
+			action.healing_done = actual_heal
+			_pending_actions.append(action)
+			_result.add_action(action)
+			action_performed.emit(action)
 
 		if free_action:
 			# Free action: hero keeps their turn — re-emit input prompt

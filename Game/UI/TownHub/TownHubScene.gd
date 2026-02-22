@@ -172,7 +172,7 @@ func _build_nav_rail() -> void:
 		var region_label = Label.new()
 		region_label.text = "— Regions —"
 		region_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		region_label.add_theme_font_size_override("font_size", 11)
+		region_label.add_theme_font_size_override("font_size", GameContext.fs(13))
 		region_label.modulate = Color(0.7, 0.7, 0.7)
 		region_label.name = "RegionLabel"
 		_nav_vbox.add_child(region_label)
@@ -218,7 +218,7 @@ func _build_nav_rail() -> void:
 		var travel_label = Label.new()
 		travel_label.text = "— Travel —"
 		travel_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		travel_label.add_theme_font_size_override("font_size", 11)
+		travel_label.add_theme_font_size_override("font_size", GameContext.fs(13))
 		travel_label.modulate = Color(0.7, 0.7, 0.7)
 		travel_label.name = "TravelLabel"
 		_nav_vbox.add_child(travel_label)
@@ -271,12 +271,12 @@ func _build_nav_rail() -> void:
 	btn_save_exit.name = "SaveExit"
 	_nav_vbox.add_child(btn_save_exit)
 
-	# Dev buttons — only visible in editor / debug builds
-	if OS.is_debug_build():
+	# Dev buttons — visible in debug builds or when Tester Mode is enabled
+	if OS.is_debug_build() or GameContext.tester_mode:
 		var dev_label = Label.new()
 		dev_label.text = "— Dev —"
 		dev_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		dev_label.add_theme_font_size_override("font_size", 11)
+		dev_label.add_theme_font_size_override("font_size", GameContext.fs(13))
 		dev_label.modulate = Color(0.5, 0.5, 0.5)
 		dev_label.name = "DevLabel"
 		_nav_vbox.add_child(dev_label)
@@ -356,7 +356,7 @@ func _check_region_unlock_notification() -> void:
 	label.text = "New Region Unlocked: %s!" % region_name
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.add_theme_font_size_override("font_size", 16)
+	label.add_theme_font_size_override("font_size", GameContext.fs(18))
 	label.modulate = Color(1, 0.9, 0.4, 1)
 	panel.add_child(label)
 	# Auto-dismiss after 4 seconds
@@ -422,7 +422,7 @@ func _build_town_map() -> void:
 		header_label.text = town.display_name
 		header_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		header_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		header_label.add_theme_font_size_override("font_size", 15)
+		header_label.add_theme_font_size_override("font_size", GameContext.fs(17))
 		header_panel.add_child(header_label)
 		# Insert at top of content vbox (index 0 = ContentHeader which is hidden)
 		_content_vbox.add_child(header_panel)
@@ -522,7 +522,7 @@ func _create_building_panel(facility_id: String, facility) -> PanelContainer:
 	var label = Label.new()
 	label.text = _get_nav_label(facility_id, facility)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.add_theme_font_size_override("font_size", 11)
+	label.add_theme_font_size_override("font_size", GameContext.fs(13))
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vbox.add_child(label)
 

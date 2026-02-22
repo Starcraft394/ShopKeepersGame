@@ -22,6 +22,10 @@ const BOOT_SCENE_PATH = "res://Game/Boot/game_boot.tscn"
 @onready var choice_a_button: Button = $MainVBox/ButtonSection/ChoiceAButton
 @onready var choice_b_button_container: VBoxContainer = $MainVBox/ButtonSection/ChoiceBButtonContainer
 @onready var choice_b_button: Button = $MainVBox/ButtonSection/ChoiceBButtonContainer/ChoiceBButton
+@onready var choice_c_container: VBoxContainer = $MainVBox/MapSection/ChoiceCContainer
+@onready var choice_c_label: Label = $MainVBox/MapSection/ChoiceCContainer/ChoiceCLabel
+@onready var choice_c_button_container: VBoxContainer = $MainVBox/ButtonSection/ChoiceCButtonContainer
+@onready var choice_c_button: Button = $MainVBox/ButtonSection/ChoiceCButtonContainer/ChoiceCButton
 @onready var extract_button: Button = $MainVBox/ButtonSection/ExtractButton
 @onready var flee_button: Button = $MainVBox/ButtonSection/FleeButton
 @onready var hotkey_hint: Label = $MainVBox/HotkeyHint
@@ -62,8 +66,7 @@ var _region_palette: Dictionary = {}
 # Hero info overlay (CanvasLayer, not Window — per Godot 4 best practices)
 var _hero_info_overlay: CanvasLayer = null
 
-var _choice_a: Dictionary = {}
-var _choice_b: Dictionary = {}
+var _choices: Array = []  # 1-3 room choices (Combat always + optional Event/Elite)
 var _is_descend_mode: bool = false  # True when at end of floor (descend instead of room choices)
 
 # ============================================================================
@@ -84,6 +87,7 @@ func _ready() -> void:
 	_update_display()
 	choice_a_button.pressed.connect(_on_choice_a_pressed)
 	choice_b_button.pressed.connect(_on_choice_b_pressed)
+	choice_c_button.pressed.connect(_on_choice_c_pressed)
 	extract_button.pressed.connect(_on_extract_pressed)
 	# Flee from camp removed — flee only available mid-combat when a hero dies
 	flee_button.visible = false
@@ -135,7 +139,7 @@ func _apply_region_theme() -> void:
 	# Title label
 	var title_label: Label = $MainVBox/Title
 	title_label.add_theme_color_override("font_color", Color(accent.r * 1.5, accent.g * 1.5, accent.b * 1.5, 1.0))
-	title_label.add_theme_font_size_override("font_size", 18)
+	title_label.add_theme_font_size_override("font_size", GameContext.fs(20))
 
 	# Section headers styling
 	var section_headers: Array = [
@@ -145,7 +149,7 @@ func _apply_region_theme() -> void:
 	]
 	for header in section_headers:
 		header.add_theme_color_override("font_color", Color(accent.r * 1.4, accent.g * 1.4, accent.b * 1.4, 0.9))
-		header.add_theme_font_size_override("font_size", 14)
+		header.add_theme_font_size_override("font_size", GameContext.fs(16))
 
 	# Wrap main sections in themed panels
 	_apply_section_panel(heroes_section, bg_medium, border)
@@ -218,28 +222,28 @@ func _generate_room_choices() -> void:
 	GameContext.generate_pending_room_choices(rng)
 
 	# Cache locally for UI
-	var choices = GameContext.get_pending_room_choices()
-	var mode = choices.get("mode", "choose")
+	var data: Dictionary = GameContext.get_pending_room_choices()
+	var mode: String = data.get("mode", "choose")
 
 	if mode == "descend":
 		# End of floor - descend mode (player completed all rooms on this floor)
 		_is_descend_mode = true
-		_choice_a = {}
-		_choice_b = {}
+		_choices = []
 
 		# Unlock floors for future runs:
 		# 1. The completed floor (selectable as start floor for farming)
 		# 2. The next floor (for progression)
-		var dungeon_id = GameContext.get_current_dungeon_id()
-		var floor_num = GameContext.get_current_floor()
+		var dungeon_id: String = GameContext.get_current_dungeon_id()
+		var floor_num: int = GameContext.get_current_floor()
 		if dungeon_id != "":
 			GameContext.unlock_floor(dungeon_id, floor_num)      # Completed floor
-			GameContext.unlock_floor(dungeon_id, floor_num + 1)  # Next floor (clamped to 4)
+			GameContext.unlock_floor(dungeon_id, floor_num + 1)  # Next floor
 	else:
-		# Normal choice mode
+		# Normal choice mode — 1-3 options
 		_is_descend_mode = false
-		_choice_a = choices.get("choice_a", { "type": "combat", "is_elite": false, "display": "Combat" })
-		_choice_b = choices.get("choice_b", { "type": "combat", "is_elite": false, "display": "Combat" })
+		_choices = []
+		for c in data.get("choices", []):
+			_choices.append(c)
 
 
 # ============================================================================
@@ -285,6 +289,8 @@ func _update_display() -> void:
 		choice_a_button.visible = false
 		choice_b_container.visible = false
 		choice_b_button_container.visible = false
+		choice_c_container.visible = false
+		choice_c_button_container.visible = false
 		no_alternate_hint.visible = false
 		choice_a_label.text = "Dungeon Complete!"
 		extract_button.visible = true
@@ -297,6 +303,8 @@ func _update_display() -> void:
 			choice_a_button.visible = false
 			choice_b_container.visible = false
 			choice_b_button_container.visible = false
+			choice_c_container.visible = false
+			choice_c_button_container.visible = false
 			no_alternate_hint.visible = false
 			choice_a_label.text = "Floor Complete! Return to town to regroup."
 			extract_button.visible = true
@@ -308,21 +316,23 @@ func _update_display() -> void:
 			choice_a_button.text = "Descend to Floor %d (A)" % (floor_num + 1)
 			choice_b_container.visible = false
 			choice_b_button_container.visible = false
+			choice_c_container.visible = false
+			choice_c_button_container.visible = false
 			no_alternate_hint.visible = false
 			extract_button.visible = true
 			extract_button.disabled = false
 			choice_a_label.text = "Floor %d complete!" % floor_num
 			hotkey_hint.text = "A=Descend | E=Extract"
 
-			# Boss gate: if next floor is the final floor, check facility T4 prerequisite
+			# Boss gate: if next floor is the final floor, check facility tier total
 			var next_floor_is_boss: bool = (floor_num + 1 >= floor_count)
 			if next_floor_is_boss:
 				var town_id: String = GameContext.get_current_town_id()
 				var gate: Dictionary = GameContext.can_challenge_boss(town_id)
 				if not gate.get("ready", true):
 					choice_a_button.disabled = true
-					choice_a_label.text = "Boss Floor Locked! Upgrade %d more facilities to Tier 4 (%d/%d ready)" % [
-						gate.required - gate.current, gate.current, gate.required
+					choice_a_label.text = "Boss Floor Locked! Need %d+ total facility tiers (%d/%d)" % [
+						gate.required, gate.current, gate.required
 					]
 					hotkey_hint.text = "E=Extract"
 				else:
@@ -330,33 +340,62 @@ func _update_display() -> void:
 			else:
 				choice_a_button.disabled = false
 	else:
-		# Normal room choices mode
-		var choice_b_disabled = _choice_b.get("disabled", false)
+		# Normal room choices mode — 1-3 options
+		var next_room_num: int = room_idx + 2  # Next room is current + 1 (1-based display)
 
-		# Update choice labels
-		var next_room_num = room_idx + 2  # Next room is current + 1 (1-based display)
-		choice_a_label.text = "A: Room %d - %s" % [next_room_num, _choice_a.get("display", "Combat")]
+		# Find each choice type from the array
+		var combat_choice: Dictionary = {}
+		var event_choice: Dictionary = {}
+		var elite_choice: Dictionary = {}
+		for c in _choices:
+			if c.get("type") == "event":
+				event_choice = c
+			elif c.get("is_elite", false):
+				elite_choice = c
+			elif c.get("forced_boss", false):
+				combat_choice = c  # Boss forced — single option
+			elif c.get("forced_elite", false):
+				combat_choice = c  # Elite forced — single option
+			else:
+				combat_choice = c  # Normal combat
 
-		# Update choice buttons
-		choice_a_button.text = "A: %s (A)" % _choice_a.get("display", "Combat")
+		# Button A: Combat (always present, or forced boss/elite)
+		var a_display: String = combat_choice.get("display", "Combat")
+		choice_a_label.text = "A: Room %d - %s" % [next_room_num, a_display]
+		choice_a_button.text = "A: %s (A)" % a_display
 		choice_a_button.visible = true
 		choice_a_button.disabled = false
 
-		if choice_b_disabled:
-			# Hide B entirely - no label, no button, no gap
-			choice_b_container.visible = false
-			choice_b_button_container.visible = false
-			no_alternate_hint.visible = true
-			hotkey_hint.text = "A=Continue"
-		else:
-			# Show B normally
-			choice_b_label.text = "B: Room %d - %s" % [next_room_num, _choice_b.get("display", "Event")]
-			choice_b_button.text = "B: %s (B)" % _choice_b.get("display", "Event")
-			choice_b_container.visible = true
-			choice_b_button_container.visible = true
+		# Button B: Event (if rolled)
+		var has_event: bool = not event_choice.is_empty()
+		choice_b_container.visible = has_event
+		choice_b_button_container.visible = has_event
+		if has_event:
+			choice_b_label.text = "B: Room %d - %s" % [next_room_num, event_choice.get("display", "Event")]
+			choice_b_button.text = "B: %s (B)" % event_choice.get("display", "Event")
 			choice_b_button.disabled = false
-			no_alternate_hint.visible = false
+
+		# Button C: Elite (if rolled)
+		var has_elite: bool = not elite_choice.is_empty()
+		choice_c_container.visible = has_elite
+		choice_c_button_container.visible = has_elite
+		if has_elite:
+			choice_c_label.text = "C: Room %d - %s" % [next_room_num, elite_choice.get("display", "Elite Combat")]
+			choice_c_button.text = "C: %s (C)" % elite_choice.get("display", "Elite Combat")
+			choice_c_button.disabled = false
+
+		# No alternate hint: show when only combat is available
+		no_alternate_hint.visible = (not has_event and not has_elite)
+
+		# Hotkey hint
+		if has_event and has_elite:
+			hotkey_hint.text = "A/B/C=Choose Room"
+		elif has_event:
 			hotkey_hint.text = "A/B=Choose Room"
+		elif has_elite:
+			hotkey_hint.text = "A/C=Choose Room"
+		else:
+			hotkey_hint.text = "A=Continue"
 
 		# Extract only available at end of floor (descend mode), so hide here
 		extract_button.visible = false
@@ -368,17 +407,13 @@ func _update_display() -> void:
 	_populate_shopkeeper_bag()
 
 	# Log state
-	var b_display = "-"
-	if not _is_descend_mode:
-		if _choice_b.get("disabled", false):
-			b_display = "(hidden)"
-		else:
-			b_display = _choice_b.get("display", "-")
-	print("[Camp] floor=%d/%d room=%d/%d descend=%s choices=[A:%s B:%s] can_extract=%s complete=%s" % [
+	var choice_displays: Array = []
+	for c in _choices:
+		choice_displays.append(c.get("display", "?"))
+	print("[Camp] floor=%d/%d room=%d/%d descend=%s choices=[%s] can_extract=%s complete=%s" % [
 		floor_num, floor_count, room_idx + 1, rooms,
 		str(_is_descend_mode),
-		_choice_a.get("display", "-") if not _is_descend_mode else "descend",
-		b_display,
+		", ".join(choice_displays) if not _is_descend_mode else "descend",
 		str(_can_extract), str(_is_dungeon_complete)
 	])
 
@@ -391,13 +426,34 @@ func _on_choice_a_pressed() -> void:
 	if _is_descend_mode:
 		_do_descend()
 	else:
-		_select_choice(_choice_a)
+		# Select the combat choice (or the first/only forced choice)
+		for c in _choices:
+			if c.get("type") == "combat" and not c.get("is_elite", false):
+				_select_choice(c)
+				return
+		# Fallback: first choice (forced boss/elite single-option)
+		if _choices.size() > 0:
+			_select_choice(_choices[0])
 
 
 func _on_choice_b_pressed() -> void:
 	if _is_descend_mode:
-		return  # B is hidden in descend mode
-	_select_choice(_choice_b)
+		return
+	# Select the event choice
+	for c in _choices:
+		if c.get("type") == "event":
+			_select_choice(c)
+			return
+
+
+func _on_choice_c_pressed() -> void:
+	if _is_descend_mode:
+		return
+	# Select the elite choice
+	for c in _choices:
+		if c.get("is_elite", false):
+			_select_choice(c)
+			return
 
 
 func _on_extract_pressed() -> void:
@@ -427,17 +483,15 @@ func _unhandled_input(event: InputEvent) -> void:
 		match event.keycode:
 			KEY_A:
 				if choice_a_button.visible and not choice_a_button.disabled:
-					if _is_descend_mode:
-						_do_descend()
-					else:
-						_select_choice(_choice_a)
+					_on_choice_a_pressed()
 			KEY_B:
-				# Check container visibility (not just button) since container hides entire B choice
 				if choice_b_button_container.visible and not choice_b_button.disabled:
 					if not _is_descend_mode:
-						_select_choice(_choice_b)
-				elif _choice_b.get("disabled", false):
-					print("[Camp] B pressed but hidden (no alternate route)")
+						_on_choice_b_pressed()
+			KEY_C:
+				if choice_c_button_container.visible and not choice_c_button.disabled:
+					if not _is_descend_mode:
+						_on_choice_c_pressed()
 			KEY_E:
 				if _can_extract:
 					_do_extract()
@@ -646,7 +700,7 @@ func _create_hero_row(hero_id: String, party_idx: int = 0, party_size: int = 1) 
 	# Combat row selector (Front/Middle/Back)
 	var row_select = OptionButton.new()
 	row_select.custom_minimum_size = Vector2(65, 26)
-	row_select.add_theme_font_size_override("font_size", 10)
+	row_select.add_theme_font_size_override("font_size", GameContext.fs(12))
 	row_select.add_item("Front", 0)
 	row_select.add_item("Mid", 1)
 	row_select.add_item("Back", 2)
@@ -674,14 +728,14 @@ func _create_hero_row(hero_id: String, party_idx: int = 0, party_size: int = 1) 
 	# Name label
 	var name_label = Label.new()
 	name_label.text = hero_name
-	name_label.add_theme_font_size_override("font_size", 12)
+	name_label.add_theme_font_size_override("font_size", GameContext.fs(14))
 	name_label.add_theme_color_override("font_color", Color(0.95, 0.9, 0.8, 1.0))
 	info_col.add_child(name_label)
 
 	# Class label
 	var class_label = Label.new()
 	class_label.text = cls_display
-	class_label.add_theme_font_size_override("font_size", 10)
+	class_label.add_theme_font_size_override("font_size", GameContext.fs(12))
 	class_label.add_theme_color_override("font_color", Color(0.6, 0.65, 0.7, 0.8))
 	info_col.add_child(class_label)
 
@@ -713,7 +767,7 @@ func _create_hero_row(hero_id: String, party_idx: int = 0, party_size: int = 1) 
 	# HP text
 	var hp_label = Label.new()
 	hp_label.text = "%d/%d" % [hp_current, hp_max]
-	hp_label.add_theme_font_size_override("font_size", 9)
+	hp_label.add_theme_font_size_override("font_size", GameContext.fs(11))
 	hp_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7, 0.8))
 	info_col.add_child(hp_label)
 
@@ -950,7 +1004,7 @@ func _show_hero_picker_for_consumable(item_id: String, source_hero_id: String, s
 	# Title
 	var title = Label.new()
 	title.text = "Use %s on:" % item_name
-	title.add_theme_font_size_override("font_size", 14)
+	title.add_theme_font_size_override("font_size", GameContext.fs(16))
 	title.add_theme_color_override("font_color", Color(0.9, 0.85, 0.7))
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(title)
@@ -1130,7 +1184,7 @@ func _on_hero_info_pressed(hero_id: String) -> void:
 	var accent: Color = _region_palette.get("accent", Color(0.4, 0.65, 0.6, 0.5))
 	var name_label = Label.new()
 	name_label.text = "%s (%s %s)" % [hero_name, race_display_name, cls_display_name]
-	name_label.add_theme_font_size_override("font_size", 16)
+	name_label.add_theme_font_size_override("font_size", GameContext.fs(18))
 	name_label.add_theme_color_override("font_color", Color(accent.r * 1.6, accent.g * 1.6, accent.b * 1.6, 1.0))
 	vbox.add_child(name_label)
 
@@ -1140,7 +1194,7 @@ func _on_hero_info_pressed(hero_id: String) -> void:
 	# === STATS ===
 	var stats_title = Label.new()
 	stats_title.text = "Stats"
-	stats_title.add_theme_font_size_override("font_size", 14)
+	stats_title.add_theme_font_size_override("font_size", GameContext.fs(16))
 	stats_title.add_theme_color_override("font_color", Color(accent.r * 1.8, accent.g * 1.4, accent.b * 0.8, 1.0))
 	vbox.add_child(stats_title)
 
@@ -1158,7 +1212,7 @@ func _on_hero_info_pressed(hero_id: String) -> void:
 	# === EQUIPMENT ===
 	var equip_title = Label.new()
 	equip_title.text = "Equipment"
-	equip_title.add_theme_font_size_override("font_size", 14)
+	equip_title.add_theme_font_size_override("font_size", GameContext.fs(16))
 	equip_title.add_theme_color_override("font_color", Color(accent.r * 1.4, accent.g * 1.4, accent.b * 1.4, 1.0))
 	vbox.add_child(equip_title)
 
@@ -1193,7 +1247,7 @@ func _on_hero_info_pressed(hero_id: String) -> void:
 	# === ABILITIES ===
 	var ability_title = Label.new()
 	ability_title.text = "Abilities"
-	ability_title.add_theme_font_size_override("font_size", 14)
+	ability_title.add_theme_font_size_override("font_size", GameContext.fs(16))
 	ability_title.add_theme_color_override("font_color", Color(accent.r * 1.4, accent.g * 1.4, accent.b * 1.4, 1.0))
 	vbox.add_child(ability_title)
 
@@ -1261,12 +1315,12 @@ func _add_camp_stat_line(container: VBoxContainer, stat_name: String, value: Str
 	var name_lbl = Label.new()
 	name_lbl.text = stat_name + ":"
 	name_lbl.custom_minimum_size = Vector2(80, 0)
-	name_lbl.add_theme_font_size_override("font_size", 12)
+	name_lbl.add_theme_font_size_override("font_size", GameContext.fs(14))
 	hbox.add_child(name_lbl)
 
 	var val_lbl = Label.new()
 	val_lbl.text = value
-	val_lbl.add_theme_font_size_override("font_size", 12)
+	val_lbl.add_theme_font_size_override("font_size", GameContext.fs(14))
 	val_lbl.add_theme_color_override("font_color", color)
 	if tooltip != "":
 		val_lbl.tooltip_text = tooltip
@@ -1283,14 +1337,14 @@ func _add_camp_ability_line(container: VBoxContainer, ability_name: String, desc
 
 	var name_lbl = Label.new()
 	name_lbl.text = ability_name
-	name_lbl.add_theme_font_size_override("font_size", 12)
+	name_lbl.add_theme_font_size_override("font_size", GameContext.fs(14))
 	name_lbl.add_theme_color_override("font_color", color_override)
 	ability_vbox.add_child(name_lbl)
 
 	if desc != "":
 		var desc_lbl = Label.new()
 		desc_lbl.text = desc
-		desc_lbl.add_theme_font_size_override("font_size", 10)
+		desc_lbl.add_theme_font_size_override("font_size", GameContext.fs(12))
 		desc_lbl.add_theme_color_override("font_color", Color.LIGHT_GRAY)
 		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		desc_lbl.custom_minimum_size = Vector2(260, 0)
@@ -1317,12 +1371,12 @@ func _add_camp_equipment_line(container: VBoxContainer, slot_name: String, value
 	var name_lbl = Label.new()
 	name_lbl.text = slot_name + ":"
 	name_lbl.custom_minimum_size = Vector2(80, 0)
-	name_lbl.add_theme_font_size_override("font_size", 12)
+	name_lbl.add_theme_font_size_override("font_size", GameContext.fs(14))
 	hbox.add_child(name_lbl)
 
 	var val_lbl = Label.new()
 	val_lbl.text = value
-	val_lbl.add_theme_font_size_override("font_size", 12)
+	val_lbl.add_theme_font_size_override("font_size", GameContext.fs(14))
 	val_lbl.add_theme_color_override("font_color", color)
 	if tooltip != "":
 		val_lbl.tooltip_text = tooltip

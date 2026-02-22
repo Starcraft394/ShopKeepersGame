@@ -66,7 +66,7 @@ func _create_slot(item_id: String, display_name: String, qty: int) -> PanelConta
 	label.text = "%s\nx%d" % [display_name.left(3), qty] if qty > 1 else display_name.left(4)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.add_theme_font_size_override("font_size", 8)
+	label.add_theme_font_size_override("font_size", GameContext.fs(10))
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(label)
 

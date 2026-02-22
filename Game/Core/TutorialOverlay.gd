@@ -137,13 +137,13 @@ class _TutorialPanel extends CanvasLayer:
 
 		# Speaker name
 		_speaker_label = Label.new()
-		_speaker_label.add_theme_font_size_override("font_size", 13)
+		_speaker_label.add_theme_font_size_override("font_size", GameContext.fs(15))
 		_speaker_label.add_theme_color_override("font_color", SPEAKER_COLOR)
 		text_col.add_child(_speaker_label)
 
 		# Title
 		_title_label = Label.new()
-		_title_label.add_theme_font_size_override("font_size", 18)
+		_title_label.add_theme_font_size_override("font_size", GameContext.fs(20))
 		_title_label.add_theme_color_override("font_color", TITLE_COLOR)
 		text_col.add_child(_title_label)
 
@@ -153,7 +153,7 @@ class _TutorialPanel extends CanvasLayer:
 		_body_label.fit_content = true
 		_body_label.scroll_active = false
 		_body_label.custom_minimum_size = Vector2(0, 60)
-		_body_label.add_theme_font_size_override("normal_font_size", 14)
+		_body_label.add_theme_font_size_override("normal_font_size", GameContext.fs(16))
 		_body_label.add_theme_color_override("default_color", BODY_COLOR)
 		text_col.add_child(_body_label)
 
@@ -170,7 +170,7 @@ class _TutorialPanel extends CanvasLayer:
 
 		# Step counter
 		_step_label = Label.new()
-		_step_label.add_theme_font_size_override("font_size", 12)
+		_step_label.add_theme_font_size_override("font_size", GameContext.fs(14))
 		_step_label.add_theme_color_override("font_color", STEP_COLOR)
 		_step_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn_row.add_child(_step_label)
@@ -179,7 +179,7 @@ class _TutorialPanel extends CanvasLayer:
 		_back_btn = Button.new()
 		_back_btn.text = "Back"
 		_back_btn.flat = true
-		_back_btn.add_theme_font_size_override("font_size", 12)
+		_back_btn.add_theme_font_size_override("font_size", GameContext.fs(14))
 		_back_btn.add_theme_color_override("font_color", SKIP_COLOR)
 		_back_btn.add_theme_color_override("font_hover_color", Color(0.7, 0.7, 0.7, 1.0))
 		_back_btn.pressed.connect(_on_back_pressed)
@@ -189,7 +189,7 @@ class _TutorialPanel extends CanvasLayer:
 		var skip_btn := Button.new()
 		skip_btn.text = "Skip"
 		skip_btn.flat = true
-		skip_btn.add_theme_font_size_override("font_size", 12)
+		skip_btn.add_theme_font_size_override("font_size", GameContext.fs(14))
 		skip_btn.add_theme_color_override("font_color", SKIP_COLOR)
 		skip_btn.add_theme_color_override("font_hover_color", Color(0.7, 0.7, 0.7, 1.0))
 		skip_btn.pressed.connect(_on_skip_pressed)
@@ -197,7 +197,7 @@ class _TutorialPanel extends CanvasLayer:
 
 		# Continue button
 		_continue_btn = Button.new()
-		_continue_btn.add_theme_font_size_override("font_size", 15)
+		_continue_btn.add_theme_font_size_override("font_size", GameContext.fs(17))
 		_continue_btn.pressed.connect(_on_continue_pressed)
 		btn_row.add_child(_continue_btn)
 

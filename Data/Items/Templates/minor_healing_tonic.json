@@ -1,9 +1,12 @@
 {
   "id": "minor_healing_tonic",
   "display_name": "Minor Healing Tonic",
-  "description": "Restores a small amount of health.",
+  "description": "Restores health over time. A basic healing potion brewed by apprentice alchemists.",
   "icon_hint": "small round glass vial of pale pink liquid with a simple cork",
   "item_type": "consumable",
+  "use_effect": "hot_heal",
+  "use_value": 24,
+  "hot_turns": 2,
   "use_effect_id": "heal_small",
   "base_stats": {},
   "allowed_affixes": [],

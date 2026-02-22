@@ -12,6 +12,17 @@ extends RefCounted
 
 enum Team { PLAYER, ENEMY }
 
+# Per-region speed multiplier for monsters (40 SPD = 2 actions, 80 SPD = 3 actions)
+const MONSTER_SPEED_SCALE: Dictionary = {
+	1: 1.0,   # R1: SPD 10-20 → 10-20  (all 1 action)
+	2: 1.0,   # R2: SPD 13-24 → 13-24  (all 1 action)
+	3: 1.5,   # R3: SPD 16-30 → 24-45  (bosses 42-45 = 2 actions)
+	4: 1.6,   # R4: SPD 20-38 → 32-61  (bosses 56-61 = 2 actions)
+	5: 1.6,   # R5: SPD 23-45 → 37-72  (bosses 67-72 = 2 actions)
+	6: 1.6,   # R6: SPD 27-55 → 43-88  (bosses 80-88 = 3 actions)
+	7: 1.6,   # R7: SPD 32-60 → 51-96  (bosses 88-96 = 3 actions)
+}
+
 # ============================================================================
 # IDENTITY
 # ============================================================================
@@ -40,6 +51,9 @@ var statuses: StatusRuntime = null
 
 # Attack range type ("melee" or "ranged") — used by TargetingPolicy for row targeting
 var attack_type: String = "melee"
+
+# AI behavior tier (0=Feral, 1=Basic, 2=Tactical, 3=Strategic) — from MonsterData
+var ai_tier: int = 0
 
 # Weapon ability
 var weapon_ability_id: String = ""
@@ -267,6 +281,7 @@ static func create_monster(monster_id: String, unit_index: int) -> CombatUnit:
 		unit.defense = monster_data.base_stats.get("defense", 2)
 		unit.speed = monster_data.base_stats.get("speed", 10)
 		unit.attack_type = monster_data.attack_type
+		unit.ai_tier = monster_data.ai_tier
 	else:
 		# Placeholder stats if monster not found
 		unit.display_name = "Monster %d" % unit_index
@@ -280,6 +295,13 @@ static func create_monster(monster_id: String, unit_index: int) -> CombatUnit:
 	if _gc and _gc.challenge_level > 0:
 		unit.max_health = int(unit.max_health * _gc.get_hp_multiplier())
 		unit.attack = int(unit.attack * _gc.get_damage_multiplier())
+
+	# Apply region-based monster speed scaling
+	if _gc:
+		var region: int = _gc.current_region
+		var scale: float = MONSTER_SPEED_SCALE.get(region, 1.0)
+		if scale != 1.0:
+			unit.speed = int(unit.speed * scale)
 
 	unit.current_health = unit.max_health
 	unit.statuses = StatusRuntime.new(unit.unit_id)
@@ -682,14 +704,53 @@ func apply_status_v1(status_id: String, duration_rounds: int, source: String = "
 		display_name, status_id, duration_rounds, source])
 
 
+## Apply a HOT (heal-over-time) status with a custom per-tick heal value (Status v1.5).
+## Used by consumable potions where heal_per_tick varies by item tier/region.
+## Stacking follows the same rules as apply_status_v1().
+func apply_hot_v1(status_id: String, duration_rounds: int, heal_per_tick: int, source: String = "") -> void:
+	var registry = _get_registry()
+	var status_data = registry.get_status_effect(status_id) if registry else null
+	var stacking_mode: String = status_data.stacking_mode if status_data else "refresh"
+	var max_stacks: int = status_data.max_stacks if status_data else 1
+
+	for status in active_statuses:
+		if status["id"] == status_id:
+			var old_stacks = status.get("stacks", 1)
+			if stacking_mode == "intensity":
+				var new_stacks = mini(old_stacks + 1, max_stacks)
+				status["stacks"] = new_stacks
+				status["remaining_rounds"] = duration_rounds
+				status["heal_per_tick"] = maxi(status.get("heal_per_tick", 0), heal_per_tick)
+				print("[Status] hot_stack unit=%s id=%s old_stacks=%d new_stacks=%d hpt=%d duration=%d source=%s" % [
+					display_name, status_id, old_stacks, new_stacks, status["heal_per_tick"], duration_rounds, source])
+			else:
+				status["remaining_rounds"] = maxi(status["remaining_rounds"], duration_rounds)
+				status["heal_per_tick"] = maxi(status.get("heal_per_tick", 0), heal_per_tick)
+				print("[Status] hot_refresh unit=%s id=%s stacks=%d hpt=%d duration=%d source=%s" % [
+					display_name, status_id, old_stacks, status["heal_per_tick"], duration_rounds, source])
+			return
+
+	var status_entry = {
+		"id": status_id,
+		"remaining_rounds": duration_rounds,
+		"source": source,
+		"stacks": 1,
+		"heal_per_tick": heal_per_tick
+	}
+	active_statuses.append(status_entry)
+	print("[Status] hot_applied unit=%s id=%s duration=%d hpt=%d stacks=1 source=%s" % [
+		display_name, status_id, duration_rounds, heal_per_tick, source])
+
+
 ## Tick all statuses (decrement remaining_rounds) and remove expired ones.
 ## Called at round start after buff ticking. Returns array of expired status IDs.
 ## DOT damage scales with stacks (Status v1.4): dmg = base_value + value_per_stack * (stacks - 1)
+## HOT healing (Status v1.5): heals HP per tick for statuses with "healing" tag.
 func tick_statuses() -> Array:
 	var expired: Array = []
 	var remaining: Array = []
 
-	# Get registry for DOT lookup (if available)
+	# Get registry for DOT/HOT lookup (if available)
 	var registry = _get_registry()
 
 	for status in active_statuses:
@@ -697,18 +758,28 @@ func tick_statuses() -> Array:
 		var stacks = status.get("stacks", 1)
 		var hp_before = current_health
 		var dot_dmg = 0
+		var hot_heal = 0
 
-		# Check for DOT damage before ticking duration (Status v1.4: scale with stacks)
 		if registry and is_alive:
 			var status_data = registry.get_status_effect(status_id)
-			if status_data and status_data.category == "dot":
-				# DOT damage = base_value + value_per_stack * (stacks - 1)
-				dot_dmg = status_data.base_value + status_data.value_per_stack * (stacks - 1)
-				if dot_dmg > 0:
-					current_health -= dot_dmg
-					if current_health <= 0:
-						current_health = 0
-						is_alive = false
+			if status_data:
+				# Check for DOT damage (Status v1.4: scale with stacks)
+				if status_data.category == "dot":
+					dot_dmg = status_data.base_value + status_data.value_per_stack * (stacks - 1)
+					if dot_dmg > 0:
+						current_health -= dot_dmg
+						if current_health <= 0:
+							current_health = 0
+							is_alive = false
+				# Check for HOT healing (Status v1.5: regenerating/healing statuses)
+				elif status_data.tags is Array and "healing" in status_data.tags:
+					var hpt: int = status.get("heal_per_tick", 0)
+					if hpt == 0:
+						# Fallback: standard formula from status data
+						hpt = status_data.base_value + status_data.value_per_stack * (stacks - 1)
+					if hpt > 0 and current_health < max_health:
+						current_health = mini(current_health + hpt, max_health)
+						hot_heal = current_health - hp_before
 
 		# Decrement duration
 		status["remaining_rounds"] -= 1
@@ -719,12 +790,18 @@ func tick_statuses() -> Array:
 			if dot_dmg > 0:
 				print("[Status] tick unit=%s id=%s stacks=%d dmg=%d hp_before=%d hp_after=%d remaining=0" % [
 					display_name, status_id, stacks, dot_dmg, hp_before, current_health])
+			elif hot_heal > 0:
+				print("[Status] tick unit=%s id=%s stacks=%d heal=%d hp_before=%d hp_after=%d remaining=0" % [
+					display_name, status_id, stacks, hot_heal, hp_before, current_health])
 			print("[Status] expired unit=%s id=%s stacks=%d" % [display_name, status_id, stacks])
 		else:
 			# Status continues
 			if dot_dmg > 0:
 				print("[Status] tick unit=%s id=%s stacks=%d dmg=%d hp_before=%d hp_after=%d remaining=%d" % [
 					display_name, status_id, stacks, dot_dmg, hp_before, current_health, status["remaining_rounds"]])
+			elif hot_heal > 0:
+				print("[Status] tick unit=%s id=%s stacks=%d heal=%d hp_before=%d hp_after=%d remaining=%d" % [
+					display_name, status_id, stacks, hot_heal, hp_before, current_health, status["remaining_rounds"]])
 			else:
 				print("[Status] tick unit=%s id=%s stacks=%d remaining=%d" % [
 					display_name, status_id, stacks, status["remaining_rounds"]])

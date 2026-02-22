@@ -103,6 +103,51 @@
         "Hasn't it?"
       ],
       "notes": "Extended ending sequence. Sovereign defeated, Grail deactivated, world healing. Final line is NG+ hook — the cycle continues."
+    },
+    {
+      "id": "r7_cedric_epilogue",
+      "trigger": "herald_visit",
+      "flag_required": "story_r7_boss_killed",
+      "flag_set": null,
+      "display_type": "portrait_text_box",
+      "speaker_id": "cedric",
+      "speaker_name": "Sir Cedric Ashmore",
+      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon39.png",
+      "lines": [
+        "You're back. I wasn't certain you would be.",
+        "I felt it — we all felt it. The void tears closing, one by one. Like a held breath finally released.",
+        "A royal courier arrived while you were below. The King has issued a formal decree.",
+        "He confesses what he did — the Grail, the rupture, the corruption. All of it.",
+        "He's dissolved the Crown's authority over the frontier regions. The towns will govern themselves.",
+        "He says it's not penance — penance implies he could ever repay what he's taken.",
+        "It's just... the first honest thing he's done in a very long time.",
+        "The regions are still scarred. The corruption will take years to fully recede.",
+        "But the trade routes are open. The supply lines hold. People are rebuilding.",
+        "That's your doing, Shopkeeper. Not the King's. Not the Grail's. Yours."
+      ],
+      "notes": "Post-campaign epilogue via Cedric. Explains the King's atonement and the state of the world."
+    },
+    {
+      "id": "r7_merchant_epilogue",
+      "trigger": "keeper_story",
+      "flag_required": "story_r7_boss_killed",
+      "flag_set": null,
+      "display_type": "full_screen_overlay",
+      "speaker_id": "null_merchant",
+      "speaker_name": "The Null Merchant",
+      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_GoblinOrc/PNG/Simple_color/Icon40.png",
+      "lines": [
+        "Interesting. You broke the cycle. Or did you?",
+        "The Sovereign wanted to rewrite the past. The King tried to outrun it. You simply... kept going.",
+        "Supply lines and stubbornness. Who would have thought?",
+        "The Grail is dormant. The corruption fades. The Anchor Stone in Thornhaven still pulses, though.",
+        "You've noticed, haven't you? That faint rhythm. Like a heartbeat that isn't yours.",
+        "Some artifacts don't stay dormant forever, Shopkeeper.",
+        "The world will need its supply lines again. Sooner than you think.",
+        "But that is a story for another time. For now — well done.",
+        "Adventure awaits."
+      ],
+      "notes": "Final story beat. NG+ tease via Anchor Stone. Closes with adventure awaits hook."
     }
   ]
 }

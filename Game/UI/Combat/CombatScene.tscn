@@ -74,7 +74,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "=== PARTY ==="
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.6, 0.8, 1.0, 1)
 
 [node name="CenterSpacer" type="Control" parent="MainContent/TeamLabels"]
@@ -86,7 +86,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "=== ENEMIES ==="
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(1.0, 0.6, 0.6, 1)
 
 [node name="Battlefield" type="HBoxContainer" parent="MainContent"]
@@ -108,7 +108,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "BACK"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 11
 theme_override_colors/font_color = Color(0.7, 0.85, 1.0, 0.7)
 
 [node name="LabelMid" type="Label" parent="MainContent/Battlefield/PartyGrid/PartyColLabels"]
@@ -116,7 +116,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "MID"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 11
 theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 0.8)
 
 [node name="LabelFront" type="Label" parent="MainContent/Battlefield/PartyGrid/PartyColLabels"]
@@ -124,7 +124,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "FRONT"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 11
 theme_override_colors/font_color = Color(1.0, 0.6, 0.5, 0.7)
 
 [node name="PartyRow_0" type="HBoxContainer" parent="MainContent/Battlefield/PartyGrid"]
@@ -226,7 +226,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "FRONT"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 11
 theme_override_colors/font_color = Color(1.0, 0.6, 0.5, 0.7)
 
 [node name="LabelMid" type="Label" parent="MainContent/Battlefield/EnemyGrid/EnemyColLabels"]
@@ -234,7 +234,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "MID"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 11
 theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 0.8)
 
 [node name="LabelBack" type="Label" parent="MainContent/Battlefield/EnemyGrid/EnemyColLabels"]
@@ -242,7 +242,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "BACK"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 11
 theme_override_colors/font_color = Color(0.7, 0.85, 1.0, 0.7)
 
 [node name="EnemyRow_0" type="HBoxContainer" parent="MainContent/Battlefield/EnemyGrid"]
@@ -327,7 +327,7 @@ size_flags_horizontal = 3
 
 [node name="StashLabel" type="Label" parent="MainContent"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 12
 theme_override_colors/font_color = Color(0.96, 0.87, 0.7, 1)
 
 [node name="BottomPanel" type="VBoxContainer" parent="."]
@@ -343,7 +343,7 @@ grow_vertical = 0
 [node name="LogLabel" type="Label" parent="BottomPanel"]
 layout_mode = 2
 text = "Combat Log:"
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 12
 theme_override_colors/font_color = Color(0.6, 0.55, 0.45, 0.7)
 
 [node name="CombatLog" type="RichTextLabel" parent="BottomPanel"]

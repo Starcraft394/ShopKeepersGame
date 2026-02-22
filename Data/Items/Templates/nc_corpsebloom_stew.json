@@ -20,7 +20,7 @@
   "can_refine": false,
   "max_refinement": 0,
   "use_effect": "heal_and_buff",
-  "use_value": 80,
+  "use_value": 60,
   "stack_max": 5,
   "base_value": 40,
   "buy_value": 62,

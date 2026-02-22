@@ -5,7 +5,7 @@
   "min_drops": 1,
   "max_drops": 2,
   "entries": [
-    { "item_id": "wood_bundle", "weight": 30, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "wood_bundle", "weight": 35, "min_qty": 1, "max_qty": 3 },
     { "item_id": "herb_sprig", "weight": 25, "min_qty": 1, "max_qty": 2 },
     { "item_id": "iron_scrap", "weight": 20, "min_qty": 1, "max_qty": 1 },
     { "item_id": "bone_fragment", "weight": 10, "min_qty": 1, "max_qty": 1 },
