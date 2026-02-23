@@ -14,7 +14,7 @@
           "weight": 40,
           "text": "The robber grins and leads you to a crypt he couldn't open alone. Together you force the door and split the haul — a fair deal.",
           "effects": [
-            { "type": "add_gold_range", "min": 18, "max": 28 },
+            { "type": "add_gold_range", "min": 12, "max": 18 },
             { "type": "add_item", "item_id": "nc_bone_marrow", "min_qty": 1, "max_qty": 2 }
           ]
         },
@@ -22,7 +22,7 @@
           "weight": 35,
           "text": "He shares his knowledge of the local crypts and points you toward an untouched burial chamber. The partnership pays off.",
           "effects": [
-            { "type": "add_gold_range", "min": 15, "max": 22 },
+            { "type": "add_gold_range", "min": 10, "max": 14 },
             { "type": "add_item", "item_id": "nc_grave_dust", "min_qty": 2, "max_qty": 3 }
           ]
         },
@@ -45,7 +45,7 @@
           "weight": 45,
           "text": "He drops the sack and runs without a fight. Inside you find coins, bone marrow, and a bundle of wraith thread. Not a bad haul.",
           "effects": [
-            { "type": "add_gold_range", "min": 12, "max": 20 },
+            { "type": "add_gold_range", "min": 8, "max": 13 },
             { "type": "add_item", "item_id": "nc_wraith_thread", "min_qty": 1, "max_qty": 2 }
           ]
         },
@@ -53,7 +53,7 @@
           "weight": 30,
           "text": "He fights back with desperate ferocity, slashing wildly with his crowbar. You overpower him, but not before he draws blood.",
           "effects": [
-            { "type": "add_gold_range", "min": 16, "max": 24 },
+            { "type": "add_gold_range", "min": 10, "max": 16 },
             { "type": "damage_hero", "amount": 6 },
             { "type": "apply_status", "status_id": "bleeding", "duration": 2, "target": "random_hero" }
           ]

@@ -1,0 +1,30 @@
+{
+  "id": "gr_forest_wisp",
+  "display_name": "Forest Wisp",
+  "description": "A flickering mote of emerald light that drifts between the trees, lashing out with bursts of wild magic.",
+  "icon_hint": "small floating orb of green light with trailing wisps of leafy energy",
+  "family": "fey",
+  "region_id": "region_1",
+  "tier": 1,
+  "ai_tier": 1,
+  "attack_type": "ranged",
+  "combat_role": "mage",
+  "base_stats": {
+    "health": 46,
+    "attack": 14,
+    "defense": 2,
+    "speed": 16
+  },
+  "ability_ids": [
+    "basic_attack",
+    "mon_arcane_bolt"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region1_common",
+  "gold_drop_min": 5,
+  "gold_drop_max": 12,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_LowLevel/PNG/Transperent/Icon10.png"
+}

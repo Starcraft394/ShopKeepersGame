@@ -25,7 +25,7 @@
   "combat_tag_effect": {
     "trigger": "on_kill",
     "effect": "damage_random_enemy",
-    "damage": 8,
+    "damage": 12,
     "damage_type": "void",
     "chance": 0.25
   },

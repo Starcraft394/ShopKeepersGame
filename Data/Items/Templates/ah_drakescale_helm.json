@@ -12,11 +12,13 @@
   "max_quality": 3,
   "category": "equipment",
   "base_stats": {
-    "defense": 8
+    "defense": 8,
+    "crit_chance": 12
   },
   "stat_bonuses": {
     "defense": 8,
-    "health": 13
+    "health": 13,
+    "crit_chance": 12
   },
   "passive_id": "ah_passive_firecrit",
   "combat_tag": "burning_edge",
@@ -24,7 +26,7 @@
     "trigger": "on_attack",
     "effect": "apply_status",
     "status": "burning",
-    "chance": 0.1
+    "chance": 0.15
   },
   "allowed_affixes": [],
   "min_affixes": 0,

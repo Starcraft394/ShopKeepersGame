@@ -12,12 +12,14 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "attack": 4
+    "attack": 4,
+    "evasion": 4
   },
   "stat_bonuses": {
     "attack": 4,
     "speed": 2,
-    "health": 9
+    "health": 9,
+    "evasion": 4
   },
   "allowed_affixes": [],
   "min_affixes": 0,

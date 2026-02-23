@@ -12,11 +12,15 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "health": 22
+    "health": 22,
+    "life_steal": 8,
+    "crit_chance": 10
   },
   "stat_bonuses": {
     "health": 22,
-    "defense": 5
+    "defense": 5,
+    "life_steal": 8,
+    "crit_chance": 10
   },
   "passive_id": "nc_passive_revive",
   "combat_tag": "undying_will",
@@ -24,7 +28,7 @@
     "trigger": "on_low_hp",
     "effect": "buff_stat",
     "stat": "defense",
-    "value": 3,
+    "value": 6,
     "duration": 2,
     "threshold": 0.25,
     "once": true

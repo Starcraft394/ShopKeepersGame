@@ -12,20 +12,22 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "defense": 20,
-    "speed": -2
+    "defense": 16,
+    "speed": -2,
+    "evasion": 14
   },
   "stat_bonuses": {
-    "defense": 20,
-    "health": 42,
-    "speed": -2
+    "defense": 16,
+    "health": 30,
+    "speed": -2,
+    "evasion": 14
   },
   "passive_id": "fr_passive_amplify",
   "combat_tag": "dimensional_rift",
   "combat_tag_effect": {
     "trigger": "on_kill",
     "effect": "damage_random_enemy",
-    "damage": 8,
+    "damage": 12,
     "damage_type": "void",
     "chance": 0.25
   },

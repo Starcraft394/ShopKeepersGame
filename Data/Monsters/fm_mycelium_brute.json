@@ -8,6 +8,7 @@
   "tier": 2,
   "ai_tier": 2,
   "attack_type": "melee",
+  "combat_role": "melee",
   "base_stats": {
     "health": 175,
     "attack": 28,
@@ -15,12 +16,14 @@
     "speed": 18
   },
   "ability_ids": [
-    "basic_attack"
+    "basic_attack",
+    "mon_heavy_strike",
+    "mon_ground_slam"
   ],
   "passive_ids": [],
   "loot_table_id": "lt_region2_elite",
-  "gold_drop_min": 18,
-  "gold_drop_max": 35,
+  "gold_drop_min": 22,
+  "gold_drop_max": 42,
   "sprite_path": "",
   "is_elite": true,
   "is_boss": false,

@@ -1,0 +1,17 @@
+{
+  "id": "mon_poison_shot",
+  "display_name": "Poison Shot",
+  "description": "A venomous projectile that poisons the target on impact.",
+  "icon_hint": "green-tipped arrow dripping with bubbling venom",
+  "ability_type": "monster",
+  "source_class_id": "",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 5,
+  "damage_type": "physical",
+  "attack_scaling": 0.6,
+  "cooldown": 3,
+  "applies_status_id": "poisoned",
+  "applies_status_duration": 3,
+  "status_stacks": 2
+}

@@ -24,7 +24,7 @@
   "combat_tag_effect": {
     "trigger": "round_start",
     "effect": "heal",
-    "value": 2
+    "value": 3
   },
   "allowed_affixes": [],
   "min_affixes": 0,

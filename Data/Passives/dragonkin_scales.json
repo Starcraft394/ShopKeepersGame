@@ -7,7 +7,7 @@
   "trigger": "on_damage_received",
   "effect": {
     "damage_reduction_percent": 10,
-    "status_immunity": ["burn"]
+    "status_immunity": ["burning"]
   },
   "category": "racial",
   "source_type": "race"

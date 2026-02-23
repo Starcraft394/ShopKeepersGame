@@ -14,7 +14,7 @@
   "cooldown": 4,
   "applies_status_id": "",
   "status_stacks": 0,
-  "shield_value": 12,
+  "shield_value": 28,
   "shield_duration": 2,
   "ally_buff": {
     "stat": "speed",

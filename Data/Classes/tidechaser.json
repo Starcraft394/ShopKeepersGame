@@ -21,5 +21,5 @@
   "ability_b_id": "cleansing_wave",
   "passive_a_id": "tidal_flow",
   "passive_b_id": "ocean_blessing",
-  "weapon_types": ["staff", "wand", "trident"]
+  "weapon_types": ["staff", "focus"]
 }

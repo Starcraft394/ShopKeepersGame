@@ -73,24 +73,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 theme_override_font_sizes/font_size = 15
 
-[node name="ContentPanel" type="PanelContainer" parent="MainLayout"]
+[node name="ContentArea" type="Control" parent="MainLayout"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-
-[node name="ContentMargin" type="MarginContainer" parent="MainLayout/ContentPanel"]
-layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 8
-
-[node name="ContentVBox" type="VBoxContainer" parent="MainLayout/ContentPanel/ContentMargin"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="ContentHeader" type="PanelContainer" parent="MainLayout/ContentPanel/ContentMargin/ContentVBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 28)
-layout_mode = 2
-theme_override_styles/panel = ExtResource("3_hdr")

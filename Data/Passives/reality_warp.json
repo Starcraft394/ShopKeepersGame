@@ -1,14 +1,13 @@
 {
   "id": "reality_warp",
   "display_name": "Reality Warp",
-  "description": "At combat start, gain ATK equal to (2 + hero level/2). Reality bends to your will.",
+  "description": "At combat start, gain ATK equal to (3 + hero level). Reality bends to your will.",
   "icon_hint": "cracked purple void rift with dimensional energy spilling out and warping space",
   "passive_type": "level_scaled_stat_bonus",
   "trigger": "combat_start",
   "effect": {
     "stat": "attack",
-    "bonus": 2,
-    "level_divisor": 2
+    "bonus": 3
   },
   "source_class_id": "void_herald",
   "category": "class"

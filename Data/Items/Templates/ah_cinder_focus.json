@@ -12,12 +12,14 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "attack": 3
+    "attack": 3,
+    "thorns": 2
   },
   "stat_bonuses": {
     "attack": 3,
     "speed": 1,
-    "health": 6
+    "health": 6,
+    "thorns": 2
   },
   "allowed_affixes": [],
   "min_affixes": 0,

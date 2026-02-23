@@ -16,7 +16,12 @@
   "encounter_tags": ["coastal", "tidal", "drowned", "reef", "fog", "underwater"],
   "gear_whitelist": [
     "ss_coral_blade", "ss_tidestriker_bow", "ss_barnacle_plate",
-    "ss_abalone_shield", "ss_tidecaller_ring"
+    "ss_abalone_shield", "ss_tidecaller_ring",
+    "ss_coral_crusher", "ss_coral_staff", "ss_kelp_greaves",
+    "ss_kelp_vest", "ss_pearl_amulet", "ss_sea_glass_focus",
+    "ss_shell_pack", "ss_tide_fang", "ss_tidecrest_helm",
+    "ss_leviathan_bow", "ss_leviathan_focus", "ss_leviathan_pack",
+    "ss_leviathan_ring", "ss_leviathan_staff", "ss_tidewoven_vest"
   ],
   "floor_theme": [
     "Tidal Shallows",

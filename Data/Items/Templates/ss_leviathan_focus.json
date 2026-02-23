@@ -12,12 +12,16 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "attack": 5
+    "attack": 5,
+    "evasion": 12,
+    "resist": 12
   },
   "stat_bonuses": {
     "attack": 5,
     "speed": 2,
-    "health": 13
+    "health": 13,
+    "evasion": 12,
+    "resist": 12
   },
   "ability_id": "ss_current_shield",
   "combat_tag": "swift_current",

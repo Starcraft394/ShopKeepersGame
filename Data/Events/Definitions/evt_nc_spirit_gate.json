@@ -14,7 +14,7 @@
           "weight": 40,
           "text": "Your hand passes through the icy barrier. Ghostly fingers press something into your palm — coins and a shard of crystallized soul energy, offered freely.",
           "effects": [
-            { "type": "add_gold_range", "min": 16, "max": 24 },
+            { "type": "add_gold_range", "min": 10, "max": 16 },
             { "type": "add_item", "item_id": "soul_ore", "min_qty": 1, "max_qty": 2 }
           ]
         },
@@ -32,7 +32,7 @@
           "effects": [
             { "type": "damage_hero", "amount": 10 },
             { "type": "apply_status", "status_id": "bleeding", "duration": 2, "target": "random_hero" },
-            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+            { "type": "apply_status", "status_id": "burning", "duration": 2, "target": "random_hero" }
           ]
         }
       ]

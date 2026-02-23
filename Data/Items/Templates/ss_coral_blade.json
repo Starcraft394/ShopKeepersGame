@@ -12,11 +12,15 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "attack": 10
+    "attack": 10,
+    "crit_chance": 9,
+    "armor_penetration": 5
   },
   "stat_bonuses": {
     "attack": 10,
-    "speed": 2
+    "speed": 2,
+    "crit_chance": 9,
+    "armor_penetration": 5
   },
   "allowed_affixes": [],
   "min_affixes": 0,

@@ -1,0 +1,16 @@
+{
+  "id": "mon_ground_slam",
+  "display_name": "Ground Slam",
+  "description": "Slams the ground with tremendous force, damaging all enemies.",
+  "icon_hint": "massive fist smashing earth with radiating shockwave cracks",
+  "ability_type": "monster",
+  "source_class_id": "",
+  "target_type": "all_enemies",
+  "effect_type": "damage",
+  "base_damage": 4,
+  "damage_type": "physical",
+  "attack_scaling": 0.5,
+  "cooldown": 4,
+  "applies_status_id": "",
+  "status_stacks": 0
+}

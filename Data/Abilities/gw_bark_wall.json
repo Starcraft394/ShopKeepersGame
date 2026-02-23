@@ -14,7 +14,7 @@
   "cooldown": 4,
   "applies_status_id": "",
   "status_stacks": 0,
-  "shield_value": 15,
+  "shield_value": 20,
   "shield_duration": 2,
   "target_team": "ally",
   "target_rule": "lowest_hp_pct",

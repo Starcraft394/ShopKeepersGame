@@ -136,6 +136,14 @@
       "output_id": "invulnerability_tonic",
       "output_qty": 1,
       "required_tier": 4
+    },
+    {
+      "input_a": "boss_trophy_greenwood",
+      "input_b": "wood_bundle",
+      "input_c": "iron_scrap",
+      "output_id": "strong_healing_tonic",
+      "output_qty": 3,
+      "required_tier": 4
     }
   ]
 }

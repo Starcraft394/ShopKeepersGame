@@ -38,6 +38,7 @@ var healing_done: int = 0
 var status_applied: String = ""
 var status_stacks: int = 0
 var was_critical: bool = false
+var was_evaded: bool = false
 var round_number: int = 0
 var turn_number: int = 0
 var message: String = ""

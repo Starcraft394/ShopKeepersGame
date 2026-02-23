@@ -24,6 +24,14 @@
       "output_id": "nc_banshee_vial",
       "output_qty": 1,
       "required_tier": 3
+    },
+    {
+      "input_a": "boss_trophy_necropolis",
+      "input_b": "deadmans_grass",
+      "input_c": "cursed_relic",
+      "output_id": "nc_grave_elixir",
+      "output_qty": 3,
+      "required_tier": 4
     }
   ]
 }

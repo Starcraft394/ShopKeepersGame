@@ -81,15 +81,16 @@
           "effects": [
             { "type": "add_item", "item_id": "magma_core", "min_qty": 1, "max_qty": 1 },
             { "type": "damage_hero", "amount": 10 },
-            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+            { "type": "apply_status", "status_id": "burning", "duration": 2, "target": "random_hero" }
           ]
         },
         {
           "weight": 25,
-          "text": "The flame detonates the moment you touch the altar. Sacred fire engulfs the shrine and blasts your party backward. When the smoke clears, the core is cracked and dim.",
+          "text": "The flame detonates the moment you touch the altar. Sacred fire engulfs the shrine and blasts your party backward. When the smoke clears, the core is cracked and dim — but a shard of it survived.",
           "effects": [
             { "type": "damage_party", "amount": 8 },
-            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "party" }
+            { "type": "apply_status", "status_id": "burning", "duration": 2, "target": "party" },
+            { "type": "add_item", "item_id": "ember_dust", "min_qty": 1, "max_qty": 2 }
           ]
         }
       ]

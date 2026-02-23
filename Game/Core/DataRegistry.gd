@@ -40,6 +40,7 @@ var _events: Dictionary = {}           # id -> EventData
 var _mixing_recipes: Dictionary = {}   # facility_id -> Array of recipe dicts
 var _regional_affixes: Dictionary = {} # region_id -> { prefix, stat_bonus, description }
 var _campaign_dialogs: Dictionary = {} # region_id -> Array[CampaignDialogData]
+var _equipment_by_region_tier: Dictionary = {} # "region_N:tier_M" -> Array of template_ids
 
 var _is_loaded: bool = false
 var _load_errors: Array[String] = []
@@ -459,6 +460,22 @@ func get_all_events() -> Array:
 	return _events.values()
 
 
+## Get all equipment template IDs matching a region tag and tier. Cached after first call.
+func get_equipment_for_region_tier(region_tag: String, tier: int) -> Array:
+	var key: String = "%s:tier_%d" % [region_tag, tier]
+	if _equipment_by_region_tier.has(key):
+		return _equipment_by_region_tier[key]
+	var tier_tag: String = "tier_%d" % tier
+	var result: Array = []
+	for template in _item_templates.values():
+		if template.category != "equipment":
+			continue
+		if region_tag in template.tags and tier_tag in template.tags:
+			result.append(template.template_id)
+	_equipment_by_region_tier[key] = result
+	return result
+
+
 func is_data_loaded() -> bool:
 	return _is_loaded
 
@@ -566,7 +583,7 @@ func run_smoke_test() -> bool:
 		["Ability", "str_precise_strike", get_ability("str_precise_strike")],
 		["Passive", "def_iron_skin", get_passive("def_iron_skin")],
 		["Passive", "str_killer_instinct", get_passive("str_killer_instinct")],
-		["StatusEffect", "burn", get_status_effect("burn")],
+		["StatusEffect", "burning", get_status_effect("burning")],
 		["StatusEffect", "stun", get_status_effect("stun")],
 		["Monster", "goblin", get_monster("goblin")],
 		["Region", "region_1", get_region("region_1")],

@@ -11,11 +11,14 @@
   "tier": 3,
   "min_quality": 0,
   "max_quality": 3,
-  "base_stats": {},
+  "base_stats": {
+    "evasion": 7
+  },
   "stat_bonuses": {
     "attack": 1,
     "speed": 3,
-    "health": 14
+    "health": 14,
+    "evasion": 7
   },
   "allowed_affixes": [],
   "min_affixes": 0,

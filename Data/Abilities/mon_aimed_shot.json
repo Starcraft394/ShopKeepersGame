@@ -1,0 +1,16 @@
+{
+  "id": "mon_aimed_shot",
+  "display_name": "Aimed Shot",
+  "description": "A carefully aimed projectile that deals precise physical damage.",
+  "icon_hint": "crossbow bolt flying straight with motion blur trail",
+  "ability_type": "monster",
+  "source_class_id": "",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 7,
+  "damage_type": "physical",
+  "attack_scaling": 0.6,
+  "cooldown": 3,
+  "applies_status_id": "",
+  "status_stacks": 0
+}

@@ -13,12 +13,14 @@
   "max_quality": 3,
   "base_stats": {
     "attack": 17,
-    "speed": -2
+    "speed": -2,
+    "crit_chance": 14
   },
   "stat_bonuses": {
     "attack": 17,
     "speed": -2,
-    "health": 5
+    "health": 5,
+    "crit_chance": 14
   },
   "ability_id": "fm_fungal_slam",
   "combat_tag": "spore_shield",

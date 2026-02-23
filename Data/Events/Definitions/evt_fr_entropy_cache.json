@@ -27,10 +27,11 @@
         },
         {
           "weight": 20,
-          "text": "The cache dissolves completely the instant you touch it, releasing a wave of entropic energy that ages everything nearby by a decade in a heartbeat.",
+          "text": "The cache dissolves completely the instant you touch it, releasing a wave of entropic energy that ages everything nearby by a decade in a heartbeat. A few coins survived the dissolution.",
           "effects": [
             { "type": "damage_party", "amount": 5 },
-            { "type": "apply_status", "status_id": "poisoned", "duration": 2, "target": "random_hero" }
+            { "type": "apply_status", "status_id": "poisoned", "duration": 2, "target": "random_hero" },
+            { "type": "add_gold_range", "min": 6, "max": 10 }
           ]
         }
       ]
@@ -60,7 +61,7 @@
           "effects": [
             { "type": "add_item", "item_id": "fr_entropy_residue", "min_qty": 1, "max_qty": 1 },
             { "type": "damage_party", "amount": 4 },
-            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+            { "type": "apply_status", "status_id": "burning", "duration": 2, "target": "random_hero" }
           ]
         }
       ]

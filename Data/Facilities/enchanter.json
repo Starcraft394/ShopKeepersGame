@@ -2436,6 +2436,49 @@
           "qty": 2
         }
       ]
+    },
+    {
+      "output_id": "cloth_robe",
+      "output_qty": 1,
+      "required_tier": 1,
+      "upgrade_tier": 1,
+      "equipment_type": "light_armor",
+      "unlock_cost": [
+        {
+          "item_id": "wolf_pelt",
+          "qty": 1
+        },
+        {
+          "item_id": "spider_silk",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "output_id": "cloth_cap",
+      "output_qty": 1,
+      "required_tier": 1,
+      "upgrade_tier": 1,
+      "equipment_type": "helmet",
+      "unlock_cost": [
+        {
+          "item_id": "wolf_pelt",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "output_id": "cloth_leggings",
+      "output_qty": 1,
+      "required_tier": 1,
+      "upgrade_tier": 1,
+      "equipment_type": "legs",
+      "unlock_cost": [
+        {
+          "item_id": "wolf_pelt",
+          "qty": 1
+        }
+      ]
     }
   ]
 }

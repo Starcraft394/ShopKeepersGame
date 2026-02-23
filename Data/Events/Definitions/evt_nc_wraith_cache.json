@@ -14,7 +14,7 @@
           "weight": 45,
           "text": "The wards shatter with a dull pop. Inside you find a wraith-hunter's field kit: coins, bandages, and a vial of purifying salve.",
           "effects": [
-            { "type": "add_gold_range", "min": 14, "max": 22 },
+            { "type": "add_gold_range", "min": 9, "max": 14 },
             { "type": "heal_hero", "amount": 6 }
           ]
         },
@@ -22,16 +22,16 @@
           "weight": 35,
           "text": "The wards break cleanly. A generous stash of gold and supplies — this hunter was well-funded.",
           "effects": [
-            { "type": "add_gold_range", "min": 18, "max": 26 }
+            { "type": "add_gold_range", "min": 12, "max": 17 }
           ]
         },
         {
           "weight": 20,
           "text": "The wards discharge violently as you force them. A blast of spectral energy scorches your hands before you can pull them back.",
           "effects": [
-            { "type": "add_gold_range", "min": 8, "max": 14 },
+            { "type": "add_gold_range", "min": 5, "max": 9 },
             { "type": "damage_hero", "amount": 7 },
-            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+            { "type": "apply_status", "status_id": "burning", "duration": 2, "target": "random_hero" }
           ]
         }
       ]

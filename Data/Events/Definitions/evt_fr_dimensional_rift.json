@@ -28,9 +28,10 @@
         },
         {
           "weight": 20,
-          "text": "The rift destabilizes! A shockwave of compressed space slams outward, bruising everyone and scattering your tools.",
+          "text": "The rift destabilizes! A shockwave of compressed space slams outward, bruising everyone and scattering your tools. A fragment of rift membrane clings to your collection vessel.",
           "effects": [
-            { "type": "damage_party", "amount": 6 }
+            { "type": "damage_party", "amount": 6 },
+            { "type": "add_item", "item_id": "fr_rift_membrane", "min_qty": 1, "max_qty": 1 }
           ]
         }
       ]

@@ -192,6 +192,69 @@ func get_buy_value() -> int:
 func get_sell_value() -> int:
 	return base_value
 
+
+## Get human-readable effect label for consumable items.
+## Returns "" if no use_effect is set.
+func get_effect_label() -> String:
+	if use_effect == "":
+		return ""
+	match use_effect:
+		"heal":
+			return "Restores %d HP" % use_value
+		"hot_heal":
+			if hot_turns > 0:
+				return "Restores %d HP over %d turns" % [use_value, hot_turns]
+			return "Restores %d HP" % use_value
+		"heal_and_buff":
+			return "Restores %d HP and buffs stats" % use_value
+		"heal_and_buff_all":
+			return "Restores %d HP to party and buffs all" % use_value
+		"heal_and_cure":
+			return "Restores %d HP and cures status effects" % use_value
+		"heal_regen_cleanse":
+			return "Restores %d HP with regen, cleanses" % use_value
+		"cure_poison":
+			return "Cures poison"
+		"cure_bleeding":
+			return "Cures bleeding"
+		"cure_stun":
+			return "Cures stun"
+		"buff_attack":
+			return "+%d Attack" % use_value
+		"buff_defense":
+			return "+%d Defense" % use_value
+		"buff_speed":
+			return "+%d Speed" % use_value
+		"buff_attack_and_speed":
+			return "+%d Attack & Speed" % use_value
+		"buff_attack_burning":
+			return "+%d Attack with burn" % use_value
+		"buff_attack_crit_pierce":
+			return "+%d Attack, crit, pierce" % use_value
+		"buff_def_atk_immunity":
+			return "+%d Defense & Attack, grants immunity" % use_value
+		"buff_evasion":
+			return "+%d Evasion" % use_value
+		"buff_evasion_and_stealth":
+			return "+%d Evasion & stealth" % use_value
+		"buff_speed_cleanse_all":
+			return "+%d Speed, cleanses all" % use_value
+		"buff_all_stats_cdr":
+			return "+%d All stats, reduces cooldowns" % use_value
+		"restore_focus":
+			return "Restores %d Focus" % use_value
+		"debuff_accuracy":
+			return "-%d Enemy Accuracy" % use_value
+		"apply_poison":
+			return "Applies %d poison" % use_value
+		"immunity":
+			return "Grants immunity for %d turns" % use_value
+		_:
+			var label: String = use_effect.replace("_", " ").capitalize()
+			if use_value > 0:
+				return "%s (%d)" % [label, use_value]
+			return label
+
 # Factory method
 static func from_dict(data: Dictionary) -> ItemTemplate:
 	var instance = ItemTemplate.new()

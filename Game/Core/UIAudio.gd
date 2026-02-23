@@ -680,7 +680,7 @@ func _open_pause_menu() -> void:
 	var hint = Label.new()
 	hint.text = "Press ESC to resume"
 	hint.add_theme_font_size_override("font_size", GameContext.fs(12))
-	hint.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+	hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(hint)
 

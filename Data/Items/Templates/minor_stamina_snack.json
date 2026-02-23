@@ -1,15 +1,18 @@
 {
   "id": "minor_stamina_snack",
   "display_name": "Minor Stamina Snack",
-  "description": "A salty bite that helps you push on.",
+  "description": "A salty bite that gives a burst of energy before combat.",
   "icon_hint": "small strip of salted jerky wrapped in brown parchment paper",
   "item_type": "consumable",
   "item_subtype": "food",
+  "category": "consumable",
   "slot": "",
   "tier": 1,
-  "min_quality": 1,
-  "max_quality": 5,
+  "min_quality": 0,
+  "max_quality": 3,
   "base_stats": {},
+  "use_effect": "buff_speed",
+  "use_value": 2,
   "allowed_affixes": [],
   "min_affixes": 0,
   "max_affixes": 0,
@@ -18,10 +21,13 @@
   "can_refine": false,
   "max_refinement": 0,
   "base_value": 6,
+  "buy_value": 10,
+  "stack_max": 10,
   "icon_path": "res://Assets/_ArtPacks/Items_Recolored/minor_stamina_snack.png",
   "tags": [
     "region_1",
-    "consumable"
-  ],
-  "stack_max": 10
+    "consumable",
+    "food",
+    "tier_1"
+  ]
 }

@@ -25,7 +25,7 @@
     "trigger": "on_attack",
     "effect": "apply_status",
     "status": "burning",
-    "chance": 0.1
+    "chance": 0.15
   },
   "allowed_affixes": [],
   "min_affixes": 0,

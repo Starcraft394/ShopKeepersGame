@@ -12,18 +12,20 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "attack": 22
+    "attack": 22,
+    "armor_penetration": 8
   },
   "stat_bonuses": {
     "attack": 22,
-    "speed": -2
+    "speed": -2,
+    "armor_penetration": 8
   },
   "combat_tag": "temporal_echo",
   "combat_tag_effect": {
     "trigger": "on_ability_use",
     "effect": "reduce_cooldown",
     "value": 1,
-    "chance": 0.2
+    "chance": 0.15
   },
   "allowed_affixes": [],
   "min_affixes": 0,

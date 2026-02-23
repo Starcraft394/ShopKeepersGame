@@ -1,0 +1,19 @@
+{
+  "id": "mon_mark_prey",
+  "display_name": "Mark Prey",
+  "description": "Marks a target, reducing their defenses and making them vulnerable.",
+  "icon_hint": "glowing red crosshair mark on a silhouetted target",
+  "ability_type": "monster",
+  "source_class_id": "",
+  "target_type": "single_enemy",
+  "effect_type": "debuff",
+  "base_damage": 0,
+  "damage_type": "physical",
+  "attack_scaling": 0.0,
+  "cooldown": 4,
+  "target_team": "enemy",
+  "target_rule": "highest_atk",
+  "enemy_debuff": {"stat": "defense", "value": -5, "duration": 3},
+  "applies_status_id": "",
+  "status_stacks": 0
+}

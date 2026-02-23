@@ -1,6 +1,6 @@
 # ShopKeepers Game - Development Status
 
-**Last Updated:** 2026-02-19
+**Last Updated:** 2026-02-22
 
 ---
 
@@ -9,11 +9,12 @@
 | Category | Status | Notes |
 |----------|--------|-------|
 | Core Systems | ✅ Complete | DataRegistry, GameContext, SeededRNG |
-| Combat System | ✅ Complete | Player-controlled, multi-actions, consumables |
-| Town/Facilities | ✅ Complete | All facility types with upgrades |
-| Dungeon System | ✅ Complete | 2 dungeons, 4 floors each, per-room seeding |
+| Combat System | ✅ Complete | Player-controlled, multi-actions, consumables, monster abilities, combat roles |
+| Town/Facilities | ✅ Complete | All facility types with tier progression |
+| Dungeon System | ✅ Complete | 7 dungeons, 4 floors each, per-room seeding, room choice system |
 | Save/Load | ✅ Complete | Full state persistence |
-| UI Framework | ✅ Complete | Town, Combat, Party screens |
+| UI Framework | ✅ Complete | Town, Combat, Party, BookUI, RPG UI Pack |
+| Campaign | ✅ Complete | 32 dialogs across 7 regions, 3 display types |
 
 ---
 
@@ -23,15 +24,17 @@
 |--------------|-------|--------|
 | Classes | 15 | ✅ All implemented |
 | Races | 9 | ✅ All implemented |
-| Abilities | 37 | ✅ No stubs |
-| Passives | 43 | ✅ No stubs |
-| Monsters | 112 | ✅ 7 regions, all with attack_type |
+| Abilities | 80 | ✅ 62 hero abilities + 18 monster abilities |
+| Passives | 66 | ✅ No stubs |
+| Monsters | 112 | ✅ 7 regions, all with attack_type, abilities, combat roles |
 | Dungeons | 7 | All regions implemented |
-| Item Templates | 241 | Consumables, gear, books, materials |
-| Facilities | 22 | All types with upgrades |
-| Regions | 7 | Greenroot → Fractured Realm |
-| Events | 57 | Region-themed encounters |
-| Tutorials | 11 | Full onboarding sequence |
+| Item Templates | 430 | Consumables, gear, books, materials |
+| Facilities | 22 | All types with tier progression |
+| Regions | 7 | Thornhaven → Fractured Realm |
+| Events | 70 | 57 migrated to v2 + 13 new, weighted outcomes |
+| Tutorials | 12 | Full onboarding sequence (incl. party_bar) |
+| Loot Tables | 38 | Region-specific drop tables |
+| Campaign Dialogs | 32 | 7 regions, 3 display types, trigger system |
 
 ---
 
@@ -39,22 +42,50 @@
 
 - [x] Player action selection (Basic Attack, Ability A, Ability B, Pass, Use Item)
 - [x] Target selection with validation (single/AoE/self)
-- [x] Speed-based multi-actions (Speed 10+ = 2 actions, 20+ = 3)
+- [x] Speed-based multi-actions (Speed 40+ = 2 actions, 80+ = 3 actions)
 - [x] Consumable usage as free action (hero keeps their attack turn)
 - [x] Turn queue with speed ordering
-- [x] Status effects (burn, stun, poison, bleed, etc.)
+- [x] Status effects (burn, stun, poison, bleed, HOT, etc.)
 - [x] Buff/debuff system with per-unit status independence
 - [x] Cooldown management
 - [x] Per-room RNG seeding for enemy variety
-- [x] Front/back row targeting (melee vs ranged attack_type)
+- [x] Front/back row grid targeting with TargetingPolicy
+- [x] Combat roles (melee, ranged, mage) with different targeting behavior
+- [x] Monster ability system (18 monster abilities, AI tier-based selection)
 - [x] Dead hero filtering in loot routing
 - [x] Full party wipe cleanup via exit_to_town()
 
 ---
 
-## Recent Session Fixes (2026-02-19)
+## Recent Work (2026-02-22)
 
-### Playtest Fixes
+### Monster Ability System
+- [x] 18 monster abilities with AI tier-based selection
+- [x] Combat roles (melee, ranged, mage) with different targeting
+- [x] Front/back row grid targeting with TargetingPolicy
+- [x] 112 monsters updated with abilities, combat roles, and AI tiers
+- [x] 6 ranged monster conversions in R5-R7
+
+### Campaign & Story
+- [x] Campaign dialog system — 32 dialogs across 7 regions, 3 display types (full_screen_overlay, portrait_text_box, event_popup)
+- [x] Trigger system (region_first_arrival, boss_first_kill, herald_visit, dungeon_camp_story, keeper_story)
+- [x] Campaign epilogue dialogs
+
+### UI & Visual
+- [x] BookUI system — animated book overlay (Bestiary, recipe books, handbook)
+- [x] RPG UI Pack integration — HP bars, dividers, banners, slot art
+- [x] Text size scaling system — configurable font sizes
+- [x] ESC closeable stack — LIFO order UI management
+- [x] Stock Shop two-state flow — commit allocations, refresh system
+
+### Systems
+- [x] Event system overhaul — v2 schema with weighted outcomes per choice
+- [x] Facility tier restructure — Storage capacity, Inn race filters, Training XP, Equipment quality, Shop refresh
+- [x] Dungeon room choice system — floor-based room selection
+- [x] HOT (heal over time) mechanic
+- [x] Icon ledger and recolour pipeline
+
+### Previous Session (2026-02-19)
 - [x] Tutorial back button — navigate backwards with Back btn / LEFT arrow / Backspace
 - [x] Enemy AI front-row targeting — 112 monsters classified as melee/ranged via attack_type field
 - [x] Status effect bleed bug — dead units now return empty snapshots, status_changed emitted on death
@@ -74,9 +105,9 @@
 
 ---
 
-## Balance Status: NEEDS WORK
+## Balance Status: NEEDS REVIEW
 
-### Hero Classes - Issues Identified
+### Hero Classes - Issues Identified (from earlier audit)
 
 | Class | Issue | Priority |
 |-------|-------|----------|
@@ -86,16 +117,19 @@
 | Pyrewarden | 270 HP + 64 DEF, nearly unkillable | HIGH |
 | Ashblade | Strong ATK + survivability combo | MONITOR |
 
-### Monster Balance - Issues Identified
+> **Note:** These issues were identified in an earlier audit. With monster abilities, combat roles, and AI tiers now implemented, some of these balance concerns may have shifted. A comprehensive re-evaluation is needed.
+
+### Monster Balance
+
+Monsters now have abilities (not just basic_attack), combat roles (melee/ranged/mage), and AI tiers for ability selection. All monsters have been rebalanced with proper stats.
 
 | Monster | Issue | Priority |
 |---------|-------|----------|
-| Tier 1 Elites | Too weak (same HP as base mobs) | HIGH |
 | Logsplitter Brute | 68 HP exceeds Tier 3 elites | MEDIUM |
 | Rootbound Shaman | ATK 14 is boss-level | MEDIUM |
 | Cultist | ATK 7 matches Tier 2 | LOW |
 
-### Ability/Passive Balance - Issues Identified
+### Ability/Passive Balance - Issues Identified (from earlier audit)
 
 | Ability/Passive | Issue | Priority |
 |-----------------|-------|----------|
@@ -111,7 +145,7 @@
 
 ## Test Status
 
-- **148 tests total** — all passing
+- **200 tests total** (178 unit + 22 validation) — all passing
 - Headless validation: PASSED
 - Test runner: `DevTools\run_headless.bat`
 
@@ -129,9 +163,6 @@
 
 ---
 
-## Next Priority: Balance Pass
+## Next Priority: Full Balance Review
 
-1. Hero stat adjustments (nerf outliers)
-2. Monster scaling adjustments (buff Tier 1 elites)
-3. Ability damage/healing rebalancing
-4. Passive effect reduction
+With monster abilities, combat roles, and AI tiers now implemented, run a comprehensive balance pass covering hero classes, monster encounters, ability scaling, and economy.

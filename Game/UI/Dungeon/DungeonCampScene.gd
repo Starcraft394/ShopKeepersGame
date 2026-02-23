@@ -77,6 +77,10 @@ func _ready() -> void:
 	# Switch to dungeon camp BGM
 	UIAudio.play_bgm("dungeon_camp")
 
+	# Apply background art (falls back to region-tinted ColorRect if image not found)
+	var region_num: int = GameContext.get_current_region()
+	BackgroundManager.apply_background(self, "dungeon", "R%d" % region_num)
+
 	# Load region palette for theming
 	_region_palette = RegionTheme.get_palette_for_current_region()
 	_apply_region_theme()
@@ -127,9 +131,10 @@ func _show_camp_overlays() -> void:
 # ============================================================================
 
 func _apply_region_theme() -> void:
-	# Background
+	# Background (only tint if still a ColorRect — TextureRect has baked-in art)
 	var bg = $Background
-	bg.color = _region_palette.get("bg_dark", Color(0.1, 0.12, 0.15, 1))
+	if bg is ColorRect:
+		bg.color = _region_palette.get("bg_dark", Color(0.1, 0.12, 0.15, 1))
 
 	var accent: Color = _region_palette.get("accent", Color(0.4, 0.65, 0.6, 0.5))
 	var border: Color = _region_palette.get("border", Color(0.3, 0.3, 0.3, 0.4))
@@ -640,7 +645,7 @@ func _populate_hero_rows() -> void:
 	if party.is_empty():
 		var hint = Label.new()
 		hint.text = "(No heroes in party)"
-		hint.modulate = Color(0.5, 0.5, 0.5, 1)
+		hint.modulate = Color(0.7, 0.7, 0.7, 1)
 		hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		hero_rows.add_child(hint)
 		return
@@ -827,11 +832,9 @@ func _create_hero_row(hero_id: String, party_idx: int = 0, party_size: int = 1) 
 				if template.description != "":
 					tooltip_lines.append(template.description)
 				# Consumable effects
-				if template.category == "consumable" and template.use_effect != "":
+				if template.use_effect != "":
 					tooltip_lines.append("")
-					tooltip_lines.append("Effect: %s" % template.use_effect.replace("_", " ").capitalize())
-					if template.use_value > 0:
-						tooltip_lines.append("Value: %d" % template.use_value)
+					tooltip_lines.append(template.get_effect_label())
 				# Materials: show recipes
 				if template.category == "materials":
 					var recipes = GameContext.get_recipes_using_material(item_id)
@@ -910,6 +913,9 @@ func _use_hero_bag_item(hero_id: String, item_id: String) -> void:
 		return
 	elif use_effect in ["buff_defense", "resistance"]:
 		_apply_combat_modifier_from_bag(hero_id, item_id, "player_def_bonus", 3, "Resistance Salve", "+3 DEF")
+		return
+	elif use_effect in ["buff_evasion", "buff_evasion_and_stealth"]:
+		_apply_combat_modifier_from_bag(hero_id, item_id, "player_eva_bonus", template.use_value, template.display_name, "+%d EVA" % template.use_value)
 		return
 
 	# Use the consumable on the hero who owns it
@@ -1068,6 +1074,17 @@ func _on_consumable_hero_chosen(item_id: String, target_hero_id: String, source_
 				print("[Camp] Used Resistance Salve from shopkeeper bag - +3 DEF for next combat")
 			_update_display()
 			return
+		elif use_effect in ["buff_evasion", "buff_evasion_and_stealth"]:
+			var eva_val: int = template.use_value
+			if source == "hero_bag" and source_hero_id != "":
+				_apply_combat_modifier_from_bag(source_hero_id, item_id, "player_eva_bonus", eva_val, template.display_name, "+%d EVA" % eva_val)
+			else:
+				GameContext.consume_stash_item(item_id, "shopkeeper_bag")
+				var modifier = {"id": item_id, "label": template.display_name, "player_eva_bonus": eva_val}
+				GameContext.set_pending_combat_modifier(modifier)
+				print("[Camp] Used %s from shopkeeper bag - +%d EVA for next combat" % [template.display_name, eva_val])
+			_update_display()
+			return
 
 	var result: Dictionary = GameContext.use_consumable_on_hero(item_id, target_hero_id, source, source_hero_id)
 	if result.get("success", false):
@@ -1205,6 +1222,20 @@ func _on_hero_info_pressed(hero_id: String) -> void:
 	_add_camp_stat_line(vbox, "Attack", str(stats.get("attack", 0)), Color.SALMON, _build_camp_stat_tooltip("Attack", hero_id))
 	_add_camp_stat_line(vbox, "Defense", str(stats.get("defense", 0)), Color.LIGHT_BLUE, _build_camp_stat_tooltip("Defense", hero_id))
 	_add_camp_stat_line(vbox, "Speed", str(stats.get("speed", 0)), Color.YELLOW, _build_camp_stat_tooltip("Speed", hero_id))
+	# New stats (only show if > 0)
+	var camp_new_stats = [
+		{"key": "crit_chance", "label": "Crit", "color": Color(1.0, 0.7, 0.3)},
+		{"key": "evasion", "label": "Evasion", "color": Color(0.6, 0.9, 0.6)},
+		{"key": "resist", "label": "Resist", "color": Color(0.7, 0.5, 0.9)},
+		{"key": "thorns", "label": "Thorns", "color": Color(0.8, 0.4, 0.4)},
+		{"key": "armor_penetration", "label": "Pen", "color": Color(0.9, 0.6, 0.5)},
+		{"key": "life_steal", "label": "Life Steal", "color": Color(0.8, 0.3, 0.3)},
+	]
+	for ns in camp_new_stats:
+		var ns_val = int(stats.get(ns.key, 0))
+		if ns_val > 0:
+			var suffix: String = "%%" if ns.key in ["crit_chance", "evasion", "life_steal"] else ""
+			_add_camp_stat_line(vbox, ns.label, "%d%s" % [ns_val, suffix], ns.color, _build_camp_stat_tooltip(ns.key.capitalize(), hero_id))
 
 	var sep2 = HSeparator.new()
 	vbox.add_child(sep2)
@@ -1264,7 +1295,7 @@ func _on_hero_info_pressed(hero_id: String) -> void:
 			_add_camp_ability_line(vbox, "[A] %s" % a_name, a_desc)
 		else:
 			var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("ability_a", 5)
-			_add_camp_ability_line(vbox, "[A] %s (Lv %d)" % [a_name, req_lv], a_desc, Color(0.5, 0.5, 0.5, 1))
+			_add_camp_ability_line(vbox, "[A] %s (Lv %d)" % [a_name, req_lv], a_desc, Color(0.7, 0.7, 0.7, 1))
 		has_abilities = true
 
 	if ability_b_id != "":
@@ -1275,7 +1306,7 @@ func _on_hero_info_pressed(hero_id: String) -> void:
 			_add_camp_ability_line(vbox, "[B] %s" % b_name, b_desc)
 		else:
 			var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("ability_b", 25)
-			_add_camp_ability_line(vbox, "[B] %s (Lv %d)" % [b_name, req_lv], b_desc, Color(0.5, 0.5, 0.5, 1))
+			_add_camp_ability_line(vbox, "[B] %s (Lv %d)" % [b_name, req_lv], b_desc, Color(0.7, 0.7, 0.7, 1))
 		has_abilities = true
 
 	if not has_abilities:

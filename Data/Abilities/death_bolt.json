@@ -7,10 +7,10 @@
   "source_class_id": "lich",
   "target_type": "single_enemy",
   "effect_type": "damage",
-  "base_damage": 22,
+  "base_damage": 18,
   "damage_type": "dark",
   "attack_scaling": 1.5,
-  "cooldown": 2,
+  "cooldown": 3,
   "applies_status_id": "",
   "status_stacks": 0
 }

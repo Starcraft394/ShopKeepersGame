@@ -1,0 +1,17 @@
+{
+  "id": "mon_chain_lightning",
+  "display_name": "Chain Lightning",
+  "description": "Unleashes a bolt of lightning that arcs between all enemies.",
+  "icon_hint": "branching blue-white lightning bolt arcing between multiple targets",
+  "ability_type": "monster",
+  "source_class_id": "",
+  "target_type": "all_enemies",
+  "effect_type": "damage",
+  "base_damage": 5,
+  "damage_type": "magical",
+  "attack_scaling": 0.4,
+  "cooldown": 4,
+  "applies_status_id": "shocked",
+  "applies_status_duration": 2,
+  "status_stacks": 1
+}

@@ -1,0 +1,20 @@
+{
+  "id": "mon_war_cry",
+  "display_name": "War Cry",
+  "description": "Lets out a thundering war cry that empowers all allies.",
+  "icon_hint": "roaring beast head with visible shockwave rings and red power aura",
+  "ability_type": "monster",
+  "source_class_id": "",
+  "target_type": "all_allies",
+  "effect_type": "buff",
+  "base_damage": 0,
+  "damage_type": "physical",
+  "attack_scaling": 0.0,
+  "cooldown": 5,
+  "target_team": "ally",
+  "target_rule": "any",
+  "allow_self_target": true,
+  "ally_buff": {"stats": ["attack"], "value": 4, "duration": 3},
+  "applies_status_id": "",
+  "status_stacks": 0
+}

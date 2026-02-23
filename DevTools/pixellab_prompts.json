@@ -1,0 +1,185 @@
+{
+  "settings": {
+    "width": 320,
+    "height": 180,
+    "outline": "selective outline",
+    "shading": "medium shading",
+    "detail": "medium detail",
+    "view": "side",
+    "text_guidance_scale": 8.0,
+    "negative_description": "No characters, no monsters, no creatures, no text, no UI, no modern objects, no anime, no photorealism, no symmetry, no bright white, no neon, no buildings, no structures, no houses, no roofs, no walls, no doors, no architecture"
+  },
+  "building_settings": {
+    "width": 128,
+    "height": 128,
+    "outline": "selective outline",
+    "shading": "medium shading",
+    "detail": "highly detailed",
+    "view": "side",
+    "text_guidance_scale": 8.0,
+    "no_background": true,
+    "negative_description": "No characters, no text, no UI, no modern objects"
+  },
+  "scenes": [
+    {
+      "scene_id": "town_thornhaven_T1",
+      "category": "town",
+      "description": "Pixel art, SNES style, fantasy forest clearing landscape. A wide flat clearing of packed dirt and short grass at the edge of an ancient forest. Dense dark forest with thick canopy filtering green-gold light frames left, right, and top edges. Thick tree trunks with hanging moss at the borders. A crude wooden palisade of sharpened logs marks the far boundary. Wildflowers and ferns at the clearing edges. A single amber lantern on a crooked post. Late afternoon golden hour lighting. Warm amber and forest green palette. Desaturated ochre ground. Center area is wide open low-contrast dirt clearing. Left side and bottom darker. Top is dark canopy. No buildings."
+    },
+    {
+      "scene_id": "town_sproutrest_T1",
+      "category": "town",
+      "description": "Pixel art, SNES style, fantasy fungal cavern landscape. A wide flat clearing on the floor of a bioluminescent underground cavern. Giant mushroom stalks with glowing caps frame left and right edges. Soft blue-green bioluminescent light from fungal growths on cavern walls. Thick spore mist at ground level. Mycelium-covered flat ground in the center. Shelf fungi and glowing spore clusters along the borders. No sky visible, dark cavern ceiling far above. Strange but peaceful atmosphere. Cool blue-green and soft purple palette. Center area is wide open low-contrast fungal floor. Bottom darker. No buildings."
+    },
+    {
+      "scene_id": "town_shelldrift_T1",
+      "category": "town",
+      "description": "Pixel art, SNES style, fantasy beach landscape. A wide flat stretch of pale sand on a misty shoreline. Smooth wet sand in the center with gentle tide marks. Weathered driftwood logs and scattered seashells at the edges. Rocky outcrops and tide pools frame left and right borders. Wispy grey fog rolls in from the sea beyond. Overcast grey-green storm sky. Tall grass and dried kelp at the far edges. A single rusty iron lantern on a wooden post. Cold, desaturated, pale palette. Grey-blue fog, pale sand, dark teal distant water. Center area is wide open low-contrast flat sand. Bottom darker wet sand. No buildings."
+    },
+    {
+      "scene_id": "town_embercradle_T1",
+      "category": "town",
+      "description": "Pixel art, SNES style, fantasy volcanic wasteland landscape. A wide flat expanse of dark volcanic rock amid a scorched wasteland. Glowing orange-red fissures crack the ground at the edges. Jagged obsidian rock formations frame left and right borders. Ash particles drift in the air. Sky is deep orange-red with distant volcanic ridge silhouettes. Heat shimmer visible above the ground. Ochre sand drifts between dark rock. Hostile and barren landscape. Dark volcanic palette with orange-red accents. Center area is wide open dark rock surface low contrast. Bottom darkest. No buildings."
+    },
+    {
+      "scene_id": "town_crystalhearth_T1",
+      "category": "town",
+      "description": "Pixel art, SNES style, fantasy crystal grove landscape. A wide flat clearing among towering crystal formations under a deep purple-black sky with slow-motion falling stars. Pale blue and purple crystal spires frame left and right edges. Prismatic light refracts through crystals creating rainbow fragments on the ground. Some small stones float at different heights near the edges. Crystal-dusted flat ground in the center. Ethereal and otherworldly atmosphere. Deep purple sky, pale blue-white crystals, prismatic rainbow accents. Center area is wide open low-contrast crystal-dusted ground. Bottom darker. No buildings."
+    },
+    {
+      "scene_id": "town_duskhollow_T1",
+      "category": "town",
+      "description": "Pixel art, SNES style, fantasy graveyard landscape. A wide flat expanse of barren dark earth in a dense fog-choked graveyard. Thick grey-green fog blankets everything, obscuring the horizon completely. Dead twisted trees with bare branches frame left and right edges. Scattered bones half-buried in the dirt at the borders. Cold thin blue-green soul-light glows faintly from the ground. Wisps of spectral mist drift across the scene. Charcoal grey, bone white, cold blue-green soul light palette. Oppressive and eerie atmosphere. Center area is wide open low-contrast barren earth. Bottom darkest. No buildings. No gravestones. No architecture."
+    },
+    {
+      "scene_id": "town_void_threshold_T1",
+      "category": "town",
+      "description": "Pixel art, SNES style, fantasy void realm landscape. A fragment of cracked and broken ground floating in an endless void. Fragments of prior regions visible at the edges, broken and fused wrong: a twisted tree root, a shattered crystal, a dissolving stone arch. Void fissures crack the ground showing absolute nothing below. Sickly purple-white void energy seeps from the cracks. Wrong shadow directions. Void-black sky, purple-black energy tendrils, fragmented color echoes from destroyed worlds. Zero warmth. Center area is wide open low-contrast void-touched ground. Bottom darkest. No buildings."
+    },
+    {
+      "scene_id": "dungeon_R1",
+      "category": "dungeon",
+      "description": "Pixel art, SNES style, fantasy forest dungeon scene. Deep ancient forest interior. Thick tree trunks frame left and right edges. Dense canopy overhead filters dappled golden-amber light beams. Ground is soft earth covered in leaf litter, moss, and ferns. Mushrooms at tree bases. Exposed root systems. Hanging moss from branches. Atmosphere is warm but enclosed and mysterious. Forest green, moss green, bark brown, dappled amber palette. Center area is flat trail surface with leaf litter, low contrast. Bottom is dark ground shadow. Top is dark canopy."
+    },
+    {
+      "scene_id": "dungeon_R2",
+      "category": "dungeon",
+      "description": "Pixel art, SNES style, fantasy fungal cavern scene. Underground fungal cavern with no sky visible. Massive mushroom stalks frame the edges. Thick spore mist at ground level, faintly luminous. Bioluminescent mushroom clusters emit cool blue-green glow as the sole light source. Mycelium-coated ground. Shelf fungi form natural ledges. Spore sac chains hang as natural chandeliers. Strange and alien but not cruel. Blue-green bioluminescence, soft purple caps, cool tones. Center area low contrast fungal floor. Bottom darker."
+    },
+    {
+      "scene_id": "dungeon_R3",
+      "category": "dungeon",
+      "description": "Pixel art, SNES style, fantasy coastal dungeon scene. Fog-soaked ancient stone ruins by the sea. Broken columns and worn stone walls covered in kelp and barnacles. Tidal pools reflect pale light. Dense pale fog fills the upper half. Wet stone or wooden platforms. Storm lighting, grey-green pre-storm sky barely visible through fog. Cold, desaturated, horizontal layers of fog and ruin. Pale grey-blue fog, grey-green storm, dark teal water palette. Center area low contrast wet stone floor. Bottom darker."
+    },
+    {
+      "scene_id": "dungeon_R4",
+      "category": "dungeon",
+      "description": "Pixel art, SNES style, fantasy volcanic dungeon scene. Dark volcanic rock terrain cracked with deep orange-red glowing fissures. Ash-grey sand drifts between obsidian formations. Angular, sharp, alien rock structures. Volcanic ridge silhouettes against orange-red sky. Ash particles in the air. Heat shimmer. The environment itself is hostile. Black volcanic rock, deep orange-red glow, ochre sand palette. Center area dark rock surface low contrast. Bottom darkest with fissure glow."
+    },
+    {
+      "scene_id": "dungeon_R5",
+      "category": "dungeon",
+      "description": "Pixel art, SNES style, fantasy crystal dungeon scene. Crystal formations of pale blue, purple, and white frame the scene. Deep purple-black sky with slow-motion falling stars visible overhead. Prismatic crystal light creates rainbow fragments on the ground. Some stones float at different heights. Gravity feels wrong. Crystal geometry both beautiful and unsettling. Deep purple sky, pale blue-white crystals, rainbow prismatic accents. Center area low contrast crystal-dusted ground. Bottom darker."
+    },
+    {
+      "scene_id": "dungeon_R6",
+      "category": "dungeon",
+      "description": "Pixel art, SNES style, fantasy necropolis dungeon scene. Massive mausoleums with ornate but crumbling architecture. Bones as structural and decorative elements. Grey dust and packed grave-earth floor. Cold thin blue-green soul-light from ground and carved runes. Anti-lantern lighting that drains rather than warms. Skull-lined walls visible in distance. Charcoal grey, bone white, cold blue-green soul light, dark purple accent palette. Center area low contrast grey dust floor. Bottom darkest."
+    },
+    {
+      "scene_id": "dungeon_R7",
+      "category": "dungeon",
+      "description": "Pixel art, SNES style, fantasy void realm dungeon scene. Collapsing reality with echoes of all previous regions broken and fused wrong. A tree root from the forest twisted into void geometry. Crystal shards shattered into void fissures. Mausoleum wall dissolving. Void fissures in ground showing nothing below. Void energy sickly purple-white with wrong shadow directions. Void-black, purple-black energy, fragmented region color echoes. Zero warmth. Center area low contrast. Bottom darkest."
+    },
+    {
+      "scene_id": "event_R1",
+      "category": "event",
+      "description": "Pixel art, SNES style, fantasy forest encounter scene. A small mysterious clearing in the ancient forest with a mossy stone marker at center. Filtered green-gold canopy light. Fallen leaves scattered. Curious and uncertain atmosphere, not threatening but not ordinary. Could host an animal den, shrine, or merchant camp. Warm forest greens, amber light, mossy stones. Center area low contrast clearing floor. Bottom darker."
+    },
+    {
+      "scene_id": "event_R2",
+      "category": "event",
+      "description": "Pixel art, SNES style, fantasy fungal encounter scene. A small alcove in the fungal cavern where bioluminescent mushrooms cluster around a natural clearing. Strange objects half-visible in spore mist. Curious blue-green glow creates pools of light. Uncertain atmosphere, alien but not hostile. Cool blue-green palette. Center area low contrast. Bottom darker."
+    },
+    {
+      "scene_id": "event_R3",
+      "category": "event",
+      "description": "Pixel art, SNES style, fantasy coastal encounter scene. A sheltered cove among fog-soaked ruins. An old stone archway frames the area. Tidal pools, kelp, and washed-up debris. Something curious half-buried in sand. Pale fog, cold grey-green atmosphere, uncertain. Center area low contrast wet sand. Bottom darker."
+    },
+    {
+      "scene_id": "event_R4",
+      "category": "event",
+      "description": "Pixel art, SNES style, fantasy volcanic encounter scene. A rocky outcropping amid the volcanic wasteland. Obsidian formations create a natural shelter. Faint orange glow from a nearby fissure. Ash-covered ground with something unusual partially exposed. Hot, hostile but momentarily sheltered. Dark volcanic palette with orange accents. Center area low contrast. Bottom darker."
+    },
+    {
+      "scene_id": "event_R5",
+      "category": "event",
+      "description": "Pixel art, SNES style, fantasy crystal encounter scene. A small crystal grotto where formations create a sheltered space. Prismatic light refracts through crystals creating rainbow floor patterns. A floating stone hovers nearby. Something unusual rests among the crystals. Ethereal and curious. Deep purple, pale crystal blues, prismatic accents. Center area low contrast. Bottom darker."
+    },
+    {
+      "scene_id": "event_R6",
+      "category": "event",
+      "description": "Pixel art, SNES style, fantasy necropolis encounter scene. A bone alcove in the necropolis with carved runes providing cold blue-green soul-light. Evidence of prior visitors: a torch stub, discarded camp gear. Something curious among the bones. Gothic but with signs of the living having passed through. Charcoal, bone white, cold blue-green palette. Center area low contrast. Bottom darker."
+    },
+    {
+      "scene_id": "event_R7",
+      "category": "event",
+      "description": "Pixel art, SNES style, fantasy void encounter scene. A fragment of recognizable ground floating in void. Pieces of multiple regions visible at edges, broken and wrong. A peculiar object or anomaly at the center that defies explanation. Void fissures at the edges. Unsettling but compelling. Void-black, purple-white energy, fragmented colors. Center area low contrast. Bottom darker."
+    },
+    {
+      "scene_id": "shop_interior",
+      "category": "shop",
+      "description": "Pixel art, SNES style, fantasy shop interior scene. Interior of a cozy frontier shop. Long wooden counter across mid-ground. Floor-to-ceiling shelves behind with bottles, herb bundles, small crates, and folded cloth. Single lantern hangs from ceiling beam casting warm amber glow. Rough timber walls. Worn wooden plank floor. Small window on left with faint daylight. Dried herbs hanging from ceiling beams. Organized but well-used. The safest, warmest space. Warm timber, amber lantern light, cluttered but cozy palette. Center area low contrast counter and floor. Bottom darker wooden floor."
+    },
+    {
+      "scene_id": "building_dungeon",
+      "category": "building",
+      "description": "Pixel art, SNES style, single fantasy building sprite. A stone dungeon entrance archway with glowing blue runes carved into the stone. Dark opening beyond. Mossy stones at the base. Mysterious and foreboding. Side view."
+    },
+    {
+      "scene_id": "building_inn",
+      "category": "building",
+      "description": "Pixel art, SNES style, single fantasy building sprite. A cozy two-story timber inn with warm lit windows. Wooden sign hanging by the door. Chimney with gentle smoke. Thatched roof. The warmest building in town. Side view."
+    },
+    {
+      "scene_id": "building_shop",
+      "category": "building",
+      "description": "Pixel art, SNES style, single medieval fantasy building sprite. A cozy stone-and-timber merchant shop with a peaked slate roof and arched wooden door. Leaded glass window displays potions and goods. A hanging wooden sign with a painted coin emblem. Wooden barrel and crate beside the entrance. Ivy creeping up one wall. Warm lantern glow from inside. Side view."
+    },
+    {
+      "scene_id": "building_storage",
+      "category": "building",
+      "description": "Pixel art, SNES style, single fantasy building sprite. A large wooden warehouse or barn with reinforced double doors. Crates and barrels stacked outside. Sturdy stone foundation. Storage for adventuring supplies. Side view."
+    },
+    {
+      "scene_id": "building_blacksmith",
+      "category": "building",
+      "description": "Pixel art, SNES style, single fantasy building sprite. A blacksmith forge with a brick chimney glowing orange. Anvil visible near the open workshop door. Metal tools on wall hooks. Warm forge glow. Side view."
+    },
+    {
+      "scene_id": "building_huntsman",
+      "category": "building",
+      "description": "Pixel art, SNES style, single fantasy building sprite. A rustic hunter's lodge with mounted antlers above the door. A bow and quiver hang by the entrance. Furs draped over a railing. Woodland feel. Side view."
+    },
+    {
+      "scene_id": "building_enchanter",
+      "category": "building",
+      "description": "Pixel art, SNES style, single fantasy building sprite. A mystical enchanter's tower with arcane purple-blue glowing symbols on the walls. Crystal orb visible in upper window. Mysterious blue smoke from chimney. Otherworldly feel. Side view."
+    },
+    {
+      "scene_id": "building_chef",
+      "category": "building",
+      "description": "Pixel art, SNES style, single fantasy building sprite. A cozy kitchen building with thick white smoke from the chimney. Herbs hanging by the door. A small menu board outside. Steam rising from a window. Inviting cooking smells implied. Side view."
+    },
+    {
+      "scene_id": "building_alchemist",
+      "category": "building",
+      "description": "Pixel art, SNES style, single fantasy building sprite. An apothecary shop with colorful potion bottles visible in the window. Green vines growing on the walls. Mortar and pestle sign. Mysterious but useful. Side view."
+    },
+    {
+      "scene_id": "building_training",
+      "category": "building",
+      "description": "Pixel art, SNES style, single fantasy building sprite. A training hall or small arena with wooden training dummies visible inside. Stone walls with a wide entrance archway. A weapon rack outside. Disciplined and sturdy. Side view."
+    }
+  ]
+}

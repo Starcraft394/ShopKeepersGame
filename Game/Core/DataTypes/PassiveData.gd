@@ -23,6 +23,7 @@ var effect_data: Dictionary = {}
 var passive_type: String = ""  # "stat_bonus", "conditional_stat_bonus", "on_kill"
 var trigger: String = "always"  # "always", "on_front_row", "on_kill"
 var effect: Dictionary = {}  # {stat: "defense", bonus: 2} or {reduce_weapon_cooldown: 1}
+var cost: Dictionary = {}  # {stat: "health", value: -5} for passives with a stat cost
 
 # Stacking Rules
 var max_stacks: int = 1
@@ -54,6 +55,8 @@ static func from_dict(data: Dictionary) -> PassiveData:
 	instance.trigger = data.get("trigger", "always")
 	var effect_val = data.get("effect", {})
 	instance.effect = effect_val if effect_val is Dictionary else {}
+	var cost_val = data.get("cost", {})
+	instance.cost = cost_val if cost_val is Dictionary else {}
 
 	return instance
 

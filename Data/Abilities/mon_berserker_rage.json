@@ -1,0 +1,21 @@
+{
+  "id": "mon_berserker_rage",
+  "display_name": "Berserker Rage",
+  "description": "Enters a frenzied state, greatly increasing attack power.",
+  "icon_hint": "red-eyed snarling beast head with pulsing crimson aura",
+  "ability_type": "monster",
+  "source_class_id": "",
+  "target_type": "self",
+  "effect_type": "buff",
+  "base_damage": 0,
+  "damage_type": "physical",
+  "attack_scaling": 0.0,
+  "cooldown": 5,
+  "target_team": "self",
+  "target_rule": "any",
+  "allow_self_target": true,
+  "buff_stats": {"attack": 6},
+  "buff_duration": 3,
+  "applies_status_id": "",
+  "status_stacks": 0
+}

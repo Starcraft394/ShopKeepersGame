@@ -13,12 +13,14 @@
   "max_quality": 3,
   "base_stats": {
     "defense": 3,
-    "health": 5
+    "health": 5,
+    "evasion": 3
   },
   "stat_bonuses": {
     "defense": 3,
     "speed": -1,
-    "health": 5
+    "health": 5,
+    "evasion": 3
   },
   "allowed_affixes": [],
   "min_affixes": 0,

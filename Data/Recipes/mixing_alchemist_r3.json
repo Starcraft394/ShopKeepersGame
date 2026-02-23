@@ -24,6 +24,14 @@
       "output_id": "ss_fog_bomb",
       "output_qty": 1,
       "required_tier": 3
+    },
+    {
+      "input_a": "boss_trophy_sunken_strand",
+      "input_b": "tidal_pearl",
+      "input_c": "driftwood",
+      "output_id": "ss_tidecaller_flask",
+      "output_qty": 1,
+      "required_tier": 4
     }
   ]
 }

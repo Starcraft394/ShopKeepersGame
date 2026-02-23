@@ -12,13 +12,15 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "health": 12
+    "health": 12,
+    "crit_chance": 14
   },
   "stat_bonuses": {
     "attack": 4,
     "defense": 3,
     "speed": 1,
-    "health": 12
+    "health": 12,
+    "crit_chance": 14
   },
   "passive_id": "se_passive_cosmic",
   "combat_tag": "temporal_echo",
@@ -26,7 +28,7 @@
     "trigger": "on_ability_use",
     "effect": "reduce_cooldown",
     "value": 1,
-    "chance": 0.2
+    "chance": 0.15
   },
   "allowed_affixes": [],
   "min_affixes": 0,

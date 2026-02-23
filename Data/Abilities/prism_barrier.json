@@ -14,6 +14,6 @@
   "applies_status_id": "taunting",
   "applies_status_duration": 2,
   "status_stacks": 0,
-  "shield_value": 20,
+  "shield_value": 28,
   "shield_duration": 2
 }

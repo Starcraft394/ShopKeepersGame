@@ -22,6 +22,14 @@
       "input_a": "fr_entropy_residue",
       "input_b": "fr_null_fragment",
       "input_c": "fr_corruption_ichor"
+    },
+    {
+      "input_a": "boss_trophy_fractured_realm",
+      "input_b": "void_crystal",
+      "input_c": "fr_dimensional_essence",
+      "output_id": "fr_void_mend",
+      "output_qty": 3,
+      "required_tier": 4
     }
   ]
 }

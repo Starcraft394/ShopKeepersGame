@@ -8,6 +8,7 @@
   "tier": 3,
   "ai_tier": 3,
   "attack_type": "ranged",
+  "combat_role": "mage",
   "base_stats": {
     "health": 450,
     "attack": 42,
@@ -15,12 +16,14 @@
     "speed": 24
   },
   "ability_ids": [
-    "basic_attack"
+    "basic_attack",
+    "mon_meteor",
+    "mon_mend_ally"
   ],
   "passive_ids": [],
   "loot_table_id": "lt_region2_boss",
-  "gold_drop_min": 40,
-  "gold_drop_max": 75,
+  "gold_drop_min": 52,
+  "gold_drop_max": 98,
   "sprite_path": "",
   "is_elite": false,
   "is_boss": true,

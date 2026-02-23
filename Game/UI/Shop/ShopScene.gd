@@ -88,6 +88,9 @@ func _select_item(template: ItemTemplate) -> void:
 	details += "Buy: %d gold  |  Sell: %d gold\n" % [buy_price, template.base_value]
 	if template.description != "":
 		details += "\n%s\n" % template.description
+	var effect_label: String = template.get_effect_label()
+	if effect_label != "":
+		details += "\n%s\n" % effect_label
 	if not template.base_stats.is_empty():
 		details += "\nStats:"
 		for stat_name in template.base_stats:

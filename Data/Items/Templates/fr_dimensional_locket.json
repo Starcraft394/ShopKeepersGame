@@ -13,19 +13,23 @@
   "max_quality": 3,
   "base_stats": {
     "attack": 6,
-    "health": 10
+    "health": 10,
+    "life_steal": 12,
+    "resist": 12
   },
   "stat_bonuses": {
     "attack": 6,
     "defense": 4,
     "speed": 2,
-    "health": 10
+    "health": 10,
+    "life_steal": 12,
+    "resist": 12
   },
   "combat_tag": "dimensional_rift",
   "combat_tag_effect": {
     "trigger": "on_kill",
     "effect": "damage_random_enemy",
-    "damage": 8,
+    "damage": 12,
     "damage_type": "void",
     "chance": 0.25
   },

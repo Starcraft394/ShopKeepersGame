@@ -381,26 +381,73 @@
 - **Melee (GRID_DEFAULT)**: Must target frontmost alive row. Within row, targets lowest absolute HP.
 - **Ranged (GRID_DEFAULT)**: Can target any row. Targets lowest %HP hero.
 
-### AI Tier System (infrastructure ready, abilities TBD)
+### Combat Role System
 
-| ai_tier | Name | Intended Behavior |
-|---------|------|-------------------|
-| 0 | Feral | Basic/weapon only |
-| 1 | Basic | Fixed priority: A → B → weapon → basic |
-| 2 | Tactical | Random selection from ready abilities |
-| 3 | Strategic | Context-aware (heal priority when ally low) |
+| Role | Count | Description |
+|------|-------|-------------|
+| melee | 72 | Frontline fighters, beasts, constructs — physical damage |
+| mage | 29 | Casters, elementals, wraiths — magical damage, AoE |
+| ranged | 11 | Archers, hurlers, spitters — physical ranged attacks |
 
-### AI Tier Distribution
+### AI Tier System
 
-| ai_tier | Count | Notes |
-|---------|-------|-------|
-| 0 (none) | 7 | R1 original monsters (no ai_tier field) |
-| 1 | 38 | Low-tier normals |
-| 2 | 53 | Mid/high-tier normals + elites |
-| 3 | 14 | Bosses |
+| ai_tier | Name | Behavior | Count |
+|---------|------|----------|-------|
+| 0 | Feral | Basic/weapon only — ignores ability slots | 7 |
+| 1 | Basic | Fixed priority: A → B → weapon → basic | 35 |
+| 2 | Tactical | Random pick from ready abilities | 56 |
+| 3 | Strategic | Fixed priority (context-aware deferred) | 14 |
 
 ### Ability Coverage
 
-**Current state:** All 112 monsters have only `basic_attack`. No monsters have passives.
-AI tier differentiation requires assigning monster abilities first (separate pass).
-See `Docs/MONSTER_MANIFEST.md` for complete per-monster data.
+| Extra Abilities | Monster Count | Notes |
+|----------------|---------------|-------|
+| 0 | 7 | R1 T1 normals only (ai_tier 0) |
+| 1 | 77 | T1 normals (R2+) + T2 normals |
+| 2 | 28 | Elites + bosses |
+
+### Monster Ability Pool (18 abilities)
+
+**Melee Role:**
+| Ability | Target | Damage | Scale | CD | Status |
+|---------|--------|--------|-------|----|--------|
+| mon_heavy_strike | single | 6 | 0.8 | 3 | — |
+| mon_rending_strike | single | 5 | 0.8 | 3 | bleeding (2s, 3t) |
+| mon_ground_slam | AoE | 4 | 0.5 | 4 | — |
+| mon_berserker_rage | self | buff | — | 5 | ATK +6 (3t) |
+| mon_devastating_charge | single | 12 | 1.0 | 5 | stun |
+
+**Ranged Role:**
+| Ability | Target | Damage | Scale | CD | Status |
+|---------|--------|--------|-------|----|--------|
+| mon_aimed_shot | single | 7 | 0.6 | 3 | — |
+| mon_poison_shot | single | 5 | 0.6 | 3 | poisoned (2s, 3t) |
+| mon_volley | AoE | 4 | 0.4 | 4 | — |
+| mon_mark_prey | single | debuff | — | 4 | DEF -5 (3t) |
+| mon_rain_of_arrows | AoE | 8 | 0.6 | 5 | bleeding (2s, 3t) |
+
+**Mage Role:**
+| Ability | Target | Damage | Scale | CD | Status |
+|---------|--------|--------|-------|----|--------|
+| mon_arcane_bolt | single | 8 | 0.5 | 3 | — |
+| mon_flame_burst | single | 6 | 0.6 | 3 | burning (2s, 3t) |
+| mon_chain_lightning | AoE | 5 | 0.4 | 4 | shocked (1s, 2t) |
+| mon_life_siphon | single | 8 | 0.8 | 4 | heal self 8 |
+| mon_meteor | AoE | 10 | 0.6 | 5 | burning (2s, 3t) |
+
+**Support (shared):**
+| Ability | Target | Effect | CD |
+|---------|--------|--------|----|
+| mon_mend_ally | lowest HP% ally | heal 12 | 4 |
+| mon_war_cry | all allies | ATK +4 (3t) | 5 |
+| mon_regeneration | all allies | heal 10 | 5 |
+
+### Balance Notes
+
+- **R1 T1 monsters** (ai_tier 0) use basic attack only — tutorial-difficulty fights
+- **R2+ T1 normals** (ai_tier 1) have 1 ability each — predictable but dangerous
+- **T2 normals + elites** (ai_tier 2) use 1-2 abilities with random selection — unpredictable
+- **Bosses** (ai_tier 3) have 2 abilities on fixed priority — strong openers, then sustained pressure
+- **6 ranged conversions** in R5-R7 (2 per region) add targeting variety to late-game encounters
+- No monsters have passives yet (future pass)
+- See `Docs/MONSTER_MANIFEST.md` for complete per-monster data

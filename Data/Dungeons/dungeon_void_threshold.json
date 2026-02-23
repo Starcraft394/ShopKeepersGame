@@ -16,7 +16,15 @@
   "encounter_tags": ["void", "corruption", "entropy", "dimensional", "rift", "abyss"],
   "gear_whitelist": [
     "fr_void_edge", "fr_entropy_bow", "fr_dimensional_plate",
-    "fr_null_barrier", "fr_rift_band"
+    "fr_null_barrier", "fr_rift_band",
+    "fr_null_blade", "fr_null_bow", "fr_null_fang",
+    "fr_null_focus_t3", "fr_null_greaves", "fr_null_helm",
+    "fr_null_maul", "fr_null_pack", "fr_null_pendant",
+    "fr_null_plate", "fr_null_ring", "fr_null_shield",
+    "fr_null_shroud", "fr_null_staff",
+    "fr_dimensional_locket", "fr_entropy_maul", "fr_null_focus",
+    "fr_rift_staff", "fr_void_fang", "fr_void_greaves",
+    "fr_void_helm", "fr_void_pack", "fr_void_shroud"
   ],
   "floor_theme": [
     "The Fraying Edge",

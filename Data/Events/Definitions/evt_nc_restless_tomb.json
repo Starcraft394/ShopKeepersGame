@@ -14,14 +14,14 @@
           "weight": 45,
           "text": "Coins and a corroded brooch lie scattered across the sarcophagus floor. The occupant left in a hurry.",
           "effects": [
-            { "type": "add_gold_range", "min": 15, "max": 25 }
+            { "type": "add_gold_range", "min": 10, "max": 16 }
           ]
         },
         {
           "weight": 30,
           "text": "A hidden compartment beneath the burial platform holds a small fortune in old currency. Someone was wealthy in life.",
           "effects": [
-            { "type": "add_gold_range", "min": 22, "max": 30 }
+            { "type": "add_gold_range", "min": 14, "max": 20 }
           ]
         },
         {
@@ -30,7 +30,7 @@
           "effects": [
             { "type": "damage_hero", "amount": 8 },
             { "type": "apply_status", "status_id": "bleeding", "duration": 2, "target": "random_hero" },
-            { "type": "add_gold_range", "min": 8, "max": 12 }
+            { "type": "add_gold_range", "min": 5, "max": 8 }
           ]
         }
       ]
@@ -61,7 +61,7 @@
           "effects": [
             { "type": "add_item", "item_id": "spectral_log", "min_qty": 1, "max_qty": 2 },
             { "type": "damage_hero", "amount": 5 },
-            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+            { "type": "apply_status", "status_id": "burning", "duration": 2, "target": "random_hero" }
           ]
         }
       ]

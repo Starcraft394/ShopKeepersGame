@@ -55,6 +55,33 @@
       "requires_unlock_group": "",
       "required_town_tier": 1,
       "required_dungeon_floor_unlocked": 2
+    },
+    {
+      "item_id": "torch",
+      "weight": 8,
+      "price_gold": 10,
+      "tier": 1,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 1
+    },
+    {
+      "item_id": "smoke_bomb",
+      "weight": 8,
+      "price_gold": 15,
+      "tier": 1,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 1
+    },
+    {
+      "item_id": "minor_stamina_snack",
+      "weight": 8,
+      "price_gold": 12,
+      "tier": 1,
+      "requires_unlock_group": "",
+      "required_town_tier": 1,
+      "required_dungeon_floor_unlocked": 1
     }
   ],
 

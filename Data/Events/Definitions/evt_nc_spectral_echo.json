@@ -14,14 +14,14 @@
           "weight": 45,
           "text": "The warrior's ghost leads you through a maze of corridors to a collapsed alcove. Behind the rubble, a strongbox gleams with old gold.",
           "effects": [
-            { "type": "add_gold_range", "min": 18, "max": 28 }
+            { "type": "add_gold_range", "min": 12, "max": 18 }
           ]
         },
         {
           "weight": 30,
           "text": "The echo leads you to a hidden cache — the warrior's own burial hoard, undisturbed for centuries.",
           "effects": [
-            { "type": "add_gold_range", "min": 12, "max": 18 },
+            { "type": "add_gold_range", "min": 8, "max": 12 },
             { "type": "add_item", "item_id": "nc_wraith_thread", "min_qty": 1, "max_qty": 2 }
           ]
         },

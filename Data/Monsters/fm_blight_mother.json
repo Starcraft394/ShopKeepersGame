@@ -8,6 +8,7 @@
   "tier": 3,
   "ai_tier": 3,
   "attack_type": "ranged",
+  "combat_role": "mage",
   "base_stats": {
     "health": 400,
     "attack": 40,
@@ -15,12 +16,14 @@
     "speed": 22
   },
   "ability_ids": [
-    "basic_attack"
+    "basic_attack",
+    "mon_chain_lightning",
+    "mon_life_siphon"
   ],
   "passive_ids": [],
   "loot_table_id": "lt_region2_boss",
-  "gold_drop_min": 30,
-  "gold_drop_max": 55,
+  "gold_drop_min": 39,
+  "gold_drop_max": 72,
   "sprite_path": "",
   "is_elite": false,
   "is_boss": true,

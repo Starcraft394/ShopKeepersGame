@@ -8,6 +8,7 @@
   "tier": 3,
   "ai_tier": 3,
   "attack_type": "ranged",
+  "combat_role": "mage",
   "base_stats": {
     "health": 1050,
     "attack": 76,
@@ -15,7 +16,9 @@
     "speed": 55
   },
   "ability_ids": [
-    "basic_attack"
+    "basic_attack",
+    "mon_meteor",
+    "mon_life_siphon"
   ],
   "passive_ids": [],
   "loot_table_id": "lt_region6_boss",

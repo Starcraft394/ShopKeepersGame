@@ -14,7 +14,8 @@
   "xp_modifier": 0.9,
   "trait_tags": [
     "draconic",
-    "fire"
+    "fire",
+    "immune_fire"
   ],
   "portraits": [
     "res://Assets/_ArtPacks/Avatars_Demon/PNG/Transperent/Icon5.png",

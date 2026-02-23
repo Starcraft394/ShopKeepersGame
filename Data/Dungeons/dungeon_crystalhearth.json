@@ -16,7 +16,15 @@
   "encounter_tags": ["crystal", "prismatic", "starfall", "temporal", "void", "arcane"],
   "gear_whitelist": [
     "se_prism_blade", "se_starfall_bow", "se_crystal_ward",
-    "se_echo_shield", "se_temporal_band"
+    "se_echo_shield", "se_temporal_band",
+    "se_astral_helm", "se_astral_pack", "se_astral_pendant",
+    "se_astral_plate", "se_astral_ring", "se_astral_staff",
+    "se_crystal_leggings", "se_crystal_robe", "se_prism_edge",
+    "se_prism_fang", "se_prism_focus", "se_prism_shield",
+    "se_starfall_shortbow", "se_temporal_maul",
+    "se_astral_leggings", "se_astral_robe", "se_chrono_cleaver",
+    "se_echo_amulet", "se_prism_helm", "se_prism_staff",
+    "se_starlight_focus", "se_temporal_dagger"
   ],
   "floor_theme": [
     "Starfall Grotto",

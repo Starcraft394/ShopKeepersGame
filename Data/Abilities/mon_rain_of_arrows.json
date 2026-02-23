@@ -1,0 +1,17 @@
+{
+  "id": "mon_rain_of_arrows",
+  "display_name": "Rain of Arrows",
+  "description": "Unleashes a devastating rain of projectiles that shreds all enemies.",
+  "icon_hint": "dark sky filled with hundreds of descending arrows with red trailing light",
+  "ability_type": "monster",
+  "source_class_id": "",
+  "target_type": "all_enemies",
+  "effect_type": "damage",
+  "base_damage": 8,
+  "damage_type": "physical",
+  "attack_scaling": 0.6,
+  "cooldown": 5,
+  "applies_status_id": "bleeding",
+  "applies_status_duration": 3,
+  "status_stacks": 2
+}

@@ -12,11 +12,15 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "health": 22
+    "health": 22,
+    "life_steal": 10,
+    "armor_penetration": 4
   },
   "stat_bonuses": {
     "health": 22,
-    "defense": 3
+    "defense": 3,
+    "life_steal": 10,
+    "armor_penetration": 4
   },
   "passive_id": "nc_passive_drain",
   "combat_tag": "undying_will",
@@ -24,7 +28,7 @@
     "trigger": "on_low_hp",
     "effect": "buff_stat",
     "stat": "defense",
-    "value": 3,
+    "value": 6,
     "duration": 2,
     "threshold": 0.25,
     "once": true

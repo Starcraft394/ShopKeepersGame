@@ -29,7 +29,7 @@
           "text": "The death lord's attention is a double-edged sword. You feel healed, but a mark of cold fire burns itself into one hero's skin.",
           "effects": [
             { "type": "heal_party", "amount": 10 },
-            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+            { "type": "apply_status", "status_id": "burning", "duration": 2, "target": "random_hero" }
           ]
         }
       ]

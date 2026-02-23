@@ -57,10 +57,11 @@
         },
         {
           "weight": 20,
-          "text": "The abyss speaks too loudly. Forbidden knowledge hammers into your skulls, leaving everyone dazed and bleeding from their ears.",
+          "text": "The abyss speaks too loudly. Forbidden knowledge hammers into your skulls, leaving everyone dazed and bleeding from their ears. But fragments of corrupted insight crystallize in your hands.",
           "effects": [
             { "type": "damage_party", "amount": 5 },
-            { "type": "apply_status", "status_id": "blinded", "duration": 2, "target": "random_hero" }
+            { "type": "apply_status", "status_id": "blinded", "duration": 2, "target": "random_hero" },
+            { "type": "add_item", "item_id": "fr_corruption_ichor", "min_qty": 1, "max_qty": 1 }
           ]
         }
       ]

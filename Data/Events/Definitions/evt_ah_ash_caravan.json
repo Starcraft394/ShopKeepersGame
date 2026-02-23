@@ -29,7 +29,7 @@
           "text": "As you reach into the wreckage, a pocket of superheated air bursts from the ash. Embers sear exposed skin.",
           "effects": [
             { "type": "damage_hero", "amount": 8 },
-            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" },
+            { "type": "apply_status", "status_id": "burning", "duration": 2, "target": "random_hero" },
             { "type": "add_gold_range", "min": 5, "max": 10 }
           ]
         }

@@ -10,7 +10,7 @@
   "base_damage": 16,
   "damage_type": "fire",
   "attack_scaling": 1.4,
-  "cooldown": 2,
+  "cooldown": 3,
   "applies_status_id": "burning",
   "applies_status_duration": 2,
   "status_stacks": 1

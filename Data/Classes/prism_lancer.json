@@ -21,5 +21,5 @@
   "ability_b_id": "prismatic_burst",
   "passive_a_id": "focused_light",
   "passive_b_id": "crystal_resonance",
-  "weapon_types": ["spear", "lance", "crystal"]
+  "weapon_types": ["sword", "bow", "dagger"]
 }

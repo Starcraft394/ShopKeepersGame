@@ -10,18 +10,20 @@
   "equip_slot": "offhand",
   "tier": 4,
   "base_stats": {
-    "defense": 18
+    "defense": 18,
+    "evasion": 13
   },
   "stat_bonuses": {
     "defense": 18,
-    "health": 36
+    "health": 30,
+    "evasion": 13
   },
   "ability_id": "fr_null_ward",
   "combat_tag": "dimensional_rift",
   "combat_tag_effect": {
     "trigger": "on_kill",
     "effect": "damage_random_enemy",
-    "damage": 8,
+    "damage": 12,
     "damage_type": "void",
     "chance": 0.25
   },

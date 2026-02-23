@@ -158,6 +158,11 @@ var shopkeeper_bag: Array = []
 const SHOPKEEPER_BAG_CAPACITY_DEFAULT: int = 6  # Max stacks
 const SHOPKEEPER_SAFE_SLOTS: int = 3  # First N slots are insured (survive flee/wipe)
 
+# Stacking limits — materials stack higher than equipment/consumables
+const BAG_MATERIAL_STACK_MAX: int = 20       # Materials per slot in hero/shopkeeper bags
+const STASH_MATERIAL_STACK_MAX: int = 100    # Materials per slot in run stash
+const STASH_DEFAULT_STACK_MAX: int = 20      # Equipment/consumables per slot in run stash
+
 # DEPRECATED (v1.2): Loot routing preference - kept for save compatibility only, not used.
 # Manual-only routing now; no auto-assign or remember preference.
 var loot_pref: Dictionary = {}
@@ -178,6 +183,24 @@ var loot_panel_size: Vector2 = Vector2(620, 400)
 ## Returns font size adjusted for text_size setting: Small=-2, Medium=0, Large=+2
 func fs(base: int) -> int:
 	return base + (text_size - 1) * 2
+
+
+## Get the per-slot stack limit for an item in hero/shopkeeper bags.
+## Materials stack to BAG_MATERIAL_STACK_MAX; everything else is 1 per slot.
+func get_bag_stack_limit(item_id: String) -> int:
+	var tpl = DataRegistry.get_item_template(item_id)
+	if tpl != null and tpl.item_type == "material":
+		return BAG_MATERIAL_STACK_MAX
+	return 1
+
+
+## Get the per-slot stack limit for an item in the run stash.
+## Materials stack to STASH_MATERIAL_STACK_MAX; everything else to STASH_DEFAULT_STACK_MAX.
+func get_stash_stack_limit(item_id: String) -> int:
+	var tpl = DataRegistry.get_item_template(item_id)
+	if tpl != null and tpl.item_type == "material":
+		return STASH_MATERIAL_STACK_MAX
+	return STASH_DEFAULT_STACK_MAX
 
 
 func apply_text_size_to_theme() -> void:
@@ -234,11 +257,43 @@ const DEFAULT_UNLOCKS: Array[String] = ["healing_tonic", "rusty_sword"]
 # When an item is in this dict, it can appear in the General Store.
 var unlocked_recipes: Dictionary = {}
 
-# Default recipes unlocked on fresh save (basic starter items)
+# Default recipes unlocked on fresh save — all T1 items across 5 facilities.
+# Category rules: Metals/Melee→Blacksmith, Wood/Range/Leather→Huntsman,
+# Cloth/Magic→Enchanter, Potions→Alchemist, Food→Chef.
 const DEFAULT_UNLOCKED_RECIPES: Dictionary = {
-	"healing_tonic": { "source_facility": "alchemist", "facility_tier": 1, "upgrade_tier": 1, "output_id": "healing_tonic" },
+	# --- Blacksmith (Metals/Melee) — 6 items ---
 	"rusty_sword:t1": { "source_facility": "blacksmith", "facility_tier": 1, "upgrade_tier": 1, "output_id": "rusty_sword" },
-	"wooden_shield:t1": { "source_facility": "blacksmith", "facility_tier": 1, "upgrade_tier": 1, "output_id": "wooden_shield" }
+	"wooden_mace:t1": { "source_facility": "blacksmith", "facility_tier": 1, "upgrade_tier": 1, "output_id": "wooden_mace" },
+	"wooden_shield:t1": { "source_facility": "blacksmith", "facility_tier": 1, "upgrade_tier": 1, "output_id": "wooden_shield" },
+	"bone_dagger:t1": { "source_facility": "blacksmith", "facility_tier": 1, "upgrade_tier": 1, "output_id": "bone_dagger" },
+	"padded_mail:t1": { "source_facility": "blacksmith", "facility_tier": 1, "upgrade_tier": 1, "output_id": "padded_mail" },
+	"padded_coif:t1": { "source_facility": "blacksmith", "facility_tier": 1, "upgrade_tier": 1, "output_id": "padded_coif" },
+	# --- Huntsman (Wood/Range/Leather) — 5 items ---
+	"hunting_bow:t1": { "source_facility": "huntsman", "facility_tier": 1, "upgrade_tier": 1, "output_id": "hunting_bow" },
+	"leather_vest:t1": { "source_facility": "huntsman", "facility_tier": 1, "upgrade_tier": 1, "output_id": "leather_vest" },
+	"tanned_leather_hood:t1": { "source_facility": "huntsman", "facility_tier": 1, "upgrade_tier": 1, "output_id": "tanned_leather_hood" },
+	"tanned_leather_greaves:t1": { "source_facility": "huntsman", "facility_tier": 1, "upgrade_tier": 1, "output_id": "tanned_leather_greaves" },
+	"small_backpack:t1": { "source_facility": "huntsman", "facility_tier": 1, "upgrade_tier": 1, "output_id": "small_backpack" },
+	# --- Enchanter (Cloth/Magic) — 9 items ---
+	"oak_staff:t1": { "source_facility": "enchanter", "facility_tier": 1, "upgrade_tier": 1, "output_id": "oak_staff" },
+	"apprentice_focus:t1": { "source_facility": "enchanter", "facility_tier": 1, "upgrade_tier": 1, "output_id": "apprentice_focus" },
+	"simple_ring:t1": { "source_facility": "enchanter", "facility_tier": 1, "upgrade_tier": 1, "output_id": "simple_ring" },
+	"lucky_charm:t1": { "source_facility": "enchanter", "facility_tier": 1, "upgrade_tier": 1, "output_id": "lucky_charm" },
+	"copper_band:t1": { "source_facility": "enchanter", "facility_tier": 1, "upgrade_tier": 1, "output_id": "copper_band" },
+	"bone_charm:t1": { "source_facility": "enchanter", "facility_tier": 1, "upgrade_tier": 1, "output_id": "bone_charm" },
+	"cloth_robe:t1": { "source_facility": "enchanter", "facility_tier": 1, "upgrade_tier": 1, "output_id": "cloth_robe" },
+	"cloth_cap:t1": { "source_facility": "enchanter", "facility_tier": 1, "upgrade_tier": 1, "output_id": "cloth_cap" },
+	"cloth_leggings:t1": { "source_facility": "enchanter", "facility_tier": 1, "upgrade_tier": 1, "output_id": "cloth_leggings" },
+	# --- Alchemist (Potions) — 3 items ---
+	"healing_tonic:t1": { "source_facility": "alchemist", "facility_tier": 1, "upgrade_tier": 1, "output_id": "healing_tonic" },
+	"minor_healing_tonic:t1": { "source_facility": "alchemist", "facility_tier": 1, "upgrade_tier": 1, "output_id": "minor_healing_tonic" },
+	"antidote:t1": { "source_facility": "alchemist", "facility_tier": 1, "upgrade_tier": 1, "output_id": "antidote" },
+	# --- Chef (Food) — 5 items ---
+	"cooked_meat:t1": { "source_facility": "chef", "facility_tier": 1, "upgrade_tier": 1, "output_id": "cooked_meat" },
+	"trail_rations:t1": { "source_facility": "chef", "facility_tier": 1, "upgrade_tier": 1, "output_id": "trail_rations" },
+	"mushroom_stew:t1": { "source_facility": "chef", "facility_tier": 1, "upgrade_tier": 1, "output_id": "mushroom_stew" },
+	"berry_tart:t1": { "source_facility": "chef", "facility_tier": 1, "upgrade_tier": 1, "output_id": "berry_tart" },
+	"minor_stamina_snack:t1": { "source_facility": "chef", "facility_tier": 1, "upgrade_tier": 1, "output_id": "minor_stamina_snack" },
 }
 
 # ============================================================================
@@ -462,7 +517,7 @@ const SHOP_TIER_MAX_SLOTS: Dictionary = {
 }
 
 # Facilities that can contribute items to the General Store
-const SHOP_CONTRIBUTING_FACILITIES: Array[String] = ["blacksmith", "huntsman", "enchanter", "alchemist"]
+const SHOP_CONTRIBUTING_FACILITIES: Array[String] = ["blacksmith", "huntsman", "enchanter", "alchemist", "chef"]
 
 # Stash capacity constants
 const STASH_BASE_CAPACITY: int = 30
@@ -943,127 +998,176 @@ func get_max_stash_capacity() -> int:
 			total += facility_tiers[key] * STASH_CAPACITY_PER_STORAGE_TIER
 	return total + bonus_stash_capacity
 
-## Get distinct item_id set from run_items (for stack-based capacity counting).
-func _get_distinct_stash_ids() -> Dictionary:
-	var ids: Dictionary = {}
-	for item in run_items:
-		var tid: String = ""
-		if item is ItemInstance:
-			tid = item.template_id
-		elif item is Dictionary:
-			tid = item.get("item_id", "")
-		if tid != "":
-			ids[tid] = true
-	return ids
-
-## Get current stash stack count (distinct item types).
+## Get current stash slot count (each entry = 1 slot).
+## v1.4: Slot-based capacity — entries count, not distinct IDs.
 func get_current_stash_count() -> int:
-	return _get_distinct_stash_ids().size()
+	return run_items.size()
 
-## Check if stash has room. If item_id already stacks in stash, always true.
+## Check if stash has room for an item. Checks existing stack room first, then free slots.
+## v1.4: Slot-based model — items merge into existing stacks before needing new slots.
 func can_add_to_stash(item_id: String = "") -> bool:
 	if item_id != "":
-		if _get_distinct_stash_ids().has(item_id):
-			return true
-	return get_current_stash_count() < get_max_stash_capacity()
+		var stack_limit: int = get_stash_stack_limit(item_id)
+		for item in run_items:
+			var tid: String = ""
+			if item is ItemInstance:
+				tid = item.template_id
+			elif item is Dictionary:
+				tid = item.get("item_id", "")
+			if tid == item_id:
+				var current_qty: int = 0
+				if item is ItemInstance:
+					current_qty = item.quantity
+				elif item is Dictionary:
+					current_qty = int(item.get("qty", 1))
+				if current_qty < stack_limit:
+					return true
+	return run_items.size() < get_max_stash_capacity()
 
-## Add item to run stash. Returns false if stash is full (no room for new stack).
-func add_run_item(item_id: String, qty: int = 1) -> bool:
+## Add item to run stash with stacking. Returns false if stash is full.
+## v1.4: Merges into existing stacks (matching item_id + quality_tier) up to stack limit.
+##        Overflows into new slots. Materials cap at 100, others at 20 per slot.
+func add_run_item(item_id: String, qty: int = 1, quality: int = 0) -> bool:
 	if item_id == "" or qty <= 0:
 		return false
-	if not can_add_to_stash(item_id):
-		print("[RunStash] FULL: cannot add %d %s (stacks=%d max=%d)" % [qty, item_id, get_current_stash_count(), get_max_stash_capacity()])
-		return false
-	for i in range(qty):
-		run_items.append({ "item_id": item_id, "qty": 1 })
-	print("[RunStash] +%d %s => %d/%d stacks" % [qty, item_id, get_current_stash_count(), get_max_stash_capacity()])
+	var stack_limit: int = get_stash_stack_limit(item_id)
+	var remaining: int = qty
+
+	# Phase 1: Merge into existing stacks (matching item_id + quality_tier)
+	for item in run_items:
+		if remaining <= 0:
+			break
+		if item is Dictionary and item.get("item_id", "") == item_id and int(item.get("quality_tier", 0)) == quality:
+			var current: int = int(item.get("qty", 1))
+			var space: int = stack_limit - current
+			if space > 0:
+				var add_amt: int = mini(remaining, space)
+				item["qty"] = current + add_amt
+				remaining -= add_amt
+		elif item is ItemInstance and item.template_id == item_id and item.quality_tier == quality:
+			var current: int = item.quantity
+			var space: int = stack_limit - current
+			if space > 0:
+				var add_amt: int = mini(remaining, space)
+				item.quantity = current + add_amt
+				remaining -= add_amt
+
+	# Phase 2: Overflow into new slots
+	while remaining > 0:
+		if run_items.size() >= get_max_stash_capacity():
+			print("[RunStash] FULL: cannot add remaining %d %s (slots=%d max=%d)" % [remaining, item_id, run_items.size(), get_max_stash_capacity()])
+			return false
+		var add_amt: int = mini(remaining, stack_limit)
+		run_items.append({"item_id": item_id, "qty": add_amt, "quality_tier": quality})
+		remaining -= add_amt
+
+	print("[RunStash] +%d %s => %d/%d slots" % [qty, item_id, run_items.size(), get_max_stash_capacity()])
 	return true
 
 
 ## Remove item from run stash. Returns true if successful.
-## Handles both ItemInstance (removes lowest quality first) and Dictionary items.
+## v1.4: Decrements qty from stacked entries. Removes entry when qty reaches 0.
+## Handles both ItemInstance (lowest quality first) and Dictionary items.
 func remove_run_item(template_id: String, qty: int = 1) -> bool:
 	if template_id == "" or qty <= 0:
 		return true
 
-	var removed = 0
+	var remaining: int = qty
 
-	# First pass: collect matching ItemInstances sorted by quality (lowest first)
+	# First pass: decrement from ItemInstances sorted by quality (lowest first)
 	var instance_indices: Array = []
 	for i in range(run_items.size()):
 		var item = run_items[i]
 		if item is ItemInstance and item.template_id == template_id:
-			instance_indices.append({ "index": i, "quality": item.quality_tier, "qty": item.quantity })
-
-	# Sort by quality tier ascending (lowest quality first)
+			instance_indices.append({"index": i, "quality": item.quality_tier})
 	instance_indices.sort_custom(func(a, b): return a.quality < b.quality)
 
-	# Remove from ItemInstances first (lowest quality)
 	var indices_to_remove: Array = []
 	for entry in instance_indices:
-		if removed >= qty:
+		if remaining <= 0:
 			break
-		indices_to_remove.append(entry.index)
-		removed += entry.qty
+		var idx: int = entry.index
+		var item = run_items[idx]
+		var item_qty: int = item.quantity
+		if item_qty <= remaining:
+			indices_to_remove.append(idx)
+			remaining -= item_qty
+		else:
+			item.quantity -= remaining
+			remaining = 0
 
-	# Remove collected indices in reverse order to preserve indices
+	# Second pass: decrement from Dictionary items if still needed
+	if remaining > 0:
+		for i in range(run_items.size()):
+			if remaining <= 0:
+				break
+			var item = run_items[i]
+			if item is Dictionary and item.get("item_id", "") == template_id:
+				var item_qty: int = int(item.get("qty", 1))
+				if item_qty <= remaining:
+					if i not in indices_to_remove:
+						indices_to_remove.append(i)
+					remaining -= item_qty
+				else:
+					item["qty"] = item_qty - remaining
+					remaining = 0
+
+	# Remove depleted entries in reverse order
 	indices_to_remove.sort()
 	indices_to_remove.reverse()
 	for idx in indices_to_remove:
-		if removed > qty:
-			# We removed too many from a multi-qty ItemInstance, but for now treat as 1 each
-			pass
 		run_items.remove_at(idx)
 
-	# Second pass: remove Dictionary items if still needed
-	if removed < qty:
-		var i = 0
-		while i < run_items.size() and removed < qty:
-			var item = run_items[i]
-			if item is Dictionary and item.get("item_id", "") == template_id:
-				run_items.remove_at(i)
-				removed += 1
-			else:
-				i += 1
-
-	if removed < qty:
+	var removed: int = qty - remaining
+	if remaining > 0:
 		print("[RunStash] Wanted to remove %d %s but only found %d" % [qty, template_id, removed])
 		return false
 
-	print("[RunStash] -%d %s => %d items total" % [removed, template_id, run_items.size()])
+	print("[RunStash] -%d %s => %d slots total" % [removed, template_id, run_items.size()])
 	return true
 
 
 ## Remove items matching BOTH template_id AND quality_tier from run stash.
-## Returns the number of items actually removed (0 if none found).
+## v1.4: Decrements qty from stacked entries. Returns the number actually removed.
 func remove_run_item_by_quality(template_id: String, quality_tier: int, qty: int = 1) -> int:
 	if template_id == "" or qty <= 0:
 		return 0
 
-	var removed: int = 0
+	var remaining: int = qty
 	var indices_to_remove: Array = []
 
-	# Collect matching items (must match both id AND quality)
 	for i in range(run_items.size()):
-		if removed >= qty:
+		if remaining <= 0:
 			break
 		var item = run_items[i]
 		if item is ItemInstance and item.template_id == template_id and item.quality_tier == quality_tier:
-			indices_to_remove.append(i)
-			removed += item.quantity
+			var item_qty: int = item.quantity
+			if item_qty <= remaining:
+				indices_to_remove.append(i)
+				remaining -= item_qty
+			else:
+				item.quantity -= remaining
+				remaining = 0
 		elif item is Dictionary and item.get("item_id", "") == template_id:
 			var item_quality: int = int(item.get("quality_tier", 0))
 			if item_quality == quality_tier:
-				indices_to_remove.append(i)
-				removed += 1
+				var item_qty: int = int(item.get("qty", 1))
+				if item_qty <= remaining:
+					indices_to_remove.append(i)
+					remaining -= item_qty
+				else:
+					item["qty"] = item_qty - remaining
+					remaining = 0
 
-	# Remove in reverse order to preserve indices
+	# Remove depleted entries in reverse order
+	indices_to_remove.sort()
 	indices_to_remove.reverse()
 	for idx in indices_to_remove:
 		run_items.remove_at(idx)
 
+	var removed: int = qty - remaining
 	if removed > 0:
-		print("[RunStash] -%d %s (q%d) => %d items total" % [removed, template_id, quality_tier, run_items.size()])
+		print("[RunStash] -%d %s (q%d) => %d slots total" % [removed, template_id, quality_tier, run_items.size()])
 	return removed
 
 
@@ -1425,6 +1529,23 @@ func get_hero_equipment_ability_ids(hero_id: String) -> Array:
 	return ids
 
 
+## Collect all combat_tag_effects from a hero's equipped items.
+## Returns Array of Dicts, each with original effect fields + "item_id" for attribution.
+func get_hero_combat_tag_effects(hero_id: String) -> Array:
+	var effects: Array = []
+	var equip = get_hero_equipment(hero_id)
+	for slot in EQUIPMENT_SLOTS:
+		var slot_data = equip.get(slot, {})
+		var eid = slot_data.get("id", "")
+		if eid != "":
+			var template = DataRegistry.get_item_template(eid)
+			if template != null and not template.combat_tag_effect.is_empty():
+				var effect = template.combat_tag_effect.duplicate()
+				effect["item_id"] = eid
+				effects.append(effect)
+	return effects
+
+
 ## Equip an item from run stash into the given slot for a specific hero.
 ## Returns true if successful, false if item cannot be equipped.
 ## Removes item from run stash on success.
@@ -1625,7 +1746,8 @@ func get_equipment_summary() -> Dictionary:
 ## Get combined stat bonuses from equipped weapon and offhand for a specific hero.
 ## Applies quality tier multipliers and region scaling to equipment stats.
 func _get_hero_equipment_stat_bonuses(hero_id: String) -> Dictionary:
-	var result = { "health": 0, "attack": 0, "defense": 0, "speed": 0 }
+	var result = { "health": 0, "attack": 0, "defense": 0, "speed": 0,
+		"crit_chance": 0, "evasion": 0, "resist": 0, "thorns": 0, "armor_penetration": 0, "life_steal": 0 }
 	var region_bonus: float = get_completed_region_count() * 0.1
 
 	var equip = get_hero_equipment(hero_id)
@@ -1666,7 +1788,8 @@ func _get_hero_equipment_stat_bonuses(hero_id: String) -> Dictionary:
 
 ## DEPRECATED: Legacy _get_equipment_stat_bonuses (for backwards compatibility)
 func _get_equipment_stat_bonuses() -> Dictionary:
-	var result = { "health": 0, "attack": 0, "defense": 0, "speed": 0 }
+	var result = { "health": 0, "attack": 0, "defense": 0, "speed": 0,
+		"crit_chance": 0, "evasion": 0, "resist": 0, "thorns": 0, "armor_penetration": 0, "life_steal": 0 }
 	var region_bonus: float = get_completed_region_count() * 0.1
 
 	# Weapon bonuses
@@ -1749,42 +1872,69 @@ func _get_hero_bag_used(hero_id: String) -> int:
 	return bag.size()
 
 ## Check if an item can be added to a hero's bag.
-## v1.3: ALL item types allowed. NO STACKING — each slot holds exactly 1 item.
+## v1.4: Materials can stack (merge into existing entry). Others need a free slot.
 func can_add_to_hero_bag(hero_id: String, item_id: String, _qty: int = 1) -> bool:
 	if hero_id == "" or item_id == "":
 		return false
 	var tpl = DataRegistry.get_item_template(item_id)
 	if tpl == null:
 		return false
-	# v1.3: No category restriction — ALL items allowed
-	# v1.3: No stacking — each item needs its own slot
 	var bag = get_hero_bag(hero_id)
-	var used = bag.size()
-	var cap = get_hero_bag_capacity(hero_id)
-	return used < cap
+	# v1.4: Materials can merge into an existing stack if room
+	var stack_limit: int = get_bag_stack_limit(item_id)
+	if stack_limit > 1:
+		for entry in bag:
+			if entry.get("item_id", "") == item_id and int(entry.get("qty", 1)) < stack_limit:
+				return true
+	# Need a free slot
+	return bag.size() < get_hero_bag_capacity(hero_id)
 
-## Add a single item to a hero's bag. Returns true if successful.
-## v1.3: ALL item types allowed. NO STACKING — always creates new entry with qty=1.
-## v2: Optional affix_data dict with keys: source_region, affix_id, affix_stats, affix_prefix
+## Add item(s) to a hero's bag. Returns true if all added successfully.
+## v1.4: Materials merge into existing stacks (up to BAG_MATERIAL_STACK_MAX per slot).
+##        Equipment/consumables always create new entries with qty=1.
 func add_item_to_hero_bag(hero_id: String, item_id: String, qty: int = 1, quality: int = 0, affix_data: Dictionary = {}) -> bool:
-	# v1.3: Add each unit as separate entry (no stacking in dungeon bags)
-	for _i in range(qty):
-		if not can_add_to_hero_bag(hero_id, item_id, 1):
-			return false
-		# Ensure bag array exists
-		if not hero_bags.has(hero_id):
-			hero_bags[hero_id] = []
-		# v1.3: Always append new entry (no merging)
-		var entry: Dictionary = { "item_id": item_id, "qty": 1, "quality_tier": quality }
-		if affix_data.get("affix_id", "") != "":
-			entry["source_region"] = affix_data.get("source_region", "")
-			entry["affix_id"] = affix_data.get("affix_id", "")
-			entry["affix_stats"] = affix_data.get("affix_stats", {})
-			entry["affix_prefix"] = affix_data.get("affix_prefix", "")
-		hero_bags[hero_id].append(entry)
-		var used = _get_hero_bag_used(hero_id)
-		var cap = get_hero_bag_capacity(hero_id)
-		print("[HeroBag] +1 %s hero=%s bag=%d/%d" % [item_id, hero_id, used, cap])
+	if not hero_bags.has(hero_id):
+		hero_bags[hero_id] = []
+	var bag: Array = hero_bags[hero_id]
+	var stack_limit: int = get_bag_stack_limit(item_id)
+	var remaining: int = qty
+
+	if stack_limit > 1:
+		# v1.4: Materials — merge into existing stacks first
+		for entry in bag:
+			if remaining <= 0:
+				break
+			if entry.get("item_id", "") == item_id:
+				var current: int = int(entry.get("qty", 1))
+				var space: int = stack_limit - current
+				if space > 0:
+					var add_amt: int = mini(remaining, space)
+					entry["qty"] = current + add_amt
+					remaining -= add_amt
+		# Overflow into new slots
+		while remaining > 0:
+			if bag.size() >= get_hero_bag_capacity(hero_id):
+				print("[HeroBag] FULL: cannot add remaining %d %s hero=%s" % [remaining, item_id, hero_id])
+				return false
+			var add_amt: int = mini(remaining, stack_limit)
+			bag.append({"item_id": item_id, "qty": add_amt, "quality_tier": quality})
+			remaining -= add_amt
+	else:
+		# Non-materials: each unit = separate entry with qty=1
+		for _i in range(qty):
+			if bag.size() >= get_hero_bag_capacity(hero_id):
+				return false
+			var entry: Dictionary = {"item_id": item_id, "qty": 1, "quality_tier": quality}
+			if affix_data.get("affix_id", "") != "":
+				entry["source_region"] = affix_data.get("source_region", "")
+				entry["affix_id"] = affix_data.get("affix_id", "")
+				entry["affix_stats"] = affix_data.get("affix_stats", {})
+				entry["affix_prefix"] = affix_data.get("affix_prefix", "")
+			bag.append(entry)
+
+	var used = _get_hero_bag_used(hero_id)
+	var cap = get_hero_bag_capacity(hero_id)
+	print("[HeroBag] +%d %s hero=%s bag=%d/%d" % [qty, item_id, hero_id, used, cap])
 	return true
 
 ## Remove item(s) from a hero's bag. Returns true if successful.
@@ -1908,18 +2058,11 @@ func resolve_acquisition_at(index: int, recipient_type: String, hero_id: String 
 		if _current_phase != GamePhase.TOWN:
 			print("[Acquire] reject to=stash item=%s reason=banked_stash_locked (phase=%s)" % [item_id, get_phase_name()])
 			return false
-		# Check stash capacity (stack-based)
+		# v1.4: Use add_run_item() for proper stacking
 		if not can_add_to_stash(item_id):
-			print("[Acquire] reject to=stash item=%s reason=stash_full (%d/%d stacks)" % [item_id, get_current_stash_count(), get_max_stash_capacity()])
+			print("[Acquire] reject to=stash item=%s reason=stash_full (%d/%d slots)" % [item_id, get_current_stash_count(), get_max_stash_capacity()])
 			return false
-		# In town: route to run_items (banked stash) — stash CAN stack
-		var stash_entry: Dictionary = {"item_id": item_id, "qty": qty, "quality_tier": quality}
-		if affix_data.get("affix_id", "") != "":
-			stash_entry["source_region"] = affix_data.get("source_region", "")
-			stash_entry["affix_id"] = affix_data.get("affix_id", "")
-			stash_entry["affix_stats"] = affix_data.get("affix_stats", {})
-			stash_entry["affix_prefix"] = affix_data.get("affix_prefix", "")
-		run_items.append(stash_entry)
+		add_run_item(item_id, qty, quality)
 		_pending_acquisitions.remove_at(index)
 		print("[Acquire] resolved to=stash item=%s qty=%d q=%d (%d/%d)" % [item_id, qty, quality, get_current_stash_count(), get_max_stash_capacity()])
 		return true
@@ -2011,38 +2154,64 @@ func get_shopkeeper_bag_summary() -> String:
 	return "%d/%d stacks %s" % [stacks, cap, ", ".join(parts)]
 
 ## Check if an item can be added to the shopkeeper bag.
-## Allowed: consumables + materials. NOT gear/equipment.
-## Capacity measured by stacks (each unique item_id+quality = 1 stack).
-## Check if an item can be added to the shopkeeper bag.
-## v1.3: ALL item types allowed. NO STACKING — each slot holds exactly 1 item.
+## v1.4: Materials can merge into existing stacks. Others need a free slot.
 func can_add_to_shopkeeper_bag(item_id: String, _qty: int = 1, _quality: int = 0) -> bool:
 	if item_id == "":
 		return false
 	var tpl = DataRegistry.get_item_template(item_id)
 	if tpl == null:
 		return false
-	# v1.3: No category restriction — ALL items allowed
-	# v1.3: No stacking — each item needs its own slot
+	# v1.4: Materials can merge into an existing stack if room
+	var stack_limit: int = get_bag_stack_limit(item_id)
+	if stack_limit > 1:
+		for entry in shopkeeper_bag:
+			if entry.get("item_id", "") == item_id and int(entry.get("qty", 1)) < stack_limit:
+				return true
 	return _get_shopkeeper_bag_stacks() < get_shopkeeper_bag_capacity()
 
-## Add a single item to the shopkeeper bag.
-## v1.3: ALL item types allowed. NO STACKING — always creates new entry with qty=1.
-## v2: Optional affix_data dict with keys: source_region, affix_id, affix_stats, affix_prefix
+## Add item(s) to the shopkeeper bag. Returns true if all added successfully.
+## v1.4: Materials merge into existing stacks (up to BAG_MATERIAL_STACK_MAX per slot).
+##        Equipment/consumables always create new entries with qty=1.
 func add_item_to_shopkeeper_bag(item_id: String, qty: int = 1, quality: int = 0, source: String = "loot", affix_data: Dictionary = {}) -> bool:
-	# v1.3: Add each unit as separate entry (no stacking in dungeon bags)
-	for _i in range(qty):
-		if not can_add_to_shopkeeper_bag(item_id, 1, quality):
-			print("[ShopBag] reject item=%s reason=full" % item_id)
-			return false
-		# v1.3: Always append new entry (no merging)
-		var entry: Dictionary = {"item_id": item_id, "qty": 1, "quality_tier": quality}
-		if affix_data.get("affix_id", "") != "":
-			entry["source_region"] = affix_data.get("source_region", "")
-			entry["affix_id"] = affix_data.get("affix_id", "")
-			entry["affix_stats"] = affix_data.get("affix_stats", {})
-			entry["affix_prefix"] = affix_data.get("affix_prefix", "")
-		shopkeeper_bag.append(entry)
-		print("[ShopBag] add item=%s qty=1 q=%d slots=%d/%d source=%s" % [item_id, quality, _get_shopkeeper_bag_stacks(), get_shopkeeper_bag_capacity(), source])
+	var stack_limit: int = get_bag_stack_limit(item_id)
+	var remaining: int = qty
+	var cap: int = get_shopkeeper_bag_capacity()
+
+	if stack_limit > 1:
+		# v1.4: Materials — merge into existing stacks first
+		for entry in shopkeeper_bag:
+			if remaining <= 0:
+				break
+			if entry.get("item_id", "") == item_id:
+				var current: int = int(entry.get("qty", 1))
+				var space: int = stack_limit - current
+				if space > 0:
+					var add_amt: int = mini(remaining, space)
+					entry["qty"] = current + add_amt
+					remaining -= add_amt
+		# Overflow into new slots
+		while remaining > 0:
+			if shopkeeper_bag.size() >= cap:
+				print("[ShopBag] FULL: cannot add remaining %d %s" % [remaining, item_id])
+				return false
+			var add_amt: int = mini(remaining, stack_limit)
+			shopkeeper_bag.append({"item_id": item_id, "qty": add_amt, "quality_tier": quality})
+			remaining -= add_amt
+	else:
+		# Non-materials: each unit = separate entry with qty=1
+		for _i in range(qty):
+			if shopkeeper_bag.size() >= cap:
+				print("[ShopBag] reject item=%s reason=full" % item_id)
+				return false
+			var entry: Dictionary = {"item_id": item_id, "qty": 1, "quality_tier": quality}
+			if affix_data.get("affix_id", "") != "":
+				entry["source_region"] = affix_data.get("source_region", "")
+				entry["affix_id"] = affix_data.get("affix_id", "")
+				entry["affix_stats"] = affix_data.get("affix_stats", {})
+				entry["affix_prefix"] = affix_data.get("affix_prefix", "")
+			shopkeeper_bag.append(entry)
+
+	print("[ShopBag] +%d %s q=%d slots=%d/%d source=%s" % [qty, item_id, quality, _get_shopkeeper_bag_stacks(), cap, source])
 	return true
 
 
@@ -2166,6 +2335,11 @@ static func _recipe_key(item_id: String, upgrade_tier: int = 0) -> String:
 	if upgrade_tier > 0:
 		return "%s:t%d" % [item_id, upgrade_tier]
 	return item_id
+
+## Check if an item is a default (starter) recipe.
+static func is_default_recipe(item_id: String, upgrade_tier: int = 1) -> bool:
+	var key: String = _recipe_key(item_id, upgrade_tier)
+	return DEFAULT_UNLOCKED_RECIPES.has(key)
 
 ## Check if a specific recipe tier is unlocked.
 ## If upgrade_tier == 0, checks if ANY tier of this item is unlocked.
@@ -3175,6 +3349,14 @@ func get_hero_effective_stats(hero_id: String) -> Dictionary:
 	defense += gear_bonus.get("defense", 0)
 	speed += gear_bonus.get("speed", 0)
 
+	# New equipment stats (gear-only, no class/race base)
+	var crit_chance: int = gear_bonus.get("crit_chance", 0)
+	var evasion_val: int = gear_bonus.get("evasion", 0)
+	var resist_val: int = gear_bonus.get("resist", 0)
+	var thorns_val: int = gear_bonus.get("thorns", 0)
+	var armor_penetration_val: int = gear_bonus.get("armor_penetration", 0)
+	var life_steal_val: int = gear_bonus.get("life_steal", 0)
+
 	# Log gear bonuses once per hero per combat spawn
 	if not _gear_logged_heroes.has(hero_id):
 		var equipped_slots: Array[String] = []
@@ -3196,17 +3378,27 @@ func get_hero_effective_stats(hero_id: String) -> Dictionary:
 	# v6: Collect equipment ability IDs from T4 gear
 	var equip_abilities: Array = get_hero_equipment_ability_ids(hero_id)
 
+	# v7: Collect combat tag effects from T4 gear
+	var tag_effects: Array = get_hero_combat_tag_effects(hero_id)
+
 	return {
 		"health": health,
 		"attack": attack,
 		"defense": defense,
 		"speed": speed,
+		"crit_chance": crit_chance,
+		"evasion": evasion_val,
+		"resist": resist_val,
+		"thorns": thorns_val,
+		"armor_penetration": armor_penetration_val,
+		"life_steal": life_steal_val,
 		"level": level,
 		"class_id": class_id,
 		"race_id": race_id,
 		"name": hero_name,
 		"gear_bonus": gear_bonus,
-		"equip_ability_ids": equip_abilities
+		"equip_ability_ids": equip_abilities,
+		"combat_tag_effects": tag_effects
 	}
 
 
@@ -4620,7 +4812,74 @@ func _deserialize_run_items(items_data: Array) -> Array:
 				dict_count += 1
 
 	print("[Load] run_items deserialized count=%d instances=%d dicts=%d" % [result.size(), instance_count, dict_count])
-	return result
+
+	# v1.4 Migration: Consolidate fragmented entries into proper stacks.
+	# Old saves have many qty=1 entries for the same item. Merge them.
+	var consolidated: Array = []
+	for item in result:
+		var item_id: String = ""
+		var item_qty: int = 1
+		var item_quality: int = 0
+		var item_affix: String = ""
+		if item is ItemInstance:
+			item_id = item.template_id
+			item_qty = item.quantity
+			item_quality = item.quality_tier
+			item_affix = item.affix_id if item.affix_id != "" else ""
+		elif item is Dictionary:
+			item_id = item.get("item_id", "")
+			item_qty = int(item.get("qty", 1))
+			item_quality = int(item.get("quality_tier", 0))
+			item_affix = str(item.get("affix_id", ""))
+
+		if item_id == "":
+			continue
+
+		var stack_limit: int = get_stash_stack_limit(item_id)
+		var merged: bool = false
+
+		# Try to merge into an existing consolidated entry
+		for existing in consolidated:
+			if existing is Dictionary and existing.get("item_id", "") == item_id and int(existing.get("quality_tier", 0)) == item_quality and str(existing.get("affix_id", "")) == item_affix:
+				var current: int = int(existing.get("qty", 1))
+				var space: int = stack_limit - current
+				if space >= item_qty:
+					existing["qty"] = current + item_qty
+					merged = true
+					break
+				elif space > 0:
+					existing["qty"] = stack_limit
+					item_qty -= space
+					# Remaining will be added as new entry below
+
+		if not merged:
+			# Preserve ItemInstance objects as-is if they fit within a single stack
+			if item is ItemInstance and item_qty <= stack_limit:
+				item.quantity = item_qty
+				consolidated.append(item)
+				item_qty = 0
+			else:
+				# Convert to dict for overflow / dict entries
+				while item_qty > 0:
+					var add_amt: int = mini(item_qty, stack_limit)
+					var new_entry: Dictionary = {"item_id": item_id, "qty": add_amt, "quality_tier": item_quality}
+					if item_affix != "":
+						if item is Dictionary:
+							new_entry["source_region"] = item.get("source_region", "")
+							new_entry["affix_id"] = item.get("affix_id", "")
+							new_entry["affix_stats"] = item.get("affix_stats", {})
+							new_entry["affix_prefix"] = item.get("affix_prefix", "")
+						elif item is ItemInstance:
+							new_entry["source_region"] = item.source_region
+							new_entry["affix_id"] = item.affix_id
+							new_entry["affix_stats"] = item.affix_stats
+							new_entry["affix_prefix"] = item.affix_prefix
+					consolidated.append(new_entry)
+					item_qty -= add_amt
+
+	if consolidated.size() != result.size():
+		print("[Load] run_items consolidated: %d entries -> %d stacks" % [result.size(), consolidated.size()])
+	return consolidated
 
 
 ## Save game data to user://savegame.json.
@@ -4923,6 +5182,17 @@ func load_game() -> void:
 		# Load recipe unlocks (shop item generation)
 		if save_data.has("unlocked_recipes") and save_data.unlocked_recipes is Dictionary:
 			unlocked_recipes = save_data.unlocked_recipes
+			# Migrate plain recipe keys to :t1 format
+			var _keys_to_migrate: Array = []
+			for key in unlocked_recipes:
+				if ":" not in key:
+					_keys_to_migrate.append(key)
+			for key in _keys_to_migrate:
+				var _mdata: Dictionary = unlocked_recipes[key]
+				var new_key: String = "%s:t1" % key
+				if not unlocked_recipes.has(new_key):
+					unlocked_recipes[new_key] = _mdata
+				unlocked_recipes.erase(key)
 		# Tutorials
 		if save_data.has("completed_tutorials") and save_data.completed_tutorials is Dictionary:
 			completed_tutorials = save_data.completed_tutorials
@@ -5135,9 +5405,21 @@ func commit_dungeon_stash_to_run() -> void:
 	var commit_items = dungeon_items.size()
 	run_gold += dungeon_gold
 	for it in dungeon_items:
-		run_items.append(it)
+		var item_id: String = ""
+		var qty: int = 1
+		var quality: int = 0
+		if it is Dictionary:
+			item_id = it.get("item_id", "")
+			qty = int(it.get("qty", 1))
+			quality = int(it.get("quality_tier", 0))
+		elif it is ItemInstance:
+			item_id = it.template_id
+			qty = it.quantity
+			quality = it.quality_tier
+		if item_id != "":
+			add_run_item(item_id, qty, quality)
 	clear_dungeon_stash()
-	print("[Extract] Committed dungeon stash to run stash. RunGold=%d RunItems=%d (+%d gold, +%d items)" % [
+	print("[Extract] Committed dungeon stash to run stash. RunGold=%d RunSlots=%d (+%d gold, +%d items)" % [
 		run_gold, run_items.size(), commit_gold, commit_items
 	])
 
@@ -5150,11 +5432,11 @@ func bank_shopkeeper_bag_to_stash() -> void:
 	var moved_stacks = shopkeeper_bag.size()
 	var moved_qty = 0
 	for entry in shopkeeper_bag:
-		var item_id = entry.get("item_id", "")
-		var qty = int(entry.get("qty", 1))
-		var quality = int(entry.get("quality_tier", 0))
+		var item_id: String = entry.get("item_id", "")
+		var qty: int = int(entry.get("qty", 1))
+		var quality: int = int(entry.get("quality_tier", 0))
 		moved_qty += qty
-		run_items.append({"item_id": item_id, "qty": qty, "quality_tier": quality})
+		add_run_item(item_id, qty, quality)
 	shopkeeper_bag.clear()
 	print("[Extract] bank_shop_bag moved_stacks=%d moved_qty=%d to_stash=true" % [moved_stacks, moved_qty])
 
@@ -5172,7 +5454,7 @@ func bank_safe_shopkeeper_slots_only() -> void:
 		var item_id: String = entry.get("item_id", "")
 		var qty: int = int(entry.get("qty", 1))
 		var quality: int = int(entry.get("quality_tier", 0))
-		run_items.append({"item_id": item_id, "qty": qty, "quality_tier": quality})
+		add_run_item(item_id, qty, quality)
 		saved += 1
 	shopkeeper_bag.clear()
 	print("[Insurance] Saved %d safe items, lost %d unsafe items" % [saved, lost])
@@ -5239,17 +5521,17 @@ func bank_hero_materials_to_stash() -> void:
 
 		for i in range(bag.size()):
 			var entry = bag[i]
-			var item_id = entry.get("item_id", "")
+			var item_id: String = entry.get("item_id", "")
 			var template = DataRegistry.get_item_template(item_id)
 
 			# Only keep consumables in hero bags - move everything else to stash
 			if template == null or template.item_type != "consumable":
-				var qty = int(entry.get("qty", 1))
-				var quality = int(entry.get("quality", 0))
-				run_items.append({"item_id": item_id, "qty": qty, "quality_tier": quality})
+				var qty: int = int(entry.get("qty", 1))
+				var quality: int = int(entry.get("quality_tier", entry.get("quality", 0)))
+				add_run_item(item_id, qty, quality)
 				items_to_remove.append(i)
 				total_moved += 1
-				print("[Extract] hero=%s banked material=%s to stash" % [hero_id, item_id])
+				print("[Extract] hero=%s banked material=%s qty=%d to stash" % [hero_id, item_id, qty])
 
 		# Remove items in reverse order to preserve indices
 		for i in range(items_to_remove.size() - 1, -1, -1):
@@ -5699,7 +5981,7 @@ func _roll_room_choices(rng: RandomNumberGenerator, floor_num: int) -> Array:
 ##   - Combat always present as an option
 ##   - Event and Elite are independent rolls per floor (FLOOR_ROOM_CHANCES)
 ##   - No 2 events in a row: if _last_room_was_event, skip event roll
-##   - Last room of floor: forced_elite=true (only one option)
+##   - Last room of non-final floor: normal rolls (same as any other room)
 ##   - Final floor + last room: forced_boss=true (only one option)
 func generate_pending_room_choices(rng: RandomNumberGenerator) -> void:
 	# Not in dungeon -> return empty
@@ -5741,23 +6023,6 @@ func generate_pending_room_choices(rng: RandomNumberGenerator) -> void:
 			}]
 		}
 		print("[Choices] next_room=%d/%d floor=%d/%d -> FORCED BOSS" % [
-			next_room_index + 1, rooms_per_floor, current_floor, floor_count
-		])
-		return
-
-	if next_is_last_room_on_floor:
-		pending_room_choices = {
-			"mode": "choose",
-			"choices": [{
-				"type": "combat",
-				"is_elite": false,
-				"is_boss": false,
-				"forced_elite": true,
-				"forced_boss": false,
-				"display": "Elite Combat"
-			}]
-		}
-		print("[Choices] next_room=%d/%d floor=%d/%d -> FORCED ELITE" % [
 			next_room_index + 1, rooms_per_floor, current_floor, floor_count
 		])
 		return

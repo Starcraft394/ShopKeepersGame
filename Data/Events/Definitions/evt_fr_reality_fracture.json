@@ -56,10 +56,11 @@
         },
         {
           "weight": 25,
-          "text": "You peer too deeply and vertigo seizes you. The fractures show a thousand versions of your own death. Your party drags you back, retching and shaking.",
+          "text": "You peer too deeply and vertigo seizes you. The fractures show a thousand versions of your own death. Your party drags you back, retching and shaking — but your grasping hand holds a null fragment from between the cracks.",
           "effects": [
             { "type": "damage_hero", "amount": 8 },
-            { "type": "apply_status", "status_id": "blinded", "duration": 2, "target": "random_hero" }
+            { "type": "apply_status", "status_id": "blinded", "duration": 2, "target": "random_hero" },
+            { "type": "add_item", "item_id": "fr_null_fragment", "min_qty": 1, "max_qty": 1 }
           ]
         }
       ]

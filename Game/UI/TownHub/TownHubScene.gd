@@ -1,7 +1,7 @@
 extends Control
 
 # ============================================================================
-# TOWN HUB — CraftPix-themed shell with dynamic nav rail + town map grid
+# TOWN HUB — Building sprite overlay with transparent background
 # ============================================================================
 
 const TOWN_SCENE = preload("res://Game/UI/Town/TownScene.tscn")
@@ -21,27 +21,106 @@ const NAV_LABELS: Dictionary = {
 	"storage": "Storage",
 }
 
-# Facility type → building panel colour tint
-const BUILDING_COLORS: Dictionary = {
-	"dungeon": Color(0.6, 0.3, 0.3),
-	"inn": Color(0.4, 0.55, 0.35),
-	"shop": Color(0.55, 0.45, 0.3),
-	"training_hall": Color(0.35, 0.4, 0.55),
-	"storage": Color(0.45, 0.45, 0.45),
-	"production": Color(0.5, 0.4, 0.3),
+# Building sprite mapping: facility_id → sprite filename (without extension)
+const BUILDING_SPRITES: Dictionary = {
+	"blacksmith": "building_blacksmith",
+	"enchanter": "building_enchanter",
+	"huntsman": "building_huntsman",
+	"chef": "building_chef",
+	"alchemist": "building_alchemist",
+	"inn": "building_inn",
+	"storage": "building_storage",
+	"training_hall": "building_training",
 }
-const BUILDING_COLOR_DEFAULT := Color(0.4, 0.4, 0.45)
+
+# Fallback: facility_type → sprite filename
+const BUILDING_SPRITES_BY_TYPE: Dictionary = {
+	"dungeon": "building_dungeon",
+	"shop": "building_shop",
+	"inn": "building_inn",
+	"storage": "building_storage",
+	"training_hall": "building_training",
+	"blacksmith": "building_blacksmith",
+	"enchanter": "building_enchanter",
+	"huntsman": "building_huntsman",
+	"chef": "building_chef",
+	"alchemist": "building_alchemist",
+}
+
+const BUILDING_SPRITE_PATH := "res://Assets/Backgrounds/"
+
+## Preferred display order for facility buildings (by facility_id or facility_type).
+## Row 1 = first 5, Row 2 = next 5.  Facilities not listed here append at the end.
+const FACILITY_DISPLAY_ORDER: Array = [
+	"blacksmith", "inn", "dungeon", "shop", "storage",
+	"huntsman", "enchanter", "chef", "alchemist", "training_hall",
+]
+
+## Height of the dark backing panel behind the party bar (px).
+## Buildings and background stop above this zone.
+const PARTY_BAR_ZONE_HEIGHT := 200
+
+## Base building dimensions (at sf=1, before scaling).
+const BASE_BUILDING_SIZE := 140.0
+const BASE_SHADOW_W := 112.0
+const BASE_SHADOW_H := 14.0
+const BASE_SHADOW_OX := 14.0
+const BASE_SHADOW_OY := 136.0
+const BASE_WRAPPER_H := 148.0
+const BASE_GRID_TOP := 42.0   # Clears the town header panel
+const BASE_GRID_BOTTOM_EXTRA := 8.0
+const BASE_ROW_SEP := 8
+const BASE_COL_SEP := 12
+const BASE_BLD_LABEL_FS := 12
+const BASE_HEADER_FS := 17
+
+## Total space the 2×5 building layout needs at sf=1 (used to compute scale factor).
+## Width:  5 buildings * 140 + 4 gaps * 12 = 748
+## Height: header(42) + 2 rows * ~166 (wrapper+sep+label) + row_gap(8) + bottom(8) = 390
+const BASE_LAYOUT_W := 748.0
+const BASE_LAYOUT_H := 390.0
 
 @onready var _nav_vbox: VBoxContainer = %NavVBox
 @onready var _nav_header_label: Label = %NavHeaderLabel
-@onready var _content_header: PanelContainer = %ContentHeader
-@onready var _content_vbox: VBoxContainer = %ContentVBox
+@onready var _content_area: Control = %ContentArea
 
 var _town_scene_instance: Control = null
-var _town_map_grid: GridContainer = null
+var _content_layout: VBoxContainer = null
+var _building_spacer: Control = null
+var _building_overlay: Control = null
+var _party_bar_vbox: VBoxContainer = null
 var _nav_facility_buttons: Array[Button] = []
 var _nav_travel_buttons: Array[Button] = []
 var _icon_cache: Dictionary = {}  # icon_path → Texture2D
+
+# ---- LAYOUT EDITOR (dev tool — remove after finalizing) ----
+var _layout_edit_mode: bool = false
+var _layout_btn: Button = null
+var _layout_print_btn: Button = null
+var _layout_data: Dictionary = {}       # facility_id -> { "position": Vector2, "size": Vector2 }
+var _layout_wrappers: Dictionary = {}   # facility_id -> Control node
+var _layout_hud_labels: Dictionary = {} # facility_id -> Label node
+var _layout_dragging_id: String = ""
+var _layout_drag_offset: Vector2 = Vector2.ZERO
+const LAYOUT_SCALE_STEP := 8
+const LAYOUT_MIN_SIZE := 60
+const LAYOUT_MAX_SIZE := 400
+var _resize_timer: SceneTreeTimer = null
+
+
+## Returns a uniform scale factor so the 2×5 building grid fits the background area.
+## Computed from viewport size using the same offsets as _constrain_background(),
+## so buildings always match the visible background bounds at any window size.
+func _building_scale() -> float:
+	var vp: Vector2 = get_viewport().get_visible_rect().size
+	# Background area matches _constrain_background() offsets:
+	# width  = viewport_w - 188(left) - 16(right) = viewport_w - 204
+	# height = viewport_h - 16(top) - 16(bottom) - PARTY_BAR_ZONE_HEIGHT
+	var area_w: float = maxf(100, vp.x - 204)
+	var area_h: float = maxf(100, vp.y - 32 - PARTY_BAR_ZONE_HEIGHT)
+	var sx: float = area_w / BASE_LAYOUT_W
+	var sy: float = area_h / BASE_LAYOUT_H
+	return maxf(0.5, minf(sx, sy))
 
 
 func _get_known_towns() -> Array[String]:
@@ -57,7 +136,11 @@ func _get_known_towns() -> Array[String]:
 
 
 func _ready() -> void:
-	print("[TownHub] Scene loaded — CraftPix shell active")
+	print("[TownHub] Scene loaded — building overlay active")
+
+	# Apply background art (graceful fallback to ColorRect if not found)
+	var town_id: String = GameContext.get_current_town_id()
+	BackgroundManager.apply_background(self, "town", "%s_T1" % town_id)
 
 	# Apply town entry reset (heal survivors, remove dead heroes, refresh shops).
 	# This MUST run before embedding TownScene because the boot router changes
@@ -67,8 +150,10 @@ func _ready() -> void:
 
 	_embed_town_scene()
 	_build_nav_rail()
-	_build_town_map()
+	_build_building_overlay()
+	_setup_background_zones()
 	GameContext.location_changed.connect(_on_location_changed)
+	get_viewport().size_changed.connect(_on_viewport_resized)
 	# Show overlays sequentially — each must finish before the next starts,
 	# otherwise multiple dialogs/tutorials stack on screen simultaneously.
 	await _check_campaign_dialogs()
@@ -94,33 +179,82 @@ func _check_campaign_dialogs() -> void:
 
 
 # ============================================================================
-# EMBED TOWN SCENE
+# EMBED TOWN SCENE (hidden — only CanvasLayer popups render)
 # ============================================================================
 
 func _embed_town_scene() -> void:
-	_content_header.visible = false
-
 	_town_scene_instance = TOWN_SCENE.instantiate()
 	_town_scene_instance.use_craftpix_skin = true
-	_town_scene_instance.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_town_scene_instance.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_town_scene_instance.visible = false  # Hidden — only facility popups (CanvasLayer) show
 
-	# Create party bar container and add it to the tree BEFORE TownScene,
-	# so it's already in the scene tree when TownScene._ready() populates it.
-	# (Adding children to an orphan container causes layout to not calculate.)
-	var party_bar_vbox = VBoxContainer.new()
-	party_bar_vbox.name = "PartyBarVBox"
-	party_bar_vbox.add_theme_constant_override("separation", 6)
-	party_bar_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	party_bar_vbox.size_flags_vertical = Control.SIZE_SHRINK_END
-	_town_scene_instance.party_bar_target = party_bar_vbox
+	# Layout VBox fills content area: building overlay expands, party bar auto-sizes
+	_content_layout = VBoxContainer.new()
+	_content_layout.name = "ContentLayout"
+	_content_layout.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_content_layout.add_theme_constant_override("separation", 0)
+	_content_layout.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_content_area.add_child(_content_layout)
 
-	_content_vbox.add_child(party_bar_vbox)
-	_content_vbox.add_child(_town_scene_instance)
-	# Move party bar below TownScene so it renders at the bottom
-	_content_vbox.move_child(party_bar_vbox, _content_vbox.get_child_count() - 1)
+	# Spacer takes all remaining vertical space — buildings live inside it
+	_building_spacer = Control.new()
+	_building_spacer.name = "BuildingSpacer"
+	_building_spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_building_spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_content_layout.add_child(_building_spacer)
 
-	print("[TownHub] Embedded TownScene into content area (CraftPix skin enabled)")
+	# Party bar auto-sizes to content at bottom
+	_party_bar_vbox = VBoxContainer.new()
+	_party_bar_vbox.name = "PartyBarVBox"
+	_party_bar_vbox.add_theme_constant_override("separation", 6)
+	_party_bar_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_party_bar_vbox.size_flags_vertical = Control.SIZE_SHRINK_END
+	_content_layout.add_child(_party_bar_vbox)
+
+	_town_scene_instance.party_bar_target = _party_bar_vbox
+	_content_area.add_child(_town_scene_instance)
+
+	print("[TownHub] Embedded TownScene (hidden, popups via CanvasLayer)")
+
+
+# ============================================================================
+# BACKGROUND ZONES — Background stops above party bar
+# ============================================================================
+
+## Constrain the background image to the playable area only.
+## Left: after NavRail. Top: after margin. Right: before margin. Bottom: above party bar.
+func _setup_background_zones() -> void:
+	# Dark backing behind the party bar area (full width)
+	var backing = ColorRect.new()
+	backing.name = "PartyBarBacking"
+	backing.color = Color(0.08, 0.08, 0.12, 1.0)
+	backing.anchor_left = 0.0
+	backing.anchor_right = 1.0
+	backing.anchor_top = 1.0
+	backing.anchor_bottom = 1.0
+	backing.offset_top = -PARTY_BAR_ZONE_HEIGHT
+	backing.offset_bottom = 0
+	backing.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Insert after Background (index 0) but before MainLayout
+	add_child(backing)
+	move_child(backing, 1)
+
+	# Constrain background to playable area (content area minus party bar zone)
+	# 16px margin + 160px NavRail + 12px HBox separation = 188px from left
+	_constrain_background()
+
+
+func _constrain_background() -> void:
+	var bg = get_node_or_null("Background")
+	if bg == null:
+		return
+	bg.anchor_left = 0.0
+	bg.anchor_top = 0.0
+	bg.anchor_right = 1.0
+	bg.anchor_bottom = 1.0
+	bg.offset_left = 188    # 16 margin + 160 NavRail + 12 separation
+	bg.offset_top = 16      # Top margin
+	bg.offset_right = -16   # Right margin
+	bg.offset_bottom = -(16 + PARTY_BAR_ZONE_HEIGHT)  # Bottom margin + party bar
 
 
 # ============================================================================
@@ -187,7 +321,7 @@ func _build_nav_rail() -> void:
 			if not is_unlocked:
 				rbtn.text = region.display_name + " [Locked]"
 				rbtn.disabled = true
-				rbtn.modulate = Color(0.4, 0.4, 0.4)
+				rbtn.modulate = Color(0.6, 0.6, 0.6)
 			elif region.region_id == current_region_id:
 				rbtn.text = region.display_name
 				rbtn.disabled = true
@@ -277,7 +411,7 @@ func _build_nav_rail() -> void:
 		dev_label.text = "— Dev —"
 		dev_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		dev_label.add_theme_font_size_override("font_size", GameContext.fs(13))
-		dev_label.modulate = Color(0.5, 0.5, 0.5)
+		dev_label.modulate = Color(0.7, 0.7, 0.7)
 		dev_label.name = "DevLabel"
 		_nav_vbox.add_child(dev_label)
 
@@ -296,6 +430,31 @@ func _build_nav_rail() -> void:
 		btn_gold.pressed.connect(_on_dev_add_gold)
 		btn_gold.name = "DevAddGold"
 		_nav_vbox.add_child(btn_gold)
+
+		var btn_unlock = Button.new()
+		btn_unlock.text = "Unlock Regions"
+		btn_unlock.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn_unlock.modulate = Color(0.6, 0.8, 1.0)
+		btn_unlock.pressed.connect(_on_dev_unlock_regions)
+		btn_unlock.name = "DevUnlockRegions"
+		_nav_vbox.add_child(btn_unlock)
+
+		_layout_btn = Button.new()
+		_layout_btn.text = "Edit Layout: OFF"
+		_layout_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_layout_btn.modulate = Color(0.8, 1.0, 0.8)
+		_layout_btn.pressed.connect(_on_toggle_layout_edit)
+		_layout_btn.name = "DevEditLayout"
+		_nav_vbox.add_child(_layout_btn)
+
+		_layout_print_btn = Button.new()
+		_layout_print_btn.text = "Print Layout"
+		_layout_print_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_layout_print_btn.modulate = Color(0.8, 1.0, 0.8)
+		_layout_print_btn.pressed.connect(_on_print_layout)
+		_layout_print_btn.name = "DevPrintLayout"
+		_layout_print_btn.visible = _layout_edit_mode
+		_nav_vbox.add_child(_layout_print_btn)
 
 
 ## Show a welcome banner and auto-open Inn when the player has no heroes.
@@ -387,152 +546,510 @@ func _get_nav_label(facility_id: String, facility) -> String:
 
 
 # ============================================================================
-# TOWN MAP GRID — Clickable building panels (center area)
+# BUILDING OVERLAY — Clickable building sprites over background
 # ============================================================================
 
-func _build_town_map() -> void:
-	# Remove old grid if rebuilding
-	if _town_map_grid != null and is_instance_valid(_town_map_grid):
-		_town_map_grid.queue_free()
-		_town_map_grid = null
+func _build_building_overlay() -> void:
+	# Remove old overlay if rebuilding
+	if _building_overlay != null and is_instance_valid(_building_overlay):
+		_building_overlay.queue_free()
+		_building_overlay = null
+
+	# Clear edit-mode node references (data persists for re-entry)
+	_layout_wrappers.clear()
+	_layout_hud_labels.clear()
+	_layout_dragging_id = ""
 
 	var town_id = GameContext.get_current_town_id()
 	var town = DataRegistry.get_town(town_id) if DataRegistry.has_method("get_town") else null
 	if town == null:
 		return
 
-	# Town name header in content area
-	var header_panel = _content_vbox.get_node_or_null("TownMapHeader")
-	if header_panel == null:
-		header_panel = PanelContainer.new()
-		header_panel.name = "TownMapHeader"
-		# Region-tinted header (runtime StyleBoxFlat instead of static .tres)
-		var palette: Dictionary = RegionTheme.get_palette_for_current_region()
-		var header_style = StyleBoxFlat.new()
-		header_style.bg_color = palette.get("title_bar", Color(0.18, 0.22, 0.3, 0.9))
-		header_style.content_margin_left = 8
-		header_style.content_margin_top = 4
-		header_style.content_margin_right = 8
-		header_style.content_margin_bottom = 4
-		header_style.set_corner_radius_all(4)
-		header_panel.add_theme_stylebox_override("panel", header_style)
-		header_panel.custom_minimum_size = Vector2(0, 32)
-		var header_label = Label.new()
-		header_label.name = "TownMapHeaderLabel"
-		header_label.text = town.display_name
-		header_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		header_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		header_label.add_theme_font_size_override("font_size", GameContext.fs(17))
-		header_panel.add_child(header_label)
-		# Insert at top of content vbox (index 0 = ContentHeader which is hidden)
-		_content_vbox.add_child(header_panel)
-		_content_vbox.move_child(header_panel, 0)
+	# Container for all building buttons — lives inside BuildingSpacer
+	# so it is automatically constrained to the area above the party bar
+	_building_overlay = Control.new()
+	_building_overlay.name = "BuildingOverlay"
+	_building_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_building_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_building_spacer.add_child(_building_overlay)
+
+	# Town name header — semi-transparent floating panel at top center
+	_create_town_header(town)
+
+	# Branch: edit mode (free positioning) vs normal mode (HBox/VBox grid)
+	if _layout_edit_mode:
+		_place_building_buttons_edit_mode(town)
 	else:
-		var lbl = header_panel.get_node_or_null("TownMapHeaderLabel")
-		if lbl:
-			lbl.text = town.display_name
+		_place_building_buttons(town)
 
-	# Scroll container for grid
-	var scroll = _content_vbox.get_node_or_null("TownMapScroll")
-	if scroll == null:
-		scroll = ScrollContainer.new()
-		scroll.name = "TownMapScroll"
-		scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-		scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		scroll.size_flags_stretch_ratio = 3  # Take 75% of shared space with TownScene
-		scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-		# Insert after header
-		_content_vbox.add_child(scroll)
-		_content_vbox.move_child(scroll, 1)
-
-	# Grid container
-	_town_map_grid = GridContainer.new()
-	_town_map_grid.name = "TownMapGrid"
-	_town_map_grid.columns = 3
-	_town_map_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_town_map_grid.add_theme_constant_override("h_separation", 12)
-	_town_map_grid.add_theme_constant_override("v_separation", 12)
-	scroll.add_child(_town_map_grid)
-
-	# Create building panels
-	for facility_id in town.facility_ids:
-		var facility = DataRegistry.get_facility(facility_id) if DataRegistry.has_method("get_facility") else null
-		var panel = _create_building_panel(facility_id, facility)
-		_town_map_grid.add_child(panel)
-
-	print("[TownHub] Town map built: %d buildings in grid" % town.facility_ids.size())
+	print("[TownHub] Building overlay built: %d buildings (edit=%s)" % [town.facility_ids.size(), _layout_edit_mode])
 
 
-func _create_building_panel(facility_id: String, facility) -> PanelContainer:
-	var panel = PanelContainer.new()
-	panel.custom_minimum_size = Vector2(140, 100)
-	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	panel.add_theme_stylebox_override("panel", _SLOT_STYLE)
-	panel.mouse_filter = Control.MOUSE_FILTER_STOP
-	panel.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	panel.gui_input.connect(_on_building_gui_input.bind(facility_id))
+func _create_town_header(town) -> void:
+	var sf: float = _building_scale()
+	var palette: Dictionary = RegionTheme.get_palette_for_current_region()
 
+	var header_panel = PanelContainer.new()
+	header_panel.name = "TownHeader"
+	var header_style = StyleBoxFlat.new()
+	header_style.bg_color = palette.get("title_bar", Color(0.18, 0.22, 0.3, 0.85))
+	header_style.content_margin_left = 16 * sf
+	header_style.content_margin_top = 4 * sf
+	header_style.content_margin_right = 16 * sf
+	header_style.content_margin_bottom = 4 * sf
+	header_style.set_corner_radius_all(int(6 * sf))
+	header_style.border_color = palette.get("border", Color(0.4, 0.5, 0.4, 0.6))
+	header_style.set_border_width_all(1)
+	header_panel.add_theme_stylebox_override("panel", header_style)
+
+	# Anchor to top-center of overlay
+	header_panel.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	header_panel.offset_top = 8 * sf
+	header_panel.offset_left = -120 * sf
+	header_panel.offset_right = 120 * sf
+	header_panel.offset_bottom = 42 * sf
+
+	var header_label = Label.new()
+	header_label.text = town.display_name
+	header_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	header_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	header_label.add_theme_font_size_override("font_size", GameContext.fs(int(BASE_HEADER_FS * sf)))
+	header_panel.add_child(header_label)
+
+	_building_overlay.add_child(header_panel)
+
+
+func _place_building_buttons(town) -> void:
+	# Sort facilities into preferred display order
+	var ordered: Array = _sort_facilities_for_display(town.facility_ids)
+	var count: int = ordered.size()
+	if count == 0:
+		return
+
+	var sf: float = _building_scale()
+
+	# Layout: 2 rows, split facilities evenly
+	var cols: int = ceili(count / 2.0)
+	var row1_count: int = cols
+	var row2_count: int = count - cols
+
+	# Grid container: constrained to background area (not full spacer).
+	# anchor_bottom=0 so offset_bottom is an absolute y-position from parent top,
+	# matching the background's visible bottom edge.
+	var vp: Vector2 = get_viewport().get_visible_rect().size
+	var bg_area_h: float = maxf(100, vp.y - 32 - PARTY_BAR_ZONE_HEIGHT)
+
+	var grid_anchor = Control.new()
+	grid_anchor.name = "BuildingGrid"
+	grid_anchor.anchor_left = 0.0
+	grid_anchor.anchor_right = 1.0
+	grid_anchor.anchor_top = 0.0
+	grid_anchor.anchor_bottom = 0.0
+	grid_anchor.offset_top = BASE_GRID_TOP * sf
+	grid_anchor.offset_bottom = bg_area_h - (BASE_GRID_BOTTOM_EXTRA * sf)
+	grid_anchor.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_building_overlay.add_child(grid_anchor)
+
+	# Bottom-align rows so buildings are grounded on the landscape
 	var vbox = VBoxContainer.new()
-	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	vbox.add_theme_constant_override("separation", 4)
-	panel.add_child(vbox)
+	vbox.name = "RowsVBox"
+	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	vbox.alignment = BoxContainer.ALIGNMENT_END
+	vbox.add_theme_constant_override("separation", int(BASE_ROW_SEP * sf))
+	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	grid_anchor.add_child(vbox)
 
-	# Building icon — TextureRect if icon_path available, ColorRect fallback
-	var icon_tex: Texture2D = null
-	# Dungeon board: show a random monster portrait from the dungeon's pool
-	if facility != null and facility.facility_type == "dungeon":
-		var dungeon = DataRegistry.get_dungeon(facility_id)
-		if dungeon != null:
-			var all_monsters: Array[String] = []
-			all_monsters.append_array(dungeon.tier1_monster_ids)
-			all_monsters.append_array(dungeon.tier2_monster_ids)
-			all_monsters.append_array(dungeon.elite_monster_ids)
-			if not all_monsters.is_empty():
-				var seed_val: int = SeededRNG.derive_seed("dungeon_icon:%s" % facility_id, GameContext.get_run_seed())
-				var rng: RandomNumberGenerator = SeededRNG.create_rng(seed_val)
-				var monster_id: String = all_monsters[rng.randi_range(0, all_monsters.size() - 1)]
-				var monster = DataRegistry.get_monster(monster_id)
-				if monster != null and monster.portrait_path != "":
-					icon_tex = _load_icon(monster.portrait_path)
-	elif facility != null and facility.icon_path != "":
-		icon_tex = _load_icon(facility.icon_path)
+	# Row 1
+	var row1 = HBoxContainer.new()
+	row1.name = "Row1"
+	row1.alignment = BoxContainer.ALIGNMENT_CENTER
+	row1.add_theme_constant_override("separation", int(BASE_COL_SEP * sf))
+	row1.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(row1)
 
-	if icon_tex != null:
-		var tex_rect = TextureRect.new()
-		tex_rect.texture = icon_tex
-		tex_rect.custom_minimum_size = Vector2(64, 64)
-		tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		tex_rect.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-		tex_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		vbox.add_child(tex_rect)
-	else:
-		var sprite_placeholder = ColorRect.new()
-		sprite_placeholder.custom_minimum_size = Vector2(64, 64)
-		sprite_placeholder.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-		var tint = BUILDING_COLOR_DEFAULT
-		if facility != null and BUILDING_COLORS.has(facility.facility_type):
-			tint = BUILDING_COLORS[facility.facility_type]
-		sprite_placeholder.color = tint
-		sprite_placeholder.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		vbox.add_child(sprite_placeholder)
+	for i in range(row1_count):
+		var fid: String = ordered[i]
+		var facility = DataRegistry.get_facility(fid) if DataRegistry.has_method("get_facility") else null
+		var btn_container = _create_building_button(fid, facility, sf)
+		row1.add_child(btn_container)
 
-	# Building name label
+	# Row 2
+	if row2_count > 0:
+		var row2 = HBoxContainer.new()
+		row2.name = "Row2"
+		row2.alignment = BoxContainer.ALIGNMENT_CENTER
+		row2.add_theme_constant_override("separation", int(BASE_COL_SEP * sf))
+		row2.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		vbox.add_child(row2)
+
+		for i in range(row1_count, count):
+			var fid: String = ordered[i]
+			var facility = DataRegistry.get_facility(fid) if DataRegistry.has_method("get_facility") else null
+			var btn_container = _create_building_button(fid, facility, sf)
+			row2.add_child(btn_container)
+
+
+## Sort facility IDs into the preferred display order.
+## Matches by facility_id first, then by facility_type.  Unmatched facilities append at end.
+func _sort_facilities_for_display(facility_ids: Array) -> Array:
+	var ordered: Array = []
+	var remaining: Array = facility_ids.duplicate()
+
+	for preferred_key in FACILITY_DISPLAY_ORDER:
+		for fid in remaining:
+			# Match by exact facility_id
+			if fid == preferred_key:
+				ordered.append(fid)
+				remaining.erase(fid)
+				break
+			# Match by facility_type (e.g. "dungeon" matches "dungeon_thornhaven")
+			var facility = DataRegistry.get_facility(fid) if DataRegistry.has_method("get_facility") else null
+			if facility != null and facility.facility_type == preferred_key:
+				ordered.append(fid)
+				remaining.erase(fid)
+				break
+			# Match by prefix (e.g. "shop" matches "shop_thornhaven")
+			if fid.begins_with(preferred_key + "_") or fid.begins_with(preferred_key):
+				ordered.append(fid)
+				remaining.erase(fid)
+				break
+
+	# Append any unmatched facilities at end
+	ordered.append_array(remaining)
+	return ordered
+
+
+func _create_building_button(facility_id: String, facility, sf: float) -> VBoxContainer:
+	var container = VBoxContainer.new()
+	container.alignment = BoxContainer.ALIGNMENT_END
+	container.add_theme_constant_override("separation", int(2 * sf))
+
+	# Resolve building sprite texture
+	var sprite_key: String = ""
+	if BUILDING_SPRITES.has(facility_id):
+		sprite_key = BUILDING_SPRITES[facility_id]
+	elif facility != null and BUILDING_SPRITES_BY_TYPE.has(facility.facility_type):
+		sprite_key = BUILDING_SPRITES_BY_TYPE[facility.facility_type]
+
+	var tex: Texture2D = null
+	if sprite_key != "":
+		var sprite_path: String = BUILDING_SPRITE_PATH + sprite_key + ".png"
+		tex = _load_icon(sprite_path)
+
+	var bld: float = BASE_BUILDING_SIZE * sf
+
+	# Wrapper allows building sprite + shadow to overlap
+	var sprite_wrapper = Control.new()
+	sprite_wrapper.name = "SpriteWrapper"
+	sprite_wrapper.custom_minimum_size = Vector2(bld, BASE_WRAPPER_H * sf)
+	sprite_wrapper.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	# Drop shadow at bottom of wrapper (elliptical via rounded ColorRect)
+	var shadow = ColorRect.new()
+	shadow.name = "Shadow"
+	shadow.color = Color(0, 0, 0, 0.3)
+	shadow.size = Vector2(BASE_SHADOW_W * sf, BASE_SHADOW_H * sf)
+	shadow.position = Vector2(BASE_SHADOW_OX * sf, BASE_SHADOW_OY * sf)
+	shadow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	sprite_wrapper.add_child(shadow)
+
+	# TextureButton with the building sprite
+	var btn = TextureButton.new()
+	btn.name = "Btn_" + facility_id
+	btn.position = Vector2.ZERO
+	btn.size = Vector2(bld, bld)
+	btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	btn.ignore_texture_size = true
+	if tex != null:
+		btn.texture_normal = tex
+	btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	btn.pressed.connect(_on_facility_clicked.bind(facility_id))
+	# Hover effects
+	btn.mouse_entered.connect(func(): btn.modulate = Color(1.3, 1.3, 1.3))
+	btn.mouse_exited.connect(func(): btn.modulate = Color(1.0, 1.0, 1.0))
+	sprite_wrapper.add_child(btn)
+
+	container.add_child(sprite_wrapper)
+
+	# Label below with shadow for readability on backgrounds
 	var label = Label.new()
 	label.text = _get_nav_label(facility_id, facility)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.add_theme_font_size_override("font_size", GameContext.fs(13))
+	label.add_theme_font_size_override("font_size", GameContext.fs(int(BASE_BLD_LABEL_FS * sf)))
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(label)
+	label.add_theme_constant_override("shadow_offset_x", 1)
+	label.add_theme_constant_override("shadow_offset_y", 1)
+	label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
+	container.add_child(label)
 
-	return panel
+	return container
 
 
-func _on_building_gui_input(event: InputEvent, facility_id: String) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		print("[TownHub] Building clicked: %s" % facility_id)
-		_on_facility_clicked(facility_id)
+# ============================================================================
+# LAYOUT EDITOR — Dev tool for visual building placement (remove after finalizing)
+# ============================================================================
+
+func _on_toggle_layout_edit() -> void:
+	_layout_edit_mode = not _layout_edit_mode
+	if _layout_btn:
+		_layout_btn.text = "Edit Layout: ON" if _layout_edit_mode else "Edit Layout: OFF"
+		_layout_btn.modulate = Color(0.4, 1.0, 0.4) if _layout_edit_mode else Color(0.8, 1.0, 0.8)
+	if _layout_print_btn:
+		_layout_print_btn.visible = _layout_edit_mode
+	_build_building_overlay()
+	print("[TownHub] Layout edit mode: %s" % ("ON" if _layout_edit_mode else "OFF"))
+
+
+func _place_building_buttons_edit_mode(town) -> void:
+	var facility_ids: Array = town.facility_ids
+	var count: int = facility_ids.size()
+	if count == 0:
+		return
+
+	var sf: float = _building_scale()
+
+	# Calculate default positions in a 2-row grid if no saved data (design-space coords)
+	var cols: int = ceili(count / 2.0)
+	# Use design-resolution content area for default positions
+	var design_area_w: float = _content_area.size.x / sf
+	var col_spacing: float = design_area_w / (cols + 1)
+
+	for i in range(count):
+		var fid: String = facility_ids[i]
+		var facility = DataRegistry.get_facility(fid) if DataRegistry.has_method("get_facility") else null
+
+		if not _layout_data.has(fid):
+			var row: int = 0 if i < cols else 1
+			var col: int = i if i < cols else (i - cols)
+			var row_count: int = cols if row == 0 else (count - cols)
+			var row_spacing: float = design_area_w / (row_count + 1)
+			_layout_data[fid] = {
+				"position": Vector2(
+					row_spacing * (col + 1) - 70,
+					80 + row * 180
+				),
+				"size": Vector2(140, 140)
+			}
+
+		var data: Dictionary = _layout_data[fid]
+		var wrapper: Control = _create_edit_mode_building(fid, facility, data, sf)
+		_building_overlay.add_child(wrapper)
+		_layout_wrappers[fid] = wrapper
+
+
+func _create_edit_mode_building(facility_id: String, facility, data: Dictionary, sf: float) -> Control:
+	# data stores design-space coords; multiply by sf for screen placement
+	var bld_size: Vector2 = data["size"] * sf
+	var bld_pos: Vector2 = data["position"] * sf
+
+	var wrapper = Control.new()
+	wrapper.name = "Edit_" + facility_id
+	wrapper.position = bld_pos
+	wrapper.size = Vector2(bld_size.x, bld_size.y + 28 * sf)
+	wrapper.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	# Green border outline (2px larger on each side)
+	var border = ColorRect.new()
+	border.name = "Border"
+	border.color = Color(0.2, 0.9, 0.2, 0.5)
+	border.position = Vector2(-2 * sf, -2 * sf)
+	border.size = Vector2(bld_size.x + 4 * sf, bld_size.y + 4 * sf)
+	border.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	wrapper.add_child(border)
+
+	# Drop shadow at building base
+	var shadow = ColorRect.new()
+	shadow.name = "Shadow"
+	shadow.color = Color(0, 0, 0, 0.3)
+	shadow.size = Vector2(bld_size.x * 0.8, 14 * sf)
+	shadow.position = Vector2(bld_size.x * 0.1, bld_size.y - 4 * sf)
+	shadow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	wrapper.add_child(shadow)
+
+	# Resolve building sprite
+	var sprite_key: String = ""
+	if BUILDING_SPRITES.has(facility_id):
+		sprite_key = BUILDING_SPRITES[facility_id]
+	elif facility != null and BUILDING_SPRITES_BY_TYPE.has(facility.facility_type):
+		sprite_key = BUILDING_SPRITES_BY_TYPE[facility.facility_type]
+	var tex: Texture2D = null
+	if sprite_key != "":
+		tex = _load_icon(BUILDING_SPRITE_PATH + sprite_key + ".png")
+
+	var btn = TextureButton.new()
+	btn.name = "Btn_" + facility_id
+	btn.position = Vector2.ZERO
+	btn.size = bld_size
+	btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	btn.ignore_texture_size = true
+	if tex != null:
+		btn.texture_normal = tex
+	btn.mouse_default_cursor_shape = Control.CURSOR_MOVE
+	btn.gui_input.connect(_on_layout_building_input.bind(facility_id, wrapper))
+	wrapper.add_child(btn)
+
+	# Name label
+	var name_label = Label.new()
+	name_label.text = _get_nav_label(facility_id, facility)
+	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	name_label.add_theme_font_size_override("font_size", GameContext.fs(int(11 * sf)))
+	name_label.position = Vector2(0, bld_size.y + 2 * sf)
+	name_label.size = Vector2(bld_size.x, 20 * sf)
+	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	name_label.add_theme_constant_override("shadow_offset_x", 1)
+	name_label.add_theme_constant_override("shadow_offset_y", 1)
+	name_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
+	wrapper.add_child(name_label)
+
+	# HUD label (yellow, shows design-space size @ position)
+	var hud_label = Label.new()
+	hud_label.name = "HUD"
+	hud_label.text = _format_layout_hud(data["size"], data["position"])
+	hud_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hud_label.add_theme_font_size_override("font_size", GameContext.fs(int(9 * sf)))
+	hud_label.add_theme_color_override("font_color", Color(1, 1, 0.6))
+	hud_label.add_theme_constant_override("shadow_offset_x", 1)
+	hud_label.add_theme_constant_override("shadow_offset_y", 1)
+	hud_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.9))
+	hud_label.position = Vector2(0, -18 * sf)
+	hud_label.size = Vector2(bld_size.x, 16 * sf)
+	hud_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	wrapper.add_child(hud_label)
+	_layout_hud_labels[facility_id] = hud_label
+
+	return wrapper
+
+
+func _on_layout_building_input(event: InputEvent, facility_id: String, wrapper: Control) -> void:
+	if not _layout_edit_mode:
+		return
+
+	var sf: float = _building_scale()
+
+	# Drag (left mouse button)
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			_layout_dragging_id = facility_id
+			_layout_drag_offset = event.global_position - wrapper.global_position
+			wrapper.get_parent().move_child(wrapper, -1)
+		else:
+			if _layout_dragging_id == facility_id:
+				_layout_dragging_id = ""
+		get_viewport().set_input_as_handled()
+
+	elif event is InputEventMouseMotion:
+		if _layout_dragging_id == facility_id:
+			var new_screen_pos: Vector2 = event.global_position - _layout_drag_offset - _building_overlay.global_position
+			wrapper.position = new_screen_pos
+			# Store in design-space (divide by sf)
+			_layout_data[facility_id]["position"] = new_screen_pos / sf
+			_update_layout_hud(facility_id)
+			get_viewport().set_input_as_handled()
+
+	# Resize (scroll wheel) — delta is in design-space pixels
+	elif event is InputEventMouseButton and event.pressed:
+		var delta: int = 0
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			delta = LAYOUT_SCALE_STEP
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			delta = -LAYOUT_SCALE_STEP
+
+		if delta != 0:
+			var current_size: Vector2 = _layout_data[facility_id]["size"]
+			var new_val: float = clampf(current_size.x + delta, LAYOUT_MIN_SIZE, LAYOUT_MAX_SIZE)
+			_layout_data[facility_id]["size"] = Vector2(new_val, new_val)
+			_rebuild_edit_building(facility_id)
+			get_viewport().set_input_as_handled()
+
+
+func _rebuild_edit_building(facility_id: String) -> void:
+	var old_wrapper = _layout_wrappers.get(facility_id)
+	if old_wrapper != null and is_instance_valid(old_wrapper):
+		old_wrapper.queue_free()
+	var facility = DataRegistry.get_facility(facility_id) if DataRegistry.has_method("get_facility") else null
+	var data: Dictionary = _layout_data[facility_id]
+	var sf: float = _building_scale()
+	var new_wrapper: Control = _create_edit_mode_building(facility_id, facility, data, sf)
+	_building_overlay.add_child(new_wrapper)
+	_layout_wrappers[facility_id] = new_wrapper
+
+
+func _update_layout_hud(facility_id: String) -> void:
+	var hud = _layout_hud_labels.get(facility_id)
+	if hud == null or not is_instance_valid(hud):
+		return
+	var data: Dictionary = _layout_data[facility_id]
+	hud.text = _format_layout_hud(data["size"], data["position"])
+
+
+func _format_layout_hud(bld_size: Vector2, bld_pos: Vector2) -> String:
+	return "%dx%d @ %d,%d" % [int(bld_size.x), int(bld_size.y), int(bld_pos.x), int(bld_pos.y)]
+
+
+func _on_print_layout() -> void:
+	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
+	var bg_area: Vector2 = _content_area.size - Vector2(0, PARTY_BAR_ZONE_HEIGHT)
+	var text: String = "=== BUILDING LAYOUT ===\n"
+	text += "Town: %s\n" % GameContext.get_current_town_id()
+	text += "Viewport: %dx%d\n" % [int(viewport_size.x), int(viewport_size.y)]
+	text += "Content area: %dx%d\n" % [int(_content_area.size.x), int(_content_area.size.y)]
+	text += "Background area: %dx%d\n\n" % [int(bg_area.x), int(bg_area.y)]
+	for facility_id in _layout_data:
+		var data: Dictionary = _layout_data[facility_id]
+		var pos: Vector2 = data["position"]
+		var sz: Vector2 = data["size"]
+		text += '  "%s": { "x": %d, "y": %d, "w": %d, "h": %d },\n' % [
+			facility_id, int(pos.x), int(pos.y), int(sz.x), int(sz.y)
+		]
+	text += "\n=== END LAYOUT ==="
+	print(text)
+	_show_layout_overlay(text)
+
+
+func _show_layout_overlay(text: String) -> void:
+	var canvas = CanvasLayer.new()
+	canvas.layer = 10
+	add_child(canvas)
+	# Dark backdrop
+	var backdrop = ColorRect.new()
+	backdrop.color = Color(0, 0, 0, 0.6)
+	backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
+	backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
+	canvas.add_child(backdrop)
+	# Centered panel
+	var center = CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	canvas.add_child(center)
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(500, 400)
+	center.add_child(panel)
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 8)
+	panel.add_child(vbox)
+	# Title
+	var title = Label.new()
+	title.text = "Building Layout Data"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", GameContext.fs(16))
+	vbox.add_child(title)
+	# Scrollable text
+	var scroll = ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	vbox.add_child(scroll)
+	var rtl = RichTextLabel.new()
+	rtl.text = text
+	rtl.bbcode_enabled = false
+	rtl.selection_enabled = true
+	rtl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	rtl.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	rtl.add_theme_font_size_override("normal_font_size", GameContext.fs(12))
+	scroll.add_child(rtl)
+	# Close button
+	var close_btn = Button.new()
+	close_btn.text = "Close"
+	close_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	close_btn.pressed.connect(func(): canvas.queue_free())
+	vbox.add_child(close_btn)
 
 
 # ============================================================================
@@ -555,25 +1072,33 @@ func _on_region_pressed(region_id: String) -> void:
 		print("[TownHub] Cannot travel to region %s — no towns" % region_id)
 		return
 	var target_town: String = region.town_ids[0]
-	print("[TownHub] Travelling to region %s → %s" % [region_id, target_town])
+	print("[TownHub] Travelling to region %s -> %s" % [region_id, target_town])
 	_known_towns.clear()
 	if _town_scene_instance and _town_scene_instance.has_method("switch_town"):
 		_town_scene_instance.switch_town(target_town)
 
 
+func _on_viewport_resized() -> void:
+	if _resize_timer != null:
+		return  # Already pending
+	_resize_timer = get_tree().create_timer(0.15)
+	_resize_timer.timeout.connect(func():
+		_resize_timer = null
+		_build_building_overlay()
+		_constrain_background()
+	)
+
+
 func _on_location_changed(_region_id: String, _town_id: String) -> void:
-	print("[TownHub] Location changed — rebuilding nav rail + town map")
+	print("[TownHub] Location changed — rebuilding nav rail + building overlay")
 	_build_nav_rail()
 
-	# Clear and rebuild town map
-	var scroll = _content_vbox.get_node_or_null("TownMapScroll")
-	if scroll:
-		for child in scroll.get_children():
-			child.queue_free()
-		_town_map_grid = null
+	# Update background for new town and re-constrain to playable area
+	BackgroundManager.apply_background(self, "town", "%s_T1" % _town_id)
+	_constrain_background()
 
-	# Defer rebuild so queue_free completes first
-	call_deferred("_build_town_map")
+	# Defer overlay rebuild so queue_free from old overlay completes first
+	call_deferred("_build_building_overlay")
 
 
 func _on_options_pressed() -> void:
@@ -631,6 +1156,17 @@ func _on_dev_add_gold() -> void:
 	GameContext.add_run_gold(100)
 	GameContext.save_game()
 	print("[TownHub] Added 100 gold. New total: %d" % GameContext.get_run_gold())
+
+
+func _on_dev_unlock_regions() -> void:
+	var all_regions: Array = DataRegistry.get_all_regions() if DataRegistry.has_method("get_all_regions") else []
+	for region in all_regions:
+		if not GameContext.completed_regions.has(region.region_id):
+			GameContext.completed_regions[region.region_id] = true
+	GameContext.save_game()
+	# Rebuild nav rail to enable region buttons
+	_build_nav_rail()
+	print("[TownHub] DEV: All %d regions unlocked" % all_regions.size())
 
 
 # ============================================================================

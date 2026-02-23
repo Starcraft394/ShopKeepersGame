@@ -9,7 +9,7 @@
   "target_type": "single_ally",
   "effect_type": "heal",
   "base_damage": 0,
-  "base_heal": 18,
+  "base_heal": 24,
   "damage_type": "magical",
   "attack_scaling": 0.0,
   "cooldown": 3,

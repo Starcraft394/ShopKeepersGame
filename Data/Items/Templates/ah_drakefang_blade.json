@@ -12,11 +12,17 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "attack": 17
+    "attack": 17,
+    "crit_chance": 12,
+    "armor_penetration": 9,
+    "life_steal": 4
   },
   "stat_bonuses": {
     "attack": 17,
-    "speed": 2
+    "speed": 2,
+    "crit_chance": 12,
+    "armor_penetration": 9,
+    "life_steal": 4
   },
   "ability_id": "ah_dragonfire_strike",
   "combat_tag": "burning_edge",
@@ -24,7 +30,7 @@
     "trigger": "on_attack",
     "effect": "apply_status",
     "status": "burning",
-    "chance": 0.1
+    "chance": 0.15
   },
   "allowed_affixes": [],
   "min_affixes": 0,

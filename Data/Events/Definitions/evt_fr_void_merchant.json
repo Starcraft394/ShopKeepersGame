@@ -63,11 +63,12 @@
         },
         {
           "weight": 30,
-          "text": "Your blade passes through the merchant like smoke. It reforms behind you and places a cold hand on one hero's shoulder. 'A lesson, then. Free of charge.' Agony lances through the hero's body.",
+          "text": "Your blade passes through the merchant like smoke. It reforms behind you and places a cold hand on one hero's shoulder. 'A lesson, then. Free of charge.' Agony lances through the hero's body. As the merchant fades, a few of its wares clatter to the ground.",
           "effects": [
             { "type": "damage_hero", "amount": 12 },
             { "type": "apply_status", "status_id": "bleeding", "duration": 2, "target": "random_hero" },
-            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+            { "type": "apply_status", "status_id": "burning", "duration": 2, "target": "random_hero" },
+            { "type": "add_gold_range", "min": 6, "max": 12 }
           ]
         }
       ]

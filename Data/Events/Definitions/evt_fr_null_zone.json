@@ -27,10 +27,11 @@
         },
         {
           "weight": 20,
-          "text": "The null zone surges outward as you disturb its edge. For a terrifying moment, everyone ceases to exist — then reality snaps back, leaving you shaken and numb.",
+          "text": "The null zone surges outward as you disturb its edge. For a terrifying moment, everyone ceases to exist — then reality snaps back, leaving you shaken and numb. A single null fragment remains in your clenched fist.",
           "effects": [
             { "type": "damage_party", "amount": 6 },
-            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "party" }
+            { "type": "apply_status", "status_id": "shocked", "duration": 2, "target": "party" },
+            { "type": "add_item", "item_id": "fr_null_fragment", "min_qty": 1, "max_qty": 1 }
           ]
         }
       ]

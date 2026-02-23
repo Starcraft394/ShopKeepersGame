@@ -11,10 +11,15 @@
   "tier": 3,
   "min_quality": 0,
   "max_quality": 3,
-  "base_stats": {},
+  "base_stats": {
+    "crit_chance": 7,
+    "evasion": 9
+  },
   "stat_bonuses": {
     "defense": 1,
-    "health": 10
+    "health": 10,
+    "crit_chance": 7,
+    "evasion": 9
   },
   "allowed_affixes": [],
   "min_affixes": 0,

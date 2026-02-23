@@ -21,5 +21,5 @@
   "ability_b_id": "phase_strike",
   "passive_a_id": "dimensional_shift",
   "passive_b_id": "void_shell",
-  "weapon_types": ["sword", "axe", "void_blade"]
+  "weapon_types": ["sword", "axe", "dagger"]
 }

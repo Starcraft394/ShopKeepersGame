@@ -38,6 +38,10 @@ var _trigger_combat_type: String = ""  # "basic" or "elite"
 # ============================================================================
 
 func _ready() -> void:
+	# Apply background art (graceful fallback to ColorRect if not found)
+	var region_num: int = GameContext.get_current_region()
+	BackgroundManager.apply_background(self, "event", "R%d" % region_num)
+
 	# Connect buttons
 	for i in range(choice_buttons.size()):
 		choice_buttons[i].pressed.connect(_on_choice_pressed.bind(i))
@@ -149,7 +153,7 @@ func _display_event() -> void:
 			var requires = choice.get("requires", {})
 			if not _check_requirements(requires):
 				choice_buttons[i].disabled = true
-				choice_buttons[i].modulate = Color(0.5, 0.5, 0.5, 1)
+				choice_buttons[i].modulate = Color(0.7, 0.7, 0.7, 1)
 		else:
 			choice_buttons[i].visible = false
 
@@ -566,8 +570,9 @@ func _return_to_camp() -> void:
 	if not _choice_made:
 		return
 
-	# Award event completion XP
-	GameContext.grant_party_xp(20, "event")
+	# Award event completion XP (scaled by region)
+	var event_xp: int = 10 + (GameContext.get_current_region() - 1) * 15
+	GameContext.grant_party_xp(event_xp, "event")
 
 	if _trigger_combat_after:
 		# Route to combat instead of camp

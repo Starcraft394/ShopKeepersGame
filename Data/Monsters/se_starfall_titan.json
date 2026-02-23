@@ -8,6 +8,7 @@
   "tier": 3,
   "ai_tier": 3,
   "attack_type": "melee",
+  "combat_role": "melee",
   "base_stats": {
     "health": 950,
     "attack": 72,
@@ -15,7 +16,9 @@
     "speed": 42
   },
   "ability_ids": [
-    "basic_attack"
+    "basic_attack",
+    "mon_devastating_charge",
+    "mon_ground_slam"
   ],
   "passive_ids": [],
   "loot_table_id": "lt_region5_boss",

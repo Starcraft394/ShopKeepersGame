@@ -1,0 +1,16 @@
+{
+  "id": "mon_volley",
+  "display_name": "Volley",
+  "description": "Launches a barrage of projectiles at all enemies.",
+  "icon_hint": "rain of arrows descending from above in a wide arc",
+  "ability_type": "monster",
+  "source_class_id": "",
+  "target_type": "all_enemies",
+  "effect_type": "damage",
+  "base_damage": 4,
+  "damage_type": "physical",
+  "attack_scaling": 0.4,
+  "cooldown": 4,
+  "applies_status_id": "",
+  "status_stacks": 0
+}

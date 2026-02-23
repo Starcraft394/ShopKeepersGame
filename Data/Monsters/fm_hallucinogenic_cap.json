@@ -8,6 +8,7 @@
   "tier": 2,
   "ai_tier": 2,
   "attack_type": "ranged",
+  "combat_role": "mage",
   "base_stats": {
     "health": 106,
     "attack": 25,
@@ -15,7 +16,8 @@
     "speed": 16
   },
   "ability_ids": [
-    "basic_attack"
+    "basic_attack",
+    "mon_chain_lightning"
   ],
   "passive_ids": [],
   "loot_table_id": "lt_region2_uncommon",

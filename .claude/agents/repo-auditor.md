@@ -35,6 +35,19 @@ INVARIANTS - DO NOT BREAK:
 - Dungeon bags: no stacking; stash stacks only
 - Determinism: all RNG through SeededRNG
 
+REFERENCE DOCS TO CONSULT:
+- Docs/PROJECT_MAP.md — directory index and file counts
+- Docs/BALANCE_REFERENCE.md — abilities, passives, status effects, equipment, class stats, monster overview
+- Docs/MONSTER_MANIFEST.md — all 112 monsters with roles, abilities, stats
+- Docs/DEVELOPMENT_STATUS.md — current feature/content inventory and recent changes
+- Docs/GAME_GUIDE.md — player-facing game guide
+
+CURRENT CONTENT COUNTS (as of 2026-02-22):
+- 430 item templates, 112 monsters, 80 abilities, 66 passives, 15 classes, 9 races
+- 13 status effects, 38 loot tables, 22 facilities, 70 events, 14 tutorials, 32 campaign dialogs
+- 178 unit tests + 22 validation tests = 200 total, 0 failures
+- 13 agent prompts in .claude/agents/
+
 OUTPUT FORMAT:
 A) Repo Scan Summary (key folders, autoloads, save schema)
 B) Implemented Systems Inventory (bullet list)

@@ -142,7 +142,7 @@ const POP_TEXT_COLORS: Dictionary = {
 	"buff_apply": Color.CYAN,
 	"miss": Color.GRAY,
 	"crit": Color.HOT_PINK,
-	"status_expire": Color(0.6, 0.6, 0.6, 1.0)  # Muted gray for expired statuses
+	"status_expire": Color(0.78, 0.78, 0.78, 1.0)  # Muted gray for expired statuses
 }
 
 # Cast callout styling
@@ -372,7 +372,11 @@ func _ready() -> void:
 	# Populate region palette before UI building
 	_region_palette = RegionTheme.get_palette_for_current_region()
 
-	# Theme root background and top bar per region
+	# Apply background art (falls back to region-tinted ColorRect if image not found)
+	var region_num: int = GameContext.get_current_region()
+	BackgroundManager.apply_background(self, "dungeon", "R%d" % region_num)
+
+	# Theme root background and top bar per region (only if still ColorRect)
 	var bg_node = get_node_or_null("Background")
 	if bg_node and bg_node is ColorRect:
 		var dark: Color = _region_palette.get("bg_dark", Color(0.10, 0.09, 0.08, 1))
@@ -941,7 +945,7 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 		if tex != null:
 			portrait_rect.texture = tex
 	if not unit_data["is_alive"]:
-		portrait_rect.modulate = Color(0.4, 0.4, 0.4, 1)
+		portrait_rect.modulate = Color(0.55, 0.55, 0.55, 1)
 	card_hbox.add_child(portrait_rect)
 
 	# Right side: name, class, HP bar, badges
@@ -963,7 +967,7 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 	if unit_data["is_alive"]:
 		name_label.add_theme_color_override("font_color", Color(0.96, 0.91, 0.82, 1))
 	else:
-		name_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5, 1))
+		name_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7, 1))
 	info_vbox.add_child(name_label)
 
 	# Class label (heroes only)
@@ -1056,7 +1060,11 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 	# D1: HP numbers label inside HP bar
 	var hp_label = Label.new()
 	hp_label.name = "HPLabel"
-	hp_label.text = "%d/%d" % [int(unit_data["hp"]), int(unit_data["max_hp"])]
+	var shield_val: int = int(unit_data.get("shield_hp", 0))
+	if shield_val > 0:
+		hp_label.text = "%d/%d +%d" % [int(unit_data["hp"]), int(unit_data["max_hp"]), shield_val]
+	else:
+		hp_label.text = "%d/%d" % [int(unit_data["hp"]), int(unit_data["max_hp"])]
 	hp_label.add_theme_font_size_override("font_size", GameContext.fs(11))
 	hp_label.add_theme_color_override("font_color", Color.WHITE)
 	hp_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -1065,6 +1073,32 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 	hp_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hp_bar.add_child(hp_label)
 	_unit_hp_labels[unit_data["id"]] = hp_label
+
+	# Shield bar (thin cyan bar below HP bar, visible when shielded)
+	var shield_bar_val: int = int(unit_data.get("shield_hp", 0))
+	if shield_bar_val > 0:
+		var shield_bar = ProgressBar.new()
+		shield_bar.custom_minimum_size.y = 3
+		shield_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		shield_bar.show_percentage = false
+		shield_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		shield_bar.max_value = maxi(1, int(unit_data.get("max_hp", 100)))
+		shield_bar.value = shield_bar_val
+		var s_bg = StyleBoxFlat.new()
+		s_bg.bg_color = Color(0.12, 0.12, 0.12, 0.5)
+		s_bg.corner_radius_top_left = 1
+		s_bg.corner_radius_top_right = 1
+		s_bg.corner_radius_bottom_left = 1
+		s_bg.corner_radius_bottom_right = 1
+		shield_bar.add_theme_stylebox_override("background", s_bg)
+		var s_fill = StyleBoxFlat.new()
+		s_fill.bg_color = Color(0.3, 0.7, 1.0, 0.9)
+		s_fill.corner_radius_top_left = 1
+		s_fill.corner_radius_top_right = 1
+		s_fill.corner_radius_bottom_left = 1
+		s_fill.corner_radius_bottom_right = 1
+		shield_bar.add_theme_stylebox_override("fill", s_fill)
+		info_vbox.add_child(shield_bar)
 
 	# Status badge row (pooled)
 	var unit_id = unit_data["id"]
@@ -1157,6 +1191,23 @@ func _build_unit_card_tooltip(unit_data: Dictionary) -> String:
 		spd_str += " (%+d)" % (spd - base_spd)
 	lines.append("%s | %s | %s" % [atk_str, def_str, spd_str])
 
+	# New combat stats (only show if > 0)
+	var extra_stat_parts: Array[String] = []
+	var crit_val = int(unit_data.get("crit_chance", 0))
+	if crit_val > 0: extra_stat_parts.append("CRIT:%d%%" % crit_val)
+	var evd_val = int(unit_data.get("evasion", 0))
+	if evd_val > 0: extra_stat_parts.append("EVD:%d%%" % evd_val)
+	var res_val = int(unit_data.get("resist", 0))
+	if res_val > 0: extra_stat_parts.append("RES:%d" % res_val)
+	var thn_val = int(unit_data.get("thorns", 0))
+	if thn_val > 0: extra_stat_parts.append("THN:%d" % thn_val)
+	var pen_val = int(unit_data.get("armor_penetration", 0))
+	if pen_val > 0: extra_stat_parts.append("PEN:%d" % pen_val)
+	var ls_val = int(unit_data.get("life_steal", 0))
+	if ls_val > 0: extra_stat_parts.append("LSTL:%d%%" % ls_val)
+	if not extra_stat_parts.is_empty():
+		lines.append(" | ".join(extra_stat_parts))
+
 	# Abilities (heroes only)
 	if unit_data["team"] == "player":
 		var tt_hero_id: String = unit_data.get("source_id", unit_data["id"])
@@ -1237,6 +1288,12 @@ func _build_hp_tooltip(unit_data: Dictionary) -> String:
 	lines.append("Base: %d" % base_hp)
 	if bonus != 0:
 		lines.append("Bonuses: %+d" % bonus)
+	var shield_val: int = int(unit_data.get("shield_hp", 0))
+	if shield_val > 0:
+		var shield_rounds: int = int(unit_data.get("shield_remaining_rounds", 0))
+		lines.append("")
+		lines.append("Shield: %d HP (%d rounds remaining)" % [shield_val, shield_rounds])
+		lines.append("Absorbs damage before HP is reduced.")
 	return "\n".join(lines)
 
 
@@ -2096,6 +2153,18 @@ func _do_combat_transition() -> void:
 # LOOT PANEL — Route items to stash or hero bags
 # ============================================================================
 
+## Returns "+" if any entry in the bag has material stack room remaining.
+func _bag_stack_room_indicator(bag: Array) -> String:
+	for entry in bag:
+		var eid: String = entry.get("item_id", "") if entry is Dictionary else entry.template_id if entry is ItemInstance else ""
+		var stack_limit: int = GameContext.get_bag_stack_limit(eid)
+		if stack_limit > 1:
+			var eq: int = int(entry.get("qty", 1)) if entry is Dictionary else entry.quantity if entry is ItemInstance else 1
+			if eq < stack_limit:
+				return "+"
+	return ""
+
+
 ## Show the loot routing panel as a CanvasLayer popup overlay.
 ## v2: Visual slot-based overlay with icon grids instead of text lists.
 func _show_loot_panel() -> void:
@@ -2237,7 +2306,7 @@ func _show_loot_panel() -> void:
 	var shop_used = GameContext.shopkeeper_bag.size()
 	var shop_cap = GameContext.get_shopkeeper_bag_capacity()
 	var shop_header = Label.new()
-	shop_header.text = "Shop Bag (%d/%d):" % [shop_used, shop_cap]
+	shop_header.text = "Shop Bag (%d/%d%s):" % [shop_used, shop_cap, _bag_stack_room_indicator(GameContext.shopkeeper_bag)]
 	shop_header.add_theme_font_size_override("font_size", GameContext.fs(14))
 	shop_header.add_theme_color_override("font_color", Color(0.6, 0.85, 0.6))
 	vbox.add_child(shop_header)
@@ -2271,7 +2340,7 @@ func _show_loot_panel() -> void:
 		vbox.add_child(hero_row)
 
 		var hero_lbl = Label.new()
-		hero_lbl.text = "%s (%d/%d):" % [hero_name, bag.size(), bag_cap]
+		hero_lbl.text = "%s (%d/%d%s):" % [hero_name, bag.size(), bag_cap, _bag_stack_room_indicator(bag)]
 		hero_lbl.add_theme_font_size_override("font_size", GameContext.fs(14))
 		hero_lbl.add_theme_color_override("font_color", Color(0.85, 0.75, 0.55))
 		hero_lbl.custom_minimum_size = Vector2(120, 0)
@@ -2335,13 +2404,18 @@ func _show_loot_panel() -> void:
 		all_shop_btn.text = "Deposit All"
 		all_shop_btn.custom_minimum_size = Vector2(140, 32)
 		all_shop_btn.tooltip_text = "Shop bag first, then hero bags (D)"
-		# Only disable if ALL bags (shop + all heroes) are full
-		var any_space = shop_used < shop_cap
-		if not any_space:
+		# Disable only if NO pending item can fit (stacking-aware)
+		var any_space: bool = false
+		for acq in pending:
+			if any_space:
+				break
+			var aid: String = acq.get("item_id", "")
+			var aq: int = int(acq.get("quality", 0))
+			if GameContext.can_add_to_shopkeeper_bag(aid, 1, aq):
+				any_space = true
+				break
 			for pid in GameContext.selected_party:
-				var bag_used = GameContext.get_hero_bag(pid).size()
-				var bag_cap = GameContext.get_hero_bag_capacity(pid)
-				if bag_used < bag_cap:
+				if GameContext.can_add_to_hero_bag(pid, aid, 1):
 					any_space = true
 					break
 		if not any_space:
@@ -2443,6 +2517,10 @@ func _create_loot_item_slot(acq: Dictionary, index: int) -> Control:
 			var loot_affix_desc: String = DataRegistry.get_regional_affix(loot_affix_data.get("affix_id", "")).get("description", "")
 			if loot_affix_desc != "":
 				tip_parts.append(loot_affix_desc)
+		# Show consumable effect
+		var effect_label: String = tpl.get_effect_label()
+		if effect_label != "":
+			tip_parts.append(effect_label)
 	slot.tooltip_text = "\n".join(tip_parts)
 
 	# Click handler — select this slot
@@ -2498,10 +2576,27 @@ func _create_bag_slot(entry: Dictionary, slot_size: int = 32, is_swap_target: bo
 		if icon_ctrl != null:
 			slot.add_child(icon_ctrl)
 
+	# Qty label overlay for stacked items (materials)
+	var entry_qty: int = int(entry.get("qty", 1))
+	if entry_qty > 1:
+		var qty_label = Label.new()
+		qty_label.text = "x%d" % entry_qty
+		qty_label.add_theme_font_size_override("font_size", 10)
+		qty_label.add_theme_color_override("font_color", Color(1, 1, 1, 0.95))
+		qty_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.9))
+		qty_label.add_theme_constant_override("shadow_offset_x", 1)
+		qty_label.add_theme_constant_override("shadow_offset_y", 1)
+		qty_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		qty_label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+		qty_label.set_anchors_preset(Control.PRESET_FULL_RECT)
+		slot.add_child(qty_label)
+
 	# Tooltip
 	var tip: String = display_name
 	if quality > 0:
 		tip = "%s %s" % [ItemInstance.QUALITY_NAMES[clampi(quality, 0, 3)], display_name]
+	if entry_qty > 1:
+		tip += " x%d" % entry_qty
 	slot.tooltip_text = tip
 
 	# Swap click handler — only active in swap mode for the target hero
@@ -2552,7 +2647,7 @@ func _update_routing_bar() -> void:
 		else:
 			hint.text = "Click an item above to assign it  (or press B / 1-4)"
 			hint.add_theme_font_size_override("font_size", GameContext.fs(13))
-			hint.add_theme_color_override("font_color", Color(0.6, 0.6, 0.5))
+			hint.add_theme_color_override("font_color", Color(0.78, 0.78, 0.68))
 		_loot_routing_bar.add_child(hint)
 		return
 
@@ -2576,12 +2671,12 @@ func _update_routing_bar() -> void:
 	var shop_btn = Button.new()
 	shop_btn.custom_minimum_size = Vector2(100, 26)
 	if not GameContext.can_add_to_shopkeeper_bag(item_id, 1, quality):
-		shop_btn.text = "Swap Shop (%d/%d)" % [shop_used, shop_cap]
+		shop_btn.text = "Swap Shop (%d/%d%s)" % [shop_used, shop_cap, _bag_stack_room_indicator(GameContext.shopkeeper_bag)]
 		shop_btn.modulate = Color(1.0, 0.8, 0.6)
 		shop_btn.tooltip_text = "Replace an item in the shop bag"
 		shop_btn.pressed.connect(_on_loot_shop_swap_request.bind(_loot_selected_index))
 	else:
-		shop_btn.text = "Shop Bag (%d/%d)" % [shop_used, shop_cap]
+		shop_btn.text = "Shop Bag (%d/%d%s)" % [shop_used, shop_cap, _bag_stack_room_indicator(GameContext.shopkeeper_bag)]
 		shop_btn.pressed.connect(_on_loot_to_shop_bag.bind(_loot_selected_index))
 	_loot_routing_bar.add_child(shop_btn)
 
@@ -2594,17 +2689,19 @@ func _update_routing_bar() -> void:
 		var hero_name: String = hero.get("name", hero_id) if not hero.is_empty() else hero_id
 		if hero_name.length() > 10:
 			hero_name = hero_name.substr(0, 9) + "."
-		var bag_used = GameContext.get_hero_bag(hero_id).size()
+		var hero_bag = GameContext.get_hero_bag(hero_id)
+		var bag_used = hero_bag.size()
 		var bag_cap = GameContext.get_hero_bag_capacity(hero_id)
+		var bag_plus: String = _bag_stack_room_indicator(hero_bag)
 		var hero_btn = Button.new()
 		hero_btn.custom_minimum_size = Vector2(100, 26)
 		if not GameContext.can_add_to_hero_bag(hero_id, item_id, 1):
-			hero_btn.text = "Swap %s (%d/%d)" % [hero_name, bag_used, bag_cap]
+			hero_btn.text = "Swap %s (%d/%d%s)" % [hero_name, bag_used, bag_cap, bag_plus]
 			hero_btn.modulate = Color(1.0, 0.8, 0.6)
 			hero_btn.tooltip_text = "Replace an item in %s's bag" % hero_name
 			hero_btn.pressed.connect(_on_loot_swap_request.bind(_loot_selected_index, hero_id))
 		else:
-			hero_btn.text = "%s (%d/%d)" % [hero_name, bag_used, bag_cap]
+			hero_btn.text = "%s (%d/%d%s)" % [hero_name, bag_used, bag_cap, bag_plus]
 			hero_btn.pressed.connect(_on_loot_to_hero.bind(_loot_selected_index, hero_id))
 		_loot_routing_bar.add_child(hero_btn)
 
@@ -2728,31 +2825,41 @@ func _on_loot_discard_all() -> void:
 
 
 ## Route all pending items: shop bag first, then overflow to hero bags.
+## Multi-pass: skips un-routable items so fitting items still get deposited.
 func _on_loot_deposit_all() -> void:
-	var routed_shop = 0
-	var routed_hero = 0
-	# Phase 1: Fill shop bag
-	while not GameContext.get_all_pending_acquisitions().is_empty():
-		var acq = GameContext.get_all_pending_acquisitions()[0]
-		var item_id: String = acq.get("item_id", "")
-		var quality: int = int(acq.get("quality", 0))
-		if not GameContext.can_add_to_shopkeeper_bag(item_id, 1, quality):
-			break
-		GameContext.resolve_acquisition_at(0, "shop_bag")
-		routed_shop += 1
-	# Phase 2: Overflow to hero bags
-	while not GameContext.get_all_pending_acquisitions().is_empty():
-		var acq = GameContext.get_all_pending_acquisitions()[0]
-		var item_id: String = acq.get("item_id", "")
-		var placed = false
-		for hero_id in GameContext.selected_party:
-			if GameContext.can_add_to_hero_bag(hero_id, item_id, 1):
-				GameContext.resolve_acquisition_at(0, "hero_bag", hero_id)
-				routed_hero += 1
-				placed = true
-				break
-		if not placed:
-			break  # All bags full
+	var routed_shop: int = 0
+	var routed_hero: int = 0
+	var placed_any: bool = true
+	while placed_any:
+		placed_any = false
+		var pending = GameContext.get_all_pending_acquisitions()
+		var i: int = pending.size() - 1
+		while i >= 0:
+			var acq = pending[i]
+			var item_id: String = acq.get("item_id", "")
+			var quality: int = int(acq.get("quality", 0))
+			# Try shop bag first
+			if GameContext.can_add_to_shopkeeper_bag(item_id, 1, quality):
+				GameContext.resolve_acquisition_at(i, "shop_bag")
+				routed_shop += 1
+				placed_any = true
+				pending = GameContext.get_all_pending_acquisitions()
+				i = mini(i, pending.size()) - 1
+				continue
+			# Try hero bags
+			var hero_placed: bool = false
+			for hero_id in GameContext.selected_party:
+				if GameContext.can_add_to_hero_bag(hero_id, item_id, 1):
+					GameContext.resolve_acquisition_at(i, "hero_bag", hero_id)
+					routed_hero += 1
+					placed_any = true
+					hero_placed = true
+					break
+			if hero_placed:
+				pending = GameContext.get_all_pending_acquisitions()
+				i = mini(i, pending.size()) - 1
+				continue
+			i -= 1  # skip this item, try next
 	print("[LootPanel] Deposit All: %d to shop, %d to heroes" % [routed_shop, routed_hero])
 	_loot_selected_index = -1
 	_refresh_loot_panel()
@@ -2856,32 +2963,42 @@ func _handle_loot_resize_motion(global_pos: Vector2) -> void:
 	_loot_panel.position = new_pos
 
 
-## Auto-deposit all loot: shopkeeper bag first, then hero bags (same logic as Deposit All button).
+## Auto-deposit all loot: shopkeeper bag first, then hero bags.
+## Multi-pass: skips un-routable items so fitting items still get deposited.
 func _auto_deposit_all_loot() -> void:
 	var routed_shop: int = 0
 	var routed_hero: int = 0
-	# Phase 1: Fill shopkeeper bag
-	while not GameContext.get_all_pending_acquisitions().is_empty():
-		var acq = GameContext.get_all_pending_acquisitions()[0]
-		var item_id: String = acq.get("item_id", "")
-		var quality: int = int(acq.get("quality", 0))
-		if not GameContext.can_add_to_shopkeeper_bag(item_id, 1, quality):
-			break
-		GameContext.resolve_acquisition_at(0, "shop_bag")
-		routed_shop += 1
-	# Phase 2: Overflow to hero bags
-	while not GameContext.get_all_pending_acquisitions().is_empty():
-		var acq = GameContext.get_all_pending_acquisitions()[0]
-		var item_id: String = acq.get("item_id", "")
-		var placed: bool = false
-		for hero_id in GameContext.selected_party:
-			if GameContext.can_add_to_hero_bag(hero_id, item_id, 1):
-				GameContext.resolve_acquisition_at(0, "hero_bag", hero_id)
-				routed_hero += 1
-				placed = true
-				break
-		if not placed:
-			break  # All bags full
+	var placed_any: bool = true
+	while placed_any:
+		placed_any = false
+		var pending = GameContext.get_all_pending_acquisitions()
+		var i: int = pending.size() - 1
+		while i >= 0:
+			var acq = pending[i]
+			var item_id: String = acq.get("item_id", "")
+			var quality: int = int(acq.get("quality", 0))
+			# Try shop bag first
+			if GameContext.can_add_to_shopkeeper_bag(item_id, 1, quality):
+				GameContext.resolve_acquisition_at(i, "shop_bag")
+				routed_shop += 1
+				placed_any = true
+				pending = GameContext.get_all_pending_acquisitions()
+				i = mini(i, pending.size()) - 1
+				continue
+			# Try hero bags
+			var hero_placed: bool = false
+			for hero_id in GameContext.selected_party:
+				if GameContext.can_add_to_hero_bag(hero_id, item_id, 1):
+					GameContext.resolve_acquisition_at(i, "hero_bag", hero_id)
+					routed_hero += 1
+					placed_any = true
+					hero_placed = true
+					break
+			if hero_placed:
+				pending = GameContext.get_all_pending_acquisitions()
+				i = mini(i, pending.size()) - 1
+				continue
+			i -= 1  # skip this item, try next
 	var remaining: int = GameContext.get_all_pending_acquisitions().size()
 	print("[AutoLoot] Deposited: %d to shop bag, %d to hero bags, %d remaining" % [routed_shop, routed_hero, remaining])
 
@@ -3258,7 +3375,7 @@ func _show_defeat_panel() -> void:
 	if shop_bag.is_empty():
 		var no_items = Label.new()
 		no_items.text = "(No items in shopkeeper bag)"
-		no_items.modulate = Color(0.6, 0.6, 0.6)
+		no_items.modulate = Color(0.78, 0.78, 0.78)
 		no_items.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		vbox.add_child(no_items)
 	else:
@@ -3397,7 +3514,7 @@ func _create_lost_hero_panel(hero_id: String) -> PanelContainer:
 		var no_equip = Label.new()
 		no_equip.text = "  (No equipment)"
 		no_equip.add_theme_font_size_override("font_size", GameContext.fs(13))
-		no_equip.modulate = Color(0.5, 0.5, 0.5)
+		no_equip.modulate = Color(0.7, 0.7, 0.7)
 		vbox.add_child(no_equip)
 
 	return panel
@@ -3893,7 +4010,7 @@ func _play_action_sfx(action: CombatAction) -> void:
 	# Status application sound (additional, on top of action sound)
 	if action.status_applied != "":
 		var status_id: String = action.status_applied
-		if status_id in ["stunned", "blinded"]:
+		if status_id in ["stun", "blinded"]:
 			UIAudio.play_sfx("stun_applied")
 		elif status_id in ["burning", "poisoned", "bleeding", "shocked", "doom"]:
 			UIAudio.play_sfx("debuff_apply")
@@ -3912,6 +4029,10 @@ func _on_action_performed(action: CombatAction) -> void:
 	if action.target_id != "" and action.actor_id != "":
 		var is_heal = action.healing_done > 0 and action.damage_dealt == 0
 		_show_attack_line(action.actor_id, action.target_id, is_heal)
+
+	# Evade pop text (on the unit who evaded the attack)
+	if action.was_evaded:
+		_show_pop_text(action.target_id, "EVADE", "miss")
 
 	# Damage pop text (on target)
 	if action.damage_dealt > 0:
@@ -3935,6 +4056,12 @@ func _on_action_performed(action: CombatAction) -> void:
 	if action.status_applied != "":
 		var status_text = action.status_applied.capitalize()
 		_show_pop_text(action.target_id, status_text, "status_apply")
+
+	# Tag effect BUFF pop text (buff_stat / reduce_cooldown — no damage/heal/status)
+	if action.action_type == CombatAction.ActionType.BUFF and \
+	   action.damage_dealt == 0 and action.healing_done == 0 and action.status_applied == "" and \
+	   action.message != "":
+		_show_pop_text(action.target_id, action.message, "buff_apply")
 
 	# v1.9B: Also add to log overlay
 	_on_action_performed_v19b(action)
@@ -4361,6 +4488,9 @@ func _on_action_performed_v19b(action: CombatAction) -> void:
 			log_entry = "%s defeated!" % action.actor_name
 		CombatAction.ActionType.DOOM_TRIGGER:
 			log_entry = "DOOM! %s -%d" % [action.target_name, action.damage_dealt]
+		CombatAction.ActionType.BUFF:
+			if action.message != "":
+				log_entry = action.message
 
 	if log_entry != "":
 		_add_to_log_overlay(log_entry)
@@ -5062,7 +5192,7 @@ func _enter_target_selection_mode(valid_targets: Array) -> void:
 				click_panel.mouse_exited.connect(_on_target_mouse_exited.bind(unit_id))
 		else:
 			# Gray out non-valid targets
-			display.modulate = Color(0.5, 0.5, 0.5)
+			display.modulate = Color(0.7, 0.7, 0.7)
 
 
 ## Handle mouse entering a valid target during target selection.
@@ -5394,6 +5524,20 @@ func _build_stat_inspection_content(vbox: VBoxContainer, unit_data: Dictionary) 
 	_add_inspect_stat(vbox, "SPD", spd_label, Color(0.7, 0.9, 0.5),
 		"Speed. Determines turn order each round. Higher speed acts first.")
 
+	# --- New Stats (only show if > 0) ---
+	var inspect_new_stats = [
+		{"key": "crit_chance", "label": "CRIT", "color": Color(1.0, 0.7, 0.3), "suffix": "%", "desc": "Critical hit chance. % to deal 1.5x damage. Capped at 50%."},
+		{"key": "evasion", "label": "EVD", "color": Color(0.6, 0.9, 0.6), "suffix": "%", "desc": "Evasion. % chance to dodge incoming attacks. Capped at 50%."},
+		{"key": "resist", "label": "RES", "color": Color(0.7, 0.5, 0.9), "suffix": "", "desc": "Resistance. Reduces fire, dark, and void damage using defense soft-cap."},
+		{"key": "thorns", "label": "THN", "color": Color(0.8, 0.4, 0.4), "suffix": "", "desc": "Thorns. Flat damage returned to physical attackers (true damage)."},
+		{"key": "armor_penetration", "label": "PEN", "color": Color(0.9, 0.6, 0.5), "suffix": "", "desc": "Armor penetration. Reduces target's defense before soft-cap."},
+		{"key": "life_steal", "label": "LSTL", "color": Color(0.8, 0.3, 0.3), "suffix": "%", "desc": "Life steal. % of direct damage dealt healed."},
+	]
+	for ins in inspect_new_stats:
+		var ins_val = int(unit_data.get(ins.key, 0))
+		if ins_val > 0:
+			_add_inspect_stat(vbox, ins.label, "%d%s" % [ins_val, ins.suffix], ins.color, ins.desc)
+
 	# --- Abilities (heroes) ---
 	if is_hero:
 		var inspect_hero_id: String = unit_data.get("source_id", unit_data["id"])
@@ -5501,7 +5645,7 @@ func _build_stat_inspection_content(vbox: VBoxContainer, unit_data: Dictionary) 
 	var hint = Label.new()
 	hint.text = "Click outside or press Escape to close"
 	hint.add_theme_font_size_override("font_size", GameContext.fs(12))
-	hint.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+	hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(hint)
 
@@ -5565,7 +5709,7 @@ func _add_inspect_ability(vbox: VBoxContainer, ability_name: String, cd_text: St
 	var cd_lbl = Label.new()
 	cd_lbl.text = "  [%s]" % cd_text
 	cd_lbl.add_theme_font_size_override("font_size", GameContext.fs(13))
-	cd_lbl.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+	cd_lbl.add_theme_color_override("font_color", Color(0.78, 0.78, 0.78))
 	hbox.add_child(cd_lbl)
 	vbox.add_child(hbox)
 
@@ -5607,7 +5751,7 @@ func _add_inspect_status_line(vbox: VBoxContainer, status_name: String, duration
 	var dur_lbl = Label.new()
 	dur_lbl.text = "  (%s)" % duration_text
 	dur_lbl.add_theme_font_size_override("font_size", GameContext.fs(13))
-	dur_lbl.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+	dur_lbl.add_theme_color_override("font_color", Color(0.78, 0.78, 0.78))
 	hbox.add_child(dur_lbl)
 	vbox.add_child(hbox)
 
@@ -5724,7 +5868,7 @@ func _show_item_select_overlay(hero_id: String, consumables: Array) -> void:
 	cancel_btn.text = "Cancel"
 	cancel_btn.custom_minimum_size = Vector2(0, 28)
 	cancel_btn.flat = true
-	cancel_btn.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+	cancel_btn.add_theme_color_override("font_color", Color(0.78, 0.78, 0.78))
 	cancel_btn.pressed.connect(_close_item_select_overlay)
 	vbox.add_child(cancel_btn)
 
@@ -5847,7 +5991,7 @@ func _show_combat_consumable_hero_picker(item_id: String, source_hero_id: String
 	cancel_btn.text = "Cancel"
 	cancel_btn.custom_minimum_size = Vector2(0, 28)
 	cancel_btn.flat = true
-	cancel_btn.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+	cancel_btn.add_theme_color_override("font_color", Color(0.78, 0.78, 0.78))
 	cancel_btn.pressed.connect(_on_combat_consumable_picker_cancel)
 	vbox.add_child(cancel_btn)
 

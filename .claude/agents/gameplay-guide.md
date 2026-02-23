@@ -64,9 +64,13 @@ PHASE 4 — DUNGEON EXPLORATION:
 
 PHASE 5 — COMBAT:
 - Turn-based auto-combat using speed-based TurnQueue
+- Speed multi-actions: 40+ SPD = 2 actions/turn, 80+ SPD = 3 actions/turn (max)
 - Each hero has: Ability A (primary, low cooldown), Ability B (special, higher cooldown)
-- Two passives per hero (class-based)
-- Status effects: buffs (evasive, reflecting, regenerating, taunting) and debuffs (bleeding, burning, poisoned, stunned, etc.)
+- Two passives per hero (class-based) + one racial passive
+- Monsters have combat roles (melee/ranged/mage) and up to 2 special abilities
+- Monster AI tiers: Feral (basic only), Basic (fixed priority), Tactical (random), Strategic (bosses)
+- Row-based targeting: melee targets front row (lowest abs HP), ranged/mage targets any row (lowest %HP)
+- Status effects: buffs (evasive, reflecting, regenerating, taunting) and debuffs (bleeding, burning, poisoned, stunned, shocked, blinded, doom)
 - Loot drops from defeated monsters → manually routed to hero bags
 - Heroes can die in combat (permanent death)
 
@@ -95,7 +99,12 @@ KEY GAME SYSTEMS:
 - 9 Races: Human, Elf, Dwarf, Mossfolk, Tidelings, Dragonkin, Crystalborn, Undead, Voidwalkers
 - 15 Classes across 4 archetypes: Vanguard (tank), DPS, Healer, Warden/Striker
 - 7 Regions with unique themes, monsters, materials, and bosses
-- 241 items: equipment, consumables, materials, class books
+- 430 items: equipment, consumables, materials, class books across 5 tiers
+- 112 monsters with combat roles (melee/ranged/mage), AI tiers, and 18 monster abilities
+- 80 abilities total: 62 hero abilities + 18 monster abilities
+- 66 passives: class passives + racial passives
+- 70 events using v2 weighted outcome schema
+- 32 campaign dialogs across 7 regions (story progression)
 - Deterministic RNG (SeededRNG) — same seed = same run
 - Manual loot routing (no auto-sort)
 - Item stacking only in stash, not in hero bags
@@ -104,11 +113,14 @@ KEY GAME SYSTEMS:
 - Manage Gear popup: equipment + bag management (view contents, remove items, add from stash)
 - Storage "To Bag": consumables can be sent directly to hero bags via hero chooser
 - No camp flee; flee only mid-combat on hero death (survivors drop all gear and bag items)
-- 11 contextual tutorials via TutorialOverlay component
+- 12 contextual tutorials via TutorialOverlay component
+- Speed multi-actions: 40+ SPD = 2 actions/turn, 80+ SPD = 3 actions/turn
+- BookUI system: Bestiary (monster field guide), recipe books, handbook
+- Campaign dialog system: narrative overlays at key progression moments
 
-TUTORIAL SYSTEM (11 tutorials implemented):
+TUTORIAL SYSTEM (12 tutorials implemented):
 - TutorialOverlay component: dims background, presents guidance text
-- Tutorials: welcome, dungeon_dangers, combat, camp, events, extraction, facilities_overview, equipment_facilities, training_hall, production, manage_roster
+- Tutorials: welcome, dungeon_dangers, combat, camp, events, extraction, facilities_overview, equipment_facilities, training_hall, production, manage_roster, party_bar
 - Each triggers on first encounter with the relevant system (contextual)
 - Tutorials shown once per save, tracked in save data
 - Use short, punchy text — not walls of explanation

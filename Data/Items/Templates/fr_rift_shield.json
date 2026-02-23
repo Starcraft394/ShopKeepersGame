@@ -12,11 +12,13 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "defense": 7
+    "defense": 7,
+    "evasion": 6
   },
   "stat_bonuses": {
     "defense": 7,
-    "health": 15
+    "health": 13,
+    "evasion": 6
   },
   "allowed_affixes": [],
   "min_affixes": 0,

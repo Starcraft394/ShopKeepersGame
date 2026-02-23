@@ -30,7 +30,7 @@
           "text": "The pool surges upward! Corruption splashes across the party, eating through cloth and searing skin before you can scramble back.",
           "effects": [
             { "type": "damage_party", "amount": 7 },
-            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+            { "type": "apply_status", "status_id": "burning", "duration": 2, "target": "random_hero" }
           ]
         }
       ]

@@ -45,7 +45,7 @@ var _player_units: Array = []
 var _enemy_units: Array = []
 var _all_units: Array = []
 var _turn_queue: TurnQueue = null
-var _rng: RandomNumberGenerator = null
+var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _result: CombatResult = null
 var _targeting_policy: TargetingPolicy = null
 
@@ -137,6 +137,9 @@ func initialize_combat(hero_ids: Array, enemy_ids: Array, rng: RandomNumberGener
 	# This fixes a bug where persisted HP from previous combat (with bonuses applied)
 	# would be restored, then bonuses applied again, causing current > max.
 	_clamp_player_hp()
+
+	# T4 combat_start tag effects (e.g., speed buffs) BEFORE speed modifiers
+	_process_combat_start_tag_effects()
 
 	# Apply combat modifier speed bonuses BEFORE TurnQueue is built
 	_apply_combat_modifier_speeds(modifier)
@@ -281,6 +284,11 @@ func _apply_single_passive(unit: CombatUnit, passive_id: String) -> void:
 		_apply_level_scaled_passive(unit, passive)
 		return
 
+	# Handle level-scaled stat bonus with cost (e.g., dark_pact: +ATK but -HP)
+	if passive.passive_type == "level_scaled_stat_bonus_with_cost":
+		_apply_level_scaled_passive_with_cost(unit, passive)
+		return
+
 	# Skip non-stat-bonus types (on_kill, round_start handled elsewhere)
 	if not passive.is_stat_bonus():
 		return
@@ -340,6 +348,39 @@ func _apply_level_scaled_passive(unit: CombatUnit, passive: PassiveData) -> void
 	passive_triggered.emit(unit, passive.passive_id, "+%d %s (level-scaled)" % [scaled_bonus, stat.to_upper()])
 
 
+## Apply a level-scaled stat bonus passive WITH a stat cost (e.g., dark_pact).
+## Formula: bonus = base_bonus + (level / divisor), then apply cost to another stat.
+func _apply_level_scaled_passive_with_cost(unit: CombatUnit, passive: PassiveData) -> void:
+	var stat = passive.get_bonus_stat()
+	var base_bonus = passive.get_bonus_value()
+	var level = unit.hero_level
+	var level_divisor = max(1, passive.get_level_divisor())
+	var scaled_bonus = base_bonus + int(level / level_divisor)
+
+	if stat != "" and scaled_bonus > 0:
+		var buff_stats = {stat: scaled_bonus}
+		var buff_id = "passive_" + passive.passive_id
+		unit.apply_buff(buff_id, buff_stats, 999)
+		print("[Passive] %s hero=%s name=%s level=%d +%d %s (level-scaled with cost)" % [
+			passive.passive_id, unit.source_id, unit.display_name, level, scaled_bonus, stat])
+		passive_triggered.emit(unit, passive.passive_id, "+%d %s (level-scaled)" % [scaled_bonus, stat.to_upper()])
+
+	# Apply cost (e.g., reduce max HP)
+	var cost_stat: String = passive.cost.get("stat", "")
+	var cost_value: int = int(passive.cost.get("value", 0))
+	if cost_stat != "" and cost_value != 0:
+		if cost_stat == "health":
+			unit.max_health += cost_value  # cost_value is negative
+			unit.current_health = mini(unit.current_health, unit.max_health)
+			print("[Passive] %s: %d max HP from %s (cost)" % [unit.display_name, cost_value, passive.display_name])
+		else:
+			# Generic stat cost — apply as debuff
+			var debuff_stats = {cost_stat: cost_value}
+			var debuff_id = "passive_cost_" + passive.passive_id
+			unit.apply_buff(debuff_id, debuff_stats, 999)
+			print("[Passive] %s: %d %s from %s (cost)" % [unit.display_name, cost_value, cost_stat.to_upper(), passive.display_name])
+
+
 # ============================================================================
 # RACE PASSIVES
 # ============================================================================
@@ -370,7 +411,7 @@ func _apply_race_passive_to_unit(unit: CombatUnit) -> void:
 		push_warning("[RacePassive] Passive not found: %s for race %s" % [passive_id, unit.race_id])
 		return
 
-	# Handle race_multi_stat_bonus type (human, dwarf)
+	# Handle race_multi_stat_bonus type (human, dwarf, voidwalker, crystalborn)
 	if passive.passive_type == "race_multi_stat_bonus":
 		_apply_race_multi_stat_passive(unit, passive)
 		return
@@ -378,6 +419,11 @@ func _apply_race_passive_to_unit(unit: CombatUnit) -> void:
 	# Handle simple stat_bonus type (elf)
 	if passive.passive_type == "stat_bonus":
 		_apply_race_stat_bonus_passive(unit, passive)
+		return
+
+	# Handle damage_reduction type (dragonkin_scales)
+	if passive.passive_type == "damage_reduction":
+		_apply_race_damage_reduction_passive(unit, passive)
 		return
 
 
@@ -435,6 +481,20 @@ func _apply_race_multi_stat_passive(unit: CombatUnit, passive: PassiveData) -> v
 			unit.current_health += hp_bonus
 			changes.append("+%d HP (scaled)" % hp_bonus)
 
+	# Map dodge_chance to evasion stat (voidwalker_phase)
+	if passive.effect.has("dodge_chance"):
+		var bonus = int(passive.effect.get("dodge_chance", 0))
+		if bonus != 0:
+			buff_stats["evasion"] = buff_stats.get("evasion", 0) + bonus
+			changes.append("+%d EVA" % bonus)
+
+	# Map magic_damage_reduction_percent to resist stat (crystalborn_refraction)
+	if passive.effect.has("magic_damage_reduction_percent"):
+		var bonus = int(passive.effect.get("magic_damage_reduction_percent", 0))
+		if bonus != 0:
+			buff_stats["resist"] = buff_stats.get("resist", 0) + bonus
+			changes.append("+%d RES" % bonus)
+
 	# Apply non-health bonuses as a tracked buff
 	if not buff_stats.is_empty():
 		var buff_id = "passive_" + passive.passive_id
@@ -473,6 +533,36 @@ func _apply_race_stat_bonus_passive(unit: CombatUnit, passive: PassiveData) -> v
 	print("[RacePassive] id=%s hero=%s name=%s race=%s level=%d +%d %s (tracked as buff)" % [
 		passive.passive_id, unit.source_id, unit.display_name, unit.race_id, level, bonus, stat.to_upper()])
 	passive_triggered.emit(unit, passive.passive_id, "+%d %s" % [bonus, stat.to_upper()])
+
+
+## Apply race damage reduction passive (dragonkin_scales).
+## Maps damage_reduction_percent to flat DEF+RES buff.
+## Burn immunity is handled via race trait_tags ("immune_fire").
+func _apply_race_damage_reduction_passive(unit: CombatUnit, passive: PassiveData) -> void:
+	var level = unit.hero_level
+	var dr_pct = int(passive.effect.get("damage_reduction_percent", 0))
+	var changes: Array[String] = []
+	var buff_stats: Dictionary = {}
+
+	# Map damage_reduction_percent to defense and resist bonuses
+	if dr_pct > 0:
+		var def_bonus = int(dr_pct / 2)
+		var res_bonus = dr_pct - def_bonus
+		if def_bonus > 0:
+			buff_stats["defense"] = def_bonus
+			changes.append("+%d DEF" % def_bonus)
+		if res_bonus > 0:
+			buff_stats["resist"] = res_bonus
+			changes.append("+%d RES" % res_bonus)
+
+	if not buff_stats.is_empty():
+		var buff_id = "passive_" + passive.passive_id
+		unit.apply_buff(buff_id, buff_stats, 999)
+
+	if changes.size() > 0:
+		print("[RacePassive] id=%s hero=%s name=%s race=%s level=%d bonuses=%s (tracked as buff)" % [
+			passive.passive_id, unit.source_id, unit.display_name, unit.race_id, level, ", ".join(changes)])
+		passive_triggered.emit(unit, passive.passive_id, ", ".join(changes))
 
 
 ## Apply round-start passives (e.g., verdant_renewal).
@@ -602,6 +692,24 @@ func _apply_combat_modifier_effects(modifier: Dictionary) -> void:
 		print("[CombatMod] Applied player_start_damage=%d to %d heroes (clamped to 1 HP min)" % [
 			player_start_damage, _player_units.size()])
 
+	# Apply player defense bonus (consumable buff)
+	var player_def_bonus = modifier.get("player_def_bonus", 0)
+	if player_def_bonus != 0:
+		for unit in _player_units:
+			unit.defense += player_def_bonus
+			print("[CombatMod] %s DEF: %d -> %d (+%d)" % [
+				unit.display_name, unit.defense - player_def_bonus, unit.defense, player_def_bonus])
+		print("[CombatMod] Applied player_def_bonus=%d to %d heroes" % [player_def_bonus, _player_units.size()])
+
+	# Apply player evasion bonus (consumable buff)
+	var player_eva_bonus = modifier.get("player_eva_bonus", 0)
+	if player_eva_bonus != 0:
+		for unit in _player_units:
+			unit.evasion += player_eva_bonus
+			print("[CombatMod] %s EVA: %d -> %d (+%d)" % [
+				unit.display_name, unit.evasion - player_eva_bonus, unit.evasion, player_eva_bonus])
+		print("[CombatMod] Applied player_eva_bonus=%d to %d heroes" % [player_eva_bonus, _player_units.size()])
+
 	# Apply bonus gold (add directly to dungeon stash)
 	var bonus_gold = modifier.get("bonus_gold", 0)
 	if bonus_gold > 0:
@@ -631,25 +739,47 @@ func _apply_pending_event_statuses(statuses: Array) -> void:
 				print("[CombatMod] Applied %s (%d turns) to entire party (from event)" % [status_id, duration])
 
 
-## Determine which ability a unit should use (priority: Active A > Active B > Weapon > Basic).
+## Determine which ability a unit should use.
+## Heroes + ai_tier 1/3: fixed priority A > B > weapon > basic.
+## ai_tier 0 (Feral): basic/weapon only — ignores abilities.
+## ai_tier 2 (Tactical): random pick from ready abilities.
 func _get_ability_to_use(unit: CombatUnit) -> Dictionary:
-	# Priority 1: Class Active A
+	var is_enemy: bool = unit.team == CombatUnit.Team.ENEMY
+
+	# AI Tier 0 (Feral): basic attack only — ignores abilities
+	if is_enemy and unit.ai_tier == 0:
+		if unit.is_weapon_ability_ready():
+			return {"type": "weapon", "ability": null}
+		return {"type": "basic", "ability": null}
+
+	# AI Tier 2 (Tactical): random pick from ready abilities
+	if is_enemy and unit.ai_tier == 2:
+		var ready: Array = []
+		if unit.is_ability_a_ready():
+			var ab = DataRegistry.get_ability(unit.ability_a_id)
+			if ab:
+				ready.append({"type": "ability_a", "ability": ab})
+		if unit.is_ability_b_ready():
+			var ab = DataRegistry.get_ability(unit.ability_b_id)
+			if ab:
+				ready.append({"type": "ability_b", "ability": ab})
+		if not ready.is_empty():
+			return ready[_rng.randi() % ready.size()]
+		if unit.is_weapon_ability_ready():
+			return {"type": "weapon", "ability": null}
+		return {"type": "basic", "ability": null}
+
+	# Heroes + AI Tier 1 (Basic) + Tier 3 (Strategic): fixed priority A > B > weapon > basic
 	if unit.is_ability_a_ready():
 		var ability = DataRegistry.get_ability(unit.ability_a_id)
 		if ability != null:
 			return {"type": "ability_a", "ability": ability}
-
-	# Priority 2: Class Active B
 	if unit.is_ability_b_ready():
 		var ability = DataRegistry.get_ability(unit.ability_b_id)
 		if ability != null:
 			return {"type": "ability_b", "ability": ability}
-
-	# Priority 3: Weapon Ability
 	if unit.is_weapon_ability_ready():
 		return {"type": "weapon", "ability": null}
-
-	# Fallback: Basic Attack
 	return {"type": "basic", "ability": null}
 
 
@@ -663,6 +793,106 @@ func _calculate_ability_damage(unit: CombatUnit, ability: AbilityData) -> int:
 	return maxi(1, total)
 
 
+## Apply pre-hit combat modifiers: evasion check, crit roll, armor pen passthrough.
+## Returns: { "evaded": bool, "raw_damage": int, "was_crit": bool, "armor_pen": int }
+## Call BEFORE take_damage(). After take_damage(), call _apply_post_hit() for thorns/life_steal.
+func _apply_pre_hit(attacker: CombatUnit, target: CombatUnit, raw_damage: int, damage_type: String) -> Dictionary:
+	var result = { "evaded": false, "raw_damage": raw_damage, "was_crit": false, "armor_pen": 0 }
+
+	# Evasion check
+	var evasion_chance = target.get_effective_evasion()
+	if evasion_chance > 0:
+		var roll = _rng.randi_range(1, 100)
+		if roll <= evasion_chance:
+			result["evaded"] = true
+			print("[Combat] %s evades attack from %s! (roll=%d, evasion=%d%%)" % [
+				target.display_name, attacker.display_name, roll, evasion_chance])
+			return result
+
+	# Crit check (1.5x damage)
+	var crit_chance_val = attacker.get_effective_crit_chance()
+	if crit_chance_val > 0:
+		var roll = _rng.randi_range(1, 100)
+		if roll <= crit_chance_val:
+			result["was_crit"] = true
+			result["raw_damage"] = int(raw_damage * 1.5)
+			print("[Combat] %s CRITICAL HIT! (roll=%d, crit=%d%%, dmg: %d->%d)" % [
+				attacker.display_name, roll, crit_chance_val, raw_damage, result["raw_damage"]])
+
+	# Armor penetration (physical only)
+	if damage_type == "physical":
+		result["armor_pen"] = attacker.get_effective_armor_penetration()
+
+	return result
+
+
+## Apply post-hit effects: thorns retaliation and life steal.
+## Call AFTER take_damage() with the actual damage dealt.
+## Emits action_performed for pop text display of secondary effects.
+func _apply_post_hit(attacker: CombatUnit, target: CombatUnit, actual_damage: int, damage_type: String) -> void:
+	# Thorns: flat damage returned to attacker on physical hits
+	if damage_type == "physical" and target.is_alive:
+		var thorns_val = target.get_effective_thorns()
+		if thorns_val > 0:
+			var thorns_dmg = attacker.take_damage(thorns_val, "true")
+			print("[Combat] %s takes %d thorns damage from %s!" % [
+				attacker.display_name, thorns_dmg, target.display_name])
+			# Emit pop text action (no actor_id to suppress attack line)
+			var thorns_action = CombatAction.new()
+			thorns_action.action_type = CombatAction.ActionType.BUFF
+			thorns_action.target_id = attacker.unit_id
+			thorns_action.damage_dealt = thorns_dmg
+			thorns_action.message = "Thorns: %d" % thorns_dmg
+			action_performed.emit(thorns_action)
+
+	# Reflect: return % of damage to attacker
+	if target.is_alive and target.reflect_percent > 0 and actual_damage > 0:
+		var reflect_dmg = maxi(1, int(actual_damage * target.reflect_percent / 100.0))
+		var reflect_actual = attacker.take_damage(reflect_dmg, "magical")
+		print("[Combat] %s reflects %d damage to %s! (%d%%)" % [
+			target.display_name, reflect_actual, attacker.display_name, target.reflect_percent])
+		var reflect_action = CombatAction.new()
+		reflect_action.action_type = CombatAction.ActionType.BUFF
+		reflect_action.actor_id = target.unit_id
+		reflect_action.actor_name = target.display_name
+		reflect_action.target_id = attacker.unit_id
+		reflect_action.target_name = attacker.display_name
+		reflect_action.damage_dealt = reflect_actual
+		reflect_action.message = "Reflect: %d" % reflect_actual
+		action_performed.emit(reflect_action)
+
+	# Life steal: % of damage dealt healed
+	if actual_damage > 0 and attacker.is_alive:
+		var ls_pct = attacker.get_effective_life_steal()
+		if ls_pct > 0:
+			var heal_amount = maxi(1, int(actual_damage * ls_pct / 100.0))
+			var actual_heal = attacker.heal(heal_amount)
+			if actual_heal > 0:
+				print("[Combat] %s life steals %d HP (%d%% of %d)" % [
+					attacker.display_name, actual_heal, ls_pct, actual_damage])
+				# Emit pop text action (no actor_id to suppress attack line)
+				var ls_action = CombatAction.new()
+				ls_action.action_type = CombatAction.ActionType.BUFF
+				ls_action.target_id = attacker.unit_id
+				ls_action.healing_done = actual_heal
+				ls_action.message = "Life Steal: +%d HP" % actual_heal
+				action_performed.emit(ls_action)
+
+	# Tag effects: on_melee_hit_received (fires on target for physical melee hits)
+	if damage_type == "physical" and target.is_alive and attacker.attack_type == "melee":
+		_check_tag_effects(target, "on_melee_hit_received", {"attacker": attacker})
+
+	# Tag effects: on_low_hp (fires on target after taking damage)
+	if target.is_alive:
+		_check_tag_effects(target, "on_low_hp")
+
+	# Death check: attacker may have died from thorns or reflect damage
+	if not attacker.is_alive:
+		var death_action = CombatAction.create_death(attacker)
+		_result.add_action(death_action)
+		action_performed.emit(death_action)
+
+
 ## Compute internal status duration from designer-specified duration.
 ## Adds +1 to account for round-start tick timing, ensuring the status
 ## produces the intended number of ticks/blocks before expiring.
@@ -672,8 +902,8 @@ func _compute_internal_status_duration(requested_duration: int) -> int:
 
 
 ## Apply status effect from an ability.
-## For Status Hooks v1 statuses (like "stunned"), uses apply_status_v1().
-## For legacy statuses ("stun", "doom"), uses the old StatusRuntime system.
+## For Status Hooks v1 statuses (like "stun"), uses apply_status_v1().
+## For legacy statuses ("stun", "doom"), also uses the old StatusRuntime system.
 ## Status v1.3: Checks for immunity/resist from race trait_tags before applying.
 func _apply_ability_status(target: CombatUnit, ability: AbilityData, source: CombatUnit) -> void:
 	var status_id = ability.applies_status_id
@@ -809,6 +1039,7 @@ func step_one_turn() -> Array:
 		_tick_all_statuses()
 		_turn_queue.start_new_round()
 		_apply_round_start_passives()  # Trigger round-start passives (e.g., verdant_renewal)
+		_process_round_start_tag_effects()  # T4 round_start tag effects (e.g., regen)
 		_unit_remaining_actions.clear()  # Reset action counts for new round
 		round_ended.emit(_current_round)
 
@@ -841,8 +1072,11 @@ func step_one_turn() -> Array:
 ## Tick temporary buffs on all units (called at round start).
 func _tick_all_buffs() -> void:
 	for unit in _all_units:
-		if unit.is_alive and unit.has_active_buffs():
-			unit.tick_buffs()
+		if unit.is_alive:
+			if unit.has_active_buffs():
+				unit.tick_buffs()
+			unit.tick_shield()
+			unit.tick_reflect()
 
 
 ## Tick status effects on all units (called at round start, after buffs).
@@ -916,6 +1150,12 @@ func _unit_to_snapshot(unit: CombatUnit) -> Dictionary:
 		"base_speed": unit.speed,
 		"base_attack": unit.attack,
 		"base_defense": unit.defense,
+		"crit_chance": unit.get_effective_crit_chance(),
+		"evasion": unit.get_effective_evasion(),
+		"resist": unit.get_effective_resist(),
+		"thorns": unit.get_effective_thorns(),
+		"armor_penetration": unit.get_effective_armor_penetration(),
+		"life_steal": unit.get_effective_life_steal(),
 		"weapon_cooldown": unit.weapon_ability_cooldown,
 		"weapon_max_cooldown": unit.weapon_ability_max_cooldown,
 		"ability_a_id": unit.ability_a_id,
@@ -933,6 +1173,9 @@ func _unit_to_snapshot(unit: CombatUnit) -> Dictionary:
 		"pos": {"x": unit.grid_x, "y": unit.grid_y},
 		"team_pos_key": "%s:%d,%d" % [team_str, unit.grid_x, unit.grid_y],
 		"portrait_path": _get_unit_portrait(unit),
+		"shield_hp": unit.shield_hp,
+		"shield_remaining_rounds": unit.shield_remaining_rounds,
+		"reflect_percent": unit.reflect_percent,
 	}
 
 
@@ -1136,6 +1379,7 @@ func _run_combat_loop() -> void:
 		_tick_all_statuses()
 		_turn_queue.start_new_round()
 		_apply_round_start_passives()  # Trigger round-start passives (e.g., verdant_renewal)
+		_process_round_start_tag_effects()  # T4 round_start tag effects (e.g., regen)
 
 	if _current_round >= MAX_ROUNDS:
 		print("[CombatController] Combat ended: MAX ROUNDS reached")
@@ -1151,7 +1395,7 @@ func _process_unit_turn(unit: CombatUnit) -> void:
 	# Process turn start - check if stunned (legacy StatusRuntime)
 	var can_act = unit.statuses.process_turn_start()
 
-	# Also check Status Hooks v1 "stunned" status
+	# Also check Status Hooks v1 "stun" status
 	if can_act and unit.is_action_blocked_by_status():
 		can_act = false
 
@@ -1201,7 +1445,7 @@ func _process_unit_turn_step(unit: CombatUnit) -> void:
 	# Process turn start - check if stunned (legacy StatusRuntime)
 	var can_act = unit.statuses.process_turn_start()
 
-	# Also check Status Hooks v1 "stunned" status
+	# Also check Status Hooks v1 "stun" status
 	if can_act and unit.is_action_blocked_by_status():
 		can_act = false
 
@@ -1286,9 +1530,26 @@ func _execute_unit_action(unit: CombatUnit) -> void:
 		# Basic attack (uses effective attack)
 		raw_damage = eff_atk
 
-	var actual_damage = target.take_damage(raw_damage, damage_type)
+	# Apply combat stat modifiers (evasion, crit, armor_pen)
+	var hit = _apply_pre_hit(unit, target, raw_damage, damage_type)
+	if hit["evaded"]:
+		var action = CombatAction.create_attack(unit, target, 0, is_ability)
+		action.was_evaded = true
+		action.message = "%s's attack was evaded by %s!" % [unit.display_name, target.display_name]
+		_result.add_action(action)
+		action_performed.emit(action)
+		# Still put ability on cooldown
+		match ability_type:
+			"ability_a": unit.use_ability_a()
+			"ability_b": unit.use_ability_b()
+			"weapon": unit.use_weapon_ability()
+		return
+
+	var actual_damage = target.take_damage(hit["raw_damage"], damage_type, hit["armor_pen"])
+	_apply_post_hit(unit, target, actual_damage, damage_type)
 
 	var action = CombatAction.create_attack(unit, target, actual_damage, is_ability)
+	action.was_critical = hit["was_crit"]
 	_result.add_action(action)
 	action_performed.emit(action)
 
@@ -1305,12 +1566,17 @@ func _execute_unit_action(unit: CombatUnit) -> void:
 	if ability != null and ability.applies_status_id != "":
 		_apply_ability_status(target, ability, unit)
 
+	# Tag effects: on_attack (basic/weapon attacks only, not class abilities)
+	if ability == null or ability_type in ["basic", "weapon"]:
+		_check_tag_effects(unit, "on_attack", {"target": target})
+
 	if not target.is_alive:
 		status_changed.emit(target.unit_id)  # Clear status badges on death
 		var death_action = CombatAction.create_death(target)
 		_result.add_action(death_action)
 		action_performed.emit(death_action)
 		_trigger_on_kill_passives(unit, target.source_id)  # M4: on_kill passive trigger
+		_check_tag_effects(unit, "on_kill")
 
 
 func _execute_unit_action_step(unit: CombatUnit) -> void:
@@ -1352,9 +1618,27 @@ func _execute_unit_action_step(unit: CombatUnit) -> void:
 		# Basic attack (uses effective attack)
 		raw_damage = eff_atk
 
-	var actual_damage = target.take_damage(raw_damage, "physical")
+	# Apply combat stat modifiers (evasion, crit, armor_pen)
+	var hit = _apply_pre_hit(unit, target, raw_damage, "physical")
+	if hit["evaded"]:
+		var action = CombatAction.create_attack(unit, target, 0, is_ability)
+		action.was_evaded = true
+		action.message = "%s's attack was evaded by %s!" % [unit.display_name, target.display_name]
+		_pending_actions.append(action)
+		_result.add_action(action)
+		action_performed.emit(action)
+		if ability_type == "weapon":
+			unit.use_weapon_ability()
+		return
+
+	var actual_damage = target.take_damage(hit["raw_damage"], "physical", hit["armor_pen"])
+	_apply_post_hit(unit, target, actual_damage, "physical")
+
+	# Tag effects: on_attack (basic/weapon attacks in step mode)
+	_check_tag_effects(unit, "on_attack", {"target": target})
 
 	var action = CombatAction.create_attack(unit, target, actual_damage, is_ability)
+	action.was_critical = hit["was_crit"]
 	_pending_actions.append(action)
 	_result.add_action(action)
 	action_performed.emit(action)
@@ -1369,6 +1653,7 @@ func _execute_unit_action_step(unit: CombatUnit) -> void:
 		_result.add_action(death_action)
 		action_performed.emit(death_action)
 		_trigger_on_kill_passives(unit, target.source_id)
+		_check_tag_effects(unit, "on_kill")
 
 
 # ============================================================================
@@ -1552,6 +1837,9 @@ func _execute_class_ability_step(unit: CombatUnit, ability: AbilityData, ability
 			# Fallback: treat as damage ability
 			_execute_damage_ability(unit, ability, ability_type, player_target)
 
+	# Tag effects: on_ability_use (fires after any class/equip ability)
+	_check_tag_effects(unit, "on_ability_use")
+
 
 ## Execute a damage-type ability (guardian_challenge, aegis_slam, twin_strike).
 ## Supports single target and AoE (all_enemies) abilities.
@@ -1578,33 +1866,51 @@ func _execute_damage_ability(unit: CombatUnit, ability: AbilityData, ability_typ
 	var hits = ability.hit_count if ability.hit_count > 0 else 1
 	var total_damage = 0
 	var hits_landed = 0
+	var any_crit = false
 
 	for i in range(hits):
 		# Check if target died mid-combo (skip remaining hits)
 		if not target.is_alive:
-			# Log skipped hits
 			for j in range(i, hits):
 				print("[Ability] %s caster=%s target=%s dmg=0 hit=%d/%d (skipped - target dead)" % [
 					ability.ability_id, unit.display_name, target.display_name, j + 1, hits])
 			break
 
 		var raw_damage = _calculate_ability_damage(unit, ability)
-		# Apply armor piercing if ability has it
 		var actual_damage: int
+
 		if ability.armor_piercing:
-			actual_damage = target.take_damage(raw_damage, "true")  # True damage ignores defense
+			# Armor piercing = true damage, but still apply evasion/crit
+			var hit = _apply_pre_hit(unit, target, raw_damage, "true")
+			if hit["evaded"]:
+				print("[Ability] %s caster=%s target=%s hit=%d/%d EVADED" % [
+					ability.ability_id, unit.display_name, target.display_name, i + 1, hits])
+				continue
+			if hit["was_crit"]:
+				any_crit = true
+			actual_damage = target.take_damage(hit["raw_damage"], "true")
 		else:
-			actual_damage = target.take_damage(raw_damage, ability.damage_type)
+			var hit = _apply_pre_hit(unit, target, raw_damage, ability.damage_type)
+			if hit["evaded"]:
+				print("[Ability] %s caster=%s target=%s hit=%d/%d EVADED" % [
+					ability.ability_id, unit.display_name, target.display_name, i + 1, hits])
+				continue
+			if hit["was_crit"]:
+				any_crit = true
+			actual_damage = target.take_damage(hit["raw_damage"], ability.damage_type, hit["armor_pen"])
+
+		_apply_post_hit(unit, target, actual_damage, ability.damage_type)
 		total_damage += actual_damage
 		hits_landed += 1
 
-		# Log in required format
-		print("[Ability] %s caster=%s target=%s dmg=%d hit=%d/%d%s" % [
+		print("[Ability] %s caster=%s target=%s dmg=%d hit=%d/%d%s%s" % [
 			ability.ability_id, unit.display_name, target.display_name, actual_damage, i + 1, hits,
-			" (piercing)" if ability.armor_piercing else ""])
+			" (piercing)" if ability.armor_piercing else "",
+			" (CRIT)" if any_crit else ""])
 
 	# Create action for UI
 	var action = CombatAction.create_ability_attack(unit, target, ability.ability_id, ability.display_name, total_damage)
+	action.was_critical = any_crit
 	_pending_actions.append(action)
 	_result.add_action(action)
 	action_performed.emit(action)
@@ -1633,6 +1939,7 @@ func _execute_damage_ability(unit: CombatUnit, ability: AbilityData, ability_typ
 		_result.add_action(death_action)
 		action_performed.emit(death_action)
 		_trigger_on_kill_passives(unit, target.source_id)
+		_check_tag_effects(unit, "on_kill")
 
 
 ## Execute an AoE damage ability (spore_cloud, storm_surge, etc.)
@@ -1643,14 +1950,32 @@ func _execute_aoe_damage_ability(unit: CombatUnit, ability: AbilityData, ability
 
 	var total_damage = 0
 	var targets_hit = 0
+	var any_crit = false
 
 	for enemy in alive_enemies:
 		var raw_damage = _calculate_ability_damage(unit, ability)
 		var actual_damage: int
+
 		if ability.armor_piercing:
-			actual_damage = enemy.take_damage(raw_damage, "true")
+			var hit = _apply_pre_hit(unit, enemy, raw_damage, "true")
+			if hit["evaded"]:
+				print("[Ability] %s caster=%s target=%s EVADED (AoE)" % [
+					ability.ability_id, unit.display_name, enemy.display_name])
+				continue
+			if hit["was_crit"]:
+				any_crit = true
+			actual_damage = enemy.take_damage(hit["raw_damage"], "true")
 		else:
-			actual_damage = enemy.take_damage(raw_damage, ability.damage_type)
+			var hit = _apply_pre_hit(unit, enemy, raw_damage, ability.damage_type)
+			if hit["evaded"]:
+				print("[Ability] %s caster=%s target=%s EVADED (AoE)" % [
+					ability.ability_id, unit.display_name, enemy.display_name])
+				continue
+			if hit["was_crit"]:
+				any_crit = true
+			actual_damage = enemy.take_damage(hit["raw_damage"], ability.damage_type, hit["armor_pen"])
+
+		_apply_post_hit(unit, enemy, actual_damage, ability.damage_type)
 		total_damage += actual_damage
 		targets_hit += 1
 
@@ -1670,6 +1995,7 @@ func _execute_aoe_damage_ability(unit: CombatUnit, ability: AbilityData, ability
 	var action = CombatAction.create_ability_attack(unit, alive_enemies[0], ability.ability_id, ability.display_name, total_damage)
 	action.is_aoe = true
 	action.targets_hit = targets_hit
+	action.was_critical = any_crit
 	_pending_actions.append(action)
 	_result.add_action(action)
 	action_performed.emit(action)
@@ -1691,6 +2017,7 @@ func _execute_aoe_damage_ability(unit: CombatUnit, ability: AbilityData, ability
 			_result.add_action(death_action)
 			action_performed.emit(death_action)
 			_trigger_on_kill_passives(unit, enemy.source_id)
+			_check_tag_effects(unit, "on_kill")
 
 
 ## Execute a heal-type ability (natures_grace).
@@ -1761,12 +2088,23 @@ func _execute_buff_ability(unit: CombatUnit, ability: AbilityData, ability_type:
 
 	# Apply buff using tracking system (duration-based expiry)
 	var duration = ability.buff_duration if ability.buff_duration > 0 else 99  # 0 = permanent for combat
-	target.apply_buff(ability.ability_id, ability.buff_stats, duration)
+	if not ability.buff_stats.is_empty():
+		target.apply_buff(ability.ability_id, ability.buff_stats, duration)
+
+	# Apply shield if ability has shield_value
+	if ability.shield_value > 0:
+		var shield_dur: int = ability.shield_duration if ability.shield_duration > 0 else 2
+		target.apply_shield(ability.shield_value, shield_dur)
+
+	# Apply reflect if ability has reflect_percent
+	if ability.reflect_percent > 0:
+		var ref_dur: int = ability.shield_duration if ability.shield_duration > 0 else 2
+		target.apply_reflect(ability.reflect_percent, ref_dur)
 
 	# Log in required format
-	print("[Ability] %s caster=%s target=%s buff=%s duration=%d" % [
+	print("[Ability] %s caster=%s target=%s buff=%s shield=%d reflect=%d duration=%d" % [
 		ability.ability_id, unit.display_name, target.display_name,
-		JSON.stringify(ability.buff_stats), duration])
+		JSON.stringify(ability.buff_stats), ability.shield_value, ability.reflect_percent, duration])
 
 	# Build description for UI action
 	var buff_desc_parts: Array[String] = []
@@ -1778,6 +2116,10 @@ func _execute_buff_ability(unit: CombatUnit, ability: AbilityData, ability_type:
 		buff_desc_parts.append("+%d SPD" % int(ability.buff_stats.get("speed", 0)))
 	if ability.buff_stats.has("health"):
 		buff_desc_parts.append("+%d HP" % int(ability.buff_stats.get("health", 0)))
+	if ability.shield_value > 0:
+		buff_desc_parts.append("Shield %d" % ability.shield_value)
+	if ability.reflect_percent > 0:
+		buff_desc_parts.append("Reflect %d%%" % ability.reflect_percent)
 
 	var buff_desc = ", ".join(buff_desc_parts)
 	if ability.buff_duration > 0:
@@ -1862,12 +2204,21 @@ func _execute_aoe_buff_ability(unit: CombatUnit, ability: AbilityData, ability_t
 		duration = ability.buff_duration if ability.buff_duration > 0 else 3
 
 	for ally in alive_allies:
-		ally.apply_buff(ability.ability_id, buff_stats, duration)
+		if not buff_stats.is_empty():
+			ally.apply_buff(ability.ability_id, buff_stats, duration)
+		# Apply shield to each ally if ability has shield_value
+		if ability.shield_value > 0:
+			var shield_dur: int = ability.shield_duration if ability.shield_duration > 0 else 2
+			ally.apply_shield(ability.shield_value, shield_dur)
+		# Apply reflect to each ally if ability has reflect_percent
+		if ability.reflect_percent > 0:
+			var ref_dur: int = ability.shield_duration if ability.shield_duration > 0 else 2
+			ally.apply_reflect(ability.reflect_percent, ref_dur)
 		targets_buffed += 1
 
-		print("[Ability] %s caster=%s target=%s buff=%s duration=%d (AoE %d/%d)" % [
+		print("[Ability] %s caster=%s target=%s buff=%s shield=%d reflect=%d duration=%d (AoE %d/%d)" % [
 			ability.ability_id, unit.display_name, ally.display_name,
-			JSON.stringify(buff_stats), duration, targets_buffed, alive_allies.size()])
+			JSON.stringify(buff_stats), ability.shield_value, ability.reflect_percent, duration, targets_buffed, alive_allies.size()])
 
 	# Create action for UI
 	var buff_desc = ", ".join(buff_stats.keys().map(func(k): return "+%d %s" % [buff_stats[k], k.to_upper()]))
@@ -2023,12 +2374,24 @@ func _execute_drain_ability(unit: CombatUnit, ability: AbilityData, ability_type
 	if damage_target == null:
 		return
 
-	# Deal damage
+	# Deal damage (with evasion/crit/armor_pen)
 	var raw_damage = _calculate_ability_damage(unit, ability)
-	var actual_damage = damage_target.take_damage(raw_damage, ability.damage_type)
+	var hit = _apply_pre_hit(unit, damage_target, raw_damage, ability.damage_type)
+	if hit["evaded"]:
+		var action = CombatAction.create_ability_attack(unit, damage_target, ability.ability_id, ability.display_name, 0)
+		action.was_evaded = true
+		_pending_actions.append(action)
+		_result.add_action(action)
+		action_performed.emit(action)
+		_put_ability_on_cooldown(unit, ability_type)
+		return
 
-	print("[Ability] %s caster=%s damage_target=%s dmg=%d" % [
-		ability.ability_id, unit.display_name, damage_target.display_name, actual_damage])
+	var actual_damage = damage_target.take_damage(hit["raw_damage"], ability.damage_type, hit["armor_pen"])
+	_apply_post_hit(unit, damage_target, actual_damage, ability.damage_type)
+
+	print("[Ability] %s caster=%s damage_target=%s dmg=%d%s" % [
+		ability.ability_id, unit.display_name, damage_target.display_name, actual_damage,
+		" (CRIT)" if hit["was_crit"] else ""])
 
 	# Find heal target
 	var heal_target: CombatUnit = null
@@ -2071,6 +2434,7 @@ func _execute_drain_ability(unit: CombatUnit, ability: AbilityData, ability_type
 		_result.add_action(death_action)
 		action_performed.emit(death_action)
 		_trigger_on_kill_passives(unit, damage_target.source_id)
+		_check_tag_effects(unit, "on_kill")
 
 
 ## Execute a heal ability that also cleanses debuffs (cleansing_wave).
@@ -2115,7 +2479,7 @@ func _execute_cleanse_heal_ability(unit: CombatUnit, ability: AbilityData, abili
 ## Returns array of cleansed status IDs.
 func _cleanse_debuffs_from_unit(unit: CombatUnit, count: int) -> Array:
 	var cleansed: Array = []
-	var debuff_ids = ["poisoned", "bleeding", "burning", "stunned", "weakened", "slowed"]
+	var debuff_ids = ["poisoned", "bleeding", "burning", "stun", "weakened", "slowed"]
 
 	var i = 0
 	while i < unit.active_statuses.size() and cleansed.size() < count:
@@ -2173,9 +2537,21 @@ func _execute_basic_attack_fallback(unit: CombatUnit) -> void:
 		return
 
 	var eff_atk = unit.get_effective_attack()
-	var actual_damage = target.take_damage(eff_atk, "physical")
+	var hit = _apply_pre_hit(unit, target, eff_atk, "physical")
+	if hit["evaded"]:
+		var action = CombatAction.create_attack(unit, target, 0, false)
+		action.was_evaded = true
+		action.message = "%s's attack was evaded by %s!" % [unit.display_name, target.display_name]
+		_pending_actions.append(action)
+		_result.add_action(action)
+		action_performed.emit(action)
+		return
+
+	var actual_damage = target.take_damage(hit["raw_damage"], "physical", hit["armor_pen"])
+	_apply_post_hit(unit, target, actual_damage, "physical")
 
 	var action = CombatAction.create_attack(unit, target, actual_damage, false)
+	action.was_critical = hit["was_crit"]
 	_pending_actions.append(action)
 	_result.add_action(action)
 	action_performed.emit(action)
@@ -2190,6 +2566,7 @@ func _execute_basic_attack_fallback(unit: CombatUnit) -> void:
 		_result.add_action(death_action)
 		action_performed.emit(death_action)
 		_trigger_on_kill_passives(unit, target.source_id)
+		_check_tag_effects(unit, "on_kill")
 
 
 func _check_combat_end() -> bool:
@@ -2233,7 +2610,8 @@ func _check_combat_end() -> bool:
 					drop_id = item.get("item_id", item.get("template_id", ""))
 					drop_quality = int(item.get("quality_tier", 0))
 				if drop_id != "":
-					GameContext.acquire_item_with_recipient(drop_id, 1, drop_quality, "combat", drop_affix)
+					var drop_qty: int = item.quantity if item is ItemInstance else int(item.get("qty", item.get("quantity", 1)))
+					GameContext.acquire_item_with_recipient(drop_id, drop_qty, drop_quality, "combat", drop_affix)
 			# Apply dungeon floor bonus using SNAPSHOT values (not mutable GameContext state)
 			GameContext.apply_dungeon_floor_reward_snapshot(
 				_encounter_dungeon_id,
@@ -2436,7 +2814,7 @@ func _remove_stun_status(unit: CombatUnit) -> Array:
 	while i < unit.active_statuses.size():
 		var status = unit.active_statuses[i]
 		var status_id = status.get("id", "")
-		if status_id == "stunned":
+		if status_id == "stun":
 			removed.append(status_id)
 			unit.active_statuses.remove_at(i)
 		else:
@@ -2931,9 +3309,26 @@ func _execute_basic_attack_player(unit: CombatUnit, target: CombatUnit) -> void:
 		return
 
 	var eff_atk = unit.get_effective_attack()
-	var actual_damage = target.take_damage(eff_atk, "physical")
+	var hit = _apply_pre_hit(unit, target, eff_atk, "physical")
+	if hit["evaded"]:
+		var action = CombatAction.create_attack(unit, target, 0, false)
+		action.was_evaded = true
+		action.message = "%s's attack was evaded by %s!" % [unit.display_name, target.display_name]
+		action.round_number = _current_round
+		action.turn_number = _current_turn
+		_pending_actions.append(action)
+		_result.add_action(action)
+		action_performed.emit(action)
+		return
+
+	var actual_damage = target.take_damage(hit["raw_damage"], "physical", hit["armor_pen"])
+	_apply_post_hit(unit, target, actual_damage, "physical")
+
+	# Tag effects: on_attack (player basic attack)
+	_check_tag_effects(unit, "on_attack", {"target": target})
 
 	var action = CombatAction.create_attack(unit, target, actual_damage, false)
+	action.was_critical = hit["was_crit"]
 	action.round_number = _current_round
 	action.turn_number = _current_turn
 	_pending_actions.append(action)
@@ -2949,6 +3344,7 @@ func _execute_basic_attack_player(unit: CombatUnit, target: CombatUnit) -> void:
 		_result.add_action(death_action)
 		action_performed.emit(death_action)
 		_trigger_on_kill_passives(unit, target.source_id)
+		_check_tag_effects(unit, "on_kill")
 
 
 ## Execute an equipment ability (T4 gear-granted ability).
@@ -3142,6 +3538,7 @@ func _continue_to_next_turn() -> void:
 			_tick_all_statuses()
 			_turn_queue.start_new_round()
 			_apply_round_start_passives()
+			_process_round_start_tag_effects()
 			_unit_remaining_actions.clear()
 			round_ended.emit(_current_round)
 
@@ -3174,3 +3571,254 @@ func _continue_to_next_turn() -> void:
 			_process_unit_turn_step(unit)
 			if _check_combat_end():
 				return
+
+
+# ============================================================================
+# COMBAT TAG EFFECTS (T4 Regional Set Bonuses)
+# ============================================================================
+
+## Central trigger: check all combat_tag_effects on a unit for a given trigger.
+## context: {"target": CombatUnit, "attacker": CombatUnit} depending on trigger.
+func _check_tag_effects(unit: CombatUnit, trigger_name: String, context: Dictionary = {}) -> void:
+	if unit.combat_tag_effects.is_empty():
+		return
+	for effect in unit.combat_tag_effects:
+		if effect.get("trigger", "") != trigger_name:
+			continue
+		var item_id: String = effect.get("item_id", "")
+
+		# on_low_hp: check HP threshold
+		if trigger_name == "on_low_hp":
+			var threshold: float = effect.get("threshold", 0.25)
+			var hp_pct: float = float(unit.current_health) / float(unit.max_health)
+			if hp_pct > threshold:
+				continue
+
+		# Handle "once" flag (on_low_hp effects)
+		if effect.get("once", false):
+			if unit._triggered_once_effects.has(item_id):
+				continue
+
+		# Roll chance (JSON 0.0-1.0; default 1.0 = always)
+		var chance: float = effect.get("chance", 1.0)
+		if chance < 1.0:
+			if not SeededRNG.roll_chance(chance * 100.0, _rng):
+				continue
+
+		# Mark "once" effects as triggered
+		if effect.get("once", false):
+			unit._triggered_once_effects[item_id] = true
+
+		_execute_tag_effect(unit, effect, context)
+
+
+## Execute a single combat tag effect that passed its chance roll.
+func _execute_tag_effect(unit: CombatUnit, effect: Dictionary, context: Dictionary) -> void:
+	var effect_type: String = effect.get("effect", "")
+	match effect_type:
+		"apply_status":
+			_tag_effect_apply_status(unit, effect, context)
+		"damage_random_enemy":
+			_tag_effect_damage_random_enemy(unit, effect)
+		"buff_stat":
+			_tag_effect_buff_stat(unit, effect)
+		"heal":
+			_tag_effect_heal(unit, effect)
+		"reduce_cooldown":
+			_tag_effect_reduce_cooldown(unit, effect)
+		_:
+			push_warning("[TagEffect] Unknown effect type: %s" % effect_type)
+
+
+## apply_status: Apply a status to a target based on trigger context.
+func _tag_effect_apply_status(unit: CombatUnit, effect: Dictionary, context: Dictionary) -> void:
+	var status_id: String = effect.get("status", "")
+	var item_id: String = effect.get("item_id", "")
+	if status_id == "":
+		return
+
+	# Determine target based on trigger
+	var target: CombatUnit = null
+	var trigger: String = effect.get("trigger", "")
+	match trigger:
+		"on_attack":
+			target = context.get("target")
+		"on_melee_hit_received":
+			target = context.get("attacker")
+		_:
+			target = context.get("target")
+
+	if target == null or not target.is_alive:
+		return
+
+	# Check resist/immunity
+	var resist_result = target.would_block_status(status_id)
+	if resist_result["blocked"]:
+		print("[TagEffect] blocked unit=%s target=%s status=%s reason=%s item=%s" % [
+			unit.display_name, target.display_name, status_id, resist_result["reason"], item_id])
+		return
+
+	var duration: int = int(effect.get("duration", 2))
+	duration += resist_result["duration_delta"]
+	duration = maxi(1, duration)
+	var internal_duration = _compute_internal_status_duration(duration)
+
+	target.apply_status_v1(status_id, internal_duration, "tag_" + item_id)
+	status_changed.emit(target.unit_id)
+
+	print("[TagEffect] apply_status unit=%s target=%s status=%s duration=%d item=%s" % [
+		unit.display_name, target.display_name, status_id, duration, item_id])
+
+	var action = CombatAction.new()
+	action.action_type = CombatAction.ActionType.BUFF
+	action.actor_id = unit.unit_id
+	action.actor_name = unit.display_name
+	action.target_id = target.unit_id
+	action.target_name = target.display_name
+	action.status_applied = status_id
+	action.message = "%s: %s!" % [_get_tag_effect_label(item_id), status_id.capitalize()]
+	action_performed.emit(action)
+
+
+## damage_random_enemy: Deal flat damage to a random alive enemy.
+func _tag_effect_damage_random_enemy(unit: CombatUnit, effect: Dictionary) -> void:
+	var damage_val: int = int(effect.get("damage", 0))
+	var dmg_type: String = effect.get("damage_type", "physical")
+	var item_id: String = effect.get("item_id", "")
+	if damage_val <= 0:
+		return
+
+	var enemies: Array = _enemy_units if unit.team == CombatUnit.Team.PLAYER else _player_units
+	var alive: Array = enemies.filter(func(e): return e.is_alive)
+	if alive.is_empty():
+		return
+
+	var target: CombatUnit = alive[_rng.randi() % alive.size()]
+	var actual: int = target.take_damage(damage_val, dmg_type)
+
+	print("[TagEffect] damage_random unit=%s target=%s dmg=%d type=%s item=%s" % [
+		unit.display_name, target.display_name, actual, dmg_type, item_id])
+
+	var action = CombatAction.new()
+	action.action_type = CombatAction.ActionType.BUFF
+	action.actor_id = unit.unit_id
+	action.actor_name = unit.display_name
+	action.target_id = target.unit_id
+	action.target_name = target.display_name
+	action.damage_dealt = actual
+	action.message = "%s: %d %s dmg!" % [_get_tag_effect_label(item_id), actual, dmg_type]
+	action_performed.emit(action)
+
+	if not target.is_alive:
+		var death_action = CombatAction.create_death(target)
+		_pending_actions.append(death_action)
+		_result.add_action(death_action)
+		action_performed.emit(death_action)
+		# Trigger on_kill passives (but NOT on_kill tag effects to prevent infinite loops)
+		_trigger_on_kill_passives(unit, target.source_id)
+
+
+## buff_stat: Apply a temporary stat buff to self.
+func _tag_effect_buff_stat(unit: CombatUnit, effect: Dictionary) -> void:
+	var stat: String = effect.get("stat", "")
+	var value: int = int(effect.get("value", 0))
+	var duration: int = int(effect.get("duration", 99))
+	var item_id: String = effect.get("item_id", "")
+	if stat == "" or value == 0:
+		return
+
+	var buff_stats: Dictionary = {stat: value}
+	unit.apply_buff("tag_" + item_id, buff_stats, duration)
+
+	print("[TagEffect] buff_stat unit=%s stat=%s value=%d duration=%d item=%s" % [
+		unit.display_name, stat, value, duration, item_id])
+
+	var action = CombatAction.new()
+	action.action_type = CombatAction.ActionType.BUFF
+	action.actor_id = unit.unit_id
+	action.actor_name = unit.display_name
+	action.target_id = unit.unit_id
+	action.target_name = unit.display_name
+	action.message = "%s: +%d %s" % [_get_tag_effect_label(item_id), value, stat.to_upper()]
+	action_performed.emit(action)
+
+
+## heal: Heal self by flat value.
+func _tag_effect_heal(unit: CombatUnit, effect: Dictionary) -> void:
+	var value: int = int(effect.get("value", 0))
+	var item_id: String = effect.get("item_id", "")
+	if value <= 0 or not unit.is_alive:
+		return
+
+	var actual: int = unit.heal(value)
+	if actual > 0:
+		print("[TagEffect] heal unit=%s value=%d actual=%d item=%s" % [
+			unit.display_name, value, actual, item_id])
+
+		var action = CombatAction.new()
+		action.action_type = CombatAction.ActionType.BUFF
+		action.actor_id = unit.unit_id
+		action.actor_name = unit.display_name
+		action.target_id = unit.unit_id
+		action.target_name = unit.display_name
+		action.healing_done = actual
+		action.message = "%s: +%d HP" % [_get_tag_effect_label(item_id), actual]
+		action_performed.emit(action)
+
+
+## reduce_cooldown: Reduce all ability cooldowns by value.
+func _tag_effect_reduce_cooldown(unit: CombatUnit, effect: Dictionary) -> void:
+	var value: int = int(effect.get("value", 0))
+	var item_id: String = effect.get("item_id", "")
+	if value <= 0:
+		return
+
+	var reduced_any: bool = false
+	if unit.weapon_ability_cooldown > 0:
+		unit.weapon_ability_cooldown = maxi(0, unit.weapon_ability_cooldown - value)
+		reduced_any = true
+	if unit.ability_a_cooldown > 0:
+		unit.ability_a_cooldown = maxi(0, unit.ability_a_cooldown - value)
+		reduced_any = true
+	if unit.ability_b_cooldown > 0:
+		unit.ability_b_cooldown = maxi(0, unit.ability_b_cooldown - value)
+		reduced_any = true
+	for idx in range(unit.equip_ability_cooldowns.size()):
+		if unit.equip_ability_cooldowns[idx] > 0:
+			unit.equip_ability_cooldowns[idx] = maxi(0, unit.equip_ability_cooldowns[idx] - value)
+			reduced_any = true
+
+	if reduced_any:
+		print("[TagEffect] reduce_cooldown unit=%s value=%d item=%s" % [
+			unit.display_name, value, item_id])
+
+		var action = CombatAction.new()
+		action.action_type = CombatAction.ActionType.BUFF
+		action.actor_id = unit.unit_id
+		action.actor_name = unit.display_name
+		action.target_id = unit.unit_id
+		action.target_name = unit.display_name
+		action.message = "%s: CD -%d" % [_get_tag_effect_label(item_id), value]
+		action_performed.emit(action)
+
+
+## Get short display label for tag effect pop text.
+func _get_tag_effect_label(item_id: String) -> String:
+	var template = DataRegistry.get_item_template(item_id)
+	if template != null:
+		return template.display_name
+	return item_id
+
+
+## Fire combat_start tag effects for all player units.
+func _process_combat_start_tag_effects() -> void:
+	for unit in _player_units:
+		if unit.is_alive:
+			_check_tag_effects(unit, "combat_start")
+
+
+## Fire round_start tag effects for all alive player units.
+func _process_round_start_tag_effects() -> void:
+	for unit in _player_units:
+		if unit.is_alive:
+			_check_tag_effects(unit, "round_start")

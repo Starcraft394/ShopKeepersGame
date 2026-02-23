@@ -12,12 +12,14 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "attack": 7
+    "attack": 7,
+    "thorns": 6
   },
   "stat_bonuses": {
     "attack": 7,
     "speed": 2,
-    "health": 15
+    "health": 15,
+    "thorns": 6
   },
   "ability_id": "se_echo_amplify",
   "combat_tag": "temporal_echo",
@@ -25,7 +27,7 @@
     "trigger": "on_ability_use",
     "effect": "reduce_cooldown",
     "value": 1,
-    "chance": 0.2
+    "chance": 0.15
   },
   "allowed_affixes": [],
   "min_affixes": 0,

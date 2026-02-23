@@ -11,11 +11,14 @@
   "tier": 2,
   "min_quality": 0,
   "max_quality": 3,
-  "base_stats": {},
+  "base_stats": {
+    "armor_penetration": 2
+  },
   "stat_bonuses": {
     "attack": 1,
     "speed": 1,
-    "health": 8
+    "health": 8,
+    "armor_penetration": 2
   },
   "allowed_affixes": [],
   "min_affixes": 0,

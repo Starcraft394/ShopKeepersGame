@@ -12,11 +12,15 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "attack": 15
+    "attack": 15,
+    "armor_penetration": 6,
+    "crit_chance": 13
   },
   "stat_bonuses": {
     "attack": 15,
-    "speed": 4
+    "speed": 4,
+    "armor_penetration": 6,
+    "crit_chance": 13
   },
   "ability_id": "se_starfall_rain",
   "combat_tag": "temporal_echo",
@@ -24,7 +28,7 @@
     "trigger": "on_ability_use",
     "effect": "reduce_cooldown",
     "value": 1,
-    "chance": 0.2
+    "chance": 0.15
   },
   "allowed_affixes": [],
   "min_affixes": 0,

@@ -12,11 +12,13 @@
   "max_quality": 3,
   "category": "equipment",
   "base_stats": {
-    "defense": 6
+    "defense": 6,
+    "evasion": 15
   },
   "stat_bonuses": {
     "defense": 6,
-    "health": 12
+    "health": 12,
+    "evasion": 15
   },
   "passive_id": "fm_passive_potency",
   "combat_tag": "spore_shield",

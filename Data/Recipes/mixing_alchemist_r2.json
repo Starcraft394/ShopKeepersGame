@@ -24,6 +24,14 @@
       "output_id": "fortification_brew",
       "output_qty": 1,
       "required_tier": 3
+    },
+    {
+      "input_a": "boss_trophy_fungalmire",
+      "input_b": "spore_cluster",
+      "input_c": "fungal_fiber",
+      "output_id": "fm_spore_elixir",
+      "output_qty": 1,
+      "required_tier": 4
     }
   ]
 }

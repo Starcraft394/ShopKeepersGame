@@ -12,11 +12,13 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "attack": 12
+    "attack": 12,
+    "evasion": 12
   },
   "stat_bonuses": {
     "attack": 12,
-    "speed": 4
+    "speed": 4,
+    "evasion": 12
   },
   "ability_id": "ss_tidal_volley",
   "combat_tag": "swift_current",

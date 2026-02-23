@@ -30,7 +30,7 @@
           "text": "A beam collapses as you pull at the tools, sending a shower of hot coals across the floor. You scramble clear, singed but alive.",
           "effects": [
             { "type": "damage_hero", "amount": 7 },
-            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" },
+            { "type": "apply_status", "status_id": "burning", "duration": 2, "target": "random_hero" },
             { "type": "add_gold_range", "min": 4, "max": 8 }
           ]
         }
@@ -59,10 +59,11 @@
         },
         {
           "weight": 30,
-          "text": "The forge detonates! Ancient wards, weakened by time, discharge in a blast of fire and shrapnel. The ruin collapses inward.",
+          "text": "The forge detonates! Ancient wards, weakened by time, discharge in a blast of fire and shrapnel. The ruin collapses inward — but a few heated ingots tumble free.",
           "effects": [
             { "type": "damage_party", "amount": 8 },
-            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "party" }
+            { "type": "apply_status", "status_id": "burning", "duration": 2, "target": "party" },
+            { "type": "add_gold_range", "min": 4, "max": 8 }
           ]
         }
       ]

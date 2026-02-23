@@ -11,11 +11,16 @@
   "tier": 3,
   "min_quality": 0,
   "max_quality": 3,
-  "base_stats": {},
+  "base_stats": {
+    "armor_penetration": 4,
+    "crit_chance": 10
+  },
   "stat_bonuses": {
     "attack": 1,
     "speed": 2,
-    "health": 12
+    "health": 12,
+    "armor_penetration": 4,
+    "crit_chance": 10
   },
   "allowed_affixes": [],
   "min_affixes": 0,

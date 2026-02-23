@@ -13,6 +13,7 @@ Repo Auditor → Implementer → UI Refiner (optional) → Data Curator (optiona
                                                     → Sound Director (optional)
                                                     → Story Architect (optional)
                                                     → Balancer (optional)
+                                                    → Heroes Agent (optional)
                                                     → Gameplay Guide (optional)
 ```
 
@@ -41,6 +42,9 @@ Repo Auditor → Implementer → UI Refiner (optional) → Data Curator (optiona
 | Balancer | `balancer.md` | Abilities, passives, equipment balance, reference file |
 | Gameplay Guide | `gameplay-guide.md` | Game guide, tutorials, onboarding, help text |
 | Sound Director | `sound-director.md` | Audio asset tracking, BGM replacement, SFX integration |
+| Icon Mapper | `icon-mapper.md` | Icon assignment, ledger generation, recolour pipeline |
+| Monster Curator | `monster-curator.md` | Monster manifest, roles, abilities, AI tiers, stat distributions |
+| Heroes Agent | `heroes-agent.md` | Hero reference, class kits, race balance, build paths, stat synergies |
 
 ## Usage
 
@@ -58,6 +62,7 @@ Or reference the agent by saying:
 - "Use the Sound Director agent to replace BGM tracks"
 - "Use the Sound Director agent to map SFX to combat actions"
 - "Use the Gameplay Guide agent to update the game guide"
+- "Use the Heroes Agent to audit class balance and build paths"
 
 ## Keyword → Agent Lookup
 
@@ -74,6 +79,9 @@ When you mention a topic, these keywords auto-map to the relevant agent(s):
 | `ui`, `layout`, `panel`, `button`, `theme`, `display` | UI Refiner |
 | `json`, `schema`, `validate`, `gating`, `unlock` | Data Curator |
 | `manifest`, `html reference`, `item count`, `slot coverage` | Item Curator |
+| `monster`, `creature`, `enemy`, `encounter`, `ai tier`, `combat role` | Monster Curator + Balancer |
+| `hero`, `class`, `race`, `build path`, `archetype`, `kit`, `class balance` | Heroes Agent + Balancer |
+| `icon`, `ledger`, `recolour`, `icon_path`, `icon_hint` | Icon Mapper + Art Director |
 | `audit`, `status`, `tech debt`, `milestone`, `architecture` | Repo Auditor |
 | `implement`, `build`, `fix bug`, `add feature`, `test` | Implementer |
 | `tier`, `economy`, `stat curve` | Balancer |

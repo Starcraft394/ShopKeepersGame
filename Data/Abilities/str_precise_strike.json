@@ -10,5 +10,5 @@
   "base_damage": 12,
   "damage_type": "physical",
   "attack_scaling": 1.2,
-  "cooldown": 3
+  "cooldown": 2
 }

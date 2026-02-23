@@ -10,7 +10,7 @@
 # Run tests
 DevTools\run_headless.bat
 
-# Current test count: 157 tests (135 unit + 22 playtest)
+# Current test count: 264 tests (242 unit + 22 validation)
 # All tests must pass before committing
 ```
 
@@ -65,6 +65,12 @@ See `.claude/agents/` for specialized agent prompts:
 | **Data Curator** | JSON validation, content extension |
 | **Art Director** | Art asset tracking, integration, consistency |
 | **Story Architect** | Narrative content, lore, campaign arcs, event text |
+| **Balancer** | Game balance analysis, stat curves, ability tuning |
+| **Gameplay Guide** | Player guide, tutorials, onboarding |
+| **Monster Curator** | Monster manifest, roles, abilities, AI tiers |
+| **Sound Director** | Audio assets, BGM, SFX integration |
+| **Icon Mapper** | Icon assignment, ledger, recolour pipeline |
+| **Item Curator** | Item manifest, HTML reference, slot coverage |
 
 ## Skills
 
@@ -91,8 +97,19 @@ See `.claude/skills/godot-gamedev/SKILL.md` for the full skill definition.
 - Manage Gear popup with bag inventory, remove buttons, and "Add Item to Bag" stash selector
 - Storage "To Bag" button for consumables with hero chooser and capacity indicators
 - Camp flee removed (flee only mid-combat on hero death; survivors drop all equipment and bag items)
-- Tutorial system: 11 tutorials with TutorialOverlay (welcome, dungeon, combat, camp, events, extraction, facilities, equipment facilities, training hall, production, manage roster)
-- 157 passing headless tests
+- Tutorial system: 12 tutorials with TutorialOverlay (welcome, dungeon, combat, camp, events, extraction, facilities, equipment facilities, training hall, production, manage roster, party bar)
+- Monster ability system: 18 abilities, combat roles (melee/ranged/mage), AI tier-based selection
+- Campaign dialog system: 32 dialogs across 7 regions with overlay UI
+- Event v2 system: weighted random outcomes per choice
+- BookUI: animated book overlay (Bestiary, recipe books, handbook)
+- RPG UI Pack: HP bars, dividers, banners, slot art
+- Speed multi-actions: 40+ SPD = 2 actions, 80+ SPD = 3 actions
+- Stock Shop: two-state allocation/refresh flow
+- ESC closeable stack: LIFO UI management
+- Text size scaling system
+- HOT (heal-over-time) mechanic
+- 430 items, 112 monsters, 80 abilities, 66 passives, 15 classes, 9 races
+- 234 headless tests (212 unit + 22 validation), 233 pass, 1 expected failure
 
 ### Facility Tier System
 - **Storage**: Capacity-gated stash (base 30 + 5 per Storage tier). `add_run_item()` returns bool, blocks when full.

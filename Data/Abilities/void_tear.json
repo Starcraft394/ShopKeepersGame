@@ -10,7 +10,7 @@
   "base_damage": 16,
   "damage_type": "void",
   "attack_scaling": 1.2,
-  "cooldown": 2,
+  "cooldown": 3,
   "applies_status_id": "",
   "status_stacks": 0
 }

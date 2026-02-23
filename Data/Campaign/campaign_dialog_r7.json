@@ -10,7 +10,7 @@
       "display_type": "full_screen_overlay",
       "speaker_id": "null_merchant",
       "speaker_name": "The Null Merchant",
-      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_GoblinOrc/PNG/Simple_color/Icon40.png",
+      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_GoblinOrc/PNG/Transperent/Icon40.png",
       "lines": [
         "You perceive an ending. That is... close enough to what this is.",
         "The Sovereign waits at the heart. The Grail waits with him.",
@@ -135,7 +135,7 @@
       "display_type": "full_screen_overlay",
       "speaker_id": "null_merchant",
       "speaker_name": "The Null Merchant",
-      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_GoblinOrc/PNG/Simple_color/Icon40.png",
+      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_GoblinOrc/PNG/Transperent/Icon40.png",
       "lines": [
         "Interesting. You broke the cycle. Or did you?",
         "The Sovereign wanted to rewrite the past. The King tried to outrun it. You simply... kept going.",

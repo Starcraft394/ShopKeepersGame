@@ -1,0 +1,16 @@
+{
+  "id": "mon_arcane_bolt",
+  "display_name": "Arcane Bolt",
+  "description": "Hurls a bolt of raw magical energy at the target.",
+  "icon_hint": "swirling blue-purple energy bolt streaking forward",
+  "ability_type": "monster",
+  "source_class_id": "",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 8,
+  "damage_type": "magical",
+  "attack_scaling": 0.5,
+  "cooldown": 3,
+  "applies_status_id": "",
+  "status_stacks": 0
+}

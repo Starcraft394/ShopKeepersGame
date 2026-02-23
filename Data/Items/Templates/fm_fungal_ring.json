@@ -11,10 +11,13 @@
   "tier": 3,
   "min_quality": 0,
   "max_quality": 3,
-  "base_stats": {},
+  "base_stats": {
+    "evasion": 10
+  },
   "stat_bonuses": {
     "defense": 2,
-    "health": 12
+    "health": 12,
+    "evasion": 10
   },
   "allowed_affixes": [],
   "min_affixes": 0,

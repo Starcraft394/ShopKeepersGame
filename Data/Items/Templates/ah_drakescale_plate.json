@@ -13,12 +13,14 @@
   "max_quality": 3,
   "base_stats": {
     "defense": 13,
-    "speed": -2
+    "speed": -2,
+    "thorns": 7
   },
   "stat_bonuses": {
     "defense": 13,
     "speed": -2,
-    "health": 28
+    "health": 28,
+    "thorns": 7
   },
   "passive_id": "ah_passive_burn_bonus",
   "combat_tag": "burning_edge",
@@ -26,7 +28,7 @@
     "trigger": "on_attack",
     "effect": "apply_status",
     "status": "burning",
-    "chance": 0.1
+    "chance": 0.15
   },
   "allowed_affixes": [],
   "min_affixes": 0,

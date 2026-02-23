@@ -188,9 +188,35 @@ func _create_facility_panel(facility_id: String) -> Dictionary:
 	else:
 		panel.theme = preload("res://Themes/game_theme.tres")
 
+	# Region-tinted panel background for text readability
+	var panel_body_style = StyleBoxFlat.new()
+	panel_body_style.bg_color = _region_palette.get("bg_dark", Color(0.14, 0.12, 0.10, 0.95))
+	panel_body_style.border_color = _region_palette.get("border", Color(0.35, 0.30, 0.22, 0.8))
+	panel_body_style.set_border_width_all(1)
+	panel_body_style.set_corner_radius_all(4)
+	panel_body_style.set_content_margin_all(4)
+	panel.add_theme_stylebox_override("panel", panel_body_style)
+
 	# Stagger position so panels don't stack exactly
 	var offset_idx = _open_panels.size()
 	panel.position = Vector2(80 + offset_idx * 30, 40 + offset_idx * 30)
+
+	# Interior background image (if available for this facility type)
+	var facility_for_bg = DataRegistry.get_facility(facility_id) if DataRegistry.has_method("get_facility") else null
+	var bg_type: String = facility_for_bg.facility_type if facility_for_bg != null else ""
+	var bg_path: String = "res://Assets/Backgrounds/%s_interior.png" % bg_type
+	if bg_type != "" and ResourceLoader.exists(bg_path):
+		var bg_tex: Texture2D = ResourceLoader.load(bg_path)
+		if bg_tex != null:
+			var bg_rect = TextureRect.new()
+			bg_rect.name = "PanelBackground"
+			bg_rect.texture = bg_tex
+			bg_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			bg_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+			bg_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+			bg_rect.modulate = Color(1, 1, 1, 0.3)
+			bg_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			panel.add_child(bg_rect)
 
 	# Main content VBox
 	var main_vbox = VBoxContainer.new()
@@ -615,6 +641,12 @@ func _craftpix_wrap_section(parent: VBoxContainer, section_name: String, header_
 	var panel := PanelContainer.new()
 	panel.name = section_name + "Panel"
 	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	# Region-tinted section background (slightly lighter than main panel)
+	var section_style = StyleBoxFlat.new()
+	section_style.bg_color = _region_palette.get("bg_medium", Color(0.15, 0.18, 0.22, 0.9))
+	section_style.set_corner_radius_all(3)
+	section_style.set_content_margin_all(2)
+	panel.add_theme_stylebox_override("panel", section_style)
 
 	var inner_margin := MarginContainer.new()
 	inner_margin.add_theme_constant_override("margin_left", 8)
@@ -860,7 +892,7 @@ func _populate_stash_list() -> void:
 	if aggregated.size() == 0:
 		var empty_label = Label.new()
 		empty_label.text = "(empty)"
-		empty_label.modulate = Color(0.6, 0.6, 0.6, 1)
+		empty_label.modulate = Color(0.78, 0.78, 0.78, 1)
 		stash_list_vbox.add_child(empty_label)
 	else:
 		for key in aggregated.keys():
@@ -900,14 +932,9 @@ func _populate_stash_list() -> void:
 					var bonuses = tpl.get_stat_bonuses_with_quality(entry.quality_tier, region_bonus)
 					if not bonuses.is_empty():
 						var bonus_parts: Array[String] = []
-						if bonuses.get("health", 0) > 0:
-							bonus_parts.append("HP +%d" % bonuses.health)
-						if bonuses.get("attack", 0) > 0:
-							bonus_parts.append("ATK +%d" % bonuses.attack)
-						if bonuses.get("defense", 0) > 0:
-							bonus_parts.append("DEF +%d" % bonuses.defense)
-						if bonuses.get("speed", 0) > 0:
-							bonus_parts.append("SPD +%d" % bonuses.speed)
+						for bk in CombatUnit.STAT_KEYS:
+							if bonuses.get(bk, 0) > 0:
+								bonus_parts.append("%s +%d" % [CombatUnit.STAT_ABBREV.get(bk, bk), bonuses[bk]])
 						if not bonus_parts.is_empty():
 							tooltip_parts.append("Stats (final): %s" % ", ".join(bonus_parts))
 					# Show affix bonus if present
@@ -920,11 +947,8 @@ func _populate_stash_list() -> void:
 						if affix_desc != "":
 							tooltip_parts.append(affix_desc)
 				# Consumable-specific info
-				elif tpl.item_type == "consumable" and tpl.use_effect != "":
-					tooltip_parts.append("Type: Consumable")
-					tooltip_parts.append("Use Effect: %s" % tpl.use_effect.replace("_", " ").capitalize())
-					if tpl.use_value > 0:
-						tooltip_parts.append("Power: %d" % tpl.use_value)
+				elif tpl.use_effect != "":
+					tooltip_parts.append(tpl.get_effect_label())
 				tooltip_parts.append("Sell: %d gold" % tpl.base_value)
 			item_label.tooltip_text = "\n".join(tooltip_parts)
 			item_label.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -1109,7 +1133,7 @@ func _populate_facilities_list() -> void:
 		# No facilities - show placeholder
 		var placeholder = Label.new()
 		placeholder.text = "(no facilities)"
-		placeholder.modulate = Color(0.6, 0.6, 0.6, 1)
+		placeholder.modulate = Color(0.78, 0.78, 0.78, 1)
 		facilities_vbox.add_child(placeholder)
 		return
 
@@ -1292,7 +1316,7 @@ func _create_facility_actions(facility) -> void:
 		_:
 			var info = Label.new()
 			info.text = "(No actions available)"
-			info.modulate = Color(0.6, 0.6, 0.6, 1)
+			info.modulate = Color(0.78, 0.78, 0.78, 1)
 			_facility_actions_container.add_child(info)
 
 
@@ -1347,7 +1371,7 @@ func _build_storage_ui() -> void:
 	var stash_count: int = GameContext.get_current_stash_count()
 	var stash_max: int = GameContext.get_max_stash_capacity()
 	var capacity_label = Label.new()
-	capacity_label.text = "Stash: %d / %d stacks" % [stash_count, stash_max]
+	capacity_label.text = "Stash: %d / %d slots" % [stash_count, stash_max]
 	var ratio: float = float(stash_count) / float(maxi(1, stash_max))
 	if ratio >= 0.9:
 		capacity_label.modulate = Color(1.0, 0.4, 0.4, 1)
@@ -1394,13 +1418,14 @@ func _build_storage_ui() -> void:
 
 	var count_label = Label.new()
 	count_label.text = "Showing %d / %d item stacks" % [filtered_items.size(), stash_items.size()]
+
 	count_label.modulate = Color(0.7, 0.7, 0.7, 1)
 	_facility_actions_container.add_child(count_label)
 
 	if filtered_items.size() == 0:
 		var empty_label = Label.new()
 		empty_label.text = "(No items in this category)"
-		empty_label.modulate = Color(0.6, 0.6, 0.6, 1)
+		empty_label.modulate = Color(0.78, 0.78, 0.78, 1)
 		_facility_actions_container.add_child(empty_label)
 	else:
 		var stash_grid = GridContainer.new()
@@ -1561,14 +1586,9 @@ func _create_stash_item_row(item: Dictionary) -> HBoxContainer:
 			var bonuses = tpl.get_stat_bonuses_with_quality(item.quality_tier, region_bonus)
 			if not bonuses.is_empty():
 				var bonus_parts: Array[String] = []
-				if bonuses.get("health", 0) > 0:
-					bonus_parts.append("HP +%d" % bonuses.health)
-				if bonuses.get("attack", 0) > 0:
-					bonus_parts.append("ATK +%d" % bonuses.attack)
-				if bonuses.get("defense", 0) > 0:
-					bonus_parts.append("DEF +%d" % bonuses.defense)
-				if bonuses.get("speed", 0) > 0:
-					bonus_parts.append("SPD +%d" % bonuses.speed)
+				for bk in CombatUnit.STAT_KEYS:
+					if bonuses.get(bk, 0) > 0:
+						bonus_parts.append("%s +%d" % [CombatUnit.STAT_ABBREV.get(bk, bk), bonuses[bk]])
 				if not bonus_parts.is_empty():
 					tooltip_parts.append("Stats (final): %s" % ", ".join(bonus_parts))
 			# Show affix bonus if present (item may be dict or ItemInstance)
@@ -1607,7 +1627,7 @@ func _create_stash_item_row(item: Dictionary) -> HBoxContainer:
 	# Category tag
 	var cat_label = Label.new()
 	cat_label.text = "(%s)" % item.category
-	cat_label.modulate = Color(0.6, 0.6, 0.6, 1)
+	cat_label.modulate = Color(0.78, 0.78, 0.78, 1)
 	row.add_child(cat_label)
 
 	# v3: Equip button for all equipment items (hero picker flow)
@@ -1670,7 +1690,7 @@ func _build_storage_upgrade_view() -> void:
 			elif tier == current_tier + 1:
 				btn.modulate = Color(1, 1, 1, 1)
 			else:
-				btn.modulate = Color(0.5, 0.5, 0.5, 1)
+				btn.modulate = Color(0.7, 0.7, 0.7, 1)
 		btn.pressed.connect(_on_upgrade_tier_tab_pressed.bind(tier))
 		tier_row.add_child(btn)
 
@@ -1711,13 +1731,13 @@ func _build_storage_upgrade_view() -> void:
 		var status_label = Label.new()
 		status_label.text = "Locked"
 		status_label.add_theme_font_size_override("font_size", GameContext.fs(16))
-		status_label.modulate = Color(0.5, 0.5, 0.5, 1)
+		status_label.modulate = Color(0.7, 0.7, 0.7, 1)
 		status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_facility_actions_container.add_child(status_label)
 
 		var lock_msg = Label.new()
 		lock_msg.text = "Requires Tier %d first" % (selected_tier - 1)
-		lock_msg.modulate = Color(0.6, 0.6, 0.6, 1)
+		lock_msg.modulate = Color(0.78, 0.78, 0.78, 1)
 		lock_msg.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_facility_actions_container.add_child(lock_msg)
 
@@ -1727,7 +1747,7 @@ func _build_storage_upgrade_view() -> void:
 	var current_max: int = GameContext.get_max_stash_capacity()
 	var current_count: int = GameContext.get_current_stash_count()
 	var summary_label = Label.new()
-	summary_label.text = "Current Stash: %d / %d stacks" % [current_count, current_max]
+	summary_label.text = "Current Stash: %d / %d slots" % [current_count, current_max]
 	summary_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	var ratio: float = float(current_count) / float(maxi(1, current_max))
 	if ratio >= 0.9:
@@ -1744,7 +1764,7 @@ func _build_storage_equipment_ui() -> void:
 	if roster.size() == 0:
 		var empty_lbl = Label.new()
 		empty_lbl.text = "No heroes recruited yet."
-		empty_lbl.modulate = Color(0.6, 0.6, 0.6, 1)
+		empty_lbl.modulate = Color(0.78, 0.78, 0.78, 1)
 		_facility_actions_container.add_child(empty_lbl)
 		return
 
@@ -1870,6 +1890,12 @@ func _build_storage_equipment_ui() -> void:
 		{"key": "attack", "label": "ATK", "color": Color(0.9, 0.5, 0.4, 1)},
 		{"key": "defense", "label": "DEF", "color": Color(0.5, 0.7, 0.9, 1)},
 		{"key": "speed", "label": "SPD", "color": Color(0.9, 0.9, 0.4, 1)},
+		{"key": "crit_chance", "label": "CRIT", "color": Color(1.0, 0.7, 0.3, 1)},
+		{"key": "evasion", "label": "EVD", "color": Color(0.6, 0.9, 0.6, 1)},
+		{"key": "resist", "label": "RES", "color": Color(0.7, 0.5, 0.9, 1)},
+		{"key": "thorns", "label": "THN", "color": Color(0.8, 0.4, 0.4, 1)},
+		{"key": "armor_penetration", "label": "PEN", "color": Color(0.9, 0.6, 0.5, 1)},
+		{"key": "life_steal", "label": "LSTL", "color": Color(0.8, 0.3, 0.3, 1)},
 	]
 
 	var stats_grid = GridContainer.new()
@@ -1883,9 +1909,20 @@ func _build_storage_equipment_ui() -> void:
 		"attack": "ATK (Attack Power)\nDetermines physical damage dealt.\nDamage = max(1, ATK - target DEF)",
 		"defense": "DEF (Defense)\nReduces incoming physical damage.\nDamage = max(1, attacker ATK - DEF)",
 		"speed": "SPD (Speed)\nDetermines turn order each round.\nHigher speed acts first.\n10+ = 2 actions per turn\n20+ = 3 actions per turn",
+		"crit_chance": "CRIT (Critical Hit Chance)\n% chance to deal 1.5x damage.\nCapped at 50%.",
+		"evasion": "EVD (Evasion)\n% chance to dodge attacks.\nCapped at 50%.",
+		"resist": "RES (Resistance)\nReduces fire, dark, and void damage.\nUses same soft-cap as defense.",
+		"thorns": "THN (Thorns)\nFlat damage returned to physical attackers.\nBypasses defense (true damage).",
+		"armor_penetration": "PEN (Armor Penetration)\nReduces target's effective defense.\nApplied before defense soft-cap.",
+		"life_steal": "LSTL (Life Steal)\n% of damage dealt healed.\nOnly from direct attacks, not DOTs.",
 	}
 
+	# Core stats always shown; new stats only if > 0
+	var inn_core_keys = ["health", "attack", "defense", "speed"]
 	for sd in stat_defs:
+		var val = int(eff_stats.get(sd.key, 0))
+		if val == 0 and sd.key not in inn_core_keys:
+			continue
 		var stat_label = Label.new()
 		stat_label.text = sd.label
 		stat_label.add_theme_font_size_override("font_size", GameContext.fs(14))
@@ -1896,7 +1933,7 @@ func _build_storage_equipment_ui() -> void:
 		stats_grid.add_child(stat_label)
 
 		var stat_val = Label.new()
-		stat_val.text = str(int(eff_stats.get(sd.key, 0)))
+		stat_val.text = str(val)
 		stat_val.add_theme_font_size_override("font_size", GameContext.fs(14))
 		stat_val.modulate = Color(0.9, 0.9, 0.9, 1)
 		stat_val.tooltip_text = build_inn_stat_tooltip(sd.key.capitalize(), hero_id)
@@ -1931,7 +1968,7 @@ func _build_storage_equipment_ui() -> void:
 			else:
 				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get(ab_info.slot, 1)
 				ab_lbl.text = "%s: %s (Lv %d)" % [ab_info.tag, ab_name, req_lv]
-				ab_lbl.modulate = Color(0.5, 0.5, 0.5, 1)
+				ab_lbl.modulate = Color(0.7, 0.7, 0.7, 1)
 			ab_lbl.add_theme_font_size_override("font_size", GameContext.fs(13))
 			if ab_desc != "":
 				ab_lbl.tooltip_text = ab_desc
@@ -1960,7 +1997,7 @@ func _build_storage_equipment_ui() -> void:
 			else:
 				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get(ps_info.slot, 1)
 				ps_lbl.text = "%s: %s (Lv %d)" % [ps_info.tag, ps_name, req_lv]
-				ps_lbl.modulate = Color(0.5, 0.5, 0.5, 1)
+				ps_lbl.modulate = Color(0.7, 0.7, 0.7, 1)
 			ps_lbl.add_theme_font_size_override("font_size", GameContext.fs(13))
 			if ps_desc != "":
 				ps_lbl.tooltip_text = ps_desc
@@ -2036,14 +2073,14 @@ func _build_storage_equipment_ui() -> void:
 				var empty_item = Label.new()
 				empty_item.text = "(unknown)"
 				empty_item.add_theme_font_size_override("font_size", GameContext.fs(13))
-				empty_item.modulate = Color(0.5, 0.5, 0.5, 1)
+				empty_item.modulate = Color(0.7, 0.7, 0.7, 1)
 				empty_item.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 				slot_hbox.add_child(empty_item)
 		else:
 			var empty_item = Label.new()
 			empty_item.text = "(empty)"
 			empty_item.add_theme_font_size_override("font_size", GameContext.fs(13))
-			empty_item.modulate = Color(0.5, 0.5, 0.5, 1)
+			empty_item.modulate = Color(0.7, 0.7, 0.7, 1)
 			empty_item.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			slot_hbox.add_child(empty_item)
 
@@ -2158,7 +2195,7 @@ func _build_shop_ui() -> void:
 	if _current_facility == null:
 		var no_data = Label.new()
 		no_data.text = "(No shop available)"
-		no_data.modulate = Color(0.6, 0.6, 0.6, 1)
+		no_data.modulate = Color(0.78, 0.78, 0.78, 1)
 		_facility_actions_container.add_child(no_data)
 		return
 
@@ -2201,7 +2238,7 @@ func _build_shop_buy_view(facility, current_tier: int) -> void:
 	var stash_max: int = GameContext.get_max_stash_capacity()
 	if stash_count >= stash_max:
 		var warn = Label.new()
-		warn.text = "Stash Full (%d/%d stacks) — Sell items to make room!" % [stash_count, stash_max]
+		warn.text = "Stash Full (%d/%d slots) — Sell items to make room!" % [stash_count, stash_max]
 		warn.add_theme_font_size_override("font_size", GameContext.fs(14))
 		warn.modulate = Color(1.0, 0.4, 0.3, 1)
 		warn.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -2254,13 +2291,13 @@ func _build_shop_unstocked_view(facility, current_tier: int, town_id: String, sh
 		fac_label.add_theme_font_size_override("font_size", GameContext.fs(13))
 		fac_label.tooltip_text = "Recipes unlocked: %d" % recipe_count
 		if recipe_count == 0:
-			fac_label.modulate = Color(0.5, 0.5, 0.5, 1)
+			fac_label.modulate = Color(0.7, 0.7, 0.7, 1)
 		alloc_row.add_child(fac_label)
 
 		var recipe_label = Label.new()
 		recipe_label.text = "Recipes: %d" % recipe_count
 		recipe_label.add_theme_font_size_override("font_size", GameContext.fs(12))
-		recipe_label.modulate = Color(0.6, 0.7, 0.6, 1) if recipe_count > 0 else Color(0.5, 0.5, 0.5, 1)
+		recipe_label.modulate = Color(0.6, 0.7, 0.6, 1) if recipe_count > 0 else Color(0.7, 0.7, 0.7, 1)
 		alloc_row.add_child(recipe_label)
 
 		var minus_btn = Button.new()
@@ -2280,7 +2317,9 @@ func _build_shop_unstocked_view(facility, current_tier: int, town_id: String, sh
 		var plus_btn = Button.new()
 		plus_btn.text = "+"
 		plus_btn.custom_minimum_size = Vector2(22, 22)
-		plus_btn.disabled = temp_total >= max_slots or recipe_count == 0
+		plus_btn.disabled = temp_total >= max_slots or recipe_count == 0 or current_alloc >= recipe_count
+		if current_alloc >= recipe_count and recipe_count > 0:
+			plus_btn.tooltip_text = "All %d recipes allocated" % recipe_count
 		plus_btn.pressed.connect(_on_temp_slot_plus.bind(contrib_facility_id))
 		alloc_row.add_child(plus_btn)
 
@@ -2423,7 +2462,7 @@ func _build_shop_stocked_view(facility, current_tier: int, town_id: String, shop
 	else:
 		var no_recipes = Label.new()
 		no_recipes.text = "(No items available - unlock recipes at facilities)"
-		no_recipes.modulate = Color(0.6, 0.6, 0.6, 1)
+		no_recipes.modulate = Color(0.78, 0.78, 0.78, 1)
 		_facility_actions_container.add_child(no_recipes)
 
 
@@ -2455,7 +2494,7 @@ func _build_shop_upgrade_view(facility, current_tier: int) -> void:
 			elif tier == current_tier + 1:
 				btn.modulate = Color(1, 1, 1, 1)
 			else:
-				btn.modulate = Color(0.5, 0.5, 0.5, 1)
+				btn.modulate = Color(0.7, 0.7, 0.7, 1)
 		btn.pressed.connect(_on_upgrade_tier_tab_pressed.bind(tier))
 		tier_row.add_child(btn)
 
@@ -2492,13 +2531,13 @@ func _build_shop_upgrade_view(facility, current_tier: int) -> void:
 		var status_label = Label.new()
 		status_label.text = "Locked"
 		status_label.add_theme_font_size_override("font_size", GameContext.fs(16))
-		status_label.modulate = Color(0.5, 0.5, 0.5, 1)
+		status_label.modulate = Color(0.7, 0.7, 0.7, 1)
 		status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_facility_actions_container.add_child(status_label)
 
 		var lock_msg = Label.new()
 		lock_msg.text = "Requires Tier %d first" % (selected_tier - 1)
-		lock_msg.modulate = Color(0.6, 0.6, 0.6, 1)
+		lock_msg.modulate = Color(0.78, 0.78, 0.78, 1)
 		lock_msg.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_facility_actions_container.add_child(lock_msg)
 
@@ -2841,6 +2880,11 @@ func _on_temp_slot_plus(facility_id: String) -> void:
 	var max_slots: int = GameContext.get_shop_max_slots(town_id)
 	if _get_temp_allocated_total() >= max_slots:
 		return
+	# Cap at recipe count — can't allocate more slots than unique recipes
+	var recipe_count: int = GameContext.get_facility_unlocked_recipes(facility_id).size()
+	var current_alloc: int = _temp_shop_allocations.get(facility_id, 0)
+	if recipe_count > 0 and current_alloc >= recipe_count:
+		return
 	_temp_shop_allocations[facility_id] = _temp_shop_allocations.get(facility_id, 0) + 1
 	print("[Shop] temp_slot_plus facility=%s total=%d" % [facility_id, _get_temp_allocated_total()])
 	_refresh_facility_panel()
@@ -2940,9 +2984,9 @@ func _show_sell_window() -> void:
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(420, 400)
 	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.12, 0.10, 0.08, 0.95)
+	style.bg_color = _region_palette.get("bg_dark", Color(0.14, 0.12, 0.10, 0.95))
 	style.set_border_width_all(2)
-	style.border_color = Color(0.6, 0.5, 0.3, 0.8)
+	style.border_color = _region_palette.get("border", Color(0.55, 0.4, 0.25, 0.8))
 	style.set_corner_radius_all(8)
 	style.set_content_margin_all(16)
 	panel.add_theme_stylebox_override("panel", style)
@@ -3019,7 +3063,7 @@ func _refresh_sell_overlay_items() -> void:
 	if sellable_items.size() == 0:
 		var no_items = Label.new()
 		no_items.text = "(No items to sell)"
-		no_items.modulate = Color(0.6, 0.6, 0.6, 1)
+		no_items.modulate = Color(0.78, 0.78, 0.78, 1)
 		_sell_items_container.add_child(no_items)
 	else:
 		for item in sellable_items:
@@ -3149,13 +3193,20 @@ func _generate_facility_allocated_items(town_id: String, base_rng: RandomNumberG
 		var facility_rng = RandomNumberGenerator.new()
 		facility_rng.seed = facility_seed
 
+		# Shuffle recipes (Fisher-Yates) then assign round-robin for dedup
+		var shuffled_recipes: Array = recipes.duplicate()
+		for j in range(shuffled_recipes.size() - 1, 0, -1):
+			var k: int = facility_rng.randi() % (j + 1)
+			var tmp = shuffled_recipes[j]
+			shuffled_recipes[j] = shuffled_recipes[k]
+			shuffled_recipes[k] = tmp
+
 		# Generate one item per allocated slot
 		for i in range(slots):
 			var slot_key = "%s:%d" % [facility_id, i]
 
-			# Pick a random recipe entry (seeded per facility)
-			var recipe_idx = facility_rng.randi() % recipes.size()
-			var recipe_entry: Dictionary = recipes[recipe_idx]
+			# Pick recipe via round-robin from shuffled list (unique when slots <= recipes)
+			var recipe_entry: Dictionary = shuffled_recipes[i % shuffled_recipes.size()]
 			var item_id: String = recipe_entry.get("item_id", "")
 			var upgrade_tier: int = int(recipe_entry.get("upgrade_tier", 1))
 			var facility_tier: int = int(recipe_entry.get("facility_tier", 1))
@@ -3315,7 +3366,7 @@ func _create_empty_shop_slot_row() -> HBoxContainer:
 	var empty_label = Label.new()
 	empty_label.text = "[Empty Slot]"
 	empty_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	empty_label.modulate = Color(0.4, 0.4, 0.4, 1)
+	empty_label.modulate = Color(0.65, 0.65, 0.65, 1)
 	row.add_child(empty_label)
 
 	# Placeholder for button alignment
@@ -3376,7 +3427,7 @@ func _build_item_tooltip(template, quality_tier: int) -> String:
 func _on_shop_buy_pressed(item_id: String, price: int, quality_tier: int = 0, shop_id: String = "", slot_key: String = "", affix_data: Dictionary = {}) -> void:
 	# Check stash capacity before purchasing
 	if not GameContext.can_add_to_stash(item_id):
-		print("[Store] buy item=%s BLOCKED — stash full (%d/%d stacks)" % [item_id, GameContext.get_current_stash_count(), GameContext.get_max_stash_capacity()])
+		print("[Store] buy item=%s BLOCKED — stash full (%d/%d slots)" % [item_id, GameContext.get_current_stash_count(), GameContext.get_max_stash_capacity()])
 		UIAudio.play_sfx("error_insufficient")
 		_refresh_facility_panel()
 		return
@@ -3730,7 +3781,7 @@ func _build_equipment_recipes_view(facility, current_tier: int) -> void:
 			_apply_selected_button_style(btn)
 		elif not has_recipes:
 			btn.disabled = true
-			btn.modulate = Color(0.5, 0.5, 0.5, 0.6)
+			btn.modulate = Color(0.7, 0.7, 0.7, 0.85)
 		btn.pressed.connect(_on_equipment_filter_pressed.bind(f))
 		filter_row1.add_child(btn)
 
@@ -3743,7 +3794,7 @@ func _build_equipment_recipes_view(facility, current_tier: int) -> void:
 			_apply_selected_button_style(btn)
 		elif not has_recipes:
 			btn.disabled = true
-			btn.modulate = Color(0.5, 0.5, 0.5, 0.6)
+			btn.modulate = Color(0.7, 0.7, 0.7, 0.85)
 		btn.pressed.connect(_on_equipment_filter_pressed.bind(f))
 		filter_row2.add_child(btn)
 
@@ -3762,7 +3813,7 @@ func _build_equipment_recipes_view(facility, current_tier: int) -> void:
 	if recipes.size() == 0:
 		var no_recipes = Label.new()
 		no_recipes.text = "(No recipes match current filters)"
-		no_recipes.modulate = Color(0.6, 0.6, 0.6, 1)
+		no_recipes.modulate = Color(0.78, 0.78, 0.78, 1)
 		_facility_actions_container.add_child(no_recipes)
 	else:
 		for recipe in recipes:
@@ -3799,7 +3850,7 @@ func _build_equipment_upgrade_view(facility, current_tier: int) -> void:
 			elif tier == current_tier + 1:
 				btn.modulate = Color(1, 1, 1, 1)
 			else:
-				btn.modulate = Color(0.5, 0.5, 0.5, 1)
+				btn.modulate = Color(0.7, 0.7, 0.7, 1)
 
 		btn.pressed.connect(_on_upgrade_tier_tab_pressed.bind(tier))
 		tier_row.add_child(btn)
@@ -3846,13 +3897,13 @@ func _build_equipment_upgrade_view(facility, current_tier: int) -> void:
 		var status_label = Label.new()
 		status_label.text = "Locked"
 		status_label.add_theme_font_size_override("font_size", GameContext.fs(16))
-		status_label.modulate = Color(0.5, 0.5, 0.5, 1)
+		status_label.modulate = Color(0.7, 0.7, 0.7, 1)
 		status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_facility_actions_container.add_child(status_label)
 
 		var lock_msg = Label.new()
 		lock_msg.text = "Requires Tier %d first" % (selected_tier - 1)
-		lock_msg.modulate = Color(0.6, 0.6, 0.6, 1)
+		lock_msg.modulate = Color(0.78, 0.78, 0.78, 1)
 		lock_msg.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_facility_actions_container.add_child(lock_msg)
 
@@ -3918,7 +3969,7 @@ func _build_tier_benefits_display(facility, tier: int, current_tier: int) -> voi
 				var is_unlocked = GameContext.is_recipe_unlocked(output_id)
 				rlabel.modulate = Color(0.5, 0.9, 0.5, 1) if is_unlocked else Color(0.8, 0.8, 0.8, 1)
 			else:
-				rlabel.modulate = Color(0.6, 0.6, 0.6, 1)
+				rlabel.modulate = Color(0.78, 0.78, 0.78, 1)
 			row.add_child(rlabel)
 			grid.add_child(row)
 
@@ -3966,14 +4017,25 @@ func _get_tier_benefits(facility, tier: int) -> Array[String]:
 			# Refresh limit
 			var refresh_limit: int = GameContext.SHOP_REFRESH_LIMIT_BY_TIER.get(tier, 1)
 			benefits.append("Shop Refreshes: %d per visit" % refresh_limit)
+			# Quality distribution
+			match tier:
+				1: benefits.append("Item Quality: Common only")
+				2: benefits.append("Item Quality: Common, Uncommon & Rare")
+				3: benefits.append("Item Quality: Common, Uncommon & Rare")
+				4: benefits.append("Item Quality: up to Epic")
 		"equipment":
 			# Crafting slots
 			var slots: int = facility.get_slots_for_tier(tier)
 			if slots > 0:
 				benefits.append("Crafting Slots: %d" % slots)
-			# Tier-based quality hint
-			if tier >= 3:
-				benefits.append("Recipe Discount: 25%")
+			# Quality distribution for shop items
+			match tier:
+				1: benefits.append("Shop Items: Common quality only")
+				2: benefits.append("Shop Items: Common, Uncommon & Rare quality")
+				3:
+					benefits.append("Shop Items: Common, Uncommon & Rare quality")
+					benefits.append("Recipe Discount: 25%")
+				4: benefits.append("Shop Items: up to Epic quality")
 		"production":
 			# Mixing/crafting slots
 			var slots: int = facility.get_slots_for_tier(tier)
@@ -3992,7 +4054,7 @@ func _build_equipment_repair_view(facility) -> void:
 	placeholder.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	placeholder.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	placeholder.add_theme_font_size_override("font_size", GameContext.fs(15))
-	placeholder.modulate = Color(0.6, 0.6, 0.6, 1)
+	placeholder.modulate = Color(0.78, 0.78, 0.78, 1)
 	_facility_actions_container.add_child(placeholder)
 
 	var flavor = Label.new()
@@ -4000,7 +4062,7 @@ func _build_equipment_repair_view(facility) -> void:
 	flavor.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	flavor.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	flavor.add_theme_font_size_override("font_size", GameContext.fs(13))
-	flavor.modulate = Color(0.5, 0.5, 0.4, 1)
+	flavor.modulate = Color(0.72, 0.72, 0.6, 1)
 	_facility_actions_container.add_child(flavor)
 
 
@@ -4050,8 +4112,7 @@ func _get_filtered_equipment_recipes(facility, current_tier: int, facility_id: S
 							break
 
 		# Check for default status
-		var recipe_key: String = GameContext._recipe_key(output_id, upgrade_tier)
-		var is_default: bool = is_unlocked and GameContext.DEFAULT_UNLOCKED_RECIPES.has(recipe_key)
+		var is_default: bool = is_unlocked and GameContext.is_default_recipe(output_id, upgrade_tier)
 
 		# Filter by tab
 		match _equipment_tab:
@@ -4145,16 +4206,16 @@ func _create_equipment_recipe_row(recipe_data: Dictionary, facility_id: String, 
 	var recipe_key: String = GameContext._recipe_key(output_id, upgrade_tier)
 	if is_superseded:
 		name_label.text = "[SUPERSEDED] %s%s (%s)" % [tier_badge, output_name, type_str]
-		name_label.modulate = Color(0.4, 0.4, 0.4, 1)
-		container.modulate = Color(0.5, 0.5, 0.5, 1)
+		name_label.modulate = Color(0.65, 0.65, 0.65, 1)
+		container.modulate = Color(0.7, 0.7, 0.7, 1)
 	elif is_unlocked:
-		var status: String = "[DEFAULT]" if GameContext.DEFAULT_UNLOCKED_RECIPES.has(recipe_key) else "[UNLOCKED]"
+		var status: String = "[DEFAULT]" if GameContext.is_default_recipe(output_id, upgrade_tier) else "[UNLOCKED]"
 		name_label.text = "%s %s%s (%s)" % [status, tier_badge, output_name, type_str]
 		name_label.modulate = Color(0.5, 0.9, 0.5, 1)
 	elif is_tier_locked:
 		name_label.text = "[TIER %d] %s%s (%s)" % [required_tier, tier_badge, output_name, type_str]
-		name_label.modulate = Color(0.5, 0.5, 0.5, 1)
-		container.modulate = Color(0.6, 0.6, 0.6, 1)
+		name_label.modulate = Color(0.7, 0.7, 0.7, 1)
+		container.modulate = Color(0.78, 0.78, 0.78, 1)
 	else:
 		name_label.text = "%s%s (%s)" % [tier_badge, output_name, type_str]
 	name_row.add_child(name_label)
@@ -4176,7 +4237,7 @@ func _create_equipment_recipe_row(recipe_data: Dictionary, facility_id: String, 
 		var sup_label = Label.new()
 		sup_label.text = "  Replaced by a higher-tier version"
 		sup_label.add_theme_font_size_override("font_size", GameContext.fs(13))
-		sup_label.modulate = Color(0.4, 0.4, 0.4, 1)
+		sup_label.modulate = Color(0.65, 0.65, 0.65, 1)
 		container.add_child(sup_label)
 		return container
 
@@ -4196,7 +4257,7 @@ func _create_equipment_recipe_row(recipe_data: Dictionary, facility_id: String, 
 			var rep_name: String = rep_tpl.display_name if rep_tpl != null else replaces
 			rep_label.text = "  (replaces %s)" % rep_name
 			rep_label.add_theme_font_size_override("font_size", GameContext.fs(12))
-			rep_label.modulate = Color(0.5, 0.5, 0.5, 1)
+			rep_label.modulate = Color(0.7, 0.7, 0.7, 1)
 			container.add_child(rep_label)
 		# T3/T4 craft recipes: fall through to show craft button alongside store listing
 		if not (is_craft and upgrade_tier >= 3):
@@ -4207,7 +4268,7 @@ func _create_equipment_recipe_row(recipe_data: Dictionary, facility_id: String, 
 		var tier_label = Label.new()
 		tier_label.text = "  Requires Tier %d facility" % required_tier
 		tier_label.add_theme_font_size_override("font_size", GameContext.fs(13))
-		tier_label.modulate = Color(0.6, 0.6, 0.6, 1)
+		tier_label.modulate = Color(0.78, 0.78, 0.78, 1)
 		container.add_child(tier_label)
 		return container
 
@@ -4401,10 +4462,9 @@ func _build_equipment_slot_tooltip(slot: String, item_id: String, quality: int, 
 	var region_bonus: float = GameContext.get_completed_region_count() * 0.1
 	var stats = tpl.get_stat_bonuses_with_quality(quality, region_bonus)
 	var stat_parts: Array[String] = []
-	if stats.get("attack", 0) > 0: stat_parts.append("ATK +%d" % stats.get("attack", 0))
-	if stats.get("defense", 0) > 0: stat_parts.append("DEF +%d" % stats.get("defense", 0))
-	if stats.get("health", 0) > 0: stat_parts.append("HP +%d" % stats.get("health", 0))
-	if stats.get("speed", 0) > 0: stat_parts.append("SPD +%d" % stats.get("speed", 0))
+	for sk in CombatUnit.STAT_KEYS:
+		if stats.get(sk, 0) > 0:
+			stat_parts.append("%s +%d" % [CombatUnit.STAT_ABBREV.get(sk, sk), stats[sk]])
 	if stat_parts.size() > 0:
 		lines.append("  ".join(stat_parts))
 	var affix_prefix: String = slot_data.get("affix_prefix", "")
@@ -4429,7 +4489,7 @@ func _create_empty_equip_slot(abbrev: String, slot_size: int) -> PanelContainer:
 	empty_lbl.add_theme_font_size_override("font_size", font_sz)
 	empty_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	empty_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	empty_lbl.modulate = Color(0.5, 0.5, 0.5, 1)
+	empty_lbl.modulate = Color(0.7, 0.7, 0.7, 1)
 	empty_panel.add_child(empty_lbl)
 	empty_panel.tooltip_text = "Empty %s slot" % abbrev
 	empty_panel.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -4562,7 +4622,7 @@ func _create_crafting_recipe_row(recipe: Dictionary) -> VBoxContainer:
 	# Recipe name with unlock status
 	var name_label = Label.new()
 	if is_unlocked:
-		var status = "[DEFAULT]" if GameContext.DEFAULT_UNLOCKED_RECIPES.has(output_id) else "[UNLOCKED]"
+		var status = "[DEFAULT]" if GameContext.is_default_recipe(output_id) else "[UNLOCKED]"
 		name_label.text = "Recipe: %s %s" % [output_name, status]
 		name_label.modulate = Color(0.5, 0.9, 0.5, 1)  # Green for unlocked
 	else:
@@ -4671,7 +4731,7 @@ func _create_crafting_recipe_row(recipe: Dictionary) -> VBoxContainer:
 func _create_locked_recipe_row(recipe: Dictionary) -> VBoxContainer:
 	var container = VBoxContainer.new()
 	container.add_theme_constant_override("separation", 2)
-	container.modulate = Color(0.5, 0.5, 0.5, 1)  # Gray out
+	container.modulate = Color(0.7, 0.7, 0.7, 1)  # Gray out
 
 	var output_id = recipe.get("output_id", "")
 	var required_tier = recipe.get("required_tier", 1)
@@ -4687,7 +4747,7 @@ func _create_locked_recipe_row(recipe: Dictionary) -> VBoxContainer:
 	# Locked header label
 	var name_label = Label.new()
 	name_label.text = "Locked (Tier %d): %s" % [required_tier, output_name]
-	name_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6, 1))
+	name_label.add_theme_color_override("font_color", Color(0.78, 0.78, 0.78, 1))
 	container.add_child(name_label)
 
 	# Cost display (grayed, for preview)
@@ -4706,7 +4766,7 @@ func _create_locked_recipe_row(recipe: Dictionary) -> VBoxContainer:
 	if cost_gold > 0:
 		cost_text += " + %dg" % cost_gold
 	cost_label.text = cost_text
-	cost_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5, 1))
+	cost_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7, 1))
 	container.add_child(cost_label)
 
 	return container
@@ -4874,7 +4934,7 @@ func _build_training_ui() -> void:
 	if _current_facility == null:
 		var no_data = Label.new()
 		no_data.text = "(No training hall data)"
-		no_data.modulate = Color(0.6, 0.6, 0.6, 1)
+		no_data.modulate = Color(0.78, 0.78, 0.78, 1)
 		_facility_actions_container.add_child(no_data)
 		return
 
@@ -5007,7 +5067,7 @@ func _build_training_books_view(facility, current_tier: int) -> void:
 	else:
 		var no_items = Label.new()
 		no_items.text = "(No books available for purchase)"
-		no_items.modulate = Color(0.6, 0.6, 0.6, 1)
+		no_items.modulate = Color(0.78, 0.78, 0.78, 1)
 		_facility_actions_container.add_child(no_items)
 
 	# Separator + Books Owned section
@@ -5030,7 +5090,7 @@ func _build_training_books_view(facility, current_tier: int) -> void:
 	if owned_books.size() == 0:
 		var no_books = Label.new()
 		no_books.text = "(No class books in stash)"
-		no_books.modulate = Color(0.6, 0.6, 0.6, 1)
+		no_books.modulate = Color(0.78, 0.78, 0.78, 1)
 		_facility_actions_container.add_child(no_books)
 	else:
 		var owned_grid = GridContainer.new()
@@ -5068,7 +5128,7 @@ func _build_training_assign_view(facility, current_tier: int) -> void:
 	if owned_heroes.size() == 0:
 		var no_heroes = Label.new()
 		no_heroes.text = "(No heroes recruited - visit the Inn first!)"
-		no_heroes.modulate = Color(0.6, 0.6, 0.6, 1)
+		no_heroes.modulate = Color(0.78, 0.78, 0.78, 1)
 		_facility_actions_container.add_child(no_heroes)
 	else:
 		for hero in owned_heroes:
@@ -5109,7 +5169,7 @@ func _build_training_assign_view(facility, current_tier: int) -> void:
 	if owned_books.size() == 0:
 		var no_books = Label.new()
 		no_books.text = "(No books in stash - buy some from Class Books!)"
-		no_books.modulate = Color(0.6, 0.6, 0.6, 1)
+		no_books.modulate = Color(0.78, 0.78, 0.78, 1)
 		_facility_actions_container.add_child(no_books)
 	else:
 		for book_data in owned_books:
@@ -5145,7 +5205,7 @@ func _build_training_upgrade_view(facility, current_tier: int) -> void:
 			elif tier == current_tier + 1:
 				btn.modulate = Color(1, 1, 1, 1)
 			else:
-				btn.modulate = Color(0.5, 0.5, 0.5, 1)
+				btn.modulate = Color(0.7, 0.7, 0.7, 1)
 		btn.pressed.connect(_on_upgrade_tier_tab_pressed.bind(tier))
 		tier_row.add_child(btn)
 
@@ -5182,13 +5242,13 @@ func _build_training_upgrade_view(facility, current_tier: int) -> void:
 		var status_label = Label.new()
 		status_label.text = "Locked"
 		status_label.add_theme_font_size_override("font_size", GameContext.fs(16))
-		status_label.modulate = Color(0.5, 0.5, 0.5, 1)
+		status_label.modulate = Color(0.7, 0.7, 0.7, 1)
 		status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_facility_actions_container.add_child(status_label)
 
 		var lock_msg = Label.new()
 		lock_msg.text = "Requires Tier %d first" % (selected_tier - 1)
-		lock_msg.modulate = Color(0.6, 0.6, 0.6, 1)
+		lock_msg.modulate = Color(0.78, 0.78, 0.78, 1)
 		lock_msg.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_facility_actions_container.add_child(lock_msg)
 
@@ -5268,7 +5328,7 @@ func _create_book_assign_row(book_id: String, qty: int) -> HBoxContainer:
 		# No hero selected
 		btn.text = "Select a hero"
 		btn.disabled = true
-		btn.modulate = Color(0.6, 0.6, 0.6, 1)
+		btn.modulate = Color(0.78, 0.78, 0.78, 1)
 	else:
 		# Hero selected - check if already has this class
 		var selected_hero = GameContext.get_hero(_training_selected_hero_id)
@@ -5348,7 +5408,7 @@ func _populate_heroes_section() -> void:
 	else:
 		var empty_label = Label.new()
 		empty_label.text = "  (No party selected - visit Inn to recruit)"
-		empty_label.modulate = Color(0.6, 0.6, 0.6, 1)
+		empty_label.modulate = Color(0.78, 0.78, 0.78, 1)
 		heroes_vbox.add_child(empty_label)
 
 	# Button row
@@ -5626,7 +5686,7 @@ func _create_empty_party_slot() -> PanelContainer:
 	var lbl = Label.new()
 	lbl.text = "Empty"
 	lbl.add_theme_font_size_override("font_size", GameContext.fs(12))
-	lbl.modulate = Color(0.4, 0.4, 0.4, 0.5)
+	lbl.modulate = Color(0.65, 0.65, 0.65, 0.8)
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	lbl.custom_minimum_size = Vector2(0, 60)
@@ -5788,7 +5848,7 @@ func _populate_bag_management_ui(container: VBoxContainer) -> void:
 	if consumables_in_stash.size() == 0:
 		var no_items = Label.new()
 		no_items.text = "(No consumables in stash)"
-		no_items.modulate = Color(0.6, 0.6, 0.6, 1)
+		no_items.modulate = Color(0.78, 0.78, 0.78, 1)
 		container.add_child(no_items)
 	else:
 		for item_info in consumables_in_stash:
@@ -5810,7 +5870,7 @@ func _populate_bag_management_ui(container: VBoxContainer) -> void:
 	if party.size() == 0:
 		var no_party = Label.new()
 		no_party.text = "(No heroes in party)"
-		no_party.modulate = Color(0.6, 0.6, 0.6, 1)
+		no_party.modulate = Color(0.78, 0.78, 0.78, 1)
 		container.add_child(no_party)
 	else:
 		for hero_id in party:
@@ -5873,7 +5933,7 @@ func _create_hero_bag_section(hero_id: String, parent_container: VBoxContainer) 
 	if bag.size() == 0:
 		var empty_label = Label.new()
 		empty_label.text = "  (Empty)"
-		empty_label.modulate = Color(0.5, 0.5, 0.5, 1)
+		empty_label.modulate = Color(0.7, 0.7, 0.7, 1)
 		section.add_child(empty_label)
 	else:
 		for entry in bag:
@@ -6006,11 +6066,14 @@ func _build_inn_recruit_view(facility, current_tier: int) -> void:
 	party_label.modulate = Color(0.5, 1, 0.5, 1) if selected_party.size() > 0 else Color(0.8, 0.8, 0.8, 1)
 	_facility_actions_container.add_child(party_label)
 
-	# Get recruit level from facility tier
+	# Get recruit level from facility tier, with regional minimum floor
 	var recruit_level = 1
 	var level_by_tier = facility.recruit_level_by_tier
 	if level_by_tier.has(str(current_tier)):
 		recruit_level = int(level_by_tier[str(current_tier)])
+	var region_str: String = str(GameContext.get_current_region())
+	var regional_min: int = int(facility.regional_recruit_level_minimum.get(region_str, 1))
+	recruit_level = maxi(recruit_level, regional_min)
 
 	# Recruit slots scale with tier: T1=3, T2=4, T3=5, T4=6
 	var max_candidates: int = 2 + current_tier
@@ -6032,7 +6095,7 @@ func _build_inn_recruit_view(facility, current_tier: int) -> void:
 	if candidates.size() == 0:
 		var no_candidates = Label.new()
 		no_candidates.text = "(No recruits available)"
-		no_candidates.modulate = Color(0.6, 0.6, 0.6, 1)
+		no_candidates.modulate = Color(0.78, 0.78, 0.78, 1)
 		_facility_actions_container.add_child(no_candidates)
 	else:
 		for i in range(candidates.size()):
@@ -6052,7 +6115,7 @@ func _create_empty_recruit_slot_row() -> HBoxContainer:
 	row.add_theme_constant_override("separation", 8)
 	var empty_label = Label.new()
 	empty_label.text = "[Recruited]"
-	empty_label.modulate = Color(0.4, 0.4, 0.4, 1)
+	empty_label.modulate = Color(0.65, 0.65, 0.65, 1)
 	empty_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(empty_label)
 	return row
@@ -6089,12 +6152,12 @@ func _build_inn_roster_view(facility, current_tier: int) -> void:
 	if owned_heroes.size() == 0:
 		var no_heroes = Label.new()
 		no_heroes.text = "(No heroes recruited yet)"
-		no_heroes.modulate = Color(0.6, 0.6, 0.6, 1)
+		no_heroes.modulate = Color(0.78, 0.78, 0.78, 1)
 		_facility_actions_container.add_child(no_heroes)
 	elif bench_heroes.size() == 0:
 		var no_bench = Label.new()
 		no_bench.text = "(All heroes are in your active party)"
-		no_bench.modulate = Color(0.6, 0.6, 0.6, 1)
+		no_bench.modulate = Color(0.78, 0.78, 0.78, 1)
 		_facility_actions_container.add_child(no_bench)
 	else:
 		for hero in bench_heroes:
@@ -6132,7 +6195,7 @@ func _build_inn_upgrade_view(facility, current_tier: int) -> void:
 			elif tier == current_tier + 1:
 				btn.modulate = Color(1, 1, 1, 1)
 			else:
-				btn.modulate = Color(0.5, 0.5, 0.5, 1)
+				btn.modulate = Color(0.7, 0.7, 0.7, 1)
 		btn.pressed.connect(_on_upgrade_tier_tab_pressed.bind(tier))
 		tier_row.add_child(btn)
 
@@ -6170,13 +6233,13 @@ func _build_inn_upgrade_view(facility, current_tier: int) -> void:
 		var status_label = Label.new()
 		status_label.text = "Locked"
 		status_label.add_theme_font_size_override("font_size", GameContext.fs(16))
-		status_label.modulate = Color(0.5, 0.5, 0.5, 1)
+		status_label.modulate = Color(0.7, 0.7, 0.7, 1)
 		status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_facility_actions_container.add_child(status_label)
 
 		var lock_msg = Label.new()
 		lock_msg.text = "Requires Tier %d first" % (selected_tier - 1)
-		lock_msg.modulate = Color(0.6, 0.6, 0.6, 1)
+		lock_msg.modulate = Color(0.78, 0.78, 0.78, 1)
 		lock_msg.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_facility_actions_container.add_child(lock_msg)
 
@@ -6355,7 +6418,7 @@ func _create_hero_row(hero: Dictionary, selected_party: Array) -> PanelContainer
 	var sep1 = Label.new()
 	sep1.text = "|"
 	sep1.add_theme_font_size_override("font_size", GameContext.fs(14))
-	sep1.modulate = Color(0.6, 0.6, 0.6, 1)
+	sep1.modulate = Color(0.78, 0.78, 0.78, 1)
 	stats_hbox.add_child(sep1)
 
 	var def_label = Label.new()
@@ -6369,7 +6432,7 @@ func _create_hero_row(hero: Dictionary, selected_party: Array) -> PanelContainer
 	var sep2 = Label.new()
 	sep2.text = "|"
 	sep2.add_theme_font_size_override("font_size", GameContext.fs(14))
-	sep2.modulate = Color(0.6, 0.6, 0.6, 1)
+	sep2.modulate = Color(0.78, 0.78, 0.78, 1)
 	stats_hbox.add_child(sep2)
 
 	var spd_label = Label.new()
@@ -6453,7 +6516,7 @@ func _create_hero_row(hero: Dictionary, selected_party: Array) -> PanelContainer
 		gear_bonus_label.modulate = Color(0.6, 0.9, 0.6, 1)
 	else:
 		gear_bonus_label.text = "Gear: (none equipped)"
-		gear_bonus_label.modulate = Color(0.5, 0.5, 0.5, 1)
+		gear_bonus_label.modulate = Color(0.7, 0.7, 0.7, 1)
 	gear_bonus_label.add_theme_font_size_override("font_size", GameContext.fs(14))
 	info_vbox.add_child(gear_bonus_label)
 
@@ -6488,7 +6551,7 @@ func _create_hero_row(hero: Dictionary, selected_party: Array) -> PanelContainer
 	dismiss_btn.custom_minimum_size = Vector2(100, 28)
 	dismiss_btn.text = "Dismiss"
 	dismiss_btn.disabled = in_party
-	dismiss_btn.modulate = Color(1, 0.6, 0.6, 1) if not in_party else Color(0.5, 0.5, 0.5, 1)
+	dismiss_btn.modulate = Color(1, 0.6, 0.6, 1) if not in_party else Color(0.7, 0.7, 0.7, 1)
 	dismiss_btn.pressed.connect(_on_inn_dismiss_hero_pressed.bind(hero_id))
 	btn_vbox.add_child(dismiss_btn)
 
@@ -6516,7 +6579,7 @@ func _create_hero_row(hero: Dictionary, selected_party: Array) -> PanelContainer
 		dead_label.z_index = 10
 		panel.add_child(dead_label)
 		# Dim the content behind
-		hbox.modulate = Color(0.5, 0.5, 0.5, 0.7)
+		hbox.modulate = Color(0.7, 0.7, 0.7, 0.85)
 
 	return panel
 
@@ -6651,9 +6714,9 @@ func _open_manage_gear_overlay() -> void:
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(480, 0)
 	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.12, 0.10, 0.08, 0.95)
+	style.bg_color = _region_palette.get("bg_dark", Color(0.14, 0.12, 0.10, 0.95))
 	style.set_border_width_all(2)
-	style.border_color = Color(0.6, 0.5, 0.3, 0.8)
+	style.border_color = _region_palette.get("border", Color(0.55, 0.4, 0.25, 0.8))
 	style.set_corner_radius_all(8)
 	style.set_content_margin_all(16)
 	panel.add_theme_stylebox_override("panel", style)
@@ -6796,12 +6859,24 @@ func _build_manage_gear_content() -> void:
 		{"key": "attack", "label": "ATK", "color": Color(0.9, 0.5, 0.4, 1)},
 		{"key": "defense", "label": "DEF", "color": Color(0.5, 0.7, 0.9, 1)},
 		{"key": "speed", "label": "SPD", "color": Color(0.9, 0.9, 0.4, 1)},
+		{"key": "crit_chance", "label": "CRIT", "color": Color(1.0, 0.7, 0.3, 1)},
+		{"key": "evasion", "label": "EVD", "color": Color(0.6, 0.9, 0.6, 1)},
+		{"key": "resist", "label": "RES", "color": Color(0.7, 0.5, 0.9, 1)},
+		{"key": "thorns", "label": "THN", "color": Color(0.8, 0.4, 0.4, 1)},
+		{"key": "armor_penetration", "label": "PEN", "color": Color(0.9, 0.6, 0.5, 1)},
+		{"key": "life_steal", "label": "LSTL", "color": Color(0.8, 0.3, 0.3, 1)},
 	]
 	var stat_descriptions: Dictionary = {
 		"health": "HP (Hit Points)\nHero is defeated at 0 HP.\nRestored by healing effects and potions.",
 		"attack": "ATK (Attack Power)\nDetermines physical damage dealt.\nDamage = max(1, ATK - target DEF)",
 		"defense": "DEF (Defense)\nReduces incoming physical damage.\nDamage = max(1, attacker ATK - DEF)",
 		"speed": "SPD (Speed)\nDetermines turn order each round.\nHigher speed acts first.\n10+ = 2 actions per turn\n20+ = 3 actions per turn",
+		"crit_chance": "CRIT (Critical Hit Chance)\n% chance to deal 1.5x damage.\nCapped at 50%.",
+		"evasion": "EVD (Evasion)\n% chance to dodge attacks.\nCapped at 50%.",
+		"resist": "RES (Resistance)\nReduces fire, dark, and void damage.\nUses same soft-cap as defense.",
+		"thorns": "THN (Thorns)\nFlat damage returned to physical attackers.\nBypasses defense (true damage).",
+		"armor_penetration": "PEN (Armor Penetration)\nReduces target's effective defense.\nApplied before defense soft-cap.",
+		"life_steal": "LSTL (Life Steal)\n% of damage dealt healed.\nOnly from direct attacks, not DOTs.",
 	}
 
 	var stats_grid = GridContainer.new()
@@ -6810,7 +6885,12 @@ func _build_manage_gear_content() -> void:
 	stats_grid.add_theme_constant_override("v_separation", 2)
 	left_col.add_child(stats_grid)
 
+	# Core stats always shown; new stats only shown if > 0
+	var mg_core_keys = ["health", "attack", "defense", "speed"]
 	for sd in stat_defs:
+		var val = int(eff_stats.get(sd.key, 0))
+		if val == 0 and sd.key not in mg_core_keys:
+			continue
 		var stat_label = Label.new()
 		stat_label.text = sd.label
 		stat_label.add_theme_font_size_override("font_size", GameContext.fs(14))
@@ -6821,7 +6901,7 @@ func _build_manage_gear_content() -> void:
 		stats_grid.add_child(stat_label)
 
 		var stat_val = Label.new()
-		stat_val.text = str(int(eff_stats.get(sd.key, 0)))
+		stat_val.text = str(val)
 		stat_val.add_theme_font_size_override("font_size", GameContext.fs(14))
 		stat_val.modulate = Color(0.9, 0.9, 0.9, 1)
 		stat_val.tooltip_text = build_inn_stat_tooltip(sd.key.capitalize(), hero_id)
@@ -6855,7 +6935,7 @@ func _build_manage_gear_content() -> void:
 			else:
 				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get(ab_info.slot, 1)
 				ab_lbl.text = "%s: %s (Lv %d)" % [ab_info.tag, ab_name, req_lv]
-				ab_lbl.modulate = Color(0.5, 0.5, 0.5, 1)
+				ab_lbl.modulate = Color(0.7, 0.7, 0.7, 1)
 			ab_lbl.add_theme_font_size_override("font_size", GameContext.fs(13))
 			if ab_desc != "":
 				ab_lbl.tooltip_text = ab_desc
@@ -6883,7 +6963,7 @@ func _build_manage_gear_content() -> void:
 			else:
 				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get(ps_info.slot, 1)
 				ps_lbl.text = "%s: %s (Lv %d)" % [ps_info.tag, ps_name, req_lv]
-				ps_lbl.modulate = Color(0.5, 0.5, 0.5, 1)
+				ps_lbl.modulate = Color(0.7, 0.7, 0.7, 1)
 			ps_lbl.add_theme_font_size_override("font_size", GameContext.fs(13))
 			if ps_desc != "":
 				ps_lbl.tooltip_text = ps_desc
@@ -6960,14 +7040,14 @@ func _build_manage_gear_content() -> void:
 				var unk_lbl = Label.new()
 				unk_lbl.text = "(unknown)"
 				unk_lbl.add_theme_font_size_override("font_size", GameContext.fs(13))
-				unk_lbl.modulate = Color(0.5, 0.5, 0.5, 1)
+				unk_lbl.modulate = Color(0.7, 0.7, 0.7, 1)
 				unk_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 				slot_hbox.add_child(unk_lbl)
 		else:
 			var empty_lbl = Label.new()
 			empty_lbl.text = "(empty)"
 			empty_lbl.add_theme_font_size_override("font_size", GameContext.fs(13))
-			empty_lbl.modulate = Color(0.5, 0.5, 0.5, 1)
+			empty_lbl.modulate = Color(0.7, 0.7, 0.7, 1)
 			empty_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			slot_hbox.add_child(empty_lbl)
 
@@ -7125,7 +7205,7 @@ func _show_bag_item_selection(hero_id: String) -> void:
 	if stash_items.is_empty():
 		var empty_label = Label.new()
 		empty_label.text = "(No items in stash)"
-		empty_label.modulate = Color(0.5, 0.5, 0.5, 1)
+		empty_label.modulate = Color(0.7, 0.7, 0.7, 1)
 		vbox.add_child(empty_label)
 	else:
 		var scroll = ScrollContainer.new()
@@ -7151,7 +7231,7 @@ func _show_bag_item_selection(hero_id: String) -> void:
 			var type_label = Label.new()
 			type_label.text = tpl.item_type
 			type_label.custom_minimum_size = Vector2(70, 0)
-			type_label.modulate = Color(0.6, 0.6, 0.6, 1)
+			type_label.modulate = Color(0.78, 0.78, 0.78, 1)
 			hbox.add_child(type_label)
 
 			var add_btn = Button.new()
@@ -7366,7 +7446,7 @@ func _show_equip_selection_popup(hero_id: String, slot: String) -> void:
 				compare_label.modulate = Color(0.8, 0.8, 0.8)  # Neutral
 		else:
 			compare_label.text = "  (no stat change)"
-			compare_label.modulate = Color(0.6, 0.6, 0.6)
+			compare_label.modulate = Color(0.78, 0.78, 0.78)
 
 		compare_label.add_theme_font_size_override("font_size", GameContext.fs(14))
 		item_vbox.add_child(compare_label)
@@ -7581,9 +7661,9 @@ func _show_dismiss_warning_overlay(hero_id: String) -> void:
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(420, 0)
 	var pstyle = StyleBoxFlat.new()
-	pstyle.bg_color = Color(0.12, 0.10, 0.08, 0.95)
+	pstyle.bg_color = _region_palette.get("bg_dark", Color(0.14, 0.12, 0.10, 0.95))
 	pstyle.set_border_width_all(2)
-	pstyle.border_color = Color(0.6, 0.5, 0.3, 0.8)
+	pstyle.border_color = _region_palette.get("border", Color(0.55, 0.4, 0.25, 0.8))
 	pstyle.set_corner_radius_all(8)
 	pstyle.set_content_margin_all(16)
 	panel.add_theme_stylebox_override("panel", pstyle)
@@ -7819,7 +7899,7 @@ func _build_production_ui() -> void:
 	if _current_facility == null:
 		var no_data = Label.new()
 		no_data.text = "(No facility data)"
-		no_data.modulate = Color(0.6, 0.6, 0.6, 1)
+		no_data.modulate = Color(0.78, 0.78, 0.78, 1)
 		_facility_actions_container.add_child(no_data)
 		return
 
@@ -8118,7 +8198,7 @@ func _build_item_picker_list(facility_id: String) -> void:
 		grid.queue_free()
 		var empty_label = Label.new()
 		empty_label.text = "(No ingredients in stash)"
-		empty_label.modulate = Color(0.6, 0.6, 0.6, 1)
+		empty_label.modulate = Color(0.78, 0.78, 0.78, 1)
 		_facility_actions_container.add_child(empty_label)
 
 
@@ -8332,7 +8412,7 @@ func _build_discovery_log_view(facility, facility_id: String, town_id: String, c
 				label.text = "??? + ??? + ??? = ???"
 			else:
 				label.text = "??? + ??? = ???"
-			label.modulate = Color(0.5, 0.5, 0.5, 0.6)
+			label.modulate = Color(0.7, 0.7, 0.7, 0.85)
 			label.add_theme_font_size_override("font_size", GameContext.fs(14))
 			row.add_child(label)
 
@@ -8365,7 +8445,7 @@ func _build_production_upgrade_view(facility, facility_id: String, town_id: Stri
 			elif tier == current_tier + 1:
 				btn.modulate = Color(1, 1, 1, 1)
 			else:
-				btn.modulate = Color(0.5, 0.5, 0.5, 1)
+				btn.modulate = Color(0.7, 0.7, 0.7, 1)
 		btn.pressed.connect(_on_upgrade_tier_tab_pressed.bind(tier))
 		tier_row.add_child(btn)
 
@@ -8402,13 +8482,13 @@ func _build_production_upgrade_view(facility, facility_id: String, town_id: Stri
 		var status_label = Label.new()
 		status_label.text = "Locked"
 		status_label.add_theme_font_size_override("font_size", GameContext.fs(16))
-		status_label.modulate = Color(0.5, 0.5, 0.5, 1)
+		status_label.modulate = Color(0.7, 0.7, 0.7, 1)
 		status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_facility_actions_container.add_child(status_label)
 
 		var lock_msg = Label.new()
 		lock_msg.text = "Requires Tier %d first" % (selected_tier - 1)
-		lock_msg.modulate = Color(0.6, 0.6, 0.6, 1)
+		lock_msg.modulate = Color(0.78, 0.78, 0.78, 1)
 		lock_msg.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_facility_actions_container.add_child(lock_msg)
 
@@ -8481,7 +8561,7 @@ func _build_crafting_recipes_section() -> void:
 	if available_recipes.size() == 0:
 		var no_recipes = Label.new()
 		no_recipes.text = "(No recipes available at this tier)"
-		no_recipes.modulate = Color(0.6, 0.6, 0.6, 1)
+		no_recipes.modulate = Color(0.78, 0.78, 0.78, 1)
 		_facility_actions_container.add_child(no_recipes)
 	else:
 		for recipe in available_recipes:
@@ -8706,7 +8786,7 @@ func _build_dungeon_ui() -> void:
 	if town == null or town.dungeon_id == "":
 		var no_dungeon = Label.new()
 		no_dungeon.text = "(No dungeon available)"
-		no_dungeon.modulate = Color(0.6, 0.6, 0.6, 1)
+		no_dungeon.modulate = Color(0.78, 0.78, 0.78, 1)
 		_facility_actions_container.add_child(no_dungeon)
 		return
 
@@ -8781,7 +8861,7 @@ func _build_dungeon_enter_view(dungeon, dungeon_id: String, floor_count: int) ->
 		else:
 			btn.text = "F%d" % floor_num
 			btn.disabled = true
-			btn.modulate = Color(0.5, 0.5, 0.5, 1)
+			btn.modulate = Color(0.7, 0.7, 0.7, 1)
 
 		floor_row.add_child(btn)
 
@@ -8916,7 +8996,7 @@ func _build_dungeon_floor_info(dungeon, floor_num: int) -> void:
 				var x_label = Label.new()
 				x_label.text = "x"
 				x_label.add_theme_font_size_override("font_size", GameContext.fs(11))
-				x_label.modulate = Color(0.5, 0.5, 0.5, 1)
+				x_label.modulate = Color(0.7, 0.7, 0.7, 1)
 				icon_row.add_child(x_label)
 			var icon_rect = tpl.create_icon_rect(20)
 			if icon_rect != null:
@@ -8968,7 +9048,7 @@ func _build_dungeon_dangers_view() -> void:
 	insurance_info.text = "In the future, you will be able to purchase insurance policies for your heroes before entering the dungeon. Insurance can protect against permanent death or recover a portion of lost loot."
 	insurance_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	insurance_info.add_theme_font_size_override("font_size", GameContext.fs(14))
-	insurance_info.modulate = Color(0.6, 0.6, 0.6, 1)
+	insurance_info.modulate = Color(0.78, 0.78, 0.78, 1)
 	_facility_actions_container.add_child(insurance_info)
 
 
@@ -9091,7 +9171,7 @@ func _build_equip_hero_picker_ui() -> void:
 	if ordered_heroes.size() == 0:
 		var no_heroes = Label.new()
 		no_heroes.text = "No heroes recruited. Visit the Inn to recruit."
-		no_heroes.modulate = Color(0.6, 0.6, 0.6, 1)
+		no_heroes.modulate = Color(0.78, 0.78, 0.78, 1)
 		_facility_actions_container.add_child(no_heroes)
 		return
 
@@ -9111,7 +9191,7 @@ func _build_equip_hero_picker_ui() -> void:
 			var bench_label = Label.new()
 			bench_label.text = "Bench Heroes"
 			bench_label.add_theme_font_size_override("font_size", GameContext.fs(14))
-			bench_label.modulate = Color(0.6, 0.6, 0.6, 1)
+			bench_label.modulate = Color(0.78, 0.78, 0.78, 1)
 			_facility_actions_container.add_child(bench_label)
 
 		var hero_name = hero.get("name", hero_id)
@@ -9184,7 +9264,7 @@ func _build_equip_hero_picker_ui() -> void:
 			current_lbl.modulate = Color(0.8, 0.7, 0.5, 1)
 		else:
 			current_lbl.text = "Current: Empty"
-			current_lbl.modulate = Color(0.5, 0.5, 0.5, 1)
+			current_lbl.modulate = Color(0.7, 0.7, 0.7, 1)
 		info_vbox.add_child(current_lbl)
 
 		# Right: select button
@@ -9267,7 +9347,7 @@ func _build_equip_comparison_ui() -> void:
 	var old_header = Label.new()
 	old_header.text = "Current: %s" % old_name
 	old_header.add_theme_font_size_override("font_size", GameContext.fs(15))
-	old_header.modulate = Color(0.8, 0.5, 0.5, 1) if old_item_id != "" else Color(0.5, 0.5, 0.5, 1)
+	old_header.modulate = Color(0.8, 0.5, 0.5, 1) if old_item_id != "" else Color(0.7, 0.7, 0.7, 1)
 	comp_vbox.add_child(old_header)
 
 	# New item
@@ -9329,7 +9409,7 @@ func _build_equip_comparison_ui() -> void:
 			delta_lbl.modulate = Color(1.0, 0.3, 0.3, 1)
 		else:
 			delta_lbl.text = "(0)"
-			delta_lbl.modulate = Color(0.5, 0.5, 0.5, 1)
+			delta_lbl.modulate = Color(0.7, 0.7, 0.7, 1)
 		stat_row.add_child(delta_lbl)
 
 	# Bag capacity comparison (for backpack slot)
@@ -9378,7 +9458,7 @@ func _build_equip_comparison_ui() -> void:
 			bag_delta_lbl.modulate = Color(1.0, 0.3, 0.3, 1)
 		else:
 			bag_delta_lbl.text = "(0)"
-			bag_delta_lbl.modulate = Color(0.5, 0.5, 0.5, 1)
+			bag_delta_lbl.modulate = Color(0.7, 0.7, 0.7, 1)
 		bag_row.add_child(bag_delta_lbl)
 
 	# Buttons
@@ -9473,7 +9553,7 @@ func _build_bag_transfer_hero_picker_ui() -> void:
 	if ordered_heroes.size() == 0:
 		var no_heroes = Label.new()
 		no_heroes.text = "No heroes recruited. Visit the Inn to recruit."
-		no_heroes.modulate = Color(0.6, 0.6, 0.6, 1)
+		no_heroes.modulate = Color(0.78, 0.78, 0.78, 1)
 		_facility_actions_container.add_child(no_heroes)
 		return
 
@@ -9492,7 +9572,7 @@ func _build_bag_transfer_hero_picker_ui() -> void:
 			var bench_label = Label.new()
 			bench_label.text = "Bench Heroes"
 			bench_label.add_theme_font_size_override("font_size", GameContext.fs(14))
-			bench_label.modulate = Color(0.6, 0.6, 0.6, 1)
+			bench_label.modulate = Color(0.78, 0.78, 0.78, 1)
 			_facility_actions_container.add_child(bench_label)
 
 		var hero_name = hero.get("name", hero_id)

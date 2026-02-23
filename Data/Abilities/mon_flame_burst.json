@@ -1,0 +1,17 @@
+{
+  "id": "mon_flame_burst",
+  "display_name": "Flame Burst",
+  "description": "Launches a burst of searing flames that burns the target.",
+  "icon_hint": "erupting fireball with orange-red flame tendrils",
+  "ability_type": "monster",
+  "source_class_id": "",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 6,
+  "damage_type": "fire",
+  "attack_scaling": 0.6,
+  "cooldown": 3,
+  "applies_status_id": "burning",
+  "applies_status_duration": 3,
+  "status_stacks": 2
+}

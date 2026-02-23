@@ -174,13 +174,13 @@ visible = false
 layout_mode = 2
 text = "(No alternate route available)"
 horizontal_alignment = 1
-modulate = Color(0.5, 0.5, 0.5, 1)
+modulate = Color(0.7, 0.7, 0.7, 1)
 
 [node name="LegendLabel" type="Label" parent="MainVBox/MapSection"]
 layout_mode = 2
 text = "Combat=Fight | Elite=Hard Fight | Event=Story"
 horizontal_alignment = 1
-modulate = Color(0.5, 0.5, 0.5, 1)
+modulate = Color(0.7, 0.7, 0.7, 1)
 
 [node name="Separator4" type="HSeparator" parent="MainVBox"]
 layout_mode = 2
@@ -241,4 +241,4 @@ modulate = Color(1, 0.7, 0.7, 1)
 layout_mode = 2
 text = "A=Choice A | B=Choice B | E=Extract | F=Flee"
 horizontal_alignment = 1
-modulate = Color(0.5, 0.5, 0.5, 1)
+modulate = Color(0.7, 0.7, 0.7, 1)

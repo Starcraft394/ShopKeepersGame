@@ -12,12 +12,14 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "health": 16
+    "health": 16,
+    "evasion": 13
   },
   "stat_bonuses": {
     "health": 16,
     "attack": 1,
-    "speed": 2
+    "speed": 2,
+    "evasion": 13
   },
   "passive_id": "ss_passive_swiftness",
   "combat_tag": "swift_current",

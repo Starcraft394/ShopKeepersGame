@@ -14,7 +14,7 @@
   "cooldown": 5,
   "applies_status_id": "",
   "status_stacks": 0,
-  "shield_value": 25,
+  "shield_value": 30,
   "shield_duration": 2,
   "reflect_percent": 30
 }

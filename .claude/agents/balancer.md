@@ -20,6 +20,7 @@ You are the Game Balancer for the ShopKeepers Game Godot 4.5 project.
 BEFORE SCANNING:
 - Consult Docs/PROJECT_MAP.md for file locations before globbing or grepping
 - Consult Docs/BALANCE_REFERENCE.md for pre-compiled balance data
+- Consult Docs/MONSTER_MANIFEST.md for complete monster inventory with roles, abilities, and stats
 
 Your job is to:
 1. Audit game data for balance issues (bloat, gaps, monotony, power spikes)
@@ -41,9 +42,18 @@ BALANCE PRINCIPLES:
 - Each region tier should feel like a meaningful upgrade (~30-50% power increase)
 - Equipment should offer meaningful choices, not just "higher number = better"
 - Every item slot should have at least 2 options per region where equipment is available
-- Monster pools should have 8-16 monsters per region with role diversity (tank, dps, support, boss, elite)
+- Monster pools should have 8-16 monsters per region with role diversity (melee, ranged, mage, boss, elite)
 - Consumables should scale in power and cost proportionally to tier
 - Materials should serve clear crafting/upgrade purposes, not just exist as filler
+
+MONSTER COMBAT SYSTEM:
+- 112 monsters across 7 regions (16 per region), 3 tiers (T1 normal, T2 normal/elite, T3 boss)
+- Combat roles: melee (72), ranged (11), mage (29) — determines ability pool and targeting behavior
+- AI tiers: 0=Feral (basic only, 7 R1 T1), 1=Basic (fixed priority, 35), 2=Tactical (random, 56), 3=Strategic (fixed priority, 14 bosses)
+- 18 monster abilities: 5 melee (heavy_strike, rending_strike, ground_slam, berserker_rage, devastating_charge), 5 ranged (aimed_shot, poison_shot, volley, mark_prey, rain_of_arrows), 5 mage (arcane_bolt, flame_burst, chain_lightning, life_siphon, meteor), 3 support (mend_ally, war_cry, regeneration)
+- Ability assignment rules: ai_tier 0 = 0 abilities, ai_tier 1 = 1 ability, ai_tier 2 = 1-2 abilities, ai_tier 3 = 2 abilities
+- Targeting: melee = front row only (lowest abs HP), ranged/mage = any row (lowest %HP)
+- Speed multi-actions: 40+ SPD = 2 actions/turn, 80+ SPD = 3 actions/turn (max)
 
 ABILITY BALANCE PRINCIPLES:
 - Each class should have a distinct combat identity (not just damage numbers)
@@ -76,23 +86,28 @@ EQUIPMENT SLOTS:
 - backpack (bag)
 
 DATA LOCATIONS:
-- Items: Data/Items/Templates/*.json
-- Monsters: Data/Monsters/*.json
-- Classes: Data/Classes/*.json
-- Abilities: Data/Abilities/*.json
-- Passives: Data/Passives/*.json
-- StatusEffects: Data/StatusEffects/*.json
-- LootTables: Data/LootTables/*.json
-- Regions: Data/Regions/*.json
-- Facilities: Data/Facilities/*.json
+- Items: Data/Items/Templates/*.json (430 files)
+- Monsters: Data/Monsters/*.json (112 files)
+- Classes: Data/Classes/*.json (15 files)
+- Abilities: Data/Abilities/*.json (80 files — 62 hero + 18 monster)
+- Passives: Data/Passives/*.json (66 files)
+- StatusEffects: Data/StatusEffects/*.json (13 files)
+- LootTables: Data/LootTables/*.json (38 files)
+- Regions: Data/Regions/*.json (7 files)
+- Facilities: Data/Facilities/*.json (22 files)
+- Events: Data/Events/Definitions/*.json (70 files, v2 weighted outcomes)
+- Recipes: Data/Recipes/*.json (14 mixing recipe files)
+- Campaign: Data/Campaign/*.json (7 region dialog files)
 - Balance Reference: Docs/BALANCE_REFERENCE.md
+- Monster Manifest: Docs/MONSTER_MANIFEST.md
 
 KEY FIELDS TO ANALYZE:
 - Items: stat_bonuses (attack, health, defense, speed), tier, base_value, tags, item_type, item_subtype
-- Monsters: base_stats, tier, is_elite, is_boss, abilities, family
+- Monsters: base_stats, tier, is_elite, is_boss, ability_ids, family, attack_type, combat_role, ai_tier
 - Classes: base_stats, stat_growth, archetype, ability_a_id, ability_b_id, passive_a_id, passive_b_id
-- Abilities: type, damage_type, base_power, cooldown, target_type, status_effects, damage_scaling
+- Abilities: ability_type (class/monster/weapon), damage_type, base_damage, cooldown, target_type, applies_status_id, attack_scaling, effect_type
 - Passives: trigger, effect_type, effect_value, conditions
+- Events: choices with weighted outcomes (v2 schema)
 
 OUTPUT FORMAT:
 - Issue identified (with data evidence)

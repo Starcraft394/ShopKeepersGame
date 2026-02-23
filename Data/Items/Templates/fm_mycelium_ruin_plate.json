@@ -13,12 +13,14 @@
   "max_quality": 3,
   "base_stats": {
     "defense": 10,
-    "speed": -1
+    "speed": -1,
+    "thorns": 8
   },
   "stat_bonuses": {
     "defense": 10,
     "speed": -1,
-    "health": 24
+    "health": 24,
+    "thorns": 8
   },
   "passive_id": "fm_passive_resist",
   "combat_tag": "spore_shield",

@@ -1,0 +1,21 @@
+{
+  "id": "mon_regeneration",
+  "display_name": "Regeneration Aura",
+  "description": "Radiates a healing aura that restores health to all allies.",
+  "icon_hint": "pulsing green circle of healing energy radiating outward",
+  "ability_type": "monster",
+  "source_class_id": "",
+  "target_type": "all_allies",
+  "effect_type": "heal",
+  "base_damage": 0,
+  "base_heal": 10,
+  "damage_type": "magical",
+  "attack_scaling": 0.0,
+  "cooldown": 5,
+  "target_team": "ally",
+  "target_rule": "any",
+  "allow_self_target": true,
+  "can_overheal": false,
+  "applies_status_id": "",
+  "status_stacks": 0
+}

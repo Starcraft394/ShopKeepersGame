@@ -19,7 +19,7 @@
   "combat_tag_effect": {
     "trigger": "round_start",
     "effect": "heal",
-    "value": 2
+    "value": 3
   },
   "base_value": 155,
   "buy_value": 0,

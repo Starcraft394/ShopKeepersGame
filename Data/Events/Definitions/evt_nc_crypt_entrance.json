@@ -14,14 +14,14 @@
           "weight": 50,
           "text": "You duck through the low archway and find a ransacked burial chamber — but the looters missed a coin pouch wedged beneath a collapsed shelf.",
           "effects": [
-            { "type": "add_gold_range", "min": 15, "max": 25 }
+            { "type": "add_gold_range", "min": 10, "max": 16 }
           ]
         },
         {
           "weight": 30,
           "text": "The crypt opens into a surprisingly intact vault. Gold and grave dust coat every surface — a rich haul.",
           "effects": [
-            { "type": "add_gold_range", "min": 20, "max": 30 },
+            { "type": "add_gold_range", "min": 13, "max": 20 },
             { "type": "add_item", "item_id": "nc_grave_dust", "min_qty": 1, "max_qty": 2 }
           ]
         },

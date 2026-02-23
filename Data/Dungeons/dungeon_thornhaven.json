@@ -17,7 +17,12 @@
   "gear_whitelist": [
     "rusty_sword", "wooden_shield", "leather_vest", "hunting_bow",
     "iron_helmet", "iron_greaves", "wooden_mace", "oak_staff",
-    "simple_ring", "tanned_leather_hood", "tanned_leather_greaves"
+    "simple_ring", "tanned_leather_hood", "tanned_leather_greaves",
+    "gw_thorn_dagger", "gw_ranger_vest",
+    "gw_briar_fang", "gw_longbow", "gw_ironbark_maul", "gw_verdant_blade",
+    "gw_living_staff", "gw_living_focus", "gw_ironbark_shield",
+    "gw_ironbark_plate", "gw_living_vest", "gw_ironbark_helm",
+    "gw_ironbark_greaves", "gw_emerald_ring", "gw_emerald_pendant"
   ],
   "floor_theme": [
     "Overgrown Canopy",
@@ -27,27 +32,26 @@
   ],
   "tier1_monster_ids": [
     "goblin", "wolf", "slime", "giant_spider", "boar",
-    "bandit", "bandit_elite"
+    "bandit", "bandit_elite", "gr_forest_wisp", "gr_goblin_hexer",
+    "cultist_enforcer", "webspinner"
   ],
   "tier2_monster_ids": [
-    "gr_bramble_stalker", "webspinner",
-    "tf_logsplitter_brute", "tf_rustwood_construct",
-    "cultist_enforcer"
+    "gr_bramble_stalker", "tf_logsplitter_brute", "tf_rustwood_construct"
   ],
   "elite_monster_ids": [
     "tf_sawbone_enforcer", "cultist_enforcer_elite"
   ],
   "tier1_by_floor": [
-    ["goblin", "wolf", "slime", "bandit", "giant_spider"],
-    ["goblin", "giant_spider", "boar", "bandit_elite", "wolf"],
-    ["wolf", "boar", "giant_spider", "bandit_elite", "slime"],
-    ["boar", "bandit_elite", "wolf", "slime", "goblin"]
+    ["goblin", "wolf", "slime", "bandit", "giant_spider", "gr_forest_wisp"],
+    ["goblin", "giant_spider", "boar", "bandit_elite", "wolf", "gr_goblin_hexer", "cultist_enforcer"],
+    ["wolf", "boar", "giant_spider", "bandit_elite", "slime", "gr_forest_wisp", "gr_goblin_hexer", "webspinner"],
+    ["boar", "bandit_elite", "wolf", "slime", "goblin", "gr_goblin_hexer", "gr_forest_wisp", "cultist_enforcer", "webspinner"]
   ],
   "tier2_by_floor": [
-    ["cultist_enforcer", "tf_logsplitter_brute"],
-    ["cultist_enforcer", "tf_logsplitter_brute", "webspinner", "gr_bramble_stalker"],
-    ["gr_bramble_stalker", "tf_rustwood_construct", "cultist_enforcer", "webspinner", "tf_logsplitter_brute"],
-    ["gr_bramble_stalker", "webspinner", "tf_logsplitter_brute", "tf_rustwood_construct", "cultist_enforcer"]
+    ["tf_logsplitter_brute"],
+    ["tf_logsplitter_brute", "gr_bramble_stalker"],
+    ["gr_bramble_stalker", "tf_rustwood_construct", "tf_logsplitter_brute"],
+    ["gr_bramble_stalker", "tf_logsplitter_brute", "tf_rustwood_construct"]
   ],
   "elite_by_floor": [
     [],

@@ -1,0 +1,18 @@
+{
+  "id": "mon_life_siphon",
+  "display_name": "Life Siphon",
+  "description": "Drains life force from the target, healing the caster.",
+  "icon_hint": "swirling green-black energy stream flowing from victim to caster",
+  "ability_type": "monster",
+  "source_class_id": "",
+  "target_type": "single_enemy",
+  "effect_type": "damage_and_heal",
+  "base_damage": 8,
+  "base_heal": 8,
+  "damage_type": "dark",
+  "attack_scaling": 0.8,
+  "cooldown": 4,
+  "heal_target_rule": "self",
+  "applies_status_id": "",
+  "status_stacks": 0
+}

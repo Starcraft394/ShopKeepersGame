@@ -13,19 +13,21 @@
   "max_quality": 3,
   "base_stats": {
     "attack": 28,
-    "health": 2
+    "health": 2,
+    "life_steal": 12
   },
   "stat_bonuses": {
     "attack": 28,
     "speed": -3,
-    "health": 2
+    "health": 2,
+    "life_steal": 12
   },
   "ability_id": "fr_null_crush",
   "combat_tag": "dimensional_rift",
   "combat_tag_effect": {
     "trigger": "on_kill",
     "effect": "damage_random_enemy",
-    "damage": 8,
+    "damage": 12,
     "damage_type": "void",
     "chance": 0.25
   },

@@ -12,19 +12,21 @@
   "max_quality": 3,
   "category": "equipment",
   "base_stats": {
-    "defense": 6
+    "defense": 6,
+    "evasion": 15
   },
   "stat_bonuses": {
     "defense": 6,
     "health": 8,
-    "speed": 2
+    "speed": 2,
+    "evasion": 15
   },
   "combat_tag": "temporal_echo",
   "combat_tag_effect": {
     "trigger": "on_ability_use",
     "effect": "reduce_cooldown",
     "value": 1,
-    "chance": 0.2
+    "chance": 0.15
   },
   "allowed_affixes": [],
   "min_affixes": 0,

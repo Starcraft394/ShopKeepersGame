@@ -16,8 +16,8 @@
   "status_stacks": 0,
   "ally_buff": {
     "stat": "attack",
-    "value": 6,
-    "duration": 2
+    "value": 8,
+    "duration": 3
   },
   "target_team": "ally",
   "target_rule": "highest_attack",

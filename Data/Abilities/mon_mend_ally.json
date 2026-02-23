@@ -1,0 +1,21 @@
+{
+  "id": "mon_mend_ally",
+  "display_name": "Mend Ally",
+  "description": "Channels healing energy to restore the most wounded ally.",
+  "icon_hint": "gentle green healing glow surrounding a wounded creature",
+  "ability_type": "monster",
+  "source_class_id": "",
+  "target_type": "single_ally",
+  "effect_type": "heal",
+  "base_damage": 0,
+  "base_heal": 12,
+  "damage_type": "magical",
+  "attack_scaling": 0.0,
+  "cooldown": 4,
+  "target_team": "ally",
+  "target_rule": "lowest_hp_pct",
+  "allow_self_target": true,
+  "can_overheal": false,
+  "applies_status_id": "",
+  "status_stacks": 0
+}

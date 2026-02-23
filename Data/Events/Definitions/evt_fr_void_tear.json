@@ -24,7 +24,7 @@
           "effects": [
             { "type": "add_item", "item_id": "fr_entropy_residue", "min_qty": 1, "max_qty": 2 },
             { "type": "damage_hero", "amount": 9 },
-            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+            { "type": "apply_status", "status_id": "burning", "duration": 2, "target": "random_hero" }
           ]
         },
         {

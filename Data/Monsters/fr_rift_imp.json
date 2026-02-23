@@ -8,14 +8,16 @@
   "tier": 1,
   "ai_tier": 1,
   "attack_type": "ranged",
+  "combat_role": "mage",
   "base_stats": {
     "health": 243,
     "attack": 53,
     "defense": 20,
-    "speed": 53
+    "speed": 48
   },
   "ability_ids": [
-    "basic_attack"
+    "basic_attack",
+    "mon_flame_burst"
   ],
   "passive_ids": [],
   "loot_table_id": "lt_region7_common",

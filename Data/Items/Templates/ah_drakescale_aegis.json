@@ -12,11 +12,15 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "defense": 14
+    "defense": 14,
+    "thorns": 7,
+    "resist": 8
   },
   "stat_bonuses": {
     "defense": 14,
-    "health": 24
+    "health": 24,
+    "thorns": 7,
+    "resist": 8
   },
   "ability_id": "ah_drake_guard",
   "combat_tag": "burning_edge",
@@ -24,7 +28,7 @@
     "trigger": "on_attack",
     "effect": "apply_status",
     "status": "burning",
-    "chance": 0.1
+    "chance": 0.15
   },
   "allowed_affixes": [],
   "min_affixes": 0,

@@ -59,7 +59,7 @@
           "text": "You disturb a clutch of ember beetles nesting in the debris. They swarm over your hands before you can pull back.",
           "effects": [
             { "type": "damage_hero", "amount": 6 },
-            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+            { "type": "apply_status", "status_id": "burning", "duration": 2, "target": "random_hero" }
           ]
         }
       ]

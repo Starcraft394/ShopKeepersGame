@@ -16,7 +16,15 @@
   "encounter_tags": ["necro", "undead", "bone", "ghost", "crypt", "grave"],
   "gear_whitelist": [
     "nc_soul_reaver", "nc_wraith_bow", "nc_ossuary_plate",
-    "nc_spectral_aegis", "nc_deathward_ring"
+    "nc_spectral_aegis", "nc_deathward_ring",
+    "nc_deathward_band", "nc_ossuary_greaves", "nc_ossuary_helm",
+    "nc_ossuary_mail", "nc_ossuary_maul", "nc_ossuary_pendant",
+    "nc_ossuary_shield", "nc_soul_edge", "nc_soul_focus",
+    "nc_soul_staff", "nc_wraith_fang", "nc_wraith_pack",
+    "nc_wraith_shortbow", "nc_wraith_tunic",
+    "nc_bone_crown", "nc_bone_staff", "nc_bonecaller_amulet",
+    "nc_grave_dagger", "nc_soulfire_focus", "nc_wraith_leggings",
+    "nc_wraith_robe"
   ],
   "floor_theme": [
     "Graveyard Gate",

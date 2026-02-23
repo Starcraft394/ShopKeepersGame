@@ -12,11 +12,13 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "attack": 11
+    "attack": 11,
+    "resist": 14
   },
   "stat_bonuses": {
     "attack": 11,
-    "health": 18
+    "health": 18,
+    "resist": 14
   },
   "ability_id": "fm_mycelium_mend",
   "combat_tag": "spore_shield",

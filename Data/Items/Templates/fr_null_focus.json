@@ -12,18 +12,20 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "attack": 10
+    "attack": 10,
+    "evasion": 12
   },
   "stat_bonuses": {
     "attack": 10,
     "speed": 3,
-    "health": 22
+    "health": 22,
+    "evasion": 12
   },
   "combat_tag": "dimensional_rift",
   "combat_tag_effect": {
     "trigger": "on_kill",
     "effect": "damage_random_enemy",
-    "damage": 8,
+    "damage": 12,
     "damage_type": "void",
     "chance": 0.25
   },

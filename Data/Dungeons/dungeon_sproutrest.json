@@ -15,9 +15,14 @@
   "event_table_id": "et_region2_combined",
   "encounter_tags": ["spore", "fungal", "mycelium", "bioluminescent", "bog", "underground"],
   "gear_whitelist": [
-    "iron_sword", "iron_helmet", "iron_greaves", "iron_greataxe",
-    "chainmail_vest", "reinforced_shield", "composite_bow",
-    "arcane_staff", "silver_ring", "warriors_pendant"
+    "fm_spore_blade", "fm_spore_knife", "fm_spore_mace", "fm_fungal_shortbow",
+    "fm_spore_staff", "fm_spore_focus", "fm_sporecap_shield",
+    "fm_fungal_tunic", "fm_mycelium_vest", "fm_sporeguard_helm",
+    "fm_mycelium_leggings", "fm_bioluminescent_ring", "fm_mycelium_pendant",
+    "fm_fungal_staff", "fm_fungal_fang", "fm_fungal_longbow",
+    "fm_fungal_plate", "fm_mycelium_bulwark", "fm_mycelium_focus",
+    "fm_fungal_crown", "fm_fungal_greaves", "fm_fungal_ring",
+    "fm_sporeguard_pendant"
   ],
   "floor_theme": [
     "Biolum Shallows",

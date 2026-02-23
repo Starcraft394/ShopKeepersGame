@@ -11,7 +11,7 @@
   "base_heal": 18,
   "damage_type": "magical",
   "attack_scaling": 0.0,
-  "cooldown": 2,
+  "cooldown": 3,
   "applies_status_id": "",
   "status_stacks": 0,
   "target_team": "ally",

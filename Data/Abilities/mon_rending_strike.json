@@ -1,0 +1,17 @@
+{
+  "id": "mon_rending_strike",
+  "display_name": "Rending Strike",
+  "description": "A vicious slashing attack that leaves the target bleeding.",
+  "icon_hint": "jagged claw slash trailing red blood droplets",
+  "ability_type": "monster",
+  "source_class_id": "",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 5,
+  "damage_type": "physical",
+  "attack_scaling": 0.8,
+  "cooldown": 3,
+  "applies_status_id": "bleeding",
+  "applies_status_duration": 3,
+  "status_stacks": 2
+}

@@ -9,3 +9,6 @@
 nul
 tests_full_output.txt
 DevTools/*.log
+
+# Secrets
+.env

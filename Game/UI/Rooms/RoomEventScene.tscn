@@ -126,4 +126,4 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Press 1-4 to choose"
 horizontal_alignment = 1
-modulate = Color(0.5, 0.5, 0.5, 1)
+modulate = Color(0.7, 0.7, 0.7, 1)

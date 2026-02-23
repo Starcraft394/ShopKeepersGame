@@ -16,7 +16,13 @@
   "encounter_tags": ["volcanic", "fire", "lava", "ash", "obsidian", "scorched"],
   "gear_whitelist": [
     "ah_ember_blade", "ah_scorched_longbow", "ah_magma_plate",
-    "ah_drake_buckler", "ah_cinder_amulet"
+    "ah_drake_buckler", "ah_cinder_amulet",
+    "ah_cinder_fang", "ah_drake_greaves", "ah_drake_jerkin",
+    "ah_drake_pack", "ah_ember_focus", "ah_ember_ring",
+    "ah_obsidian_staff", "ah_volcanic_helm", "ah_volcanic_maul",
+    "ah_drake_maul", "ah_drakefang_blade", "ah_drakeheart_amulet",
+    "ah_drakescale_aegis", "ah_drakescale_greaves", "ah_drakescale_helm",
+    "ah_drakescale_plate", "ah_draketalon"
   ],
   "floor_theme": [
     "Scorched Approach",

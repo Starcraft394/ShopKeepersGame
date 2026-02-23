@@ -60,7 +60,11 @@ func _create_slot(item_id: String, display_name: String, qty: int) -> PanelConta
 	panel.custom_minimum_size = Vector2(40, 40)
 	panel.add_theme_stylebox_override("panel", SLOT_STYLE)
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
-	panel.tooltip_text = "%s x%d" % [display_name, qty]
+	var tip: String = "%s x%d" % [display_name, qty]
+	var tpl: ItemTemplate = DataRegistry.get_item_template(item_id)
+	if tpl != null and tpl.use_effect != "":
+		tip += "\n" + tpl.get_effect_label()
+	panel.tooltip_text = tip
 
 	var label := Label.new()
 	label.text = "%s\nx%d" % [display_name.left(3), qty] if qty > 1 else display_name.left(4)

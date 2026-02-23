@@ -10,11 +10,13 @@
   "equip_slot": "offhand",
   "tier": 3,
   "base_stats": {
-    "defense": 9
+    "defense": 9,
+    "thorns": 4
   },
   "stat_bonuses": {
     "defense": 9,
-    "health": 16
+    "health": 16,
+    "thorns": 4
   },
   "base_value": 80,
   "buy_value": 0,

@@ -12,11 +12,13 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "defense": 1
+    "defense": 1,
+    "crit_chance": 3
   },
   "stat_bonuses": {
     "defense": 1,
-    "health": 3
+    "health": 3,
+    "crit_chance": 3
   },
   "allowed_affixes": [],
   "min_affixes": 0,

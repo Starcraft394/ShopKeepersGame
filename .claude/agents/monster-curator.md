@@ -39,23 +39,35 @@ DATA LOCATION:
 
 MONSTER SCHEMA (required fields):
 - id, display_name, description, icon_hint, family, region_id, tier
-- attack_type ("melee" or "ranged")
+- attack_type ("melee" or "ranged") — affects targeting (melee=front row, ranged=any row)
+- combat_role ("melee", "ranged", "mage") — determines ability pool; defaults to attack_type
 - ai_tier (0=Feral, 1=Basic, 2=Tactical, 3=Strategic)
 - base_stats: { health, attack, defense, speed }
-- ability_ids: array of ability references
-- passive_ids: array of passive references (optional)
+- ability_ids: array of ability references (["basic_attack"] + up to 2 monster abilities)
+- passive_ids: array of passive references (currently empty for all monsters)
 - loot_table_id, gold_drop_min, gold_drop_max
 - is_elite (bool), is_boss (bool)
 - portrait_path
 
+MONSTER ABILITY SYSTEM:
+- 18 monster abilities in Data/Abilities/mon_*.json
+- Melee: mon_heavy_strike, mon_rending_strike, mon_ground_slam, mon_berserker_rage, mon_devastating_charge
+- Ranged: mon_aimed_shot, mon_poison_shot, mon_volley, mon_mark_prey, mon_rain_of_arrows
+- Mage: mon_arcane_bolt, mon_flame_burst, mon_chain_lightning, mon_life_siphon, mon_meteor
+- Support: mon_mend_ally, mon_war_cry, mon_regeneration
+- Assignment rules: ai_tier 0 = 0 extra abilities, ai_tier 1 = 1, ai_tier 2 = 1-2, ai_tier 3 = 2
+- Role distribution: 72 melee, 11 ranged, 29 mage
+
 MANIFEST FORMAT (Docs/MONSTER_MANIFEST.md):
 - Sorted by region → tier → id
-- Each entry: id | display_name | region | tier | family | attack_type | ai_tier | HP | ATK | DEF | SPD | abilities | passives | elite/boss
+- Each entry: id | display_name | region | tier | family | attack_type | combat_role | ai_tier | HP | ATK | DEF | SPD | abilities | passives | elite/boss
 - Section summaries with counts per region
 - Stat distribution tables per tier (min/avg/max for each stat)
 - AI tier distribution table
-- Ability coverage report (which monsters have abilities beyond basic_attack)
-- Attack type distribution per region
+- Combat role distribution table (melee/ranged/mage per region)
+- Ability coverage report (0, 1, or 2 extra abilities per monster)
+- Monster ability usage table (which abilities are most/least used)
+- Monster ability pool section (all 18 abilities with stats)
 
 REGION MAPPING:
 - region_1 (R1): Thornhaven — prefix: none, gr_, tf_

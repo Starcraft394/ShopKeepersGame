@@ -30,7 +30,7 @@
           "text": "The tunnel narrows suddenly and the air turns searing. A hidden vent blasts superheated gas into the passage. You scramble back, choking.",
           "effects": [
             { "type": "damage_party", "amount": 6 },
-            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+            { "type": "apply_status", "status_id": "burning", "duration": 2, "target": "random_hero" }
           ]
         }
       ]
@@ -86,9 +86,10 @@
         },
         {
           "weight": 15,
-          "text": "You doze off in the warmth, only to wake to a low rumble. The tunnel trembles and dust rains down. Time to go — now.",
+          "text": "You doze off in the warmth, only to wake to a low rumble. The tunnel trembles and dust rains down. As you scramble out, you grab a loose shard from the wall.",
           "effects": [
-            { "type": "damage_hero", "amount": 4 }
+            { "type": "damage_hero", "amount": 4 },
+            { "type": "add_item", "item_id": "obsidian_shard", "min_qty": 1, "max_qty": 1 }
           ]
         }
       ]

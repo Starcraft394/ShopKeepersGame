@@ -25,28 +25,41 @@ Your job is to:
 5. Add tests when data rules are enforced by code
 
 DATA CATEGORIES:
-- Items/Templates/ (89 files) - equipment, consumables, materials, backpacks
-- Facilities/ (20 files) - shops, production, inn, training
-- Monsters/ (47 files) - combat enemies by tier/region
-- Classes/ (16 files) - hero classes with stats, abilities, passives
-- Races/ (9 files) - hero races with stat modifiers
-- Abilities/ (13 files) - active abilities
-- Passives/ (14 files) - passive bonuses
-- StatusEffects/ (6 files) - combat status effects
-- Dungeons/ (2 files) - floor structure, monster lists
-- LootTables/ (4 files) - drop tables by rarity
-- Events/ (11 files) - choice events and event tables
+- Items/Templates/ (430 files) - equipment, consumables, materials, backpacks, class books
+- Monsters/ (112 files) - combat enemies by tier/region, with combat_role and ability_ids
+- Abilities/ (80 files) - 62 hero abilities + 18 monster abilities
+- Passives/ (66 files) - class passives + racial passives
+- Classes/ (15 files) - hero classes with stats, abilities, passives
+- Races/ (9 files) - hero races with stat modifiers and racial passives
+- StatusEffects/ (13 files) - combat status effects (stun, bleed, burn, etc.)
+- Facilities/ (22 files) - shops, production, inn, training with tier progression
+- LootTables/ (38 files) - drop tables by rarity per region
+- Dungeons/ (7 files) - floor structure, monster pools per region
+- Events/Definitions/ (70 files) - v2 choice events with weighted outcomes
+- Events/ (7 files) - region event tables (et_region*.json)
+- Regions/ (7 files) - region world data
+- Towns/ (7 files) - town configurations
+- Recipes/ (14 files) - mixing recipes (chef + alchemist)
+- Shops/Pools/ (8 files) - shop inventory pools
+- Campaign/ (7 files) - campaign dialog JSON files across 7 regions
+- Tutorials/ (14 files) - tutorial trigger definitions
+- Affixes/ (1 file) - regional item affix definitions
 
 SCHEMA RULES:
-- Items: id, display_name, description, item_type, tier, base_value, tags
+- Items: id, display_name, description, item_type, tier, base_value, tags, stat_bonuses, icon_path
+- Monsters: id, display_name, description, attack_type, combat_role, ai_tier, base_stats, ability_ids, passive_ids, loot_table_id, is_elite, is_boss, portrait_path
 - Classes: archetype, base_stats, stat_growth, ability_a_id, ability_b_id, passive_a_id, passive_b_id
+- Abilities: id, ability_type (class/monster/weapon), effect_type, target_type, base_damage, attack_scaling, cooldown, applies_status_id
 - Facilities: unlocks array with id, unlock_group, label, required_tier, costs
-- Shop items: requires_unlock_group, required_facility_tier
+- Events (v2): choices array, each with outcomes array (weighted random): [{weight, effects}]
+- Campaign: id, trigger_type, display_type, region_id, dialog_text, portrait, flag_required
 
-KNOWN INCONSISTENCIES (document but don't break):
-- Items use mixed stat fields (base_stats, stat_bonuses, stat_scalars)
-- Legacy warrior class lacks modern fields
-- Facilities have _tf regional variants
+KEY RELATIONSHIPS:
+- Monster combat_role ("melee"/"ranged"/"mage") determines ability pool assignment
+- Monster ai_tier (0-3) determines ability selection behavior in combat
+- Monster ability_ids reference Data/Abilities/mon_*.json files
+- Item affix_pool references Data/Affixes/ regional definitions
+- Event outcomes use v2 weighted random schema (replaces old effects/risk/modifier)
 
 OUTPUT FORMAT:
 - Schema validation results

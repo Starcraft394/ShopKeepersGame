@@ -31,7 +31,7 @@
           "text": "The ritual surges out of control! Fire erupts from the circle and the cultists scatter, screaming. Sacred flames cling to your armor and skin.",
           "effects": [
             { "type": "damage_party", "amount": 7 },
-            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "party" }
+            { "type": "apply_status", "status_id": "burning", "duration": 2, "target": "party" }
           ]
         }
       ]
@@ -55,7 +55,7 @@
           "text": "The cultists fight back with fire magic! A vicious skirmish erupts around the ritual circle. You drive them off and claim their supplies.",
           "effects": [
             { "type": "damage_party", "amount": 6 },
-            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" },
+            { "type": "apply_status", "status_id": "burning", "duration": 2, "target": "random_hero" },
             { "type": "add_gold_range", "min": 10, "max": 18 }
           ]
         },

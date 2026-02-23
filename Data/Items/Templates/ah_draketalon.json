@@ -12,11 +12,13 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "attack": 12
+    "attack": 12,
+    "crit_chance": 15
   },
   "stat_bonuses": {
     "attack": 12,
-    "speed": 5
+    "speed": 5,
+    "crit_chance": 15
   },
   "ability_id": "ah_cinder_flurry",
   "combat_tag": "burning_edge",
@@ -24,7 +26,7 @@
     "trigger": "on_attack",
     "effect": "apply_status",
     "status": "burning",
-    "chance": 0.1
+    "chance": 0.15
   },
   "allowed_affixes": [],
   "min_affixes": 0,

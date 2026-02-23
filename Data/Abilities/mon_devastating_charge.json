@@ -1,0 +1,17 @@
+{
+  "id": "mon_devastating_charge",
+  "display_name": "Devastating Charge",
+  "description": "Charges forward with unstoppable force, dealing massive damage and stunning the target.",
+  "icon_hint": "armored beast charging with lowered horns trailing dust cloud",
+  "ability_type": "monster",
+  "source_class_id": "",
+  "target_type": "single_enemy",
+  "effect_type": "damage",
+  "base_damage": 12,
+  "damage_type": "physical",
+  "attack_scaling": 1.0,
+  "cooldown": 5,
+  "applies_status_id": "stun",
+  "applies_status_duration": 1,
+  "status_stacks": 1
+}

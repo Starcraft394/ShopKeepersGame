@@ -24,6 +24,14 @@
       "output_id": "se_reality_flare",
       "output_qty": 1,
       "required_tier": 3
+    },
+    {
+      "input_a": "boss_trophy_starfall_expanse",
+      "input_b": "astral_fragment",
+      "input_c": "temporal_residue",
+      "output_id": "se_starlight_draught",
+      "output_qty": 1,
+      "required_tier": 4
     }
   ]
 }

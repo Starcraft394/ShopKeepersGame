@@ -14,21 +14,21 @@
           "weight": 50,
           "text": "You pocket the coin pouches quickly. The graves remain silent — whoever left these won't miss them.",
           "effects": [
-            { "type": "add_gold_range", "min": 14, "max": 24 }
+            { "type": "add_gold_range", "min": 9, "max": 16 }
           ]
         },
         {
           "weight": 30,
           "text": "A generous take. One pouch holds twice the gold you expected, along with a small gem wrapped in cloth.",
           "effects": [
-            { "type": "add_gold_range", "min": 20, "max": 28 }
+            { "type": "add_gold_range", "min": 13, "max": 18 }
           ]
         },
         {
           "weight": 20,
           "text": "As you grab the last pouch, a spectral hand erupts from the grave and rakes across your arm. The dead take their offerings seriously.",
           "effects": [
-            { "type": "add_gold_range", "min": 10, "max": 16 },
+            { "type": "add_gold_range", "min": 7, "max": 10 },
             { "type": "damage_hero", "amount": 7 },
             { "type": "apply_status", "status_id": "bleeding", "duration": 2, "target": "random_hero" }
           ]

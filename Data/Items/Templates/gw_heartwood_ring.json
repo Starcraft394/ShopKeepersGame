@@ -12,18 +12,20 @@
   "min_quality": 0,
   "max_quality": 3,
   "base_stats": {
-    "health": 16
+    "health": 16,
+    "crit_chance": 12
   },
   "stat_bonuses": {
     "health": 16,
-    "defense": 1
+    "defense": 1,
+    "crit_chance": 12
   },
   "passive_id": "gw_passive_heal",
   "combat_tag": "regenerating",
   "combat_tag_effect": {
     "trigger": "round_start",
     "effect": "heal",
-    "value": 2
+    "value": 3
   },
   "allowed_affixes": [],
   "min_affixes": 0,

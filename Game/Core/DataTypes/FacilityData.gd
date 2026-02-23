@@ -53,6 +53,7 @@ var shop_profile: Dictionary = {}  # Town-unique shop profile { profile_id, cate
 
 # Inn-specific: recruit level by tier
 var recruit_level_by_tier: Dictionary = {}  # { "1": 1, "2": 2 } - hero level when recruiting at this tier
+var regional_recruit_level_minimum: Dictionary = {}  # { "1": 1, "5": 15 } - min recruit level per region
 var recruit_candidates: Array = []  # Array of { class_id, cost_gold } for Inn recruitment
 var max_party_size: int = 2  # Max party size for this inn
 
@@ -136,6 +137,8 @@ static func from_dict(data: Dictionary) -> FacilityData:
 	# Inn-specific fields
 	var recruit_level_val = data.get("recruit_level_by_tier", {})
 	instance.recruit_level_by_tier = recruit_level_val if recruit_level_val is Dictionary else {}
+	var regional_min_val = data.get("regional_recruit_level_minimum", {})
+	instance.regional_recruit_level_minimum = regional_min_val if regional_min_val is Dictionary else {}
 	var recruit_candidates_val = data.get("recruit_candidates", [])
 	instance.recruit_candidates = recruit_candidates_val if recruit_candidates_val is Array else []
 	instance.max_party_size = data.get("max_party_size", 2)

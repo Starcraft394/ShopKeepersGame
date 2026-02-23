@@ -10,18 +10,22 @@
   "equip_slot": "offhand",
   "tier": 4,
   "base_stats": {
-    "defense": 16
+    "defense": 16,
+    "thorns": 6,
+    "resist": 12
   },
   "stat_bonuses": {
     "defense": 16,
-    "health": 30
+    "health": 30,
+    "thorns": 6,
+    "resist": 12
   },
   "combat_tag": "undying_will",
   "combat_tag_effect": {
     "trigger": "on_low_hp",
     "effect": "buff_stat",
     "stat": "defense",
-    "value": 3,
+    "value": 6,
     "duration": 2,
     "threshold": 0.25,
     "once": true

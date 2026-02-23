@@ -8,6 +8,7 @@
   "tier": 2,
   "ai_tier": 2,
   "attack_type": "melee",
+  "combat_role": "melee",
   "base_stats": {
     "health": 110,
     "attack": 23,
@@ -15,7 +16,8 @@
     "speed": 14
   },
   "ability_ids": [
-    "basic_attack"
+    "basic_attack",
+    "mon_rending_strike"
   ],
   "passive_ids": [],
   "loot_table_id": "lt_region2_uncommon",

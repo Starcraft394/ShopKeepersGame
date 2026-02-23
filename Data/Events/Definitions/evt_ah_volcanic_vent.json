@@ -29,7 +29,7 @@
           "text": "A violent eruption of gas blasts from the vent as you reach for the crystals. Searing fumes engulf your outstretched arm.",
           "effects": [
             { "type": "damage_hero", "amount": 9 },
-            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+            { "type": "apply_status", "status_id": "burning", "duration": 2, "target": "random_hero" }
           ]
         }
       ]
@@ -58,7 +58,7 @@
           "text": "The vent belches a cloud of choking sulfur. Your party staggers back, eyes streaming and lungs burning.",
           "effects": [
             { "type": "damage_party", "amount": 5 },
-            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+            { "type": "apply_status", "status_id": "burning", "duration": 2, "target": "random_hero" }
           ]
         }
       ]
@@ -88,7 +88,7 @@
           "text": "The vent erupts the moment you reach the coins. Superheated gas sears exposed skin and the blast knocks you backward.",
           "effects": [
             { "type": "damage_hero", "amount": 10 },
-            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" },
+            { "type": "apply_status", "status_id": "burning", "duration": 2, "target": "random_hero" },
             { "type": "add_gold_range", "min": 4, "max": 8 }
           ]
         }

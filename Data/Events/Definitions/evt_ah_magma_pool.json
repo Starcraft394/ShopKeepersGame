@@ -29,7 +29,7 @@
           "text": "The crust gives way underfoot! You lurch backward as your boot plunges into searing heat. Burns race up your leg.",
           "effects": [
             { "type": "damage_hero", "amount": 10 },
-            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" },
+            { "type": "apply_status", "status_id": "burning", "duration": 2, "target": "random_hero" },
             { "type": "add_item", "item_id": "ember_dust", "min_qty": 1, "max_qty": 2 }
           ]
         }
@@ -61,7 +61,7 @@
           "text": "The pole catches fire before you reach anything useful. A splatter of magma arcs toward your party.",
           "effects": [
             { "type": "damage_hero", "amount": 7 },
-            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" }
+            { "type": "apply_status", "status_id": "burning", "duration": 2, "target": "random_hero" }
           ]
         }
       ]
@@ -87,9 +87,10 @@
         },
         {
           "weight": 15,
-          "text": "A bubble of magma bursts nearby, spraying droplets that sizzle against exposed skin. So much for resting.",
+          "text": "A bubble of magma bursts nearby, spraying droplets that sizzle against exposed skin. So much for resting — but the heat did ease some aches first.",
           "effects": [
-            { "type": "damage_party", "amount": 4 }
+            { "type": "damage_party", "amount": 4 },
+            { "type": "heal_party", "amount": 3 }
           ]
         }
       ]

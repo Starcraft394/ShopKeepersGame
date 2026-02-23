@@ -42,6 +42,23 @@ var attack: int = 10
 var defense: int = 5
 var speed: int = 10
 
+# New equipment stats (Phase 1 expansion)
+var crit_chance: int = 0      # % chance for 1.5x damage (cap 50)
+var evasion: int = 0          # % chance to dodge attacks (cap 50)
+var resist: int = 0           # Flat reduction to fire/dark/void (soft-capped like defense)
+var thorns: int = 0           # Flat damage returned to physical attacker
+var armor_penetration: int = 0 # Flat defense bypass on physical attacks
+var life_steal: int = 0       # % of direct damage healed (T3+ only)
+
+# Shared stat metadata (used by UI and serialization)
+const STAT_KEYS: Array = ["health", "attack", "defense", "speed",
+	"crit_chance", "evasion", "resist", "thorns", "armor_penetration", "life_steal"]
+const STAT_ABBREV: Dictionary = {
+	"health": "HP", "attack": "ATK", "defense": "DEF", "speed": "SPD",
+	"crit_chance": "CRIT", "evasion": "EVD", "resist": "RES",
+	"thorns": "THN", "armor_penetration": "PEN", "life_steal": "LSTL"
+}
+
 # ============================================================================
 # COMBAT STATE
 # ============================================================================
@@ -64,6 +81,18 @@ var weapon_ability_max_cooldown: int = 3
 var equip_ability_ids: Array = []  # Array of ability_id strings
 var equip_ability_cooldowns: Array = []  # Current cooldown per slot
 var equip_ability_max_cooldowns: Array = []  # Max cooldown per slot
+
+# Combat Tag Effects (T4 regional set bonuses)
+var combat_tag_effects: Array = []  # [{trigger, effect, ...params, item_id}, ...]
+var _triggered_once_effects: Dictionary = {}  # {item_id: true} for on_low_hp "once" effects
+
+# Shield (temporary HP from buff abilities)
+var shield_hp: int = 0
+var shield_remaining_rounds: int = 0
+
+# Reflect (% of damage returned to attacker)
+var reflect_percent: int = 0
+var reflect_remaining_rounds: int = 0
 
 # ============================================================================
 # CLASS KIT (M4)
@@ -90,7 +119,7 @@ var active_buffs: Array = []
 # STATUS HOOKS v1 - Minimal status effect lifecycle
 # ============================================================================
 # Statuses are stored as: { "id": status_id, "remaining_rounds": int, "source": ability_or_source_id }
-# Reserved ID: "stunned" - blocks unit action for turn
+# Reserved ID: "stun" - blocks unit action for turn
 var active_statuses: Array = []
 
 # Active ability references (loaded from ClassData)
@@ -190,6 +219,14 @@ static func create_hero(hero_id: String, class_id_param: String, unit_index: int
 		unit.hero_level = int(effective_stats.get("level", 1))
 		unit.race_id = effective_stats.get("race_id", "human")
 
+		# New equipment stats
+		unit.crit_chance = int(effective_stats.get("crit_chance", 0))
+		unit.evasion = int(effective_stats.get("evasion", 0))
+		unit.resist = int(effective_stats.get("resist", 0))
+		unit.thorns = int(effective_stats.get("thorns", 0))
+		unit.armor_penetration = int(effective_stats.get("armor_penetration", 0))
+		unit.life_steal = int(effective_stats.get("life_steal", 0))
+
 		# M4: Load class kit (passives and abilities) from class data
 		if class_data != null:
 			unit.passive_a_id = class_data.passive_a_id
@@ -258,6 +295,12 @@ static func create_hero(hero_id: String, class_id_param: String, unit_index: int
 			unit.equip_ability_max_cooldowns.append(ea_cd)
 		print("[CombatUnit] Equipment abilities: %s" % str(unit.equip_ability_ids))
 
+	# T4 Combat tag effects: load from effective_stats if provided
+	var tag_effects = effective_stats.get("combat_tag_effects", [])
+	if tag_effects is Array and tag_effects.size() > 0:
+		unit.combat_tag_effects = tag_effects.duplicate(true)
+		print("[CombatUnit] Combat tag effects: %d loaded for %s" % [tag_effects.size(), unit.display_name])
+
 	print("[CombatUnit] Created hero: %s (HP:%d ATK:%d DEF:%d SPD:%d)" % [
 		unit.display_name, unit.max_health, unit.attack, unit.defense, unit.speed])
 
@@ -282,6 +325,33 @@ static func create_monster(monster_id: String, unit_index: int) -> CombatUnit:
 		unit.speed = monster_data.base_stats.get("speed", 10)
 		unit.attack_type = monster_data.attack_type
 		unit.ai_tier = monster_data.ai_tier
+
+		# New equipment stats (from monster base_stats if present)
+		unit.crit_chance = int(monster_data.base_stats.get("crit_chance", 0))
+		unit.evasion = int(monster_data.base_stats.get("evasion", 0))
+		unit.resist = int(monster_data.base_stats.get("resist", 0))
+		unit.thorns = int(monster_data.base_stats.get("thorns", 0))
+		unit.armor_penetration = int(monster_data.base_stats.get("armor_penetration", 0))
+		unit.life_steal = int(monster_data.base_stats.get("life_steal", 0))
+
+		# Load monster abilities from MonsterData (skip "basic_attack")
+		var mon_abilities = monster_data.ability_ids.filter(func(a): return a != "basic_attack")
+		if mon_abilities.size() >= 1:
+			unit.ability_a_id = mon_abilities[0]
+			if registry:
+				var ab_a = registry.get_ability(mon_abilities[0])
+				if ab_a:
+					unit.ability_a_max_cooldown = ab_a.cooldown
+		if mon_abilities.size() >= 2:
+			unit.ability_b_id = mon_abilities[1]
+			if registry:
+				var ab_b = registry.get_ability(mon_abilities[1])
+				if ab_b:
+					unit.ability_b_max_cooldown = ab_b.cooldown
+		if not mon_abilities.is_empty():
+			print("[CombatUnit] Monster abilities: [%s (cd:%d), %s (cd:%d)]" % [
+				unit.ability_a_id, unit.ability_a_max_cooldown,
+				unit.ability_b_id, unit.ability_b_max_cooldown])
 	else:
 		# Placeholder stats if monster not found
 		unit.display_name = "Monster %d" % unit_index
@@ -329,20 +399,39 @@ static func get_soft_capped_defense(raw_def: int) -> int:
 
 
 ## Take damage. Returns actual damage dealt.
-## Uses effective defense (base + buff bonuses) with soft-cap for damage reduction.
-func take_damage(raw_damage: int, damage_type: String = "physical") -> int:
+## Uses effective defense (base + buff bonuses) with soft-cap for physical damage reduction.
+## Uses resist (same soft-cap) for fire/dark/void damage reduction.
+## Magical damage bypasses all mitigation.
+func take_damage(raw_damage: int, damage_type: String = "physical", armor_pen: int = 0) -> int:
 	if not is_alive:
 		return 0
 
-	# Apply defense reduction for physical damage (soft-capped effective defense)
+	# Apply defense reduction for physical damage (soft-capped effective defense minus armor pen)
 	var actual_damage = raw_damage
 	if damage_type == "physical":
-		var eff_def = get_soft_capped_defense(get_effective_defense())
+		var eff_def = get_soft_capped_defense(maxi(0, get_effective_defense() - armor_pen))
 		actual_damage = maxi(1, raw_damage - eff_def)
+	elif damage_type in ["fire", "dark", "void"]:
+		var eff_res = get_soft_capped_defense(get_effective_resist())
+		actual_damage = maxi(1, raw_damage - eff_res)
+
+	# Shield absorption: absorb damage from shield before health.
+	# NOTE: Full shield absorb returns absorbed amount (not 0). This means life_steal
+	# triggers on shield-absorbed damage — intentional design (damage was "dealt").
+	if shield_hp > 0 and actual_damage > 0:
+		var absorbed = mini(shield_hp, actual_damage)
+		shield_hp -= absorbed
+		actual_damage -= absorbed
+		print("[CombatUnit] %s shield absorbs %d damage (shield_hp: %d remaining)" % [
+			display_name, absorbed, shield_hp])
+		if actual_damage <= 0:
+			print("[CombatUnit] %s takes 0 damage after shield. HP: %d/%d" % [
+				display_name, current_health, max_health])
+			return absorbed  # Return total damage dealt (to shield)
 
 	current_health -= actual_damage
-	print("[CombatUnit] %s takes %d damage (raw: %d, eff_def: %d). HP: %d/%d" % [
-		display_name, actual_damage, raw_damage, get_effective_defense(), current_health, max_health])
+	print("[CombatUnit] %s takes %d damage (raw: %d, type: %s, eff_def: %d, eff_res: %d, pen: %d). HP: %d/%d" % [
+		display_name, actual_damage, raw_damage, damage_type, get_effective_defense(), get_effective_resist(), armor_pen, current_health, max_health])
 
 	if current_health <= 0:
 		current_health = 0
@@ -366,6 +455,42 @@ func heal(amount: int) -> int:
 			display_name, actual_heal, current_health, max_health])
 
 	return actual_heal
+
+
+## Apply a temporary HP shield. Replaces any existing shield.
+func apply_shield(value: int, duration: int) -> void:
+	shield_hp = value
+	shield_remaining_rounds = duration
+	print("[CombatUnit] %s gains shield: %d HP for %d rounds" % [display_name, value, duration])
+
+
+## Tick shield duration at round start. Removes shield if expired.
+func tick_shield() -> void:
+	if shield_hp <= 0:
+		return
+	shield_remaining_rounds -= 1
+	if shield_remaining_rounds <= 0:
+		print("[CombatUnit] %s shield expired" % display_name)
+		shield_hp = 0
+		shield_remaining_rounds = 0
+
+
+## Apply a damage reflect effect. Replaces any existing reflect.
+func apply_reflect(percent: int, duration: int) -> void:
+	reflect_percent = percent
+	reflect_remaining_rounds = duration
+	print("[CombatUnit] %s gains reflect: %d%% for %d rounds" % [display_name, percent, duration])
+
+
+## Tick reflect duration at round start. Removes reflect if expired.
+func tick_reflect() -> void:
+	if reflect_percent <= 0:
+		return
+	reflect_remaining_rounds -= 1
+	if reflect_remaining_rounds <= 0:
+		print("[CombatUnit] %s reflect expired" % display_name)
+		reflect_percent = 0
+		reflect_remaining_rounds = 0
 
 
 ## Check if weapon ability is ready (off cooldown).
@@ -505,6 +630,36 @@ func get_effective_speed() -> int:
 	for buff in active_buffs:
 		total += int(buff["stats"].get("speed", 0))
 	return total
+
+
+## Get effective crit chance (base + buff bonuses). Capped at 50%.
+func get_effective_crit_chance() -> int:
+	return mini(crit_chance + get_buff_bonus("crit_chance"), 50)
+
+
+## Get effective evasion (base + buff bonuses). Capped at 50%.
+func get_effective_evasion() -> int:
+	return mini(evasion + get_buff_bonus("evasion"), 50)
+
+
+## Get effective resist (base + buff bonuses).
+func get_effective_resist() -> int:
+	return resist + get_buff_bonus("resist")
+
+
+## Get effective thorns (base + buff bonuses).
+func get_effective_thorns() -> int:
+	return thorns + get_buff_bonus("thorns")
+
+
+## Get effective armor penetration (base + buff bonuses).
+func get_effective_armor_penetration() -> int:
+	return armor_penetration + get_buff_bonus("armor_penetration")
+
+
+## Get effective life steal (base + buff bonuses). Capped at 50%.
+func get_effective_life_steal() -> int:
+	return mini(life_steal + get_buff_bonus("life_steal"), 50)
 
 
 ## Check if unit has any active buffs.
@@ -823,11 +978,11 @@ func has_status_v1(status_id: String) -> bool:
 	return false
 
 
-## Check if unit is blocked from acting by "stunned" status (Status Hooks v1).
+## Check if unit is blocked from acting by "stun" status (Status Hooks v1).
 ## Returns true if unit should skip their turn.
 func is_action_blocked_by_status() -> bool:
-	if has_status_v1("stunned"):
-		print("[Status] blocked unit=%s id=stunned action_skipped=true" % display_name)
+	if has_status_v1("stun"):
+		print("[Status] blocked unit=%s id=stun action_skipped=true" % display_name)
 		return true
 	return false
 

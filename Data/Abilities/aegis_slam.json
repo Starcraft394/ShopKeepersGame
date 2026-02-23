@@ -11,7 +11,7 @@
   "damage_type": "physical",
   "attack_scaling": 1.0,
   "cooldown": 4,
-  "applies_status_id": "stunned",
+  "applies_status_id": "stun",
   "applies_status_duration": 1,
   "status_stacks": 0
 }

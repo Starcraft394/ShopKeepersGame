@@ -8,6 +8,7 @@
   "tier": 2,
   "ai_tier": 2,
   "attack_type": "ranged",
+  "combat_role": "ranged",
   "base_stats": {
     "health": 165,
     "attack": 40,
@@ -15,12 +16,13 @@
     "speed": 18
   },
   "ability_ids": [
-    "basic_attack"
+    "basic_attack",
+    "mon_poison_shot"
   ],
   "passive_ids": [],
   "loot_table_id": "lt_region3_uncommon",
-  "gold_drop_min": 17,
-  "gold_drop_max": 28,
+  "gold_drop_min": 21,
+  "gold_drop_max": 35,
   "sprite_path": "",
   "is_elite": false,
   "is_boss": false,

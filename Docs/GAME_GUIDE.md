@@ -63,9 +63,9 @@ Heroes come from 9 different races, unlocked as you progress through the regions
 
 | Region | Race | Notable Trait |
 |--------|------|--------------|
-| 1 -- Forest Haven | **Human** | Balanced stats, learns 10% faster |
-| 1 -- Forest Haven | **Elf** | Fast and perceptive (+3 SPD, reveals dungeon nodes) |
-| 1 -- Forest Haven | **Dwarf** | Tough and slow (+10 HP, +3 DEF, -3 SPD) |
+| 1 -- Forest Haven (Thornhaven) | **Human** | Balanced stats, learns 10% faster |
+| 1 -- Forest Haven (Thornhaven) | **Elf** | Fast and perceptive (+3 SPD, reveals dungeon nodes) |
+| 1 -- Forest Haven (Thornhaven) | **Dwarf** | Tough and slow (+10 HP, +3 DEF, -3 SPD) |
 | 2 -- The Fungalmire | **Mossfolk** | Regenerates HP each turn |
 | 3 -- The Sunken Strand | **Tideling** | Fast, water resistant |
 | 4 -- Ashen Horizons | **Dragonkin** | Scales reduce all damage, burn immune |
@@ -145,11 +145,30 @@ Your party size is **4 heroes** at all Inn tiers. You can recruit and deploy up 
 
 ## Equipment & Items
 
-The game has 241 items across four categories.
+The game has 430 items across four categories.
 
-### Equipment (100 items)
+### Equipment (284 items)
 
-Equipment provides stat bonuses (ATK, DEF, HP, SPD) and scales across 5 tiers:
+Equipment provides stat bonuses across **10 combat stats** and scales across 5 tiers:
+
+### Combat Stats
+
+| Stat | Abbrev | What It Does |
+|------|--------|-------------|
+| **Health** | HP | Maximum hit points. Reaching 0 = death. |
+| **Attack** | ATK | Increases damage dealt with abilities and basic attacks. |
+| **Defense** | DEF | Reduces physical damage received (soft-capped: full value up to 20, half 21-40, 20% above 40). |
+| **Speed** | SPD | Determines turn order; 40+ SPD = 2 actions per round, 80+ = 3 actions. |
+| **Crit Chance** | CRIT | Percentage chance to deal 1.5x damage on hit (capped at 50%). |
+| **Evasion** | EVA | Percentage chance to completely dodge an incoming attack (capped at 50%). |
+| **Resist** | RES | Reduces fire, dark, and void damage (same soft-cap formula as DEF). Does NOT reduce physical or "magical" damage. |
+| **Thorns** | THN | Flat damage returned to physical attackers on hit. |
+| **Armor Penetration** | PEN | Ignores this much of the target's DEF when dealing physical damage. |
+| **Life Steal** | LS | Heals the attacker for this percentage of damage dealt (capped at 50%). |
+
+The first 4 stats (HP, ATK, DEF, SPD) appear on nearly all equipment. The other 6 stats appear on mid-to-late-game equipment and create build specialization opportunities.
+
+### Equipment Tiers
 
 | Tier | Region | Power Level |
 |------|--------|-------------|
@@ -161,7 +180,7 @@ Equipment provides stat bonuses (ATK, DEF, HP, SPD) and scales across 5 tiers:
 
 Higher-tier equipment has dramatically higher stat budgets. A T1 weapon averages about 4 total stat points; a T5 weapon averages about 30.
 
-### Consumables (53 items)
+### Consumables (59 items)
 
 Consumables are single-use items carried in hero bags:
 
@@ -171,7 +190,7 @@ Consumables are single-use items carried in hero bags:
 - **Thrown** -- Venom flasks, smoke bombs, and other offensive items
 - **Utility** -- Salves, oils, and tactical items
 
-### Materials (72 items)
+### Materials (71 items)
 
 Materials are crafting ingredients gathered from dungeons:
 
@@ -180,7 +199,7 @@ Materials are crafting ingredients gathered from dungeons:
 - **Regional materials** -- Unique to each region (Spore Clusters, Sea Salt Crystals, Ember Dust)
 - **Boss trophies** -- Rare drops from defeating region bosses, required for T4 bench crafting
 
-### Class Books (16 items)
+### Class Books (15 items)
 
 Class Books unlock new hero classes at the Training Hall. Each book corresponds to one class. Find them as dungeon loot or buy them at shops in the appropriate region.
 
@@ -214,7 +233,7 @@ After completing all rooms on a floor, you can **descend** to the next floor or 
 |------|-------------|
 | **Combat** | Fight a group of monsters. Defeat them to earn loot and gold. |
 | **Elite** | A tougher combat encounter with better rewards. |
-| **Event** | A choice-based encounter (e.g., loot a satchel, bargain with a fae, investigate a shrine). Events offer 4 options with different risk/reward tradeoffs. |
+| **Event** | A choice-based encounter (e.g., loot a satchel, bargain with a fae, investigate a shrine). Each event presents choices with weighted random outcomes -- some choices are safer, others are riskier but offer better rewards. |
 | **Camp** | Rest stop between rooms where you choose your next room and manage inventory. |
 | **Boss** | A powerful regional boss at the end of the dungeon. Defeating it unlocks the next region. |
 
@@ -241,15 +260,18 @@ Extraction is how you safely end a run. After completing a floor, the camp scree
 
 ## Combat
 
-Combat is turn-based. Speed (SPD) determines turn order.
+Combat is turn-based. Speed (SPD) determines turn order. Heroes and monsters with very high speed get extra actions per round: 40+ SPD = 2 actions, 80+ SPD = 3 actions (max). This makes SPD one of the most impactful stats in late-game.
 
 ### Turn Flow
 
 1. All combatants (heroes and enemies) are sorted by SPD into a turn queue.
 2. On each unit's turn, they use an ability (A or B) based on availability and cooldowns.
-3. Damage is calculated as: `base_power + (ATK * scaling) - target DEF`.
-4. Status effects tick at the start or end of turns.
-5. Combat ends when all enemies are defeated or all heroes are dead.
+3. The target rolls **Evasion** -- if successful, the attack misses entirely ("EVADE").
+4. If the attack hits, **Crit Chance** rolls for 1.5x damage. **Armor Penetration** ignores some target DEF.
+5. Damage is calculated as: `base_power + (ATK * scaling) - (target DEF - armor_pen)`. Fire/dark/void attacks use **Resist** instead of DEF.
+6. After damage, **Thorns** retaliates on the attacker and **Life Steal** heals the attacker.
+7. Status effects tick at the start or end of turns.
+8. Combat ends when all enemies are defeated or all heroes are dead.
 
 ### Abilities
 
@@ -259,6 +281,21 @@ Every hero has two abilities:
 - **Ability B** (special) -- Higher cooldown, bigger impact. AoE damage, buffs, debuffs, or powerful heals.
 
 When both abilities are on cooldown, the hero uses a basic attack.
+
+### Targeting and Rows
+
+Heroes and monsters are arranged in a front row and back row. **Melee attackers** can only target the front row and prefer the enemy with the lowest absolute HP. **Ranged and mage attackers** can target any row and prefer the enemy with the lowest percentage HP. Position your tankier heroes in front to shield squishier damage dealers and healers.
+
+### Monster Abilities
+
+Monsters are not limited to basic attacks. Each monster has a **combat role** (melee, ranged, or mage) and up to 2 special abilities. Monster AI varies by difficulty tier:
+
+- **Feral** (Region 1 basics): Only use basic attacks
+- **Basic**: Use abilities in a fixed priority order
+- **Tactical**: Randomly select from available abilities (unpredictable)
+- **Strategic** (bosses): Use powerful abilities on rotation
+
+Higher-region monsters use more dangerous abilities like Ground Slam (AoE), Devastating Charge (stun), Life Siphon (damage + self-heal), and Meteor (AoE + burning).
 
 ### Status Effects
 
@@ -331,7 +368,7 @@ The game is structured around 7 regions, each with a unique theme, monsters, mat
 
 | # | Region | Theme | Boss |
 |---|--------|-------|------|
-| 1 | **Forest Haven** | Ancient forest, natural magic | The Thorn-Ent |
+| 1 | **Forest Haven** (Thornhaven) | Ancient forest, natural magic | The Thorn-Ent |
 | 2 | **The Fungalmire** | Bioluminescent fungal bogs | The Spiral Mycelium |
 | 3 | **The Sunken Strand** | Fog-soaked coastal ruins | The Tide Sovereign |
 | 4 | **Ashen Horizons** | Scorched sands, volcanic ridges | The Cinder Monarch |
@@ -355,6 +392,10 @@ The game is structured around 7 regions, each with a unique theme, monsters, mat
 - **New monsters** with unique abilities and loot tables
 - **Higher-tier equipment** recipes
 
+### Campaign Story
+
+As you progress through the regions, narrative dialogs appear at key moments -- arriving at a new region for the first time, defeating a boss, visiting the Herald, or discovering dungeon camps. These tell the story of the corruption spreading across the land and your role in fighting it back.
+
 ### Town Destruction
 
 The corruption fights back. Completing certain regions triggers destructive events:
@@ -369,9 +410,19 @@ Towns remain functional after a tier-down -- they just lose access to higher-tie
 
 ---
 
+## Reference Books
+
+Several in-game books are available for reference:
+
+- **Bestiary** -- A field guide to all monsters you've encountered, including their stats and descriptions. Monsters appear as hidden entries until you fight them.
+- **Recipe Books** -- The Chef, Alchemist, and Enchanter each have recipe books showing discovered and undiscovered recipes.
+- **Handbook** -- A general game guide accessible from town.
+
+---
+
 ## Tutorials
 
-The game includes 11 contextual tutorials that appear as overlay popups when you first encounter each system. Tutorials are shown once and can be reviewed later. They cover:
+The game includes 12 contextual tutorials that appear as overlay popups when you first encounter each system. Tutorials are shown once and can be reviewed later. They cover:
 
 | # | Tutorial | When It Triggers |
 |---|----------|-----------------|
@@ -386,6 +437,7 @@ The game includes 11 contextual tutorials that appear as overlay popups when you
 | 9 | Training Hall | First visit to Training Hall |
 | 10 | Production | First visit to Alchemist or Chef |
 | 11 | Manage Roster | First visit to Inn roster management |
+| 12 | Party Bar | First party bar interaction |
 
 Tutorials use a TutorialOverlay component that dims the background and presents short, punchy guidance text.
 
@@ -408,6 +460,10 @@ Tutorials use a TutorialOverlay component that dims the background and presents 
 7. **Use Class Books at the Training Hall.** New classes dramatically expand your tactical options. The Striker is great for damage, but a Stormcaller or Ashblade from later regions hits much harder.
 
 8. **Manage your party composition.** Balance your team across archetypes. A party of all DPS will hit hard but crumble under pressure. A tank (Vanguard) draws enemy fire while your damage dealers work.
+
+9. **Position your rows carefully.** Put tanky Vanguards in the front row to absorb melee attacks. Keep your healers and ranged DPS in the back -- but remember that ranged and mage enemies can still reach them.
+
+10. **Invest in Speed.** SPD determines not just turn order but also how many actions a hero gets per round. A hero with 40+ SPD acts twice, and 80+ SPD acts three times. Speed rings and amulets pay for themselves quickly.
 
 ---
 

@@ -111,7 +111,7 @@ theme_override_constants/separation = 2
 [node name="PlaceholderItem" type="Label" parent="MarginContainer/ScrollContainer/MainVBox/StashSection/StashScrollContainer/StashListVBox"]
 layout_mode = 2
 text = "(empty)"
-modulate = Color(0.6, 0.6, 0.6, 1)
+modulate = Color(0.78, 0.78, 0.78, 1)
 
 [node name="Separator2" type="HSeparator" parent="MarginContainer/ScrollContainer/MainVBox"]
 layout_mode = 2
@@ -133,7 +133,7 @@ theme_override_constants/separation = 4
 [node name="PlaceholderFacility" type="Label" parent="MarginContainer/ScrollContainer/MainVBox/FacilitiesSection/FacilitiesVBox"]
 layout_mode = 2
 text = "(no facilities)"
-modulate = Color(0.6, 0.6, 0.6, 1)
+modulate = Color(0.78, 0.78, 0.78, 1)
 
 [node name="Separator3" type="HSeparator" parent="MarginContainer/ScrollContainer/MainVBox"]
 layout_mode = 2
@@ -229,5 +229,5 @@ modulate = Color(1, 0.9, 0.5, 1)
 layout_mode = 2
 text = "Hotkeys: F5=Enter, F6=AdvFloor, Shift+F6=AdvRoom, F7=Exit"
 horizontal_alignment = 1
-modulate = Color(0.5, 0.5, 0.5, 1)
+modulate = Color(0.7, 0.7, 0.7, 1)
 

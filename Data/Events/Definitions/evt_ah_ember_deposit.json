@@ -29,7 +29,7 @@
           "text": "A vein ruptures as you chip at it, spraying superheated dust across your face. Your eyes sting and skin blisters.",
           "effects": [
             { "type": "damage_hero", "amount": 8 },
-            { "type": "apply_status", "status_id": "burn", "duration": 2, "target": "random_hero" },
+            { "type": "apply_status", "status_id": "burning", "duration": 2, "target": "random_hero" },
             { "type": "add_item", "item_id": "ember_dust", "min_qty": 1, "max_qty": 2 }
           ]
         }

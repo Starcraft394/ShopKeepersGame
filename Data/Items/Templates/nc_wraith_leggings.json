@@ -12,18 +12,22 @@
   "max_quality": 3,
   "category": "equipment",
   "base_stats": {
-    "defense": 8
+    "defense": 8,
+    "evasion": 12,
+    "resist": 12
   },
   "stat_bonuses": {
     "defense": 8,
-    "health": 14
+    "health": 14,
+    "evasion": 12,
+    "resist": 12
   },
   "combat_tag": "undying_will",
   "combat_tag_effect": {
     "trigger": "on_low_hp",
     "effect": "buff_stat",
     "stat": "defense",
-    "value": 3,
+    "value": 6,
     "duration": 2,
     "threshold": 0.25,
     "once": true

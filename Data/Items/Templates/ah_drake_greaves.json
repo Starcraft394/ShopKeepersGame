@@ -12,12 +12,16 @@
   "max_quality": 3,
   "category": "equipment",
   "base_stats": {
-    "defense": 5
+    "defense": 5,
+    "evasion": 7,
+    "resist": 9
   },
   "stat_bonuses": {
     "defense": 5,
     "health": 5,
-    "speed": 1
+    "speed": 1,
+    "evasion": 7,
+    "resist": 9
   },
   "allowed_affixes": [],
   "min_affixes": 0,
