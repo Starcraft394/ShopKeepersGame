@@ -13,14 +13,17 @@
     "health": 1300,
     "attack": 86,
     "defense": 40,
-    "speed": 60
+    "speed": 60,
+    "resist": 18,
+    "armor_penetration": 12,
+    "crit_chance": 10
   },
   "ability_ids": [
     "basic_attack",
     "mon_meteor",
     "mon_chain_lightning"
   ],
-  "passive_ids": [],
+  "passive_ids": ["mon_magic_resist", "mon_piercing_blows"],
   "loot_table_id": "lt_region7_boss",
   "gold_drop_min": 120,
   "gold_drop_max": 165,

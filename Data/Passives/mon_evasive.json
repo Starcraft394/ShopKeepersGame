@@ -1,0 +1,14 @@
+{
+  "id": "mon_evasive",
+  "display_name": "Evasive",
+  "description": "Small and nimble, difficult to hit with direct attacks.",
+  "icon_hint": "small creature dodging between attack lines",
+  "passive_type": "stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "evasion",
+    "bonus": 10
+  },
+  "source_class_id": "",
+  "category": "monster"
+}

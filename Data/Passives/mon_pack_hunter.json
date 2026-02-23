@@ -1,0 +1,14 @@
+{
+  "id": "mon_pack_hunter",
+  "display_name": "Pack Hunter",
+  "description": "Fights harder when hunting alongside allies.",
+  "icon_hint": "wolf silhouette flanking with glowing pack bond lines",
+  "passive_type": "stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "attack",
+    "bonus": 3
+  },
+  "source_class_id": "",
+  "category": "monster"
+}

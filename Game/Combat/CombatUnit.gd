@@ -352,6 +352,14 @@ static func create_monster(monster_id: String, unit_index: int) -> CombatUnit:
 			print("[CombatUnit] Monster abilities: [%s (cd:%d), %s (cd:%d)]" % [
 				unit.ability_a_id, unit.ability_a_max_cooldown,
 				unit.ability_b_id, unit.ability_b_max_cooldown])
+
+		# Load monster passives from MonsterData
+		if monster_data.passive_ids.size() >= 1:
+			unit.passive_a_id = monster_data.passive_ids[0]
+		if monster_data.passive_ids.size() >= 2:
+			unit.passive_b_id = monster_data.passive_ids[1]
+		if unit.passive_a_id != "" or unit.passive_b_id != "":
+			print("[CombatUnit] Monster passives: [%s, %s]" % [unit.passive_a_id, unit.passive_b_id])
 	else:
 		# Placeholder stats if monster not found
 		unit.display_name = "Monster %d" % unit_index

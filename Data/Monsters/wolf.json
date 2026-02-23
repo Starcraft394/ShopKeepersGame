@@ -12,8 +12,10 @@
     "health": 50,
     "attack": 16,
     "defense": 2,
-    "speed": 17
+    "speed": 17,
+    "evasion": 10
   },
+  "passive_ids": ["mon_pack_hunter"],
   "ability_ids": [
     "basic_attack"
   ],

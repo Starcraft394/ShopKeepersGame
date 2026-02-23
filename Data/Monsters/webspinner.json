@@ -13,13 +13,14 @@
     "health": 58,
     "attack": 16,
     "defense": 4,
-    "speed": 20
+    "speed": 20,
+    "crit_chance": 10
   },
   "ability_ids": [
     "basic_attack",
     "mon_poison_shot"
   ],
-  "passive_ids": [],
+  "passive_ids": ["mon_venomous"],
   "loot_table_id": "lt_spider_parts",
   "gold_drop_min": 8,
   "gold_drop_max": 18,

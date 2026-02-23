@@ -13,13 +13,14 @@
     "health": 92,
     "attack": 30,
     "defense": 8,
-    "speed": 24
+    "speed": 24,
+    "crit_chance": 10
   },
   "ability_ids": [
     "basic_attack",
     "mon_heavy_strike"
   ],
-  "passive_ids": [],
+  "passive_ids": ["mon_venomous"],
   "loot_table_id": "lt_region3_common",
   "gold_drop_min": 9,
   "gold_drop_max": 17,

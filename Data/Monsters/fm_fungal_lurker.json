@@ -13,13 +13,15 @@
     "health": 100,
     "attack": 25,
     "defense": 7,
-    "speed": 16
+    "speed": 16,
+    "evasion": 10,
+    "crit_chance": 8
   },
   "ability_ids": [
     "basic_attack",
     "mon_rending_strike"
   ],
-  "passive_ids": [],
+  "passive_ids": ["mon_evasive"],
   "loot_table_id": "lt_region2_uncommon",
   "gold_drop_min": 10,
   "gold_drop_max": 22,

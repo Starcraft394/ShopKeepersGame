@@ -13,14 +13,17 @@
     "health": 880,
     "attack": 68,
     "defense": 30,
-    "speed": 45
+    "speed": 45,
+    "resist": 15,
+    "evasion": 12,
+    "crit_chance": 10
   },
   "ability_ids": [
     "basic_attack",
     "mon_meteor",
     "mon_chain_lightning"
   ],
-  "passive_ids": [],
+  "passive_ids": ["mon_magic_resist", "mon_undying_rage"],
   "loot_table_id": "lt_region5_boss",
   "gold_drop_min": 75,
   "gold_drop_max": 110,

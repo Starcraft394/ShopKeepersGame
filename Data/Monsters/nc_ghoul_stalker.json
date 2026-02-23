@@ -6,20 +6,23 @@
   "family": "necro",
   "region_id": "region_6",
   "tier": 1,
-  "ai_tier": 1,
+  "ai_tier": 2,
   "attack_type": "melee",
   "combat_role": "melee",
   "base_stats": {
     "health": 198,
     "attack": 50,
     "defense": 15,
-    "speed": 42
+    "speed": 42,
+    "crit_chance": 12,
+    "life_steal": 8
   },
   "ability_ids": [
     "basic_attack",
-    "mon_rending_strike"
+    "mon_rending_strike",
+    "mon_mark_prey"
   ],
-  "passive_ids": [],
+  "passive_ids": ["mon_venomous"],
   "loot_table_id": "lt_region6_common",
   "gold_drop_min": 15,
   "gold_drop_max": 28,

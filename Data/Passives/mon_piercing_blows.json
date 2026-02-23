@@ -1,0 +1,14 @@
+{
+  "id": "mon_piercing_blows",
+  "display_name": "Piercing Blows",
+  "description": "Attacks bypass a portion of the target's armor.",
+  "icon_hint": "heavy fist punching through a cracked shield",
+  "passive_type": "stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "armor_penetration",
+    "bonus": 8
+  },
+  "source_class_id": "",
+  "category": "monster"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "mon_armored_shell",
+  "display_name": "Armored Shell",
+  "description": "A thick natural shell provides extra defense.",
+  "icon_hint": "layered stone shell with metallic sheen",
+  "passive_type": "stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "defense",
+    "bonus": 4
+  },
+  "source_class_id": "",
+  "category": "monster"
+}

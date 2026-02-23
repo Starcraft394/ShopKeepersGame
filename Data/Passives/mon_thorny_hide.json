@@ -1,0 +1,14 @@
+{
+  "id": "mon_thorny_hide",
+  "display_name": "Thorny Hide",
+  "description": "Natural thorns deal damage to melee attackers.",
+  "icon_hint": "bark-covered hide with protruding thorns",
+  "passive_type": "stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "thorns",
+    "bonus": 5
+  },
+  "source_class_id": "",
+  "category": "monster"
+}

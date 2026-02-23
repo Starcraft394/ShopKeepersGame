@@ -257,11 +257,21 @@ func _create_units(hero_ids: Array, enemy_ids: Array) -> void:
 # M4 CLASS KIT - PASSIVE BEHAVIORS
 # ============================================================================
 
-## Apply all passive stat bonuses to player units.
+## Apply all passive stat bonuses to player and enemy units.
 func _apply_all_passives() -> void:
 	print("[CombatController] Applying passive bonuses...")
 	for unit in _player_units:
 		_apply_passives_to_unit(unit)
+	for unit in _enemy_units:
+		_apply_monster_passives(unit)
+
+
+## Apply passive stat bonuses to a monster unit (bypasses hero level-gating).
+func _apply_monster_passives(unit: CombatUnit) -> void:
+	if unit.passive_a_id != "":
+		_apply_single_passive(unit, unit.passive_a_id)
+	if unit.passive_b_id != "":
+		_apply_single_passive(unit, unit.passive_b_id)
 
 
 ## Apply passive stat bonuses to a single unit (respects level-gating).

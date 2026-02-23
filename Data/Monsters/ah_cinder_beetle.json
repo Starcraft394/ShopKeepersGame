@@ -13,7 +13,8 @@
     "health": 138,
     "attack": 35,
     "defense": 13,
-    "speed": 25
+    "speed": 25,
+    "thorns": 5
   },
   "ability_ids": [
     "basic_attack",

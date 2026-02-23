@@ -13,14 +13,17 @@
     "health": 300,
     "attack": 30,
     "defense": 10,
-    "speed": 18
+    "speed": 18,
+    "thorns": 10,
+    "resist": 8,
+    "armor_penetration": 8
   },
   "ability_ids": [
     "basic_attack",
     "mon_ground_slam",
     "mon_berserker_rage"
   ],
-  "passive_ids": [],
+  "passive_ids": ["mon_thorny_hide", "mon_undying_rage"],
   "loot_table_id": "lt_region1_boss",
   "gold_drop_min": 45,
   "gold_drop_max": 80,

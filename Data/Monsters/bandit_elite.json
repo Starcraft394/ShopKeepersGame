@@ -12,8 +12,10 @@
     "health": 72,
     "attack": 16,
     "defense": 2,
-    "speed": 18
+    "speed": 18,
+    "armor_penetration": 5
   },
+  "passive_ids": ["mon_pack_hunter"],
   "ability_ids": [
     "basic_attack"
   ],

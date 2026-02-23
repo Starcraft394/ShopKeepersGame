@@ -1907,6 +1907,70 @@ static func run_tests() -> Dictionary:
 	else:
 		results["failed"] += 1
 
+	# Test 247: Monster passive wiring
+	var t247 = _test_monster_passive_wiring()
+	results["tests"].append(t247)
+	if t247["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 248: Monster passive stat application
+	var t248 = _test_monster_passive_stat_application()
+	results["tests"].append(t248)
+	if t248["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 249: Monster secondary stats from data
+	var t249 = _test_monster_secondary_stats_from_data()
+	results["tests"].append(t249)
+	if t249["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 250: Death bolt scaling nerf
+	var t250 = _test_death_bolt_scaling_nerf()
+	results["tests"].append(t250)
+	if t250["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 251: Cinder strike base nerf
+	var t251 = _test_cinder_strike_base_nerf()
+	results["tests"].append(t251)
+	if t251["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 252: Smoke bomb use effect
+	var t252 = _test_smoke_bomb_use_effect()
+	results["tests"].append(t252)
+	if t252["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 253: XP results capture
+	var t253 = _test_xp_results_capture()
+	results["tests"].append(t253)
+	if t253["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 254: Monster passive data loading
+	var t254 = _test_monster_passive_data_loading()
+	results["tests"].append(t254)
+	if t254["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
 	print("")
 	print("=" .repeat(60))
 	print("  TEST RESULTS: %d passed, %d failed" % [results["passed"], results["failed"]])
@@ -13347,3 +13411,250 @@ static func _test_reflect_in_snapshot() -> Dictionary:
 		print("[PASS] Unit reflect_remaining_rounds = 2 (ready for snapshot)")
 
 	return {"name": "Reflect in snapshot", "passed": passed}
+
+
+static func _test_monster_passive_wiring() -> Dictionary:
+	print("--- TEST 247: Monster Passive Wiring ---")
+	var passed: bool = true
+
+	# Use a known monster with passives: fm_sporekin_shambler has ["mon_thorny_hide"]
+	var unit = CombatUnit.create_monster("fm_sporekin_shambler", 0)
+	if unit.passive_a_id == "mon_thorny_hide":
+		print("[PASS] Monster passive_a_id = mon_thorny_hide")
+	else:
+		print("[FAIL] Expected passive_a_id 'mon_thorny_hide', got '%s'" % unit.passive_a_id)
+		passed = false
+
+	# Use a boss with 2 passives: thorn_ent has ["mon_thorny_hide", "mon_undying_rage"]
+	var boss = CombatUnit.create_monster("thorn_ent", 1)
+	if boss.passive_a_id == "mon_thorny_hide":
+		print("[PASS] Boss passive_a_id = mon_thorny_hide")
+	else:
+		print("[FAIL] Expected passive_a_id 'mon_thorny_hide', got '%s'" % boss.passive_a_id)
+		passed = false
+
+	if boss.passive_b_id == "mon_undying_rage":
+		print("[PASS] Boss passive_b_id = mon_undying_rage")
+	else:
+		print("[FAIL] Expected passive_b_id 'mon_undying_rage', got '%s'" % boss.passive_b_id)
+		passed = false
+
+	# Verify a monster with no passives has empty passive IDs
+	var slime = CombatUnit.create_monster("slime", 2)
+	if slime.passive_a_id == "":
+		print("[PASS] Slime has no passive_a_id (empty)")
+	else:
+		print("[FAIL] Slime should have empty passive_a_id, got '%s'" % slime.passive_a_id)
+		passed = false
+
+	return {"name": "Monster passive wiring", "passed": passed}
+
+
+static func _test_monster_passive_stat_application() -> Dictionary:
+	print("--- TEST 248: Monster Passive Stat Application ---")
+	var passed: bool = true
+
+	# Create a monster with mon_thorny_hide passive (thorns +5)
+	var unit = CombatUnit.new()
+	unit.unit_id = "test_mon_248"
+	unit.display_name = "ThornyMonster"
+	unit.max_health = 100
+	unit.current_health = 100
+	unit.thorns = 3
+	unit.is_alive = true
+	unit.passive_a_id = "mon_thorny_hide"
+	unit.passive_b_id = ""
+	unit.statuses = StatusRuntime.new("test_mon_248")
+
+	# Apply monster passives via controller
+	var controller = CombatControllerScript.new()
+	controller._apply_monster_passives(unit)
+
+	# mon_thorny_hide adds thorns +5 as a buff, so effective = 3 + 5 = 8
+	var eff_thorns: int = unit.get_effective_thorns()
+	if eff_thorns == 8:
+		print("[PASS] Effective thorns = 8 after passive (3 base + 5 buff)")
+	else:
+		print("[FAIL] Expected effective thorns = 8, got %d" % eff_thorns)
+		passed = false
+
+	return {"name": "Monster passive stat application", "passed": passed}
+
+
+static func _test_monster_secondary_stats_from_data() -> Dictionary:
+	print("--- TEST 249: Monster Secondary Stats From Data ---")
+	var passed: bool = true
+
+	# fm_bog_wisp should have evasion: 15, resist: 5 in base_stats
+	var wisp = CombatUnit.create_monster("fm_bog_wisp", 0)
+	if wisp.evasion == 15:
+		print("[PASS] fm_bog_wisp evasion = 15")
+	else:
+		print("[FAIL] Expected evasion 15, got %d" % wisp.evasion)
+		passed = false
+
+	if wisp.resist == 5:
+		print("[PASS] fm_bog_wisp resist = 5")
+	else:
+		print("[FAIL] Expected resist 5, got %d" % wisp.resist)
+		passed = false
+
+	# gr_bramble_stalker should have thorns: 5, crit_chance: 8
+	var stalker = CombatUnit.create_monster("gr_bramble_stalker", 1)
+	if stalker.thorns == 5:
+		print("[PASS] gr_bramble_stalker thorns = 5")
+	else:
+		print("[FAIL] Expected thorns 5, got %d" % stalker.thorns)
+		passed = false
+
+	if stalker.crit_chance == 8:
+		print("[PASS] gr_bramble_stalker crit_chance = 8")
+	else:
+		print("[FAIL] Expected crit_chance 8, got %d" % stalker.crit_chance)
+		passed = false
+
+	return {"name": "Monster secondary stats from data", "passed": passed}
+
+
+static func _test_death_bolt_scaling_nerf() -> Dictionary:
+	print("--- TEST 250: Death Bolt Scaling Nerf ---")
+	var passed: bool = true
+
+	var ability = DataRegistry.get_ability("death_bolt")
+	if ability == null:
+		print("[FAIL] death_bolt ability not found")
+		return {"name": "Death bolt scaling nerf", "passed": false}
+
+	if is_equal_approx(ability.attack_scaling, 1.3):
+		print("[PASS] death_bolt attack_scaling = 1.3")
+	else:
+		print("[FAIL] Expected attack_scaling 1.3, got %.2f" % ability.attack_scaling)
+		passed = false
+
+	if ability.base_damage == 18:
+		print("[PASS] death_bolt base_damage = 18 (unchanged)")
+	else:
+		print("[FAIL] Expected base_damage 18, got %d" % ability.base_damage)
+		passed = false
+
+	return {"name": "Death bolt scaling nerf", "passed": passed}
+
+
+static func _test_cinder_strike_base_nerf() -> Dictionary:
+	print("--- TEST 251: Cinder Strike Base Nerf ---")
+	var passed: bool = true
+
+	var ability = DataRegistry.get_ability("cinder_strike")
+	if ability == null:
+		print("[FAIL] cinder_strike ability not found")
+		return {"name": "Cinder strike base nerf", "passed": false}
+
+	if ability.base_damage == 14:
+		print("[PASS] cinder_strike base_damage = 14")
+	else:
+		print("[FAIL] Expected base_damage 14, got %d" % ability.base_damage)
+		passed = false
+
+	if is_equal_approx(ability.attack_scaling, 1.4):
+		print("[PASS] cinder_strike attack_scaling = 1.4 (unchanged)")
+	else:
+		print("[FAIL] Expected attack_scaling 1.4, got %.2f" % ability.attack_scaling)
+		passed = false
+
+	return {"name": "Cinder strike base nerf", "passed": passed}
+
+
+static func _test_smoke_bomb_use_effect() -> Dictionary:
+	print("--- TEST 252: Smoke Bomb Use Effect ---")
+	var passed: bool = true
+
+	var tpl = DataRegistry.get_item_template("smoke_bomb")
+	if tpl == null:
+		print("[FAIL] smoke_bomb template not found")
+		return {"name": "Smoke bomb use effect", "passed": false}
+
+	if tpl.use_effect == "buff_evasion":
+		print("[PASS] smoke_bomb use_effect = buff_evasion")
+	else:
+		print("[FAIL] Expected use_effect 'buff_evasion', got '%s'" % tpl.use_effect)
+		passed = false
+
+	if tpl.use_value == 15:
+		print("[PASS] smoke_bomb use_value = 15")
+	else:
+		print("[FAIL] Expected use_value 15, got %d" % tpl.use_value)
+		passed = false
+
+	return {"name": "Smoke bomb use effect", "passed": passed}
+
+
+static func _test_xp_results_capture() -> Dictionary:
+	print("--- TEST 253: XP Results Capture ---")
+	var passed: bool = true
+
+	# Setup: create test heroes in party
+	var old_party = GameContext.selected_party.duplicate()
+	var old_heroes = GameContext.owned_heroes.duplicate(true)
+
+	GameContext.owned_heroes = [
+		{"hero_id": "xp_test_1", "name": "TestHero1", "race_id": "human", "class_id": "warrior", "level": 1, "xp": 0},
+		{"hero_id": "xp_test_2", "name": "TestHero2", "race_id": "human", "class_id": "warrior", "level": 1, "xp": 0}
+	]
+	GameContext.selected_party = ["xp_test_1", "xp_test_2"]
+
+	# Grant XP and capture results
+	var result: Dictionary = GameContext.grant_party_xp(10, "test")
+
+	if result is Dictionary:
+		print("[PASS] grant_party_xp returns Dictionary")
+	else:
+		print("[FAIL] Expected Dictionary, got %s" % typeof(result))
+		passed = false
+
+	if result.has("xp_test_1"):
+		print("[PASS] Result contains hero xp_test_1")
+	else:
+		print("[FAIL] Result missing hero xp_test_1")
+		passed = false
+
+	if result.has("xp_test_2"):
+		print("[PASS] Result contains hero xp_test_2")
+	else:
+		print("[FAIL] Result missing hero xp_test_2")
+		passed = false
+
+	# Restore
+	GameContext.owned_heroes = old_heroes
+	GameContext.selected_party = old_party
+
+	return {"name": "XP results capture", "passed": passed}
+
+
+static func _test_monster_passive_data_loading() -> Dictionary:
+	print("--- TEST 254: Monster Passive Data Loading ---")
+	var passed: bool = true
+
+	# Verify our 10 monster passives are loadable from DataRegistry
+	var passive_ids: Array[String] = [
+		"mon_thorny_hide", "mon_armored_shell", "mon_spectral_form",
+		"mon_venomous", "mon_life_drain", "mon_piercing_blows",
+		"mon_magic_resist", "mon_pack_hunter", "mon_undying_rage", "mon_evasive"
+	]
+
+	for pid in passive_ids:
+		var pdata = DataRegistry.get_passive(pid)
+		if pdata == null:
+			print("[FAIL] Passive '%s' not found in DataRegistry" % pid)
+			passed = false
+		else:
+			print("[PASS] Passive '%s' loaded (%s)" % [pid, pdata.display_name])
+
+	# Verify at least one passive has correct data
+	var thorny = DataRegistry.get_passive("mon_thorny_hide")
+	if thorny != null and thorny.passive_type == "stat_bonus":
+		print("[PASS] mon_thorny_hide type = stat_bonus")
+	else:
+		print("[FAIL] mon_thorny_hide should be stat_bonus")
+		passed = false
+
+	return {"name": "Monster passive data loading", "passed": passed}

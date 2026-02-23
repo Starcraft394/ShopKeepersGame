@@ -13,14 +13,17 @@
     "health": 260,
     "attack": 44,
     "defense": 18,
-    "speed": 34
+    "speed": 34,
+    "resist": 15,
+    "evasion": 10,
+    "armor_penetration": 8
   },
   "ability_ids": [
     "basic_attack",
     "mon_meteor",
     "mon_flame_burst"
   ],
-  "passive_ids": [],
+  "passive_ids": ["mon_magic_resist", "mon_undying_rage"],
   "loot_table_id": "lt_region4_elite",
   "gold_drop_min": 32,
   "gold_drop_max": 50,

@@ -13,14 +13,16 @@
     "health": 280,
     "attack": 42,
     "defense": 20,
-    "speed": 30
+    "speed": 30,
+    "armor_penetration": 12,
+    "thorns": 8
   },
   "ability_ids": [
     "basic_attack",
     "mon_devastating_charge",
     "mon_berserker_rage"
   ],
-  "passive_ids": [],
+  "passive_ids": ["mon_armored_shell", "mon_piercing_blows"],
   "loot_table_id": "lt_region4_elite",
   "gold_drop_min": 30,
   "gold_drop_max": 48,

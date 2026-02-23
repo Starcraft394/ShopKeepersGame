@@ -13,13 +13,15 @@
     "health": 250,
     "attack": 51,
     "defense": 20,
-    "speed": 49
+    "speed": 49,
+    "evasion": 18,
+    "resist": 10
   },
   "ability_ids": [
     "basic_attack",
     "mon_arcane_bolt"
   ],
-  "passive_ids": [],
+  "passive_ids": ["mon_spectral_form"],
   "loot_table_id": "lt_region7_common",
   "gold_drop_min": 17,
   "gold_drop_max": 30,

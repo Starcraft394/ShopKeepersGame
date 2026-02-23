@@ -13,7 +13,8 @@
     "health": 195,
     "attack": 43,
     "defense": 15,
-    "speed": 39
+    "speed": 39,
+    "evasion": 8
   },
   "ability_ids": [
     "basic_attack",

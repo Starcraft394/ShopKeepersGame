@@ -1,0 +1,14 @@
+{
+  "id": "mon_life_drain",
+  "display_name": "Life Drain",
+  "description": "Attacks siphon life force from the target.",
+  "icon_hint": "dark tendril pulling red energy from a wound",
+  "passive_type": "stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "life_steal",
+    "bonus": 15
+  },
+  "source_class_id": "",
+  "category": "monster"
+}

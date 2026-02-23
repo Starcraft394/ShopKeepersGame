@@ -13,14 +13,17 @@
     "health": 580,
     "attack": 52,
     "defense": 22,
-    "speed": 28
+    "speed": 28,
+    "resist": 15,
+    "armor_penetration": 10,
+    "life_steal": 8
   },
   "ability_ids": [
     "basic_attack",
     "mon_devastating_charge",
     "mon_war_cry"
   ],
-  "passive_ids": [],
+  "passive_ids": ["mon_magic_resist", "mon_undying_rage"],
   "loot_table_id": "lt_region3_boss",
   "gold_drop_min": 61,
   "gold_drop_max": 95,

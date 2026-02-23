@@ -1,0 +1,14 @@
+{
+  "id": "mon_undying_rage",
+  "display_name": "Undying Rage",
+  "description": "Fueled by relentless fury, strikes harder than normal.",
+  "icon_hint": "cracked skull with blazing red eyes and rage aura",
+  "passive_type": "stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "attack",
+    "bonus": 6
+  },
+  "source_class_id": "",
+  "category": "monster"
+}

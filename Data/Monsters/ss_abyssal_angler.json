@@ -13,13 +13,15 @@
     "health": 165,
     "attack": 40,
     "defense": 15,
-    "speed": 18
+    "speed": 18,
+    "life_steal": 10,
+    "crit_chance": 10
   },
   "ability_ids": [
     "basic_attack",
     "mon_poison_shot"
   ],
-  "passive_ids": [],
+  "passive_ids": ["mon_life_drain"],
   "loot_table_id": "lt_region3_uncommon",
   "gold_drop_min": 21,
   "gold_drop_max": 35,

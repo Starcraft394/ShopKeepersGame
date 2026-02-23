@@ -13,14 +13,17 @@
     "health": 400,
     "attack": 40,
     "defense": 15,
-    "speed": 22
+    "speed": 22,
+    "resist": 12,
+    "life_steal": 10,
+    "thorns": 8
   },
   "ability_ids": [
     "basic_attack",
     "mon_chain_lightning",
     "mon_life_siphon"
   ],
-  "passive_ids": [],
+  "passive_ids": ["mon_life_drain", "mon_thorny_hide"],
   "loot_table_id": "lt_region2_boss",
   "gold_drop_min": 39,
   "gold_drop_max": 72,

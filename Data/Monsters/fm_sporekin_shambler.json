@@ -13,13 +13,14 @@
     "health": 72,
     "attack": 18,
     "defense": 4,
-    "speed": 14
+    "speed": 14,
+    "thorns": 5
   },
   "ability_ids": [
     "basic_attack",
     "mon_heavy_strike"
   ],
-  "passive_ids": [],
+  "passive_ids": ["mon_thorny_hide"],
   "loot_table_id": "lt_region2_common",
   "gold_drop_min": 6,
   "gold_drop_max": 14,

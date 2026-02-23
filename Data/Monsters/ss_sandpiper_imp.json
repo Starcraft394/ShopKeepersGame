@@ -13,13 +13,14 @@
     "health": 88,
     "attack": 23,
     "defense": 6,
-    "speed": 26
+    "speed": 26,
+    "evasion": 10
   },
   "ability_ids": [
     "basic_attack",
     "mon_aimed_shot"
   ],
-  "passive_ids": [],
+  "passive_ids": ["mon_evasive"],
   "loot_table_id": "lt_region3_common",
   "gold_drop_min": 10,
   "gold_drop_max": 18,

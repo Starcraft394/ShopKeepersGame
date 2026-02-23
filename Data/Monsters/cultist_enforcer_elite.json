@@ -13,14 +13,16 @@
     "health": 120,
     "attack": 22,
     "defense": 7,
-    "speed": 18
+    "speed": 18,
+    "armor_penetration": 8,
+    "crit_chance": 8
   },
   "ability_ids": [
     "basic_attack",
     "mon_rending_strike",
     "mon_berserker_rage"
   ],
-  "passive_ids": [],
+  "passive_ids": ["mon_piercing_blows"],
   "loot_table_id": "lt_cultist_parts",
   "gold_drop_min": 17,
   "gold_drop_max": 32,

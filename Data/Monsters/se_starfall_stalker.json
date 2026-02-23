@@ -13,13 +13,16 @@
     "health": 258,
     "attack": 55,
     "defense": 22,
-    "speed": 35
+    "speed": 35,
+    "crit_chance": 12,
+    "evasion": 10
   },
   "ability_ids": [
     "basic_attack",
-    "mon_aimed_shot"
+    "mon_aimed_shot",
+    "mon_rain_of_arrows"
   ],
-  "passive_ids": [],
+  "passive_ids": ["mon_venomous"],
   "loot_table_id": "lt_region5_uncommon",
   "gold_drop_min": 25,
   "gold_drop_max": 38,

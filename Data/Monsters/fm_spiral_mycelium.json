@@ -13,14 +13,16 @@
     "health": 450,
     "attack": 42,
     "defense": 16,
-    "speed": 24
+    "speed": 24,
+    "thorns": 10,
+    "resist": 8
   },
   "ability_ids": [
     "basic_attack",
     "mon_meteor",
     "mon_mend_ally"
   ],
-  "passive_ids": [],
+  "passive_ids": ["mon_thorny_hide"],
   "loot_table_id": "lt_region2_boss",
   "gold_drop_min": 52,
   "gold_drop_max": 98,

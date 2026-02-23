@@ -13,7 +13,9 @@
     "health": 145,
     "attack": 32,
     "defense": 14,
-    "speed": 20
+    "speed": 20,
+    "evasion": 8,
+    "crit_chance": 5
   },
   "ability_ids": [
     "basic_attack",

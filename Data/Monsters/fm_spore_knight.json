@@ -13,13 +13,15 @@
     "health": 110,
     "attack": 23,
     "defense": 8,
-    "speed": 14
+    "speed": 14,
+    "thorns": 8,
+    "armor_penetration": 5
   },
   "ability_ids": [
     "basic_attack",
     "mon_rending_strike"
   ],
-  "passive_ids": [],
+  "passive_ids": ["mon_thorny_hide"],
   "loot_table_id": "lt_region2_uncommon",
   "gold_drop_min": 10,
   "gold_drop_max": 22,

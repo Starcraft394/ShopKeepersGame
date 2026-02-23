@@ -12,8 +12,10 @@
     "health": 47,
     "attack": 12,
     "defense": 2,
-    "speed": 15
+    "speed": 15,
+    "crit_chance": 8
   },
+  "passive_ids": [],
   "ability_ids": [
     "basic_attack"
   ],

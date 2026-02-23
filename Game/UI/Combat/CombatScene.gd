@@ -73,6 +73,10 @@ var _loot_resize_start_panel_pos: Vector2 = Vector2.ZERO
 # Loot panel drag state
 var _loot_dragging: bool = false
 var _loot_drag_offset: Vector2 = Vector2.ZERO
+
+# XP summary state (captured before loot panel)
+var _pending_xp_results: Dictionary = {}
+var _pending_xp_amount: int = 0
 const LOOT_RESIZE_MARGIN := 8
 const LOOT_PANEL_MIN_SIZE := Vector2(460, 320)
 const LOOT_PANEL_MAX_SIZE := Vector2(1100, 800)
@@ -2098,7 +2102,8 @@ func _on_combat_ended(_result) -> void:
 			source = "combat_elite"
 
 		var xp_amount: int = GameContext.get_combat_xp(source)
-		GameContext.grant_party_xp(xp_amount, source)
+		_pending_xp_results = GameContext.grant_party_xp(xp_amount, source)
+		_pending_xp_amount = xp_amount
 
 	# Show loot panel on ANY victory (even with zero item drops, to display gold earned)
 	var show_loot: bool = _result != null and _result.is_victory
@@ -2152,6 +2157,22 @@ func _do_combat_transition() -> void:
 # ============================================================================
 # LOOT PANEL — Route items to stash or hero bags
 # ============================================================================
+
+## Get XP progress within current level for a hero.
+func _get_xp_progress(hero_id: String) -> Dictionary:
+	var hero = GameContext.get_hero(hero_id)
+	if hero.is_empty():
+		return {"current": 0, "needed": 100, "level": 1}
+	var xp: int = int(hero.get("xp", 0))
+	var level: int = int(hero.get("level", 1))
+	var current_threshold: int = GameContext.XP_THRESHOLDS[mini(level - 1, GameContext.XP_THRESHOLDS.size() - 1)]
+	var next_threshold: int = GameContext.XP_THRESHOLDS[mini(level, GameContext.XP_THRESHOLDS.size() - 1)]
+	var xp_in_level: int = xp - current_threshold
+	var xp_for_level: int = next_threshold - current_threshold
+	if xp_for_level <= 0:
+		xp_for_level = 1
+	return {"current": xp_in_level, "needed": xp_for_level, "level": level}
+
 
 ## Returns "+" if any entry in the bag has material stack room remaining.
 func _bag_stack_room_indicator(bag: Array) -> String:
@@ -2261,6 +2282,76 @@ func _show_loot_panel() -> void:
 	title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.5))
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(title)
+
+	# ── XP Summary ──
+	if _pending_xp_amount > 0:
+		var xp_header = Label.new()
+		xp_header.text = "+%d XP" % _pending_xp_amount
+		xp_header.add_theme_font_size_override("font_size", GameContext.fs(16))
+		xp_header.add_theme_color_override("font_color", Color(0.6, 0.9, 1.0))
+		xp_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		vbox.add_child(xp_header)
+
+		for hero_id in GameContext.selected_party:
+			var hero = GameContext.get_hero(hero_id)
+			if hero.is_empty():
+				continue
+			var hero_name: String = hero.get("name", hero_id)
+			var hero_level: int = int(hero.get("level", 1))
+			var levels_gained: int = _pending_xp_results.get(hero_id, 0)
+			var xp_progress: Dictionary = _get_xp_progress(hero_id)
+
+			var hero_row = HBoxContainer.new()
+			hero_row.add_theme_constant_override("separation", 8)
+			vbox.add_child(hero_row)
+
+			var name_lbl = Label.new()
+			name_lbl.text = "%s  Lv%d" % [hero_name, hero_level]
+			name_lbl.add_theme_font_size_override("font_size", GameContext.fs(13))
+			name_lbl.add_theme_color_override("font_color", Color(0.85, 0.8, 0.7))
+			name_lbl.custom_minimum_size = Vector2(120, 0)
+			hero_row.add_child(name_lbl)
+
+			# XP progress bar
+			var bar = ProgressBar.new()
+			bar.custom_minimum_size = Vector2(140, 14)
+			bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			bar.min_value = 0
+			bar.max_value = xp_progress.needed
+			bar.value = xp_progress.current
+			bar.show_percentage = false
+			var bar_bg_style = StyleBoxFlat.new()
+			bar_bg_style.bg_color = Color(0.15, 0.15, 0.2, 0.8)
+			bar_bg_style.corner_radius_top_left = 2
+			bar_bg_style.corner_radius_top_right = 2
+			bar_bg_style.corner_radius_bottom_left = 2
+			bar_bg_style.corner_radius_bottom_right = 2
+			bar.add_theme_stylebox_override("background", bar_bg_style)
+			var bar_fill_style = StyleBoxFlat.new()
+			bar_fill_style.bg_color = Color(0.3, 0.7, 1.0, 0.9)
+			bar_fill_style.corner_radius_top_left = 2
+			bar_fill_style.corner_radius_top_right = 2
+			bar_fill_style.corner_radius_bottom_left = 2
+			bar_fill_style.corner_radius_bottom_right = 2
+			bar.add_theme_stylebox_override("fill", bar_fill_style)
+			hero_row.add_child(bar)
+
+			var xp_lbl = Label.new()
+			xp_lbl.text = "%d/%d" % [xp_progress.current, xp_progress.needed]
+			xp_lbl.add_theme_font_size_override("font_size", GameContext.fs(11))
+			xp_lbl.add_theme_color_override("font_color", Color(0.7, 0.7, 0.8))
+			hero_row.add_child(xp_lbl)
+
+			if levels_gained > 0:
+				var lvl_up = Label.new()
+				lvl_up.text = "LEVEL UP!"
+				lvl_up.add_theme_font_size_override("font_size", GameContext.fs(13))
+				lvl_up.add_theme_color_override("font_color", Color(1.0, 0.9, 0.3))
+				hero_row.add_child(lvl_up)
+
+		var xp_sep = HSeparator.new()
+		xp_sep.modulate = Color(0.55, 0.4, 0.25, 0.5)
+		vbox.add_child(xp_sep)
 
 	# ── Drops grid (48x48 icon slots) ──
 	if not pending.is_empty():

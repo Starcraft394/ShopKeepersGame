@@ -13,7 +13,8 @@
     "health": 54,
     "attack": 18,
     "defense": 4,
-    "speed": 17
+    "speed": 17,
+    "armor_penetration": 5
   },
   "ability_ids": [
     "basic_attack",

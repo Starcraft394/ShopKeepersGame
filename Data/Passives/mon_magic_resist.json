@@ -1,0 +1,14 @@
+{
+  "id": "mon_magic_resist",
+  "display_name": "Magic Resistant",
+  "description": "Innate resistance reduces incoming magical damage.",
+  "icon_hint": "glowing ward sigil deflecting arcane bolts",
+  "passive_type": "stat_bonus",
+  "trigger": "combat_start",
+  "effect": {
+    "stat": "resist",
+    "bonus": 10
+  },
+  "source_class_id": "",
+  "category": "monster"
+}

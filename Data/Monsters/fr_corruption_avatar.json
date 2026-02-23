@@ -13,13 +13,16 @@
     "health": 416,
     "attack": 62,
     "defense": 29,
-    "speed": 39
+    "speed": 39,
+    "resist": 15,
+    "armor_penetration": 12,
+    "life_steal": 10
   },
   "ability_ids": [
     "basic_attack",
     "mon_rending_strike"
   ],
-  "passive_ids": [],
+  "passive_ids": ["mon_magic_resist", "mon_undying_rage"],
   "loot_table_id": "lt_region7_uncommon",
   "gold_drop_min": 35,
   "gold_drop_max": 55,

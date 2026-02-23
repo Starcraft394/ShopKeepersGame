@@ -13,13 +13,14 @@
     "health": 110,
     "attack": 23,
     "defense": 6,
-    "speed": 14
+    "speed": 14,
+    "life_steal": 8
   },
   "ability_ids": [
     "basic_attack",
     "mon_rending_strike"
   ],
-  "passive_ids": [],
+  "passive_ids": ["mon_life_drain"],
   "loot_table_id": "lt_region2_uncommon",
   "gold_drop_min": 10,
   "gold_drop_max": 22,
