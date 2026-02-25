@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shops &amp; Shadows — A Cozy Grim-Fantasy Roguelite</title>
+    <meta name="description" content="A cozy grim-fantasy roguelite where you play as the Shopkeeper. Recruit heroes, equip them, and send them into corrupted dungeons across 7 regions.">
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-card-hover: #1a1a28;
+            --border: #2a2a3a;
+            --gold: #d4a856;
+            --gold-dim: #a08040;
+            --text: #d0d0d8;
+            --text-dim: #888898;
+            --text-bright: #f0f0f5;
+            --accent-green: #4a7a5a;
+            --accent-blue: #2c6e7a;
+            --accent-red: #8b3a2a;
+            --accent-purple: #4a3a8b;
+            --accent-teal: #3a6a6a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        img { image-rendering: pixelated; }
+
+        /* ===== NAVIGATION ===== */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(10, 10, 15, 0.92);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav .logo {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: 0.05em;
+        }
+        nav .links { display: flex; gap: 1.5rem; }
+        nav .links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+        nav .links a:hover { color: var(--gold); }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 6rem 2rem 4rem;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('images/town_thornhaven_T1.png') center/cover;
+            image-rendering: pixelated;
+            filter: brightness(0.35);
+            z-index: 0;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(10,10,15,0.3) 0%, rgba(10,10,15,0.1) 40%, rgba(10,10,15,0.8) 100%);
+            z-index: 1;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 700px;
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--gold);
+            text-shadow: 0 2px 20px rgba(212, 168, 86, 0.3);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.04em;
+        }
+        .hero .subtitle {
+            font-size: 1.15rem;
+            color: var(--text-dim);
+            font-style: italic;
+            margin-bottom: 1.5rem;
+        }
+        .hero .tagline {
+            font-size: 1.6rem;
+            color: var(--text-bright);
+            font-weight: 300;
+            margin-bottom: 2rem;
+        }
+        .hero .pitch {
+            font-size: 1rem;
+            color: var(--text);
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
+        }
+        .hero .badges {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.6rem;
+        }
+        .badge {
+            background: rgba(212, 168, 86, 0.12);
+            border: 1px solid rgba(212, 168, 86, 0.3);
+            border-radius: 20px;
+            padding: 0.35rem 0.9rem;
+            font-size: 0.8rem;
+            color: var(--gold);
+            white-space: nowrap;
+        }
+        .cta-btn {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+            color: var(--bg-dark);
+            font-weight: 700;
+            font-size: 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(212, 168, 86, 0.3);
+        }
+
+        /* ===== SECTIONS ===== */
+        section { padding: 5rem 2rem; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        /* ===== STATS BAR ===== */
+        .stats-bar {
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 2.5rem 2rem;
+        }
+        .stats-grid {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1.5rem;
+            text-align: center;
+        }
+        .stat-item .stat-num {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--gold);
+            display: block;
+        }
+        .stat-item .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        /* ===== FEATURES GRID ===== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: border-color 0.3s, transform 0.2s;
+        }
+        .feature-card:hover {
+            border-color: var(--gold-dim);
+            transform: translateY(-2px);
+        }
+        .feature-card h3 {
+            color: var(--text-bright);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        .feature-card p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .feature-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* ===== IMAGE SHOWCASE ===== */
+        .showcase {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+        .showcase img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .showcase-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem;
+            background: linear-gradient(transparent, rgba(10,10,15,0.9));
+        }
+        .showcase-caption h3 {
+            color: var(--gold);
+            font-size: 1.2rem;
+        }
+        .showcase-caption p {
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        /* ===== REGIONS ===== */
+        .regions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.2rem;
+        }
+        .region-card {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            height: 220px;
+            cursor: default;
+            transition: transform 0.2s, border-color 0.3s;
+        }
+        .region-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--gold-dim);
+        }
+        .region-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .region-card .region-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.75) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1rem;
+        }
+        .region-card .region-num {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--gold);
+            margin-bottom: 0.2rem;
+        }
+        .region-card h3 {
+            font-size: 1.1rem;
+            color: var(--text-bright);
+            margin-bottom: 0.3rem;
+        }
+        .region-card p {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+        .region-card .region-tags {
+            display: flex;
+            gap: 0.4rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .region-tag {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            color: var(--text-dim);
+        }
+
+        /* ===== CLASSES ===== */
+        .archetype-section { margin-bottom: 2.5rem; }
+        .archetype-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .archetype-header h3 {
+            font-size: 1.2rem;
+            color: var(--text-bright);
+        }
+        .archetype-header .arch-badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .arch-vanguard { background: rgba(70, 130, 180, 0.2); color: #6ab0e0; border: 1px solid rgba(70,130,180,0.3); }
+        .arch-dps { background: rgba(200, 60, 60, 0.2); color: #e06a6a; border: 1px solid rgba(200,60,60,0.3); }
+        .arch-healer { background: rgba(80, 180, 80, 0.2); color: #6abe6a; border: 1px solid rgba(80,180,80,0.3); }
+        .arch-warden { background: rgba(180, 160, 60, 0.2); color: #c0b060; border: 1px solid rgba(180,160,60,0.3); }
+
+        .class-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 0.8rem;
+        }
+        .class-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+            transition: border-color 0.2s;
+        }
+        .class-card:hover { border-color: var(--gold-dim); }
+        .class-card h4 {
+            color: var(--text-bright);
+            font-size: 0.95rem;
+            margin-bottom: 0.15rem;
+        }
+        .class-card .class-region {
+            font-size: 0.7rem;
+            color: var(--gold-dim);
+            margin-bottom: 0.4rem;
+        }
+        .class-card p {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        /* ===== RACES ===== */
+        .races-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        .race-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1.2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            transition: border-color 0.2s;
+        }
+        .race-card:hover { border-color: var(--gold-dim); }
+        .race-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        .race-info h4 {
+            color: var(--text-bright);
+            font-size: 0.95rem;
+            margin-bottom: 0.15rem;
+        }
+        .race-info .race-region {
+            font-size: 0.7rem;
+            color: var(--gold-dim);
+            margin-bottom: 0.3rem;
+        }
+        .race-info p {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+        .race-traits {
+            display: flex;
+            gap: 0.3rem;
+            flex-wrap: wrap;
+            margin-top: 0.4rem;
+        }
+        .trait-tag {
+            font-size: 0.65rem;
+            padding: 0.1rem 0.45rem;
+            border-radius: 8px;
+            background: rgba(212, 168, 86, 0.12);
+            color: var(--gold-dim);
+            border: 1px solid rgba(212, 168, 86, 0.2);
+        }
+
+        /* ===== STORY ===== */
+        .story-section {
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+        .story-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+        .story-text h3 {
+            font-size: 1.3rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+        .story-text p {
+            color: var(--text);
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+        .story-text .quote {
+            border-left: 3px solid var(--gold-dim);
+            padding-left: 1rem;
+            color: var(--text-dim);
+            font-style: italic;
+            margin: 1.5rem 0;
+        }
+        .story-img {
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .story-img img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* ===== NG+ ===== */
+        .ngplus-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.2rem;
+        }
+        .ngplus-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1.2rem;
+        }
+        .ngplus-card h4 {
+            color: var(--text-bright);
+            font-size: 0.95rem;
+            margin-bottom: 0.4rem;
+        }
+        .ngplus-card p {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        /* ===== COMBAT ===== */
+        .combat-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .combat-stat {
+            text-align: center;
+            padding: 1rem;
+        }
+        .combat-stat .cs-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+        .combat-stat .cs-label {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        footer p {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+        footer a {
+            color: var(--gold-dim);
+            text-decoration: none;
+        }
+        footer a:hover { color: var(--gold); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.2rem; }
+            .hero .tagline { font-size: 1.2rem; }
+            nav .links { display: none; }
+            .story-content { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(3, 1fr); }
+            section { padding: 3rem 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav>
+    <div class="logo">SHOPS &amp; SHADOWS</div>
+    <div class="links">
+        <a href="#features">Features</a>
+        <a href="#regions">Regions</a>
+        <a href="#classes">Classes</a>
+        <a href="#races">Races</a>
+        <a href="#story">Story</a>
+        <a href="#ngplus">NG+</a>
+        <a href="https://github.com/Starcraft394/ShopKeepersGame">GitHub</a>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Shops &amp; Shadows</h1>
+        <div class="subtitle">A Cozy Grim-Fantasy Roguelite</div>
+        <div class="tagline">You are not the warrior &mdash; you empower them.</div>
+        <p class="pitch">
+            Play as the Shopkeeper, the quiet architect of resistance. Recruit expendable heroes, equip them from your curated inventory, send them into corrupted dungeons, and use the resources they bring back to grow your network of frontier towns across seven increasingly dangerous regions.
+        </p>
+        <div class="badges">
+            <span class="badge">Tactical RPG</span>
+            <span class="badge">Auto-Battler</span>
+            <span class="badge">Town Management</span>
+            <span class="badge">Extraction Roguelite</span>
+            <span class="badge">Godot 4.5</span>
+            <span class="badge">GDScript</span>
+        </div>
+        <a href="https://github.com/Starcraft394/ShopKeepersGame" class="cta-btn">View on GitHub</a>
+    </div>
+</section>
+
+<!-- Stats Bar -->
+<div class="stats-bar">
+    <div class="stats-grid">
+        <div class="stat-item">
+            <span class="stat-num">430</span>
+            <span class="stat-label">Items</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num">112</span>
+            <span class="stat-label">Monsters</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num">80</span>
+            <span class="stat-label">Abilities</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num">15</span>
+            <span class="stat-label">Classes</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num">9</span>
+            <span class="stat-label">Races</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num">7</span>
+            <span class="stat-label">Regions</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num">9</span>
+            <span class="stat-label">NG+ Cycles</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num">332</span>
+            <span class="stat-label">Tests</span>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<section id="features">
+    <div class="container">
+        <h2 class="section-title">Core Features</h2>
+        <p class="section-subtitle">Town management meets tactical combat meets extraction roguelite</p>
+
+        <div class="showcase">
+            <img src="images/shop_interior.png" alt="Shop Interior - Town Management">
+            <div class="showcase-caption">
+                <h3>Your Shop, Your Strategy</h3>
+                <p>Build and upgrade 10 facility types across multiple frontier towns</p>
+            </div>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="feature-icon">&#9876;</span>
+                <h3>Town Management</h3>
+                <p>Build and upgrade 10 facility types: Inn, Shop, Storage, Training Hall, Blacksmith, Huntsman, Enchanter, Alchemist, Chef, and Dungeon Board. Each tier unlocks better services, recipes, and recruits.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">&#9823;</span>
+                <h3>Hero Recruitment</h3>
+                <p>Recruit heroes from 9 races and 15 classes. Each hero has unique stat growth, 2 abilities, 2 class passives, and a racial passive. Heroes who die are gone forever.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">&#128481;</span>
+                <h3>Equipment System</h3>
+                <p>430 items across 5 tiers with 10 combat stats. 8 equipment slots per hero including weapon, armor, offhand, and a backpack for extra dungeon carry capacity.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">&#127748;</span>
+                <h3>Dungeon Exploration</h3>
+                <p>Room-by-room roguelite dungeon runs with choice-based pathing. Risk combat, events, or elite encounters. Extract to bank loot permanently, or push deeper and risk losing everything.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">&#9881;</span>
+                <h3>Crafting &amp; Discovery</h3>
+                <p>Equipment crafting at Blacksmith, Huntsman, and Enchanter. Discovery-based mixing at Chef and Alchemist. Regional materials and boss trophies unlock high-tier recipes.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">&#128258;</span>
+                <h3>New Game Plus</h3>
+                <p>9 NG+ cycles with escalating difficulty, hero carry limits, ability infusion, permanent stat bonuses, and a true ending at Cycle 8 when the Anchor Stone shatters.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Combat Section -->
+<section id="combat" style="background: var(--bg-card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+    <div class="container">
+        <h2 class="section-title">Tactical Combat</h2>
+        <p class="section-subtitle">Speed-based turn order with front/back row positioning and deep stat interactions</p>
+
+        <div class="showcase">
+            <img src="images/dungeon_R4.png" alt="Dungeon Combat - Ashen Horizons">
+            <div class="showcase-caption">
+                <h3>Every Decision Matters</h3>
+                <p>10 combat stats, 11 status effects, 4 monster AI tiers, and 68 items with triggered combat effects</p>
+            </div>
+        </div>
+
+        <div class="combat-features">
+            <div class="combat-stat">
+                <div class="cs-value">10</div>
+                <div class="cs-label">Combat Stats</div>
+            </div>
+            <div class="combat-stat">
+                <div class="cs-value">11</div>
+                <div class="cs-label">Status Effects</div>
+            </div>
+            <div class="combat-stat">
+                <div class="cs-value">4</div>
+                <div class="cs-label">AI Tiers</div>
+            </div>
+            <div class="combat-stat">
+                <div class="cs-value">3</div>
+                <div class="cs-label">Actions at 80+ SPD</div>
+            </div>
+        </div>
+
+        <div class="features-grid" style="margin-top: 2rem;">
+            <div class="feature-card">
+                <h3>Speed Multi-Actions</h3>
+                <p>40+ Speed grants 2 actions per round. 80+ Speed grants 3 actions. Fast heroes strike multiple times before slow enemies can react.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Combat Tag Effects</h3>
+                <p>68 Tier-4 items have triggered effects across 7 regional themes: healing, poison, speed buffs, burning, cooldown reduction, defensive surges, and void damage.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Monster Intelligence</h3>
+                <p>4 AI tiers from Feral (basic attacks only) to Strategic (optimized rotations). 18 monster abilities across melee, ranged, and mage combat roles.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Regions Section -->
+<section id="regions">
+    <div class="container">
+        <h2 class="section-title">Seven Corrupted Regions</h2>
+        <p class="section-subtitle">Each region tells its own story with unique biomes, monsters, races, and corruption</p>
+
+        <div class="regions-grid">
+            <div class="region-card">
+                <img src="images/town_thornhaven_T1.png" alt="Forest Haven">
+                <div class="region-overlay">
+                    <span class="region-num">Region 1</span>
+                    <h3>Forest Haven</h3>
+                    <p>Ancient forest where corruption twists roots and blights beasts</p>
+                    <div class="region-tags">
+                        <span class="region-tag">Human</span>
+                        <span class="region-tag">Elf</span>
+                        <span class="region-tag">Dwarf</span>
+                    </div>
+                </div>
+            </div>
+            <div class="region-card">
+                <img src="images/town_sproutrest_T1.png" alt="The Fungalmire">
+                <div class="region-overlay">
+                    <span class="region-num">Region 2</span>
+                    <h3>The Fungalmire</h3>
+                    <p>Bioluminescent fungal bogs where beauty masks danger</p>
+                    <div class="region-tags">
+                        <span class="region-tag">Mossfolk</span>
+                        <span class="region-tag">Druid</span>
+                        <span class="region-tag">Berserker</span>
+                    </div>
+                </div>
+            </div>
+            <div class="region-card">
+                <img src="images/town_shelldrift_T1.png" alt="The Sunken Strand">
+                <div class="region-overlay">
+                    <span class="region-num">Region 3</span>
+                    <h3>The Sunken Strand</h3>
+                    <p>Fog-soaked coastal ruins with shifting tides and drowned secrets</p>
+                    <div class="region-tags">
+                        <span class="region-tag">Tidelings</span>
+                        <span class="region-tag">Tidechaser</span>
+                        <span class="region-tag">Stormcaller</span>
+                    </div>
+                </div>
+            </div>
+            <div class="region-card">
+                <img src="images/town_embercradle_T1.png" alt="Ashen Horizons">
+                <div class="region-overlay">
+                    <span class="region-num">Region 4</span>
+                    <h3>Ashen Horizons</h3>
+                    <p>Scorched sands and volcanic ridges where only the fire-forged survive</p>
+                    <div class="region-tags">
+                        <span class="region-tag">Dragonkin</span>
+                        <span class="region-tag">Pyrewarden</span>
+                        <span class="region-tag">Ashblade</span>
+                    </div>
+                </div>
+            </div>
+            <div class="region-card">
+                <img src="images/town_crystalhearth_T1.png" alt="Starfall Expanse">
+                <div class="region-overlay">
+                    <span class="region-num">Region 5</span>
+                    <h3>Starfall Expanse</h3>
+                    <p>Crystal groves where reality fractures into prismatic geometry</p>
+                    <div class="region-tags">
+                        <span class="region-tag">Crystalborn</span>
+                        <span class="region-tag">Prism Sentinel</span>
+                        <span class="region-tag">Prism Lancer</span>
+                    </div>
+                </div>
+            </div>
+            <div class="region-card">
+                <img src="images/town_duskhollow_T1.png" alt="The Necropolis">
+                <div class="region-overlay">
+                    <span class="region-num">Region 6</span>
+                    <h3>The Necropolis</h3>
+                    <p>A gothic realm of bone and grave-dust where the dead walk</p>
+                    <div class="region-tags">
+                        <span class="region-tag">Undead</span>
+                        <span class="region-tag">Dark Channeler</span>
+                        <span class="region-tag">Lich</span>
+                    </div>
+                </div>
+            </div>
+            <div class="region-card">
+                <img src="images/town_void_threshold_T1.png" alt="Final Realm">
+                <div class="region-overlay">
+                    <span class="region-num">Region 7</span>
+                    <h3>Final Realm</h3>
+                    <p>Reality collapses at the edge of existence. The source of all corruption awaits.</p>
+                    <div class="region-tags">
+                        <span class="region-tag">Voidwalkers</span>
+                        <span class="region-tag">Voidwalker</span>
+                        <span class="region-tag">Void Herald</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Story Section -->
+<section id="story" class="story-section">
+    <div class="container">
+        <div class="story-content">
+            <div class="story-text">
+                <h3>A Story About Regret, Grief, and Choosing to Build Forward</h3>
+                <p>Sent to the frontier town of Thornhaven by the Crown, you discover a world ravaged by void corruption &mdash; the consequence of a grief-stricken King's desperate gamble with an ancient temporal artifact called the Grail of Life.</p>
+                <div class="quote">
+                    "A shopkeeper. The Crown sends a shopkeeper to fight corruption. How... economical."
+                    <br>&mdash; The Void Sovereign
+                </div>
+                <p>As you push deeper through seven corrupted regions, the truth emerges: the King caused the rupture. A former royal tactician named Valdric, who lost his lover Lira in the disaster, now wages war as the Void Sovereign to seize the Grail and rewrite history itself.</p>
+                <p>The question at the heart of every timeline: <strong>Is erasure of suffering worth the erasure of everything built in response to it?</strong></p>
+            </div>
+            <div class="story-img">
+                <img src="images/dungeon_R7.png" alt="The Final Realm - Where reality collapses">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Classes Section -->
+<section id="classes">
+    <div class="container">
+        <h2 class="section-title">15 Hero Classes</h2>
+        <p class="section-subtitle">Four archetypes with distinct roles, unlocked as you explore new regions</p>
+
+        <div class="archetype-section">
+            <div class="archetype-header">
+                <h3>Vanguard</h3>
+                <span class="arch-badge arch-vanguard">Tank / Protector</span>
+            </div>
+            <div class="class-grid">
+                <div class="class-card">
+                    <h4>Defender</h4>
+                    <div class="class-region">Region 1 &middot; Forest Haven</div>
+                    <p>A stalwart protector who excels at absorbing damage and shielding allies with Guardian Challenge and Aegis Slam.</p>
+                </div>
+                <div class="class-card">
+                    <h4>Pyrewarden</h4>
+                    <div class="class-region">Region 4 &middot; Ashen Horizons</div>
+                    <p>A flame-forged tank who draws aggression and retaliates with burning vengeance.</p>
+                </div>
+                <div class="class-card">
+                    <h4>Prism Sentinel</h4>
+                    <div class="class-region">Region 5 &middot; Starfall Expanse</div>
+                    <p>A crystalline guardian who refracts damage and creates protective barriers of light.</p>
+                </div>
+                <div class="class-card">
+                    <h4>Voidwalker</h4>
+                    <div class="class-region">Region 7 &middot; Final Realm</div>
+                    <p>A dimensional warrior who phases between planes to absorb attacks and confuse enemies.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="archetype-section">
+            <div class="archetype-header">
+                <h3>Damage Dealers</h3>
+                <span class="arch-badge arch-dps">DPS / Striker</span>
+            </div>
+            <div class="class-grid">
+                <div class="class-card">
+                    <h4>Striker</h4>
+                    <div class="class-region">Region 1 &middot; Forest Haven</div>
+                    <p>A swift damage dealer who eliminates enemies quickly with Twin Strike and Shadowstep.</p>
+                </div>
+                <div class="class-card">
+                    <h4>Fungal Berserker</h4>
+                    <div class="class-region">Region 2 &middot; The Fungalmire</div>
+                    <p>A rage-fueled warrior enhanced by symbiotic fungi, trading defense for overwhelming offense.</p>
+                </div>
+                <div class="class-card">
+                    <h4>Stormcaller</h4>
+                    <div class="class-region">Region 3 &middot; The Sunken Strand</div>
+                    <p>A tempest mage commanding lightning and wind to devastate enemies with elemental fury.</p>
+                </div>
+                <div class="class-card">
+                    <h4>Ashblade</h4>
+                    <div class="class-region">Region 4 &middot; Ashen Horizons</div>
+                    <p>A swift assassin wreathed in smoke and cinders, striking from shadows with burning precision.</p>
+                </div>
+                <div class="class-card">
+                    <h4>Prism Lancer</h4>
+                    <div class="class-region">Region 5 &middot; Starfall Expanse</div>
+                    <p>A radiant warrior channeling focused light into devastating piercing attacks.</p>
+                </div>
+                <div class="class-card">
+                    <h4>Lich</h4>
+                    <div class="class-region">Region 6 &middot; The Necropolis</div>
+                    <p>A master of death magic who raises the fallen and unleashes necrotic devastation.</p>
+                </div>
+                <div class="class-card">
+                    <h4>Void Herald</h4>
+                    <div class="class-region">Region 7 &middot; Final Realm</div>
+                    <p>A harbinger of entropy who tears holes in reality through unstable portals.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="archetype-section">
+            <div class="archetype-header">
+                <h3>Healers</h3>
+                <span class="arch-badge arch-healer">Restoration / Support</span>
+            </div>
+            <div class="class-grid">
+                <div class="class-card">
+                    <h4>Druid</h4>
+                    <div class="class-region">Region 2 &middot; The Fungalmire</div>
+                    <p>A nature guardian channeling plants and fungi to heal allies and control the battlefield.</p>
+                </div>
+                <div class="class-card">
+                    <h4>Tidechaser</h4>
+                    <div class="class-region">Region 3 &middot; The Sunken Strand</div>
+                    <p>A water-attuned healer who manipulates currents to restore allies and wash away afflictions.</p>
+                </div>
+                <div class="class-card">
+                    <h4>Dark Channeler</h4>
+                    <div class="class-region">Region 6 &middot; The Necropolis</div>
+                    <p>A shadow priest who drains life from enemies to heal allies, walking the line between life and death.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="archetype-section">
+            <div class="archetype-header">
+                <h3>Warden</h3>
+                <span class="arch-badge arch-warden">Hybrid Support</span>
+            </div>
+            <div class="class-grid">
+                <div class="class-card">
+                    <h4>Warden</h4>
+                    <div class="class-region">Region 1 &middot; Forest Haven</div>
+                    <p>A forest guardian with organic healing. Supports allies through nature magic and protective wards with Nature's Grace and Barkskin Blessing.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Races Section -->
+<section id="races" style="background: var(--bg-card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+    <div class="container">
+        <h2 class="section-title">9 Playable Races</h2>
+        <p class="section-subtitle">Later races are more powerful but gain experience more slowly &mdash; power vs. growth</p>
+
+        <div class="races-grid">
+            <div class="race-card">
+                <div class="race-icon" style="background: rgba(200,180,140,0.15);">&#9733;</div>
+                <div class="race-info">
+                    <h4>Human</h4>
+                    <div class="race-region">Region 1 &middot; Forest Haven</div>
+                    <p>Versatile and adaptable. Balanced stats with 10% faster XP gain makes them natural all-rounders.</p>
+                    <div class="race-traits"><span class="trait-tag">Adaptable</span><span class="trait-tag">+10% XP</span></div>
+                </div>
+            </div>
+            <div class="race-card">
+                <div class="race-icon" style="background: rgba(100,200,100,0.15);">&#127807;</div>
+                <div class="race-info">
+                    <h4>Elf</h4>
+                    <div class="race-region">Region 1 &middot; Forest Haven</div>
+                    <p>Agile and perceptive with keen senses. Trade durability for speed and precision.</p>
+                    <div class="race-traits"><span class="trait-tag">+3 SPD</span><span class="trait-tag">-5 HP</span><span class="trait-tag">Resist Bleed</span></div>
+                </div>
+            </div>
+            <div class="race-card">
+                <div class="race-icon" style="background: rgba(160,120,80,0.15);">&#9935;</div>
+                <div class="race-info">
+                    <h4>Dwarf</h4>
+                    <div class="race-region">Region 1 &middot; Forest Haven</div>
+                    <p>Durable and stubborn with legendary resilience. Slow but nearly impossible to bring down.</p>
+                    <div class="race-traits"><span class="trait-tag">+10 HP</span><span class="trait-tag">+3 DEF</span><span class="trait-tag">Resist Poison</span></div>
+                </div>
+            </div>
+            <div class="race-card">
+                <div class="race-icon" style="background: rgba(80,180,80,0.15);">&#127812;</div>
+                <div class="race-info">
+                    <h4>Mossfolk</h4>
+                    <div class="race-region">Region 2 &middot; The Fungalmire</div>
+                    <p>Plant-like beings with regenerative abilities and fungal affinity. Incredibly tough but slow.</p>
+                    <div class="race-traits"><span class="trait-tag">+15 HP</span><span class="trait-tag">+5 DEF</span><span class="trait-tag">Regenerative</span></div>
+                </div>
+            </div>
+            <div class="race-card">
+                <div class="race-icon" style="background: rgba(60,140,180,0.15);">&#127754;</div>
+                <div class="race-info">
+                    <h4>Tidelings</h4>
+                    <div class="race-region">Region 3 &middot; The Sunken Strand</div>
+                    <p>Amphibious people who draw power from the sea. Fluid in combat with elemental resilience.</p>
+                    <div class="race-traits"><span class="trait-tag">+5 HP</span><span class="trait-tag">+5 SPD</span><span class="trait-tag">Aquatic</span></div>
+                </div>
+            </div>
+            <div class="race-card">
+                <div class="race-icon" style="background: rgba(200,80,40,0.15);">&#128293;</div>
+                <div class="race-info">
+                    <h4>Dragonkin</h4>
+                    <div class="race-region">Region 4 &middot; Ashen Horizons</div>
+                    <p>Descendants of ancient dragons with inner fire. Raw power at the cost of slower progression.</p>
+                    <div class="race-traits"><span class="trait-tag">+5 ATK</span><span class="trait-tag">+5 DEF</span><span class="trait-tag">Fire Immune</span><span class="trait-tag">0.9x XP</span></div>
+                </div>
+            </div>
+            <div class="race-card">
+                <div class="race-icon" style="background: rgba(150,100,200,0.15);">&#128142;</div>
+                <div class="race-info">
+                    <h4>Crystalborn</h4>
+                    <div class="race-region">Region 5 &middot; Starfall Expanse</div>
+                    <p>Living crystal beings resonating with prismatic energy. Exceptional defense with clarity of purpose.</p>
+                    <div class="race-traits"><span class="trait-tag">+8 DEF</span><span class="trait-tag">+3 ATK</span><span class="trait-tag">Prismatic</span><span class="trait-tag">0.85x XP</span></div>
+                </div>
+            </div>
+            <div class="race-card">
+                <div class="race-icon" style="background: rgba(100,100,120,0.15);">&#9760;</div>
+                <div class="race-info">
+                    <h4>Undead</h4>
+                    <div class="race-region">Region 6 &middot; The Necropolis</div>
+                    <p>Risen souls from beyond death. Dark energies grant resilience at a cost to vitality.</p>
+                    <div class="race-traits"><span class="trait-tag">+5 ATK</span><span class="trait-tag">+10 DEF</span><span class="trait-tag">-10 HP</span><span class="trait-tag">0.8x XP</span></div>
+                </div>
+            </div>
+            <div class="race-card">
+                <div class="race-icon" style="background: rgba(80,40,120,0.15);">&#10043;</div>
+                <div class="race-info">
+                    <h4>Voidwalkers</h4>
+                    <div class="race-region">Region 7 &middot; Final Realm</div>
+                    <p>Entities touched by the void between worlds. Phase between dimensions with devastating speed.</p>
+                    <div class="race-traits"><span class="trait-tag">+8 ATK</span><span class="trait-tag">+10 SPD</span><span class="trait-tag">Dimensional</span><span class="trait-tag">0.75x XP</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- NG+ Section -->
+<section id="ngplus">
+    <div class="container">
+        <h2 class="section-title">New Game Plus</h2>
+        <p class="section-subtitle">9 cycles of escalating challenge, culminating in the True Ending</p>
+
+        <div class="showcase">
+            <img src="images/event_R5.png" alt="Starfall Expanse - NG+ Cycles">
+            <div class="showcase-caption">
+                <h3>The Anchor Stone Remembers</h3>
+                <p>Each cycle rewrites the timeline. The corruption adapts. Only you remember.</p>
+            </div>
+        </div>
+
+        <div class="ngplus-grid">
+            <div class="ngplus-card">
+                <h4>Hero Carry</h4>
+                <p>Carry 1 hero into NG+1, scaling up to all heroes by NG+4. Build your legacy team across timelines.</p>
+            </div>
+            <div class="ngplus-card">
+                <h4>Difficulty Scaling</h4>
+                <p>Monster HP scales from 1.0x to 2.5x. ATK/DEF from 1.0x to 1.8x. Speed from 1.0x to 1.2x. Every cycle demands sharper tactics.</p>
+            </div>
+            <div class="ngplus-card">
+                <h4>Ability Infusion</h4>
+                <p>Infuse learned abilities into equipment slots, letting heroes carry techniques across timelines.</p>
+            </div>
+            <div class="ngplus-card">
+                <h4>Permanent Bonuses</h4>
+                <p>+5% base stats per cycle from NG+5 onward. Equipment gains bonus stat lines based on completions.</p>
+            </div>
+            <div class="ngplus-card">
+                <h4>Unique Dialogs</h4>
+                <p>New campaign dialogs in NG+ cycles reveal hidden truths. Characters remember fragments across rewrites.</p>
+            </div>
+            <div class="ngplus-card">
+                <h4>True Ending</h4>
+                <p>At Cycle 8, the Anchor Stone shatters. The rewrite cycle ends permanently. The corruption finally recedes.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <p><strong style="color: var(--gold);">Shops &amp; Shadows</strong> &mdash; Built with Godot 4.5 &amp; GDScript</p>
+    <p>
+        <a href="https://github.com/Starcraft394/ShopKeepersGame">GitHub Repository</a>
+        &nbsp;&middot;&nbsp;
+        Active Development &mdash; 332 Tests Passing
+    </p>
+    <p style="margin-top: 1rem; font-size: 0.75rem; color: #555;">
+        &copy; 2024-2026 ShopKeepers Game. All pixel art by their respective creators.
+    </p>
+</footer>
+
+</body>
+</html>
