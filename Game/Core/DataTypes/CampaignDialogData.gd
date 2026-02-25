@@ -15,6 +15,7 @@ var speaker_id: String = ""
 var speaker_name: String = ""
 var speaker_portrait: String = ""    # res:// path or empty for no portrait
 var lines: Array[String] = []
+var min_ng_cycle: int = 0            # minimum NG+ cycle for this dialog to appear (0 = any)
 
 
 static func from_dict(data: Dictionary, region_id: String) -> CampaignDialogData:
@@ -34,6 +35,7 @@ static func from_dict(data: Dictionary, region_id: String) -> CampaignDialogData
 	inst.speaker_name = "" if sn == null else str(sn)
 	var sp = data.get("speaker_portrait", null)
 	inst.speaker_portrait = "" if sp == null else str(sp)
+	inst.min_ng_cycle = int(data.get("min_ng_cycle", 0))
 	var raw_lines = data.get("lines", [])
 	if raw_lines is Array:
 		for line in raw_lines:

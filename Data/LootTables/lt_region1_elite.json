@@ -1,17 +1,15 @@
 {
   "id": "lt_region1_elite",
   "display_name": "Region 1 Elite Loot",
-  "description": "Materials and consumables with rare equipment chance.",
+  "description": "Rich drops from Thornhaven elite encounters.",
   "min_drops": 2,
   "max_drops": 4,
   "entries": [
-    { "item_id": "iron_scrap", "weight": 30, "min_qty": 2, "max_qty": 3 },
-    { "item_id": "herb_sprig", "weight": 25, "min_qty": 2, "max_qty": 3 },
-    { "item_id": "minor_healing_tonic", "weight": 20, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "antidote", "weight": 10, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "honey", "weight": 8, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "glowing_spore", "weight": 8, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "leather_vest", "weight": 5, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "", "weight": 4, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "cursed_dust", "weight": 25, "min_qty": 2, "max_qty": 3 },
+    { "item_id": "glowing_spore", "weight": 22, "min_qty": 2, "max_qty": 3 },
+    { "item_id": "honey", "weight": 18, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "aged_cheese", "weight": 12, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "strong_healing_tonic", "weight": 15, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "", "weight": 8, "min_qty": 0, "max_qty": 0 }
   ]
 }

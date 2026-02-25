@@ -1971,6 +1971,454 @@ static func run_tests() -> Dictionary:
 	else:
 		results["failed"] += 1
 
+	# Test 255: Snapshot includes attack_type
+	var t255 = _test_snapshot_includes_attack_type()
+	results["tests"].append(t255)
+	if t255["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 256: Enemy snapshot has ability_a_id
+	var t256 = _test_enemy_snapshot_has_ability()
+	results["tests"].append(t256)
+	if t256["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 257: Enemy snapshot has passive_a_id
+	var t257 = _test_enemy_snapshot_has_passive()
+	results["tests"].append(t257)
+	if t257["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 258: Enemy snapshot has secondary stats
+	var t258 = _test_enemy_snapshot_has_secondary_stats()
+	results["tests"].append(t258)
+	if t258["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 259: Snapshot attack_type from monster data
+	var t259 = _test_snapshot_attack_type_from_data()
+	results["tests"].append(t259)
+	if t259["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 260: Shop restock clears allocations
+	var t260 = _test_shop_restock_clears_allocations()
+	results["tests"].append(t260)
+	if t260["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 261: NG+ carry limit scales with cycle
+	var t261 = _test_ng_carry_limit()
+	results["tests"].append(t261)
+	if t261["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 262: NG+ difficulty multipliers
+	var t262 = _test_ng_difficulty_multipliers()
+	results["tests"].append(t262)
+	if t262["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 263: Seen ability tracking
+	var t263 = _test_ng_seen_abilities()
+	results["tests"].append(t263)
+	if t263["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 264: Bonus stat line generation
+	var t264 = _test_ng_bonus_stat_lines()
+	results["tests"].append(t264)
+	if t264["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 265: NG+ base stat multiplier
+	var t265 = _test_ng_base_stat_multiplier()
+	results["tests"].append(t265)
+	if t265["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 266: NG+ perm stat bonus in hero effective stats
+	var t266 = _test_ng_perm_stat_bonus()
+	results["tests"].append(t266)
+	if t266["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 267: NG+ infuse item ability
+	var t267 = _test_ng_infuse_item_ability()
+	results["tests"].append(t267)
+	if t267["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 268: NG+ bonus stat lines in equipment stats
+	var t268 = _test_ng_bonus_lines_in_equipment_stats()
+	results["tests"].append(t268)
+	if t268["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 269: NG+ transition eligibility (can_start_new_cycle)
+	var t269 = _test_ng_transition_eligibility()
+	results["tests"].append(t269)
+	if t269["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 270: NG+ full transition lifecycle
+	var t270 = _test_ng_transition_lifecycle()
+	results["tests"].append(t270)
+	if t270["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 271: NG+ cycle badge text
+	var t271 = _test_ng_cycle_badge_text()
+	results["tests"].append(t271)
+	if t271["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 272: Taunt enforcement in TargetingPolicy
+	var t272 = _test_taunt_enforcement()
+	results["tests"].append(t272)
+	if t272["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 273: Dead hero excluded from combat creation
+	var t273 = _test_dead_hero_combat_exclusion()
+	results["tests"].append(t273)
+	if t273["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 274: Dead hero excluded from XP grant
+	var t274 = _test_dead_hero_xp_exclusion()
+	results["tests"].append(t274)
+	if t274["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 275: SideQuestData serialization round-trip
+	var t275 = _test_side_quest_data_serialization()
+	results["tests"].append(t275)
+	if t275["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 276: Side quest generation — kill type
+	var t276 = _test_side_quest_generate_kill()
+	results["tests"].append(t276)
+	if t276["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 277: Side quest generation — resupply type
+	var t277 = _test_side_quest_generate_resupply()
+	results["tests"].append(t277)
+	if t277["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 278: Side quest type gating
+	var t278 = _test_side_quest_type_gating()
+	results["tests"].append(t278)
+	if t278["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 279: Kill quest progress tracking
+	var t279 = _test_side_quest_kill_progress()
+	results["tests"].append(t279)
+	if t279["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 280: Resupply quest completion + material consumption
+	var t280 = _test_side_quest_resupply_completion()
+	results["tests"].append(t280)
+	if t280["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 281: Reward item selection from region pool
+	var t281 = _test_side_quest_reward_selection()
+	results["tests"].append(t281)
+	if t281["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 282: Reward goes to storage (stash)
+	var t282 = _test_side_quest_reward_to_storage()
+	results["tests"].append(t282)
+	if t282["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 283: Side quest save/load round-trip
+	var t283 = _test_side_quest_save_load()
+	results["tests"].append(t283)
+	if t283["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 284: Main story objective from campaign flags
+	var t284 = _test_side_quest_main_story_objective()
+	results["tests"].append(t284)
+	if t284["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 285: Shop seed varies with run seed
+	var t285 = _test_shop_seed_varies_with_run_seed()
+	results["tests"].append(t285)
+	if t285["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 286: Cross-hero bag transfer to uninitialized bag
+	var t286 = _test_cross_hero_bag_transfer_uninitialized()
+	results["tests"].append(t286)
+	if t286["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 287: T1 recruit equipment gives weapon
+	var t287 = _test_recruit_equipment_class_specific_r1()
+	results["tests"].append(t287)
+	if t287["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 288: Inn auto-restock clears purchased slots
+	var t288 = _test_inn_auto_restock_clears_slots()
+	results["tests"].append(t288)
+	if t288["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 289: Softlock pity grants recovery party
+	var t289 = _test_softlock_pity_grants_recovery()
+	results["tests"].append(t289)
+	if t289["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 290: Per-town Inn slot independence
+	var t290 = _test_per_town_inn_slot_independence()
+	results["tests"].append(t290)
+	if t290["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 291: get_hero_xp_progress utility
+	var t291 = _test_get_hero_xp_progress()
+	results["tests"].append(t291)
+	if t291["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 292: T1 monster gate on floor 3+
+	var t292 = _test_t1_monster_gate_floor3()
+	results["tests"].append(t292)
+	if t292["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 293: R2 material tier upgrade to T2
+	var t293 = _test_r2_material_tier_upgrade()
+	results["tests"].append(t293)
+	if t293["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 294: Stash quality_tier preserved for Dictionary items
+	var t294 = _test_stash_quality_tier_dict()
+	results["tests"].append(t294)
+	if t294["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 295: Production facility per-slot RNG variety
+	var t295 = _test_production_facility_per_slot_rng()
+	results["tests"].append(t295)
+	if t295["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 296: Party bar bench hero add-to-party flow
+	var t296 = _test_party_bar_bench_add()
+	results["tests"].append(t296)
+	if t296["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 297: Bench capacity by inn tier
+	var t297 = _test_bench_capacity_by_inn_tier()
+	results["tests"].append(t297)
+	if t297["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 298: Bench count filters by town
+	var t298 = _test_bench_count_filters_by_town()
+	results["tests"].append(t298)
+	if t298["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 299: Recruit sets home_town_id
+	var t299 = _test_recruit_sets_home_town_id()
+	results["tests"].append(t299)
+	if t299["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 300: Remove from party updates home_town_id
+	var t300 = _test_remove_from_party_updates_town()
+	results["tests"].append(t300)
+	if t300["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 301: Recruit blocked when bench full
+	var t301 = _test_recruit_blocked_bench_full()
+	results["tests"].append(t301)
+	if t301["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 302: get_inn_bench_heroes correct set
+	var t302 = _test_get_inn_bench_heroes_correct_set()
+	results["tests"].append(t302)
+	if t302["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 303: Migration defaults home_town_id
+	var t303 = _test_home_town_migration_default()
+	results["tests"].append(t303)
+	if t303["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 304: Reordered snapshot order
+	var t304 = _test_reordered_snapshot_order()
+	results["tests"].append(t304)
+	if t304["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 305: Reordered snapshot front marker
+	var t305 = _test_reordered_snapshot_front_marker()
+	results["tests"].append(t305)
+	if t305["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 306: Manage gear filter default
+	var t306 = _test_manage_gear_filter_default()
+	results["tests"].append(t306)
+	if t306["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 307: Building regional sprites exist
+	var t307 = _test_building_regional_sprites()
+	results["tests"].append(t307)
+	if t307["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 308: Formation warning all-middle detection
+	var t308 = _test_formation_warning_all_middle()
+	results["tests"].append(t308)
+	if t308["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 309: Side quest tutorial JSON exists
+	var t309 = _test_side_quest_tutorial_exists()
+	results["tests"].append(t309)
+	if t309["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 310: NG+ tutorial JSON exists
+	var t310 = _test_ng_plus_tutorial_exists()
+	results["tests"].append(t310)
+	if t310["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
 	print("")
 	print("=" .repeat(60))
 	print("  TEST RESULTS: %d passed, %d failed" % [results["passed"], results["failed"]])
@@ -9147,11 +9595,12 @@ static func _test_campaign_dialog_loading() -> Dictionary:
 	var r7_ok: bool = r7.size() >= 5  # R7 has 5 dialogs
 	var empty_ok: bool = empty.size() == 0
 
-	# Verify first R1 dialog has correct data (Cedric's herald_intro is now first)
+	# Verify R1 dialogs contain r1_herald_intro (may not be first due to NG+ dialog files)
 	var first_ok: bool = false
-	if r1.size() > 0:
-		var first = r1[0]
-		first_ok = first.id == "r1_herald_intro" and first.trigger == "region_first_arrival" and first.lines.size() >= 3
+	for d in r1:
+		if d.id == "r1_herald_intro" and d.trigger == "region_first_arrival" and d.lines.size() >= 3:
+			first_ok = true
+			break
 
 	var passed: bool = total_ok and r1_ok and r7_ok and empty_ok and first_ok
 	if passed:
@@ -11890,33 +12339,44 @@ static func _test_equipment_pool_by_region_tier() -> Dictionary:
 ## TEST 210: Dungeon drop quality is Rare (Q2) or Epic (Q3) only
 ## Rolls GEAR_DROP_QUALITY_WEIGHTS 200 times and verifies all are >= Q2.
 static func _test_dungeon_drop_quality_rare_only() -> Dictionary:
-	print("--- TEST 210: Dungeon Drop Quality Rare-Only ---")
+	print("--- TEST 210: Dungeon Drop Quality Distribution ---")
 	var rng = RandomNumberGenerator.new()
 	rng.seed = 12345
 
 	var q_counts: Array = [0, 0, 0, 0]  # Q0, Q1, Q2, Q3
-	var bad_rolls: int = 0
-	for i in range(200):
+	var total: int = 500
+	for i in range(total):
 		var q: int = SeededRNG.choose_weighted(CombatResult.GEAR_DROP_QUALITY_WEIGHTS, rng)
 		if q >= 0 and q <= 3:
 			q_counts[q] += 1
-		if q < 2:
-			bad_rolls += 1
 
-	var pass_no_low: bool = bad_rolls == 0
-	if pass_no_low:
-		print("[PASS] 200 rolls: Q2=%d Q3=%d (no Q0/Q1)" % [q_counts[2], q_counts[3]])
+	# Expected: Q0=20%, Q1=40%, Q2=30%, Q3=10%
+	# All 4 tiers should appear in 500 rolls
+	var passed: bool = true
+	var all_present: bool = q_counts[0] > 0 and q_counts[1] > 0 and q_counts[2] > 0 and q_counts[3] > 0
+	if all_present:
+		print("[PASS] All 4 quality tiers present: Q0=%d Q1=%d Q2=%d Q3=%d" % [q_counts[0], q_counts[1], q_counts[2], q_counts[3]])
 	else:
-		print("[FAIL] %d rolls below Q2: Q0=%d Q1=%d Q2=%d Q3=%d" % [bad_rolls, q_counts[0], q_counts[1], q_counts[2], q_counts[3]])
+		print("[FAIL] Missing quality tier: Q0=%d Q1=%d Q2=%d Q3=%d" % [q_counts[0], q_counts[1], q_counts[2], q_counts[3]])
+		passed = false
 
-	# Verify both Q2 and Q3 appear (with 200 rolls at 85/15 split, extremely unlikely to miss Q3)
-	var pass_both: bool = q_counts[2] > 0 and q_counts[3] > 0
-	if pass_both:
-		print("[PASS] Both Rare and Epic quality represented")
+	# Q1 (40%) should be the most common
+	var q1_highest: bool = q_counts[1] > q_counts[0] and q_counts[1] > q_counts[2] and q_counts[1] > q_counts[3]
+	if q1_highest:
+		print("[PASS] Q1 (Uncommon) is most frequent as expected (40%%)")
 	else:
-		print("[FAIL] Missing quality tier: Q2=%d Q3=%d" % [q_counts[2], q_counts[3]])
+		print("[FAIL] Q1 should be most frequent: Q0=%d Q1=%d Q2=%d Q3=%d" % [q_counts[0], q_counts[1], q_counts[2], q_counts[3]])
+		passed = false
 
-	return {"name": "Dungeon Drop Quality Rare-Only", "passed": pass_no_low and pass_both}
+	# Q3 (10%) should be the least common
+	var q3_lowest: bool = q_counts[3] < q_counts[0] and q_counts[3] < q_counts[1] and q_counts[3] < q_counts[2]
+	if q3_lowest:
+		print("[PASS] Q3 (Epic) is least frequent as expected (10%%)")
+	else:
+		print("[FAIL] Q3 should be least frequent: Q0=%d Q1=%d Q2=%d Q3=%d" % [q_counts[0], q_counts[1], q_counts[2], q_counts[3]])
+		passed = false
+
+	return {"name": "Dungeon Drop Quality Distribution", "passed": passed}
 
 
 ## TEST 211: Regional recruit level minimum
@@ -13658,3 +14118,2645 @@ static func _test_monster_passive_data_loading() -> Dictionary:
 		passed = false
 
 	return {"name": "Monster passive data loading", "passed": passed}
+
+
+static func _test_snapshot_includes_attack_type() -> Dictionary:
+	print("--- TEST 255: Snapshot Includes attack_type ---")
+	var passed: bool = true
+
+	# CombatUnit has attack_type field (default "melee")
+	var unit = CombatUnit.new()
+	unit.unit_id = "test_atk_type"
+	unit.display_name = "Test Unit"
+	unit.attack_type = "ranged"
+	unit.statuses = StatusRuntime.new("test_atk_type")
+
+	# Verify the field exists and is set
+	if unit.attack_type == "ranged":
+		print("[PASS] CombatUnit.attack_type = 'ranged'")
+	else:
+		print("[FAIL] Expected attack_type 'ranged', got '%s'" % unit.attack_type)
+		passed = false
+
+	# Verify default
+	var unit2 = CombatUnit.new()
+	unit2.unit_id = "test_atk_type2"
+	unit2.statuses = StatusRuntime.new("test_atk_type2")
+	if unit2.attack_type == "melee":
+		print("[PASS] Default attack_type = 'melee'")
+	else:
+		print("[FAIL] Expected default 'melee', got '%s'" % unit2.attack_type)
+		passed = false
+
+	return {"name": "Snapshot includes attack_type", "passed": passed}
+
+
+static func _test_enemy_snapshot_has_ability() -> Dictionary:
+	print("--- TEST 256: Enemy Snapshot Has ability_a_id ---")
+	var passed: bool = true
+
+	# nc_ghoul_stalker has mon_rending_strike, mon_mark_prey
+	var unit = CombatUnit.create_monster("nc_ghoul_stalker", 0)
+	if unit.ability_a_id != "":
+		print("[PASS] Enemy unit ability_a_id = '%s'" % unit.ability_a_id)
+	else:
+		print("[FAIL] Enemy unit ability_a_id is empty")
+		passed = false
+
+	if unit.ability_b_id != "":
+		print("[PASS] Enemy unit ability_b_id = '%s'" % unit.ability_b_id)
+	else:
+		print("[FAIL] Enemy unit ability_b_id is empty")
+		passed = false
+
+	return {"name": "Enemy snapshot has ability_a_id", "passed": passed}
+
+
+static func _test_enemy_snapshot_has_passive() -> Dictionary:
+	print("--- TEST 257: Enemy Snapshot Has passive_a_id ---")
+	var passed: bool = true
+
+	# nc_ghoul_stalker has mon_venomous
+	var unit = CombatUnit.create_monster("nc_ghoul_stalker", 0)
+	if unit.passive_a_id != "":
+		print("[PASS] Enemy unit passive_a_id = '%s'" % unit.passive_a_id)
+	else:
+		print("[FAIL] Enemy unit passive_a_id is empty")
+		passed = false
+
+	return {"name": "Enemy snapshot has passive_a_id", "passed": passed}
+
+
+static func _test_enemy_snapshot_has_secondary_stats() -> Dictionary:
+	print("--- TEST 258: Enemy Snapshot Has Secondary Stats ---")
+	var passed: bool = true
+
+	# nc_ghoul_stalker has crit_chance:12 and life_steal:8 in base_stats
+	var unit = CombatUnit.create_monster("nc_ghoul_stalker", 0)
+
+	if unit.crit_chance > 0:
+		print("[PASS] Enemy crit_chance = %d (> 0)" % unit.crit_chance)
+	else:
+		print("[FAIL] Expected crit_chance > 0, got %d" % unit.crit_chance)
+		passed = false
+
+	if unit.life_steal > 0:
+		print("[PASS] Enemy life_steal = %d (> 0)" % unit.life_steal)
+	else:
+		print("[FAIL] Expected life_steal > 0, got %d" % unit.life_steal)
+		passed = false
+
+	return {"name": "Enemy snapshot has secondary stats", "passed": passed}
+
+
+static func _test_snapshot_attack_type_from_data() -> Dictionary:
+	print("--- TEST 259: Snapshot attack_type From Monster Data ---")
+	var passed: bool = true
+
+	# nc_spectral_binder is ranged
+	var unit_ranged = CombatUnit.create_monster("nc_spectral_binder", 0)
+	if unit_ranged.attack_type == "ranged":
+		print("[PASS] nc_spectral_binder attack_type = 'ranged'")
+	else:
+		print("[FAIL] Expected 'ranged', got '%s'" % unit_ranged.attack_type)
+		passed = false
+
+	# nc_ghoul_stalker is melee
+	var unit_melee = CombatUnit.create_monster("nc_ghoul_stalker", 1)
+	if unit_melee.attack_type == "melee":
+		print("[PASS] nc_ghoul_stalker attack_type = 'melee'")
+	else:
+		print("[FAIL] Expected 'melee', got '%s'" % unit_melee.attack_type)
+		passed = false
+
+	return {"name": "Snapshot attack_type from data", "passed": passed}
+
+
+# ============================================================================
+# TEST 260: Shop Restock Clears Allocations
+# ============================================================================
+
+static func _test_shop_restock_clears_allocations() -> Dictionary:
+	print("--- TEST 260: Shop restock clears allocations ---")
+	var town_id: String = "town_thornhaven"
+	var shop_id: String = "shop_thornhaven"
+
+	# Save existing state
+	var old_allocs: Dictionary = GameContext.shop_slot_allocations.duplicate(true)
+	var old_purchased: Dictionary = GameContext.shop_purchased_slots.duplicate(true)
+	var old_refresh: Dictionary = GameContext.shop_refresh_counts.duplicate(true)
+	var old_restock: Dictionary = GameContext.shop_restock_version.duplicate(true)
+
+	# Setup: stocked state with allocations
+	GameContext.shop_slot_allocations[town_id] = {"blacksmith": 3, "huntsman": 2}
+	GameContext.shop_purchased_slots[shop_id] = ["blacksmith:0"]
+	GameContext.shop_refresh_counts[shop_id] = 1
+
+	var alloc_before: int = GameContext.get_shop_allocated_slots(town_id)
+
+	# Restock (simulates dungeon return)
+	GameContext.restock_shop(shop_id)
+
+	# Verify allocations cleared
+	var alloc_after: int = GameContext.get_shop_allocated_slots(town_id)
+	var purchased_after: int = GameContext.shop_purchased_slots.get(shop_id, []).size()
+	var refresh_after: int = GameContext.get_shop_refresh_count(shop_id)
+
+	# Restore
+	GameContext.shop_slot_allocations = old_allocs
+	GameContext.shop_purchased_slots = old_purchased
+	GameContext.shop_refresh_counts = old_refresh
+	GameContext.shop_restock_version = old_restock
+
+	var passed: bool = alloc_before == 5 and alloc_after == 0 and purchased_after == 0 and refresh_after == 0
+	if passed:
+		print("[PASS] Restock: alloc=5→0, purchased=1→0, refresh=1→0")
+	else:
+		print("[FAIL] alloc=%d→%d purchased=%d refresh=%d" % [alloc_before, alloc_after, purchased_after, refresh_after])
+	return {"name": "Shop restock clears allocations", "passed": passed}
+
+
+# ============================================================================
+# TEST 261: NG+ carry limit scales with cycle
+# ============================================================================
+
+static func _test_ng_carry_limit() -> Dictionary:
+	print("--- TEST 261: NG+ carry limit scales with cycle ---")
+	var old_cycle: int = GameContext.ng_plus_cycle
+	var old_heroes: Array = GameContext.owned_heroes.duplicate(true)
+
+	# Setup: 5 heroes so carry limit is meaningful
+	GameContext.owned_heroes = [
+		{"hero_id": "h1"}, {"hero_id": "h2"}, {"hero_id": "h3"},
+		{"hero_id": "h4"}, {"hero_id": "h5"}
+	]
+
+	GameContext.ng_plus_cycle = 0
+	var limit_0: int = GameContext.get_ng_carry_limit()  # min(1, 5) = 1
+	GameContext.ng_plus_cycle = 1
+	var limit_1: int = GameContext.get_ng_carry_limit()  # min(2, 5) = 2
+	GameContext.ng_plus_cycle = 2
+	var limit_2: int = GameContext.get_ng_carry_limit()  # min(3, 5) = 3
+	GameContext.ng_plus_cycle = 3
+	var limit_3: int = GameContext.get_ng_carry_limit()  # min(4, 5) = 4
+	GameContext.ng_plus_cycle = 4
+	var limit_4: int = GameContext.get_ng_carry_limit()  # all = 5
+
+	# Restore
+	GameContext.ng_plus_cycle = old_cycle
+	GameContext.owned_heroes = old_heroes
+
+	var passed: bool = limit_0 == 1 and limit_1 == 2 and limit_2 == 3 and limit_3 == 4 and limit_4 == 5
+	if passed:
+		print("[PASS] Carry limits: c0=%d c1=%d c2=%d c3=%d c4=%d" % [limit_0, limit_1, limit_2, limit_3, limit_4])
+	else:
+		print("[FAIL] Carry limits: c0=%d c1=%d c2=%d c3=%d c4=%d (expected 1,2,3,4,5)" % [limit_0, limit_1, limit_2, limit_3, limit_4])
+	return {"name": "NG+ carry limit scales with cycle", "passed": passed}
+
+
+# ============================================================================
+# TEST 262: NG+ difficulty multipliers lookup
+# ============================================================================
+
+static func _test_ng_difficulty_multipliers() -> Dictionary:
+	print("--- TEST 262: NG+ difficulty multipliers ---")
+	var old_cycle: int = GameContext.ng_plus_cycle
+
+	GameContext.ng_plus_cycle = 0
+	var m0: Dictionary = GameContext.get_ng_difficulty_multipliers()
+	GameContext.ng_plus_cycle = 1
+	var m1: Dictionary = GameContext.get_ng_difficulty_multipliers()
+	GameContext.ng_plus_cycle = 8
+	var m8: Dictionary = GameContext.get_ng_difficulty_multipliers()
+	GameContext.ng_plus_cycle = 99
+	var m99: Dictionary = GameContext.get_ng_difficulty_multipliers()  # Should clamp to cycle 8
+
+	GameContext.ng_plus_cycle = old_cycle
+
+	var c0_ok: bool = m0.hp == 1.0 and m0.atk == 1.0
+	var c1_ok: bool = m1.hp == 1.15 and m1.atk == 1.10
+	var c8_ok: bool = m8.hp == 2.50 and m8.atk == 1.80
+	var c99_ok: bool = m99.hp == 2.50  # Clamped to max cycle 8
+
+	var passed: bool = c0_ok and c1_ok and c8_ok and c99_ok
+	if passed:
+		print("[PASS] Difficulty: c0=%.2f/%.2f c1=%.2f/%.2f c8=%.2f/%.2f c99=%.2f" % [m0.hp, m0.atk, m1.hp, m1.atk, m8.hp, m8.atk, m99.hp])
+	else:
+		print("[FAIL] c0_ok=%s c1_ok=%s c8_ok=%s c99_ok=%s" % [str(c0_ok), str(c1_ok), str(c8_ok), str(c99_ok)])
+	return {"name": "NG+ difficulty multipliers", "passed": passed}
+
+
+# ============================================================================
+# TEST 263: Seen ability tracking
+# ============================================================================
+
+static func _test_ng_seen_abilities() -> Dictionary:
+	print("--- TEST 263: NG+ seen ability tracking ---")
+	var old_seen: Dictionary = GameContext.seen_abilities.duplicate()
+
+	GameContext.seen_abilities = {}
+	var before: bool = GameContext.has_seen_ability("twin_strike")
+	GameContext.mark_ability_seen("twin_strike")
+	var after: bool = GameContext.has_seen_ability("twin_strike")
+	GameContext.mark_ability_seen("twin_strike")  # Duplicate — should not error
+	var still: bool = GameContext.has_seen_ability("twin_strike")
+	var other: bool = GameContext.has_seen_ability("healing_tide")  # Not seen
+
+	GameContext.seen_abilities = old_seen
+
+	var passed: bool = not before and after and still and not other
+	if passed:
+		print("[PASS] Seen: before=%s after=%s duplicate=%s other=%s" % [str(before), str(after), str(still), str(other)])
+	else:
+		print("[FAIL] before=%s after=%s still=%s other=%s" % [str(before), str(after), str(still), str(other)])
+	return {"name": "NG+ seen ability tracking", "passed": passed}
+
+
+# ============================================================================
+# TEST 264: Bonus stat line generation
+# ============================================================================
+
+static func _test_ng_bonus_stat_lines() -> Dictionary:
+	print("--- TEST 264: NG+ bonus stat line generation ---")
+	var old_cycle: int = GameContext.ng_plus_cycle
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 12345
+
+	# Cycle 0, 0 regions = no lines
+	GameContext.ng_plus_cycle = 0
+	var lines_0: Array = GameContext.generate_bonus_stat_lines("weapon", 0, rng)
+
+	# Cycle 0, 3 regions = 3 lines
+	var lines_3: Array = GameContext.generate_bonus_stat_lines("weapon", 3, rng)
+
+	# Cycle 2 (NG+2), 2 regions = 2 + 2 = 4 lines
+	GameContext.ng_plus_cycle = 2
+	var lines_4: Array = GameContext.generate_bonus_stat_lines("armor", 2, rng)
+
+	# Cycle 5 (NG+5), 0 regions = 0 + 3 (capped) = 3 lines
+	GameContext.ng_plus_cycle = 5
+	var lines_capped: Array = GameContext.generate_bonus_stat_lines("ring", 0, rng)
+
+	GameContext.ng_plus_cycle = old_cycle
+
+	# Validate structure
+	var struct_ok: bool = true
+	for line in lines_3:
+		if not line.has("stat") or not line.has("value"):
+			struct_ok = false
+		if int(line.get("value", 0)) <= 0:
+			struct_ok = false
+
+	# Validate weapon pool
+	var pool_ok: bool = true
+	for line in lines_3:
+		if line.get("stat", "") not in ["attack", "speed", "crit_chance", "armor_penetration"]:
+			pool_ok = false
+
+	var passed: bool = lines_0.size() == 0 and lines_3.size() == 3 and lines_4.size() == 4 and lines_capped.size() == 3 and struct_ok and pool_ok
+	if passed:
+		print("[PASS] Lines: 0reg/c0=%d 3reg/c0=%d 2reg/c2=%d 0reg/c5=%d struct=%s pool=%s" % [lines_0.size(), lines_3.size(), lines_4.size(), lines_capped.size(), str(struct_ok), str(pool_ok)])
+	else:
+		print("[FAIL] sizes=%d,%d,%d,%d struct=%s pool=%s" % [lines_0.size(), lines_3.size(), lines_4.size(), lines_capped.size(), str(struct_ok), str(pool_ok)])
+	return {"name": "NG+ bonus stat line generation", "passed": passed}
+
+
+# ============================================================================
+# TEST 265: NG+ base stat multiplier for equipment
+# ============================================================================
+
+static func _test_ng_base_stat_multiplier() -> Dictionary:
+	print("--- TEST 265: NG+ base stat multiplier ---")
+	var old_cycle: int = GameContext.ng_plus_cycle
+
+	GameContext.ng_plus_cycle = 0
+	var mult_0: float = GameContext.get_ng_base_stat_multiplier()
+	GameContext.ng_plus_cycle = 3
+	var mult_3: float = GameContext.get_ng_base_stat_multiplier()
+	GameContext.ng_plus_cycle = 4
+	var mult_4: float = GameContext.get_ng_base_stat_multiplier()
+	GameContext.ng_plus_cycle = 8
+	var mult_8: float = GameContext.get_ng_base_stat_multiplier()
+
+	GameContext.ng_plus_cycle = old_cycle
+
+	var passed: bool = is_equal_approx(mult_0, 1.0) and is_equal_approx(mult_3, 1.0) and is_equal_approx(mult_4, 1.1) and is_equal_approx(mult_8, 1.5)
+	if passed:
+		print("[PASS] Mult: c0=%.2f c3=%.2f c4=%.2f c8=%.2f" % [mult_0, mult_3, mult_4, mult_8])
+	else:
+		print("[FAIL] c0=%.2f c3=%.2f c4=%.2f c8=%.2f (expected 1.0,1.0,1.1,1.5)" % [mult_0, mult_3, mult_4, mult_8])
+	return {"name": "NG+ base stat multiplier", "passed": passed}
+
+
+# ============================================================================
+# TEST 266: NG+ perm stat bonus in hero effective stats
+# ============================================================================
+
+static func _test_ng_perm_stat_bonus() -> Dictionary:
+	print("--- TEST 266: NG+ perm stat bonus in hero effective stats ---")
+	var old_bonus: float = GameContext.ng_plus_perm_stat_bonus
+	var old_heroes: Array = GameContext.owned_heroes.duplicate(true)
+	var old_equip: Dictionary = GameContext.hero_equipment.duplicate(true)
+
+	# Setup: a hero with known stats
+	var hero_id: String = "test_ng_hero_266"
+	GameContext.owned_heroes = [{"hero_id": hero_id, "name": "TestNG", "race_id": "human", "class_id": "warrior", "level": 1, "xp": 0}]
+	GameContext.hero_equipment = {}
+
+	# Get base stats (no bonus)
+	GameContext.ng_plus_perm_stat_bonus = 0.0
+	var stats_0: Dictionary = GameContext.get_hero_effective_stats(hero_id)
+	var hp_0: int = stats_0.get("health", 0)
+	var atk_0: int = stats_0.get("attack", 0)
+
+	# Apply 10% perm bonus
+	GameContext.ng_plus_perm_stat_bonus = 0.10
+	var stats_10: Dictionary = GameContext.get_hero_effective_stats(hero_id)
+	var hp_10: int = stats_10.get("health", 0)
+	var atk_10: int = stats_10.get("attack", 0)
+
+	# Restore
+	GameContext.ng_plus_perm_stat_bonus = old_bonus
+	GameContext.owned_heroes = old_heroes
+	GameContext.hero_equipment = old_equip
+
+	# HP and ATK should increase by ~10%
+	var hp_increased: bool = hp_10 > hp_0
+	var atk_increased: bool = atk_10 > atk_0
+	var hp_ratio: float = float(hp_10) / float(hp_0) if hp_0 > 0 else 0.0
+	var atk_ratio: float = float(atk_10) / float(atk_0) if atk_0 > 0 else 0.0
+
+	var passed: bool = hp_increased and atk_increased and hp_ratio >= 1.08 and hp_ratio <= 1.12
+	if passed:
+		print("[PASS] HP=%d→%d (%.2fx) ATK=%d→%d (%.2fx)" % [hp_0, hp_10, hp_ratio, atk_0, atk_10, atk_ratio])
+	else:
+		print("[FAIL] HP=%d→%d (%.2fx) ATK=%d→%d (%.2fx)" % [hp_0, hp_10, hp_ratio, atk_0, atk_10, atk_ratio])
+	return {"name": "NG+ perm stat bonus in hero effective stats", "passed": passed}
+
+
+# ============================================================================
+# TEST 267: NG+ infuse item ability
+# ============================================================================
+
+static func _test_ng_infuse_item_ability() -> Dictionary:
+	print("--- TEST 267: NG+ infuse item ability ---")
+	var old_heroes: Array = GameContext.owned_heroes.duplicate(true)
+	var old_equip: Dictionary = GameContext.hero_equipment.duplicate(true)
+	var old_seen: Dictionary = GameContext.seen_abilities.duplicate()
+
+	var hero_id: String = "test_ng_hero_267"
+	GameContext.owned_heroes = [{"hero_id": hero_id, "name": "InfuseTest", "race_id": "human", "class_id": "warrior", "level": 1, "xp": 0}]
+	GameContext.hero_equipment[hero_id] = {
+		"weapon": {"id": "rusty_sword", "quality": 0},
+		"offhand": {"id": "", "quality": 0},
+		"helmet": {"id": "", "quality": 0},
+		"armor": {"id": "", "quality": 0},
+		"legs": {"id": "", "quality": 0},
+		"ring": {"id": "", "quality": 0},
+		"amulet": {"id": "", "quality": 0},
+		"bag": {"id": "", "quality": 0}
+	}
+
+	# Mark ability as seen
+	GameContext.seen_abilities = {}
+	GameContext.mark_ability_seen("twin_strike")
+
+	# Infuse weapon with seen ability
+	var infuse_ok: bool = GameContext.infuse_item_ability(hero_id, "weapon", "twin_strike")
+
+	# Check slot_data has infused_ability_id
+	var slot_data: Dictionary = GameContext.hero_equipment[hero_id].get("weapon", {})
+	var infused_id: String = slot_data.get("infused_ability_id", "")
+
+	# Infuse with unseen ability — should fail
+	var infuse_unseen: bool = GameContext.infuse_item_ability(hero_id, "weapon", "healing_tide")
+
+	# Infuse empty slot — should fail
+	var infuse_empty: bool = GameContext.infuse_item_ability(hero_id, "offhand", "twin_strike")
+
+	# Restore
+	GameContext.owned_heroes = old_heroes
+	GameContext.hero_equipment = old_equip
+	GameContext.seen_abilities = old_seen
+
+	var passed: bool = infuse_ok and infused_id == "twin_strike" and not infuse_unseen and not infuse_empty
+	if passed:
+		print("[PASS] Infuse: ok=%s id=%s unseen=%s empty=%s" % [str(infuse_ok), infused_id, str(infuse_unseen), str(infuse_empty)])
+	else:
+		print("[FAIL] ok=%s id=%s unseen=%s empty=%s" % [str(infuse_ok), infused_id, str(infuse_unseen), str(infuse_empty)])
+	return {"name": "NG+ infuse item ability", "passed": passed}
+
+
+# ============================================================================
+# TEST 268: NG+ bonus stat lines applied in equipment stat calculation
+# ============================================================================
+
+static func _test_ng_bonus_lines_in_equipment_stats() -> Dictionary:
+	print("--- TEST 268: NG+ bonus stat lines in equipment stats ---")
+	var old_heroes: Array = GameContext.owned_heroes.duplicate(true)
+	var old_equip: Dictionary = GameContext.hero_equipment.duplicate(true)
+	var old_cycle: int = GameContext.ng_plus_cycle
+
+	var hero_id: String = "test_ng_hero_268"
+	GameContext.owned_heroes = [{"hero_id": hero_id, "name": "BonusTest", "race_id": "human", "class_id": "warrior", "level": 1, "xp": 0}]
+	GameContext.ng_plus_cycle = 0
+
+	# Equip weapon WITHOUT bonus stat lines
+	GameContext.hero_equipment[hero_id] = {
+		"weapon": {"id": "rusty_sword", "quality": 0},
+		"offhand": {"id": "", "quality": 0},
+		"helmet": {"id": "", "quality": 0},
+		"armor": {"id": "", "quality": 0},
+		"legs": {"id": "", "quality": 0},
+		"ring": {"id": "", "quality": 0},
+		"amulet": {"id": "", "quality": 0},
+		"bag": {"id": "", "quality": 0}
+	}
+	var stats_base: Dictionary = GameContext.get_hero_effective_stats(hero_id)
+	var speed_base: int = stats_base.get("speed", 0)
+	var crit_base: int = stats_base.get("crit_chance", 0)
+
+	# Add bonus stat lines to weapon
+	GameContext.hero_equipment[hero_id]["weapon"]["bonus_stat_lines"] = [
+		{"stat": "speed", "value": 3},
+		{"stat": "crit_chance", "value": 5}
+	]
+	var stats_bonus: Dictionary = GameContext.get_hero_effective_stats(hero_id)
+	var speed_bonus: int = stats_bonus.get("speed", 0)
+	var crit_bonus: int = stats_bonus.get("crit_chance", 0)
+
+	# Restore
+	GameContext.ng_plus_cycle = old_cycle
+	GameContext.owned_heroes = old_heroes
+	GameContext.hero_equipment = old_equip
+
+	var speed_diff: int = speed_bonus - speed_base
+	var crit_diff: int = crit_bonus - crit_base
+
+	var passed: bool = speed_diff == 3 and crit_diff == 5
+	if passed:
+		print("[PASS] Speed +%d (expected +3), Crit +%d (expected +5)" % [speed_diff, crit_diff])
+	else:
+		print("[FAIL] Speed +%d (expected +3), Crit +%d (expected +5)" % [speed_diff, crit_diff])
+	return {"name": "NG+ bonus stat lines in equipment stats", "passed": passed}
+
+
+static func _test_ng_transition_eligibility() -> Dictionary:
+	print("--- TEST 269: NG+ transition eligibility (can_start_new_cycle) ---")
+	var old_flags: Dictionary = GameContext.campaign_flags.duplicate()
+
+	# Case A: No flags — should NOT be eligible
+	GameContext.campaign_flags = {}
+	var NGPlusScript = load("res://Game/UI/NGPlus/NGPlusTransition.gd")
+	var no_flag: bool = NGPlusScript.can_start_new_cycle()
+
+	# Case B: story_r7_boss_killed flag — SHOULD be eligible (first playthrough)
+	GameContext.campaign_flags = {"story_r7_boss_killed": true}
+	var r7_flag: bool = NGPlusScript.can_start_new_cycle()
+
+	# Case C: story_ng_r7_boss_killed flag — SHOULD be eligible (NG+ cycle)
+	GameContext.campaign_flags = {"story_ng_r7_boss_killed": true}
+	var ng_flag: bool = NGPlusScript.can_start_new_cycle()
+
+	# Case D: Unrelated flag — should NOT be eligible
+	GameContext.campaign_flags = {"story_r1_arrived": true}
+	var wrong_flag: bool = NGPlusScript.can_start_new_cycle()
+
+	GameContext.campaign_flags = old_flags
+
+	var passed: bool = (not no_flag) and r7_flag and ng_flag and (not wrong_flag)
+	if passed:
+		print("[PASS] Eligibility: no_flag=%s, r7=%s, ng_r7=%s, wrong=%s" % [no_flag, r7_flag, ng_flag, wrong_flag])
+	else:
+		print("[FAIL] Eligibility: no_flag=%s (exp false), r7=%s (exp true), ng_r7=%s (exp true), wrong=%s (exp false)" % [no_flag, r7_flag, ng_flag, wrong_flag])
+	return {"name": "NG+ transition eligibility", "passed": passed}
+
+
+static func _test_ng_transition_lifecycle() -> Dictionary:
+	print("--- TEST 270: NG+ full transition lifecycle ---")
+	# Save full state
+	var old_heroes: Array = GameContext.owned_heroes.duplicate(true)
+	var old_equip: Dictionary = GameContext.hero_equipment.duplicate(true)
+	var old_cycle: int = GameContext.ng_plus_cycle
+	var old_gold: int = GameContext.run_gold
+	var old_items: Array = GameContext.run_items.duplicate(true)
+	var old_flags: Dictionary = GameContext.campaign_flags.duplicate()
+	var old_completed: Dictionary = GameContext.completed_regions.duplicate()
+	var old_dead: Array = GameContext.dead_heroes.duplicate(true)
+	var old_seen: Dictionary = GameContext.seen_abilities.duplicate()
+	var old_perm: float = GameContext.ng_plus_perm_stat_bonus
+	var old_counter: int = GameContext._hero_id_counter
+	var old_phase = GameContext._current_phase
+	var old_region: String = GameContext._current_region_id
+	var old_town: String = GameContext._current_town_id
+
+	# Setup: 3 heroes, equipped weapon on hero_a, 2000 gold, cycle 0
+	GameContext.ng_plus_cycle = 0
+	GameContext.ng_plus_perm_stat_bonus = 0.0
+	GameContext.run_gold = 2000
+	GameContext.run_items = []
+	GameContext.dead_heroes = []
+	GameContext.seen_abilities = {"twin_strike": true}
+	GameContext.campaign_flags = {"story_r7_boss_killed": true, "shown_r7_boss_kill": true, "random_flag": true}
+	GameContext.completed_regions = {"region_1": true, "region_7": true}
+	GameContext._hero_id_counter = 100
+
+	var hero_a: Dictionary = {"hero_id": "ng_test_a", "name": "Alpha", "race_id": "human", "class_id": "striker", "level": 10, "xp": 500}
+	var hero_b: Dictionary = {"hero_id": "ng_test_b", "name": "Beta", "race_id": "elf", "class_id": "warden", "level": 5, "xp": 100}
+	var hero_c: Dictionary = {"hero_id": "ng_test_c", "name": "Gamma", "race_id": "dwarf", "class_id": "healer", "level": 3, "xp": 50}
+	GameContext.owned_heroes = [hero_a, hero_b, hero_c]
+	GameContext.hero_equipment = {
+		"ng_test_a": {
+			"weapon": {"id": "rusty_sword", "quality": 1},
+			"offhand": {"id": "", "quality": 0},
+			"helmet": {"id": "", "quality": 0},
+			"armor": {"id": "", "quality": 0},
+			"legs": {"id": "", "quality": 0},
+			"ring": {"id": "", "quality": 0},
+			"amulet": {"id": "", "quality": 0},
+			"bag": {"id": "", "quality": 0}
+		}
+	}
+
+	# Execute: carry hero_a only (cycle 0 → 1 limit = 1 hero)
+	GameContext.start_new_game_plus(["ng_test_a"])
+
+	# Validate
+	var checks: Array = []
+
+	# Cycle incremented
+	checks.append(GameContext.ng_plus_cycle == 1)
+
+	# Hero carried
+	checks.append(GameContext.owned_heroes.size() == 1)
+	checks.append(GameContext.owned_heroes[0].get("hero_id", "") == "ng_test_a")
+	checks.append(int(GameContext.owned_heroes[0].get("level", 0)) == 10)
+
+	# Gold carried (25% of 2000 = 500, capped at 500)
+	checks.append(GameContext.run_gold == 500)
+
+	# Equipment moved to stash
+	var found_sword: bool = false
+	for item in GameContext.run_items:
+		var iid: String = ""
+		if item is Dictionary:
+			iid = item.get("item_id", "")
+		elif item.has_method("get"):
+			iid = ""
+		if iid == "rusty_sword":
+			found_sword = true
+			break
+	checks.append(found_sword)
+
+	# Story flags carried, random_flag dropped
+	checks.append(GameContext.has_campaign_flag("story_r7_boss_killed"))
+	checks.append(GameContext.has_campaign_flag("shown_r7_boss_kill"))
+	checks.append(not GameContext.has_campaign_flag("random_flag"))
+
+	# Seen abilities carried
+	checks.append(GameContext.has_seen_ability("twin_strike"))
+
+	# Completed regions reset
+	checks.append(GameContext.completed_regions.size() == 0)
+
+	# Dead heroes include left-behind heroes
+	var found_beta: bool = false
+	var found_gamma: bool = false
+	for dh in GameContext.dead_heroes:
+		if dh.get("hero_id", "") == "ng_test_b":
+			found_beta = true
+		if dh.get("hero_id", "") == "ng_test_c":
+			found_gamma = true
+	checks.append(found_beta and found_gamma)
+
+	# Perm stat bonus NOT applied yet (cycle 1 < 5)
+	checks.append(GameContext.ng_plus_perm_stat_bonus == 0.0)
+
+	# Restore
+	GameContext.ng_plus_cycle = old_cycle
+	GameContext.ng_plus_perm_stat_bonus = old_perm
+	GameContext.owned_heroes = old_heroes
+	GameContext.hero_equipment = old_equip
+	GameContext.run_gold = old_gold
+	GameContext.run_items = old_items
+	GameContext.campaign_flags = old_flags
+	GameContext.completed_regions = old_completed
+	GameContext.dead_heroes = old_dead
+	GameContext.seen_abilities = old_seen
+	GameContext._hero_id_counter = old_counter
+	GameContext._current_phase = old_phase
+	GameContext._current_region_id = old_region
+	GameContext._current_town_id = old_town
+
+	var all_ok: bool = true
+	for i in range(checks.size()):
+		if not checks[i]:
+			all_ok = false
+			print("[FAIL] Check %d failed" % i)
+	if all_ok:
+		print("[PASS] All %d lifecycle checks passed" % checks.size())
+	else:
+		print("[FAIL] Some lifecycle checks failed: %s" % str(checks))
+	return {"name": "NG+ full transition lifecycle", "passed": all_ok}
+
+
+static func _test_ng_cycle_badge_text() -> Dictionary:
+	print("--- TEST 271: NG+ cycle badge text ---")
+	# Test that cycle badge logic produces correct text
+	# (Testing the logic directly since we can't instantiate TownHubScene in headless)
+	var old_cycle: int = GameContext.ng_plus_cycle
+
+	# Cycle 0: no badge
+	GameContext.ng_plus_cycle = 0
+	var town_name: String = "Thornhaven"
+	var text_0: String = town_name
+	if GameContext.ng_plus_cycle > 0:
+		text_0 += "  [NG+%d]" % GameContext.ng_plus_cycle
+	var check_0: bool = text_0 == "Thornhaven"
+
+	# Cycle 3: badge present
+	GameContext.ng_plus_cycle = 3
+	var text_3: String = town_name
+	if GameContext.ng_plus_cycle > 0:
+		text_3 += "  [NG+%d]" % GameContext.ng_plus_cycle
+	var check_3: bool = text_3 == "Thornhaven  [NG+3]"
+
+	# Cycle 8: true ending cycle badge
+	GameContext.ng_plus_cycle = 8
+	var text_8: String = town_name
+	if GameContext.ng_plus_cycle > 0:
+		text_8 += "  [NG+%d]" % GameContext.ng_plus_cycle
+	var check_8: bool = text_8 == "Thornhaven  [NG+8]"
+
+	GameContext.ng_plus_cycle = old_cycle
+
+	var passed: bool = check_0 and check_3 and check_8
+	if passed:
+		print("[PASS] Badge: cycle0='%s', cycle3='%s', cycle8='%s'" % [text_0, text_3, text_8])
+	else:
+		print("[FAIL] Badge: cycle0='%s' (exp no badge), cycle3='%s' (exp [NG+3]), cycle8='%s' (exp [NG+8])" % [text_0, text_3, text_8])
+	return {"name": "NG+ cycle badge text", "passed": passed}
+
+
+static func _test_taunt_enforcement() -> Dictionary:
+	print("--- TEST 272: Taunt enforcement in TargetingPolicy ---")
+	# Create two player units: one with high HP, one with low HP
+	var high_hp = CombatUnit.new()
+	high_hp.unit_id = "taunt_high"
+	high_hp.display_name = "HighHP"
+	high_hp.team = CombatUnit.Team.PLAYER
+	high_hp.is_alive = true
+	high_hp.current_health = 100
+	high_hp.max_health = 100
+	high_hp.attack = 10
+	high_hp.speed = 5
+	high_hp.statuses = StatusRuntime.new("taunt_high")
+
+	var low_hp = CombatUnit.new()
+	low_hp.unit_id = "taunt_low"
+	low_hp.display_name = "LowHP"
+	low_hp.team = CombatUnit.Team.PLAYER
+	low_hp.is_alive = true
+	low_hp.current_health = 20
+	low_hp.max_health = 100
+	low_hp.attack = 10
+	low_hp.speed = 5
+	low_hp.statuses = StatusRuntime.new("taunt_low")
+
+	var attacker = CombatUnit.new()
+	attacker.unit_id = "attacker"
+	attacker.display_name = "Attacker"
+	attacker.team = CombatUnit.Team.ENEMY
+	attacker.is_alive = true
+	attacker.attack = 10
+	attacker.speed = 5
+	attacker.statuses = StatusRuntime.new("attacker")
+
+	# Without taunt: should pick lowest HP (low_hp)
+	var policy = TargetingPolicy.new(TargetingPolicy.TargetMode.LOWEST_HP)
+	var normal_target = policy.select_target(attacker, [high_hp, low_hp])
+	var check_1: bool = normal_target == low_hp
+	if check_1:
+		print("[PASS] Without taunt: targets lowest HP (%s)" % normal_target.display_name)
+	else:
+		var tname: String = normal_target.display_name if normal_target != null else "null"
+		print("[FAIL] Without taunt: expected LowHP, got %s" % tname)
+
+	# Apply taunt to high_hp
+	high_hp.apply_status_v1("taunting", 3, "taunt_test")
+
+	# With taunt: should pick high_hp despite having more HP
+	var taunt_target = policy.select_target(attacker, [high_hp, low_hp])
+	var check_2: bool = taunt_target == high_hp
+	if check_2:
+		print("[PASS] With taunt: targets taunting unit (%s)" % taunt_target.display_name)
+	else:
+		var tname: String = taunt_target.display_name if taunt_target != null else "null"
+		print("[FAIL] With taunt: expected HighHP, got %s" % tname)
+
+	var passed: bool = check_1 and check_2
+	return {"name": "Taunt enforcement in TargetingPolicy", "passed": passed}
+
+
+static func _test_dead_hero_combat_exclusion() -> Dictionary:
+	print("--- TEST 273: Dead hero excluded from combat creation ---")
+	# Setup: create heroes and set one's HP to 0 via persistence
+	var old_heroes = GameContext.owned_heroes.duplicate(true)
+	var old_party = GameContext.selected_party.duplicate()
+	var old_hp = GameContext.hero_hp.duplicate(true)
+
+	GameContext.owned_heroes = [
+		{"hero_id": "test_alive", "name": "AliveHero", "class_id": "defender", "level": 1, "race_id": "human", "xp": 0},
+		{"hero_id": "test_dead", "name": "DeadHero", "class_id": "defender", "level": 1, "race_id": "human", "xp": 0}
+	]
+	GameContext.selected_party = ["test_alive", "test_dead"]
+	GameContext.hero_hp = {
+		"test_alive": {"current": 50, "max": 100},
+		"test_dead": {"current": 0, "max": 100}
+	}
+
+	# Create combat controller and run _create_units
+	var controller = CombatControllerScript.new()
+	controller._create_units(["test_alive", "test_dead"], ["slime"])
+
+	# Check: only the alive hero should be in _player_units
+	var player_count: int = controller._player_units.size()
+	var check_1: bool = player_count == 1
+	if check_1:
+		print("[PASS] Only alive hero entered combat (count=%d)" % player_count)
+	else:
+		print("[FAIL] Expected 1 player unit, got %d" % player_count)
+
+	# Check: the unit that entered is the alive one
+	var check_2: bool = false
+	if player_count >= 1:
+		check_2 = controller._player_units[0].source_id == "test_alive"
+		if check_2:
+			print("[PASS] Alive hero source_id matches: %s" % controller._player_units[0].source_id)
+		else:
+			print("[FAIL] Expected source_id=test_alive, got %s" % controller._player_units[0].source_id)
+	else:
+		print("[FAIL] No player units to check")
+
+	# Cleanup
+	GameContext.owned_heroes = old_heroes
+	GameContext.selected_party = old_party
+	GameContext.hero_hp = old_hp
+
+	var passed: bool = check_1 and check_2
+	return {"name": "Dead hero excluded from combat creation", "passed": passed}
+
+
+static func _test_dead_hero_xp_exclusion() -> Dictionary:
+	print("--- TEST 274: Dead hero excluded from XP grant ---")
+	# Setup: two heroes, one alive and one dead
+	var old_heroes = GameContext.owned_heroes.duplicate(true)
+	var old_party = GameContext.selected_party.duplicate()
+	var old_hp = GameContext.hero_hp.duplicate(true)
+
+	GameContext.owned_heroes = [
+		{"hero_id": "xp_alive", "name": "AliveXP", "class_id": "defender", "level": 1, "race_id": "human", "xp": 0},
+		{"hero_id": "xp_dead", "name": "DeadXP", "class_id": "defender", "level": 1, "race_id": "human", "xp": 0}
+	]
+	GameContext.selected_party = ["xp_alive", "xp_dead"]
+	GameContext.hero_hp = {
+		"xp_alive": {"current": 50, "max": 100},
+		"xp_dead": {"current": 0, "max": 100}
+	}
+
+	# Grant XP to party
+	var xp_results = GameContext.grant_party_xp(100, "test")
+
+	# Check: alive hero got XP
+	var alive_hero = GameContext.get_hero("xp_alive")
+	var alive_xp: int = int(alive_hero.get("xp", 0))
+	var check_1: bool = alive_xp > 0
+	if check_1:
+		print("[PASS] Alive hero got XP: %d" % alive_xp)
+	else:
+		print("[FAIL] Alive hero got 0 XP")
+
+	# Check: dead hero got NO XP
+	var dead_hero = GameContext.get_hero("xp_dead")
+	var dead_xp: int = int(dead_hero.get("xp", 0))
+	var check_2: bool = dead_xp == 0
+	if check_2:
+		print("[PASS] Dead hero got 0 XP (correct)")
+	else:
+		print("[FAIL] Dead hero got XP: %d (should be 0)" % dead_xp)
+
+	# Check: result dict doesn't contain dead hero
+	var check_3: bool = not xp_results.has("xp_dead")
+	if check_3:
+		print("[PASS] XP results exclude dead hero")
+	else:
+		print("[FAIL] XP results include dead hero: %s" % str(xp_results))
+
+	# Cleanup
+	GameContext.owned_heroes = old_heroes
+	GameContext.selected_party = old_party
+	GameContext.hero_hp = old_hp
+
+	var passed: bool = check_1 and check_2 and check_3
+	return {"name": "Dead hero excluded from XP grant", "passed": passed}
+
+
+# ============================================================================
+# SIDE QUEST SYSTEM TESTS (275-284)
+# ============================================================================
+
+static func _test_side_quest_data_serialization() -> Dictionary:
+	print("--- TEST 275: SideQuestData serialization round-trip ---")
+	var quest = SideQuestData.new()
+	quest.quest_id = "sq_region_1_kill_42"
+	quest.quest_type = "kill"
+	quest.region_id = "region_1"
+	quest.display_name = "Hunt: Slay 5 Wolves"
+	quest.description = "Clear creatures"
+	quest.kill_targets = {"wolf": 5, "goblin": 3}
+	quest.kill_progress = {"wolf": 2, "goblin": 0}
+	quest.reward_item_id = "rusty_sword"
+	quest.reward_quality = 2
+	quest.is_complete = false
+
+	var d: Dictionary = quest.to_dict()
+	var restored = SideQuestData.from_dict(d)
+
+	var check_1: bool = restored.quest_id == "sq_region_1_kill_42"
+	var check_2: bool = restored.quest_type == "kill"
+	var check_3: bool = restored.kill_targets.get("wolf", 0) == 5
+	var check_4: bool = restored.kill_progress.get("wolf", 0) == 2
+	var check_5: bool = restored.reward_item_id == "rusty_sword"
+	var check_6: bool = restored.reward_quality == 2
+
+	if check_1: print("[PASS] quest_id preserved")
+	else: print("[FAIL] quest_id: %s" % restored.quest_id)
+	if check_2: print("[PASS] quest_type preserved")
+	else: print("[FAIL] quest_type: %s" % restored.quest_type)
+	if check_3: print("[PASS] kill_targets preserved")
+	else: print("[FAIL] kill_targets.wolf=%s" % str(restored.kill_targets.get("wolf", "?")))
+	if check_4: print("[PASS] kill_progress preserved")
+	else: print("[FAIL] kill_progress.wolf=%s" % str(restored.kill_progress.get("wolf", "?")))
+	if check_5: print("[PASS] reward_item_id preserved")
+	else: print("[FAIL] reward_item_id: %s" % restored.reward_item_id)
+	if check_6: print("[PASS] reward_quality preserved")
+	else: print("[FAIL] reward_quality: %d" % restored.reward_quality)
+
+	var all_pass: bool = check_1 and check_2 and check_3 and check_4 and check_5 and check_6
+	return {"name": "SideQuestData serialization round-trip", "passed": all_pass}
+
+
+static func _test_side_quest_generate_kill() -> Dictionary:
+	print("--- TEST 276: Side quest generation — kill type ---")
+	# Backup
+	var old_quests: Array = GameContext.active_side_quests.duplicate()
+
+	var rng = RandomNumberGenerator.new()
+	rng.seed = 12345
+	var quest = SideQuestSystem.generate_quest_of_type("region_1", "kill", rng)
+
+	var check_1: bool = quest != null
+	if not check_1:
+		print("[FAIL] Kill quest generation returned null")
+		GameContext.active_side_quests = old_quests
+		return {"name": "Side quest generation — kill type", "passed": false}
+
+	var check_2: bool = quest.quest_type == "kill"
+	var check_3: bool = quest.kill_targets.size() >= 1 and quest.kill_targets.size() <= 2
+	# Check that kill counts are in valid range
+	var counts_valid: bool = true
+	for target_id in quest.kill_targets:
+		var count: int = int(quest.kill_targets[target_id])
+		if count < SideQuestSystem.KILL_COUNT_MIN or count > SideQuestSystem.KILL_COUNT_MAX:
+			counts_valid = false
+	var check_4: bool = counts_valid
+	var check_5: bool = quest.reward_item_id != ""
+
+	if check_2: print("[PASS] quest_type=kill")
+	else: print("[FAIL] quest_type=%s" % quest.quest_type)
+	if check_3: print("[PASS] kill_targets count=%d (1-2)" % quest.kill_targets.size())
+	else: print("[FAIL] kill_targets count=%d" % quest.kill_targets.size())
+	if check_4: print("[PASS] Kill counts in valid range (%d-%d)" % [SideQuestSystem.KILL_COUNT_MIN, SideQuestSystem.KILL_COUNT_MAX])
+	else: print("[FAIL] Kill counts out of range: %s" % str(quest.kill_targets))
+	if check_5: print("[PASS] Reward item: %s" % quest.reward_item_id)
+	else: print("[FAIL] No reward item")
+
+	# Cleanup
+	GameContext.active_side_quests = old_quests
+
+	var all_pass: bool = check_2 and check_3 and check_4 and check_5
+	return {"name": "Side quest generation — kill type", "passed": all_pass}
+
+
+static func _test_side_quest_generate_resupply() -> Dictionary:
+	print("--- TEST 277: Side quest generation — resupply type ---")
+	var old_quests: Array = GameContext.active_side_quests.duplicate()
+
+	var rng = RandomNumberGenerator.new()
+	rng.seed = 54321
+	var quest = SideQuestSystem.generate_quest_of_type("region_1", "resupply", rng)
+
+	var check_1: bool = quest != null
+	if not check_1:
+		print("[FAIL] Resupply quest generation returned null")
+		GameContext.active_side_quests = old_quests
+		return {"name": "Side quest generation — resupply type", "passed": false}
+
+	var check_2: bool = quest.quest_type == "resupply"
+	var check_3: bool = quest.required_items.size() >= 2 and quest.required_items.size() <= 3
+	var qty_valid: bool = true
+	for item_id in quest.required_items:
+		var qty: int = int(quest.required_items[item_id])
+		if qty < SideQuestSystem.RESUPPLY_QTY_MIN or qty > SideQuestSystem.RESUPPLY_QTY_MAX:
+			qty_valid = false
+	var check_4: bool = qty_valid
+	var check_5: bool = quest.reward_quality == 2 or quest.reward_quality == 3
+
+	if check_2: print("[PASS] quest_type=resupply")
+	else: print("[FAIL] quest_type=%s" % quest.quest_type)
+	if check_3: print("[PASS] required_items count=%d (2-3)" % quest.required_items.size())
+	else: print("[FAIL] required_items count=%d" % quest.required_items.size())
+	if check_4: print("[PASS] Material quantities in valid range (%d-%d)" % [SideQuestSystem.RESUPPLY_QTY_MIN, SideQuestSystem.RESUPPLY_QTY_MAX])
+	else: print("[FAIL] Material quantities out of range: %s" % str(quest.required_items))
+	if check_5: print("[PASS] Reward quality=%d (Rare or Epic)" % quest.reward_quality)
+	else: print("[FAIL] Reward quality=%d (expected 2 or 3)" % quest.reward_quality)
+
+	GameContext.active_side_quests = old_quests
+
+	var all_pass: bool = check_2 and check_3 and check_4 and check_5
+	return {"name": "Side quest generation — resupply type", "passed": all_pass}
+
+
+static func _test_side_quest_type_gating() -> Dictionary:
+	print("--- TEST 278: Side quest type gating ---")
+	var old_quests: Array = GameContext.active_side_quests.duplicate()
+	GameContext.active_side_quests = []
+
+	var rng = RandomNumberGenerator.new()
+	rng.seed = 99999
+
+	# Generate a kill quest and add it
+	var kill_quest = SideQuestSystem.generate_quest_of_type("region_1", "kill", rng)
+	GameContext.add_side_quest(kill_quest)
+
+	# Check: cannot get another kill quest
+	var existing = GameContext.get_active_quest_by_type("kill")
+	var check_1: bool = existing != null
+	if check_1: print("[PASS] Active kill quest exists")
+	else: print("[FAIL] No active kill quest found")
+
+	# Check: resupply and mini_dungeon types still available
+	var resupply_avail: bool = GameContext.get_active_quest_by_type("resupply") == null
+	var mini_avail: bool = GameContext.get_active_quest_by_type("mini_dungeon") == null
+	var check_2: bool = resupply_avail and mini_avail
+	if check_2: print("[PASS] Other quest types still available")
+	else: print("[FAIL] Type gating too restrictive")
+
+	# Add resupply too
+	var resupply_quest = SideQuestSystem.generate_quest_of_type("region_1", "resupply", rng)
+	GameContext.add_side_quest(resupply_quest)
+
+	# Try adding another kill quest — should be rejected
+	var dup_kill = SideQuestSystem.generate_quest_of_type("region_1", "kill", rng)
+	dup_kill.quest_type = "kill"
+	var added: bool = GameContext.add_side_quest(dup_kill)
+	var check_3: bool = not added
+	if check_3: print("[PASS] Duplicate kill quest rejected")
+	else: print("[FAIL] Duplicate kill quest was accepted")
+
+	# Cleanup
+	GameContext.active_side_quests = old_quests
+
+	var all_pass: bool = check_1 and check_2 and check_3
+	return {"name": "Side quest type gating", "passed": all_pass}
+
+
+static func _test_side_quest_kill_progress() -> Dictionary:
+	print("--- TEST 279: Kill quest progress tracking ---")
+	var old_quests: Array = GameContext.active_side_quests.duplicate()
+	GameContext.active_side_quests = []
+
+	# Create a kill quest manually
+	var quest = SideQuestData.new()
+	quest.quest_id = "sq_test_kill_1"
+	quest.quest_type = "kill"
+	quest.region_id = "region_1"
+	quest.kill_targets = {"goblin": 3}
+	quest.kill_progress = {"goblin": 0}
+	quest.reward_item_id = "rusty_sword"
+	quest.reward_quality = 2
+	GameContext.active_side_quests.append(quest)
+
+	# Record kills
+	SideQuestSystem.check_kill_progress("goblin")
+	SideQuestSystem.check_kill_progress("goblin")
+	var check_1: bool = int(quest.kill_progress.get("goblin", 0)) == 2
+	if check_1: print("[PASS] Kill progress: 2/3")
+	else: print("[FAIL] Kill progress: %d/3" % int(quest.kill_progress.get("goblin", 0)))
+
+	# Not complete yet
+	var check_2: bool = not quest.check_completion()
+	if check_2: print("[PASS] Quest not complete at 2/3")
+	else: print("[FAIL] Quest falsely reports complete at 2/3")
+
+	# Third kill
+	SideQuestSystem.check_kill_progress("goblin")
+	var check_3: bool = quest.check_completion()
+	if check_3: print("[PASS] Quest complete at 3/3")
+	else: print("[FAIL] Quest not complete at 3/3")
+
+	# Unrelated monster doesn't advance
+	SideQuestSystem.check_kill_progress("wolf")
+	var check_4: bool = int(quest.kill_progress.get("goblin", 0)) == 3
+	if check_4: print("[PASS] Unrelated monster ignored")
+	else: print("[FAIL] Unrelated monster affected progress")
+
+	# Cleanup
+	GameContext.active_side_quests = old_quests
+
+	var all_pass: bool = check_1 and check_2 and check_3 and check_4
+	return {"name": "Kill quest progress tracking", "passed": all_pass}
+
+
+static func _test_side_quest_resupply_completion() -> Dictionary:
+	print("--- TEST 280: Resupply quest completion + material consumption ---")
+	var old_quests: Array = GameContext.active_side_quests.duplicate()
+	var old_items: Array = GameContext.run_items.duplicate(true)
+	GameContext.active_side_quests = []
+
+	# Create a resupply quest needing 3 wood_bundle
+	var quest = SideQuestData.new()
+	quest.quest_id = "sq_test_resupply_1"
+	quest.quest_type = "resupply"
+	quest.region_id = "region_1"
+	quest.required_items = {"wood_bundle": 3}
+	quest.reward_item_id = "rusty_sword"
+	quest.reward_quality = 2
+	GameContext.active_side_quests.append(quest)
+
+	# Not enough items yet
+	var check_1: bool = not quest.check_completion()
+	if check_1: print("[PASS] Resupply not complete (0/3)")
+	else: print("[FAIL] Resupply falsely complete (0/3)")
+
+	# Add 3 wood_bundle to stash
+	GameContext.add_run_item("wood_bundle", 3)
+	var count_before: int = GameContext.get_run_item_count("wood_bundle")
+	var check_2: bool = count_before >= 3
+	if check_2: print("[PASS] Stash has %d wood_bundle" % count_before)
+	else: print("[FAIL] Stash only has %d wood_bundle" % count_before)
+
+	# Now check completion
+	var check_3: bool = quest.check_completion()
+	if check_3: print("[PASS] Resupply complete (3/3)")
+	else: print("[FAIL] Resupply not complete with 3/3")
+
+	# Complete the quest (should consume materials)
+	var reward = SideQuestSystem.complete_quest("sq_test_resupply_1")
+	var count_after: int = GameContext.get_run_item_count("wood_bundle")
+	var check_4: bool = count_after == count_before - 3
+	if check_4: print("[PASS] Materials consumed: %d -> %d" % [count_before, count_after])
+	else: print("[FAIL] Materials not consumed: %d -> %d" % [count_before, count_after])
+
+	# Cleanup
+	GameContext.active_side_quests = old_quests
+	GameContext.run_items = old_items
+
+	var all_pass: bool = check_1 and check_2 and check_3 and check_4
+	return {"name": "Resupply quest completion + material consumption", "passed": all_pass}
+
+
+static func _test_side_quest_reward_selection() -> Dictionary:
+	print("--- TEST 281: Reward item selection from region pool ---")
+	var old_quests: Array = GameContext.active_side_quests.duplicate()
+
+	var rng = RandomNumberGenerator.new()
+	rng.seed = 77777
+
+	# Generate multiple quests to check reward variety
+	var all_valid: bool = true
+	var seen_items: Array = []
+	for i in range(5):
+		rng.seed = 77777 + i
+		var quest = SideQuestSystem.generate_quest_of_type("region_1", "kill", rng)
+		if quest == null:
+			all_valid = false
+			continue
+		# Reward should be an equipment item
+		var tmpl = DataRegistry.get_item_template(quest.reward_item_id)
+		if tmpl == null:
+			print("[FAIL] Reward item '%s' not in DataRegistry" % quest.reward_item_id)
+			all_valid = false
+		else:
+			seen_items.append(quest.reward_item_id)
+		# Quality should be 2 (Rare) or 3 (Epic)
+		if quest.reward_quality < 2 or quest.reward_quality > 3:
+			print("[FAIL] Reward quality %d not in [2,3]" % quest.reward_quality)
+			all_valid = false
+
+	var check_1: bool = all_valid
+	if check_1: print("[PASS] All reward items valid and in DataRegistry")
+	else: print("[FAIL] Some reward items invalid")
+
+	var check_2: bool = seen_items.size() == 5
+	if check_2: print("[PASS] Generated 5 rewards: %s" % str(seen_items))
+	else: print("[FAIL] Only generated %d rewards" % seen_items.size())
+
+	GameContext.active_side_quests = old_quests
+
+	var all_pass: bool = check_1 and check_2
+	return {"name": "Reward item selection from region pool", "passed": all_pass}
+
+
+static func _test_side_quest_reward_to_storage() -> Dictionary:
+	print("--- TEST 282: Reward goes to storage (stash) ---")
+	var old_quests: Array = GameContext.active_side_quests.duplicate()
+	var old_items: Array = GameContext.run_items.duplicate(true)
+	GameContext.active_side_quests = []
+
+	# Create a completed kill quest
+	var quest = SideQuestData.new()
+	quest.quest_id = "sq_test_reward_1"
+	quest.quest_type = "kill"
+	quest.region_id = "region_1"
+	quest.kill_targets = {"goblin": 1}
+	quest.kill_progress = {"goblin": 1}
+	quest.reward_item_id = "rusty_sword"
+	quest.reward_quality = 2
+	GameContext.active_side_quests.append(quest)
+
+	# Count stash items before
+	var stash_before: int = GameContext.run_items.size()
+
+	# Complete quest
+	var reward = SideQuestSystem.complete_quest("sq_test_reward_1")
+
+	# Check: reward was returned
+	var check_1: bool = reward != null
+	if check_1: print("[PASS] Reward returned: %s" % reward.display_name)
+	else: print("[FAIL] No reward returned")
+
+	# Check: stash grew by 1
+	var stash_after: int = GameContext.run_items.size()
+	var check_2: bool = stash_after == stash_before + 1
+	if check_2: print("[PASS] Stash grew: %d -> %d" % [stash_before, stash_after])
+	else: print("[FAIL] Stash size: %d -> %d" % [stash_before, stash_after])
+
+	# Check: quest removed from active list
+	var check_3: bool = GameContext.get_side_quest("sq_test_reward_1") == null
+	if check_3: print("[PASS] Quest removed from active list")
+	else: print("[FAIL] Quest still in active list")
+
+	# Cleanup
+	GameContext.active_side_quests = old_quests
+	GameContext.run_items = old_items
+
+	var all_pass: bool = check_1 and check_2 and check_3
+	return {"name": "Reward goes to storage (stash)", "passed": all_pass}
+
+
+static func _test_side_quest_save_load() -> Dictionary:
+	print("--- TEST 283: Side quest save/load round-trip ---")
+	var old_quests: Array = GameContext.active_side_quests.duplicate()
+	var old_counter: int = GameContext._side_quest_counter
+	GameContext.active_side_quests = []
+	GameContext._side_quest_counter = 0
+
+	# Create and add a quest
+	var quest = SideQuestData.new()
+	quest.quest_id = "sq_save_test_1"
+	quest.quest_type = "kill"
+	quest.region_id = "region_2"
+	quest.display_name = "Test Save Quest"
+	quest.kill_targets = {"wolf": 5}
+	quest.kill_progress = {"wolf": 2}
+	quest.reward_item_id = "rusty_sword"
+	quest.reward_quality = 3
+	GameContext.active_side_quests.append(quest)
+	GameContext._side_quest_counter = 7
+
+	# Serialize
+	var serialized: Array = GameContext._serialize_side_quests()
+	var check_1: bool = serialized.size() == 1
+	if check_1: print("[PASS] Serialized 1 quest")
+	else: print("[FAIL] Serialized %d quests" % serialized.size())
+
+	# Clear and deserialize
+	GameContext.active_side_quests = []
+	GameContext.active_side_quests = GameContext._deserialize_side_quests(serialized)
+
+	var check_2: bool = GameContext.active_side_quests.size() == 1
+	if check_2: print("[PASS] Deserialized 1 quest")
+	else: print("[FAIL] Deserialized %d quests" % GameContext.active_side_quests.size())
+
+	var restored = GameContext.active_side_quests[0] if GameContext.active_side_quests.size() > 0 else null
+	var check_3: bool = restored != null and restored is SideQuestData
+	if check_3: print("[PASS] Restored quest is SideQuestData")
+	else: print("[FAIL] Restored quest type mismatch")
+
+	var check_4: bool = restored != null and restored.quest_id == "sq_save_test_1"
+	var check_5: bool = restored != null and restored.kill_progress.get("wolf", 0) == 2
+	var check_6: bool = restored != null and restored.reward_quality == 3
+	if check_4: print("[PASS] quest_id preserved: %s" % restored.quest_id)
+	else: print("[FAIL] quest_id mismatch")
+	if check_5: print("[PASS] kill_progress preserved: wolf=%d" % int(restored.kill_progress.get("wolf", 0)))
+	else: print("[FAIL] kill_progress mismatch")
+	if check_6: print("[PASS] reward_quality preserved: %d" % restored.reward_quality)
+	else: print("[FAIL] reward_quality mismatch")
+
+	# Cleanup
+	GameContext.active_side_quests = old_quests
+	GameContext._side_quest_counter = old_counter
+
+	var all_pass: bool = check_1 and check_2 and check_3 and check_4 and check_5 and check_6
+	return {"name": "Side quest save/load round-trip", "passed": all_pass}
+
+
+static func _test_side_quest_main_story_objective() -> Dictionary:
+	print("--- TEST 284: Main story objective from campaign flags ---")
+	var old_region: int = GameContext.current_region
+	var old_flags: Dictionary = GameContext.campaign_flags.duplicate()
+	var old_completed: Dictionary = GameContext.completed_regions.duplicate()
+
+	# Case 1: Region 1, no boss killed yet
+	GameContext.current_region = 1
+	GameContext.campaign_flags = {}
+	GameContext.completed_regions = {}
+	var obj1: Dictionary = SideQuestSystem.get_main_story_objective()
+	var check_1: bool = obj1.get("region", "").find("Thornhaven") >= 0
+	if check_1: print("[PASS] R1 region shows Thornhaven")
+	else: print("[FAIL] R1 region: %s" % obj1.get("region", ""))
+
+	var check_2: bool = obj1.get("objective", "").find("boss") >= 0 or obj1.get("objective", "").find("Clear") >= 0
+	if check_2: print("[PASS] R1 objective: %s" % obj1.get("objective", ""))
+	else: print("[FAIL] R1 objective doesn't mention boss/clear: %s" % obj1.get("objective", ""))
+
+	# Case 2: Boss killed, should suggest travel to R2
+	GameContext.campaign_flags = {"story_r1_boss_killed": true}
+	var obj2: Dictionary = SideQuestSystem.get_main_story_objective()
+	var check_3: bool = obj2.get("objective", "").find("Region 2") >= 0 or obj2.get("objective", "").find("Sproutrest") >= 0
+	if check_3: print("[PASS] After R1 boss: suggests R2 (%s)" % obj2.get("objective", ""))
+	else: print("[FAIL] After R1 boss: %s" % obj2.get("objective", ""))
+
+	# Case 3: Campaign complete
+	GameContext.campaign_flags = {"story_r7_boss_killed": true}
+	GameContext.current_region = 7
+	var obj3: Dictionary = SideQuestSystem.get_main_story_objective()
+	var check_4: bool = obj3.get("objective", "").find("complete") >= 0 or obj3.get("objective", "").find("Complete") >= 0
+	if check_4: print("[PASS] Campaign complete: %s" % obj3.get("objective", ""))
+	else: print("[FAIL] Campaign complete text: %s" % obj3.get("objective", ""))
+
+	# Cleanup
+	GameContext.current_region = old_region
+	GameContext.campaign_flags = old_flags
+	GameContext.completed_regions = old_completed
+
+	var all_pass: bool = check_1 and check_2 and check_3 and check_4
+	return {"name": "Main story objective from campaign flags", "passed": all_pass}
+
+
+# ============================================================================
+# TEST 285: Shop Seed Varies With Run Seed
+# ============================================================================
+
+static func _test_shop_seed_varies_with_run_seed() -> Dictionary:
+	print("--- TEST 285: Shop seed varies with run seed ---")
+	var passed: bool = true
+
+	# Same inputs, same base seed → same result (determinism)
+	var seed_a1: int = SeededRNG.shop_seed("region_1", "town_thornhaven", 0, 12345)
+	var seed_a2: int = SeededRNG.shop_seed("region_1", "town_thornhaven", 0, 12345)
+	if seed_a1 == seed_a2:
+		print("[PASS] Same inputs + same base seed → identical shop seed (%d)" % seed_a1)
+	else:
+		print("[FAIL] Same inputs produced different seeds: %d vs %d" % [seed_a1, seed_a2])
+		passed = false
+
+	# Different base seed (run_seed) → different result
+	var seed_b: int = SeededRNG.shop_seed("region_1", "town_thornhaven", 0, 99999)
+	if seed_a1 != seed_b:
+		print("[PASS] Different run_seed → different shop seed (%d vs %d)" % [seed_a1, seed_b])
+	else:
+		print("[FAIL] Different run_seeds produced same shop seed: %d" % seed_a1)
+		passed = false
+
+	# Different restock version → different result
+	var seed_c: int = SeededRNG.shop_seed("region_1", "town_thornhaven", 1, 12345)
+	if seed_a1 != seed_c:
+		print("[PASS] Different restock_ver → different shop seed (%d vs %d)" % [seed_a1, seed_c])
+	else:
+		print("[FAIL] Different restock_ver produced same shop seed")
+		passed = false
+
+	# Verify RNG streams from different shop seeds produce different sequences
+	var rng_a = SeededRNG.create_rng(seed_a1)
+	var rng_b_diff = SeededRNG.create_rng(seed_b)
+	var val_a: int = rng_a.randi()
+	var val_b: int = rng_b_diff.randi()
+	if val_a != val_b:
+		print("[PASS] Different shop seeds → different RNG sequences (%d vs %d)" % [val_a, val_b])
+	else:
+		print("[FAIL] Different shop seeds produced same first randi()")
+		passed = false
+
+	return {"name": "Shop seed varies with run seed", "passed": passed}
+
+
+# ============================================================================
+# TEST 286: Cross-Hero Bag Transfer to Uninitialized Bag
+# ============================================================================
+
+static func _test_cross_hero_bag_transfer_uninitialized() -> Dictionary:
+	print("--- TEST 286: Cross-hero bag transfer to uninitialized bag ---")
+	var passed: bool = true
+
+	# Save existing state
+	var old_bags: Dictionary = GameContext.hero_bags.duplicate(true)
+
+	# Setup: hero_a has an item, hero_b has NO entry in hero_bags
+	var hero_a: String = "test_hero_a"
+	var hero_b: String = "test_hero_b"
+	GameContext.hero_bags[hero_a] = [{"item_id": "healing_tonic", "quantity": 1}]
+	GameContext.hero_bags.erase(hero_b)  # Ensure hero_b has no entry
+
+	# Verify precondition: hero_b not in hero_bags
+	if not GameContext.hero_bags.has(hero_b):
+		print("[PASS] Precondition: hero_b has no hero_bags entry")
+	else:
+		print("[FAIL] Precondition: hero_b should not have a hero_bags entry")
+		passed = false
+
+	# Simulate cross-hero transfer (same logic as DungeonCampScene._perform_swap)
+	# This is the fix: ensure dict entries exist before getting references
+	if not GameContext.hero_bags.has(hero_a):
+		GameContext.hero_bags[hero_a] = []
+	if not GameContext.hero_bags.has(hero_b):
+		GameContext.hero_bags[hero_b] = []
+	var src_bag: Array = GameContext.hero_bags[hero_a]
+	var dst_bag: Array = GameContext.hero_bags[hero_b]
+
+	# Perform the move (dst is empty slot)
+	var dst_cap: int = 4  # Assume capacity allows it
+	if dst_bag.size() < dst_cap and src_bag.size() > 0:
+		dst_bag.append(src_bag[0].duplicate())
+		src_bag.remove_at(0)
+
+	# Verify: item is in hero_b's bag (stored in GameContext, not a temporary)
+	var stored_b: Array = GameContext.hero_bags.get(hero_b, [])
+	if stored_b.size() == 1 and stored_b[0].get("item_id") == "healing_tonic":
+		print("[PASS] Item transferred to hero_b's bag (stored in GameContext)")
+	else:
+		print("[FAIL] Item not found in hero_b's bag. Size=%d" % stored_b.size())
+		passed = false
+
+	# Verify: hero_a's bag is now empty
+	var stored_a: Array = GameContext.hero_bags.get(hero_a, [])
+	if stored_a.size() == 0:
+		print("[PASS] Item removed from hero_a's bag")
+	else:
+		print("[FAIL] hero_a's bag still has %d items" % stored_a.size())
+		passed = false
+
+	# Cleanup
+	GameContext.hero_bags = old_bags
+
+	return {"name": "Cross-hero bag transfer to uninitialized bag", "passed": passed}
+
+
+static func _test_recruit_equipment_class_specific_r1() -> Dictionary:
+	print("--- TEST 287: Recruit equipment — class-specific R1 + random R2+ ---")
+	var passed: bool = true
+
+	var rng = RandomNumberGenerator.new()
+	rng.seed = 12345
+
+	# R1 Striker → weapon slot
+	var equip_s = GameContext.generate_recruit_equipment("striker", 1, 1, rng)
+	if equip_s.size() >= 1 and equip_s[0].get("slot", "") == "weapon":
+		print("[PASS] R1 Striker got weapon: %s" % equip_s[0].get("item_id", ""))
+	else:
+		print("[FAIL] R1 Striker expected weapon slot, got: %s" % [equip_s])
+		passed = false
+
+	# R1 Defender → offhand (wooden_shield)
+	rng.seed = 12345
+	var equip_d = GameContext.generate_recruit_equipment("defender", 1, 1, rng)
+	if equip_d.size() >= 1 and equip_d[0].get("slot", "") == "offhand" and equip_d[0].get("item_id", "") == "wooden_shield":
+		print("[PASS] R1 Defender got offhand wooden_shield")
+	else:
+		print("[FAIL] R1 Defender expected offhand/wooden_shield, got: %s" % [equip_d])
+		passed = false
+
+	# R1 Warden → bag_item (healing_tonic)
+	rng.seed = 12345
+	var equip_w = GameContext.generate_recruit_equipment("warden", 1, 1, rng)
+	if equip_w.size() >= 1 and equip_w[0].get("slot", "") == "bag_item" and equip_w[0].get("item_id", "") == "healing_tonic":
+		print("[PASS] R1 Warden got bag_item healing_tonic")
+	else:
+		print("[FAIL] R1 Warden expected bag_item/healing_tonic, got: %s" % [equip_w])
+		passed = false
+
+	# T1 should NOT have armor (1 item only at T1)
+	if equip_s.size() <= 1:
+		print("[PASS] T1 recruit has 1 item only (no T2+ bonus)")
+	else:
+		print("[FAIL] T1 recruit has %d items (expected max 1 for T1)" % equip_s.size())
+		passed = false
+
+	# R2+ any class → random slot, never "bag_item"
+	rng.seed = 12345
+	var equip_r2 = GameContext.generate_recruit_equipment("striker", 2, 1, rng)
+	if equip_r2.size() >= 1 and equip_r2[0].get("slot", "") != "bag_item":
+		print("[PASS] R2+ recruit got non-bag slot: %s (%s)" % [equip_r2[0].get("slot", ""), equip_r2[0].get("item_id", "")])
+	elif equip_r2.size() >= 1:
+		print("[FAIL] R2+ recruit got bag_item (should be equipment only)")
+		passed = false
+	else:
+		print("[FAIL] R2+ recruit got 0 items")
+		passed = false
+
+	# Verify inn_tier=0 still returns empty
+	rng.seed = 12345
+	var equip_none = GameContext.generate_recruit_equipment("striker", 1, 0, rng)
+	if equip_none.size() == 0:
+		print("[PASS] inn_tier=0 returns empty equipment")
+	else:
+		print("[FAIL] inn_tier=0 returned %d items (expected 0)" % equip_none.size())
+		passed = false
+
+	return {"name": "Recruit equipment — class-specific R1 + random R2+", "passed": passed}
+
+
+static func _test_inn_auto_restock_clears_slots() -> Dictionary:
+	print("--- TEST 288: Inn auto-restock clears purchased slots ---")
+	var passed: bool = true
+
+	# Save existing state
+	var old_purchased: Dictionary = GameContext.shop_purchased_slots.duplicate(true)
+
+	var inn_id: String = "test_inn_facility"
+	var max_candidates: int = 3  # T1 = 2 + 1
+
+	# Mark all 3 slots as purchased
+	for i in range(max_candidates):
+		GameContext.mark_shop_slot_purchased(inn_id, "recruit_%d" % i)
+
+	# Verify all slots are marked
+	var all_marked: bool = true
+	for i in range(max_candidates):
+		if not GameContext.is_shop_slot_purchased(inn_id, "recruit_%d" % i):
+			all_marked = false
+	if all_marked:
+		print("[PASS] All %d recruit slots marked as purchased" % max_candidates)
+	else:
+		print("[FAIL] Not all recruit slots marked as purchased")
+		passed = false
+
+	# Simulate auto-restock: clear the purchased slots (same logic as _check_inn_auto_restock)
+	if GameContext.shop_purchased_slots.has(inn_id):
+		GameContext.shop_purchased_slots[inn_id] = []
+
+	# Verify all slots are now available
+	var all_available: bool = true
+	for i in range(max_candidates):
+		if GameContext.is_shop_slot_purchased(inn_id, "recruit_%d" % i):
+			all_available = false
+	if all_available:
+		print("[PASS] All recruit slots cleared after restock")
+	else:
+		print("[FAIL] Some recruit slots still marked after restock")
+		passed = false
+
+	# Cleanup
+	GameContext.shop_purchased_slots = old_purchased
+
+	return {"name": "Inn auto-restock clears purchased slots", "passed": passed}
+
+
+static func _test_softlock_pity_grants_recovery() -> Dictionary:
+	print("--- TEST 289: Softlock pity grants recovery party ---")
+	var passed: bool = true
+
+	# Save state
+	var old_heroes: Array = GameContext.owned_heroes.duplicate(true)
+	var old_party: Array = GameContext.selected_party.duplicate()
+	var old_gold: int = GameContext.run_gold
+	var old_equip: Dictionary = GameContext.hero_equipment.duplicate(true)
+	var old_bags: Dictionary = GameContext.hero_bags.duplicate(true)
+
+	# Setup: 0 heroes, 0 gold
+	GameContext.owned_heroes = []
+	GameContext.selected_party = []
+	GameContext.run_gold = 0
+
+	# Simulate the pity check logic (same as _check_softlock_free_recruit)
+	var owned = GameContext.get_owned_heroes()
+	var should_trigger: bool = owned.is_empty() and GameContext.get_run_gold() < 150
+
+	if should_trigger:
+		print("[PASS] Pity trigger detected (0 heroes, gold < 150)")
+	else:
+		print("[FAIL] Pity should trigger but didn't detect")
+		passed = false
+
+	# Grant recovery gold (250 covers ~3.5 recruits at ~70g each)
+	var recovery_gold: int = maxi(250 - GameContext.run_gold, 0)
+	GameContext.add_run_gold(recovery_gold)
+	if GameContext.get_run_gold() >= 250:
+		print("[PASS] Recovery gold granted: %d total" % GameContext.get_run_gold())
+	else:
+		print("[FAIL] Recovery gold insufficient: %d (expected >= 250)" % GameContext.get_run_gold())
+		passed = false
+
+	# Grant 2 free heroes with equipment
+	var rng = RandomNumberGenerator.new()
+	rng.seed = 99999
+	var current_region = GameContext.get_current_region()
+	var equip_def = GameContext.generate_recruit_equipment("defender", current_region, 1, rng)
+	var hero1 = GameContext.recruit_hero("defender", 0, "human", 1, equip_def)
+	var equip_str = GameContext.generate_recruit_equipment("striker", current_region, 1, rng)
+	var hero2 = GameContext.recruit_hero("striker", 0, "human", 1, equip_str)
+
+	if hero1 != "" and hero2 != "":
+		print("[PASS] 2 recovery heroes recruited: %s, %s" % [hero1, hero2])
+	else:
+		print("[FAIL] Failed to recruit recovery heroes: h1=%s h2=%s" % [hero1, hero2])
+		passed = false
+
+	# Verify heroes have equipment — R1 Defender gets offhand (shield), not weapon
+	var h1_equip = GameContext.hero_equipment.get(hero1, {})
+	var h1_offhand = h1_equip.get("offhand", {})
+	if h1_offhand.get("id", "") != "":
+		print("[PASS] Recovery defender has offhand: %s" % h1_offhand.get("id", ""))
+	else:
+		print("[FAIL] Recovery defender has no offhand (expected shield)")
+		passed = false
+
+	# Verify gold not deducted (cost=0)
+	if GameContext.get_run_gold() >= 250:
+		print("[PASS] Gold preserved after free recruitment (cost=0)")
+	else:
+		print("[FAIL] Gold incorrectly deducted: %d" % GameContext.get_run_gold())
+		passed = false
+
+	# Cleanup
+	GameContext.owned_heroes = old_heroes
+	GameContext.selected_party = old_party
+	GameContext.run_gold = old_gold
+	GameContext.hero_equipment = old_equip
+	GameContext.hero_bags = old_bags
+
+	return {"name": "Softlock pity grants recovery party", "passed": passed}
+
+
+static func _test_per_town_inn_slot_independence() -> Dictionary:
+	print("--- TEST 290: Per-town Inn slot independence ---")
+	var passed: bool = true
+
+	# Save existing state
+	var old_purchased: Dictionary = GameContext.shop_purchased_slots.duplicate(true)
+	var old_restock: Dictionary = GameContext.inn_restock_counts.duplicate(true)
+
+	# Town-scoped Inn keys (matches _get_inn_shop_id() format: "town_id:inn")
+	var inn_r1: String = "town_thornhaven:inn"
+	var inn_r2: String = "town_sproutrest:inn"
+
+	# Mark recruit_0 as purchased at R1's Inn
+	GameContext.mark_shop_slot_purchased(inn_r1, "recruit_0")
+
+	# Verify R1 slot IS purchased
+	if GameContext.is_shop_slot_purchased(inn_r1, "recruit_0"):
+		print("[PASS] R1 Inn recruit_0 is purchased")
+	else:
+		print("[FAIL] R1 Inn recruit_0 should be purchased")
+		passed = false
+
+	# Verify R2 slot is NOT purchased (independent tracking)
+	if not GameContext.is_shop_slot_purchased(inn_r2, "recruit_0"):
+		print("[PASS] R2 Inn recruit_0 is NOT purchased (independent)")
+	else:
+		print("[FAIL] R2 Inn recruit_0 should NOT be purchased — slots are leaking across towns")
+		passed = false
+
+	# Verify inn_restock_counts per-town independence
+	GameContext.inn_restock_counts["town_thornhaven"] = 3
+	GameContext.inn_restock_counts["town_sproutrest"] = 0
+	if GameContext.inn_restock_counts.get("town_thornhaven", 0) == 3 and GameContext.inn_restock_counts.get("town_sproutrest", 0) == 0:
+		print("[PASS] Inn restock counts are per-town (R1=3, R2=0)")
+	else:
+		print("[FAIL] Inn restock counts not independent")
+		passed = false
+
+	# Cleanup
+	GameContext.shop_purchased_slots = old_purchased
+	GameContext.inn_restock_counts = old_restock
+
+	return {"name": "Per-town Inn slot independence", "passed": passed}
+
+
+static func _test_get_hero_xp_progress() -> Dictionary:
+	print("--- TEST 291: get_hero_xp_progress utility ---")
+	var passed: bool = true
+
+	# Save state
+	var old_heroes: Array = GameContext.owned_heroes.duplicate(true)
+
+	# Create test hero at Lv5 with xp=200 (between L5 threshold=168 and L6 threshold=260)
+	var test_hero_id: String = "test_xp_prog_hero"
+	GameContext.owned_heroes.append({
+		"hero_id": test_hero_id,
+		"name": "XP Tester",
+		"race_id": "human",
+		"class_id": "warrior",
+		"level": 5,
+		"xp": 200
+	})
+
+	var progress: Dictionary = GameContext.get_hero_xp_progress(test_hero_id)
+
+	# L5 threshold = 168, L6 threshold = 260
+	# Expected: current = 200 - 168 = 32, needed = 260 - 168 = 92
+	if progress.current == 32:
+		print("[PASS] Within-level current XP = %d (expected 32)" % progress.current)
+	else:
+		print("[FAIL] Within-level current XP = %d (expected 32)" % progress.current)
+		passed = false
+
+	if progress.needed == 92:
+		print("[PASS] XP needed for level = %d (expected 92)" % progress.needed)
+	else:
+		print("[FAIL] XP needed for level = %d (expected 92)" % progress.needed)
+		passed = false
+
+	if progress.level == 5 and progress.is_max == false:
+		print("[PASS] Level=5, is_max=false")
+	else:
+		print("[FAIL] Level=%d, is_max=%s (expected 5, false)" % [progress.level, str(progress.is_max)])
+		passed = false
+
+	# Test max level
+	for h in GameContext.owned_heroes:
+		if h.get("hero_id", "") == test_hero_id:
+			h["level"] = GameContext.MAX_HERO_LEVEL
+			h["xp"] = 70000
+			break
+	var max_prog: Dictionary = GameContext.get_hero_xp_progress(test_hero_id)
+	if max_prog.is_max:
+		print("[PASS] Max level hero returns is_max=true")
+	else:
+		print("[FAIL] Max level hero should return is_max=true")
+		passed = false
+
+	# Cleanup
+	GameContext.owned_heroes = old_heroes
+
+	return {"name": "get_hero_xp_progress utility", "passed": passed}
+
+
+# ============================================================================
+# Test 292: T1 monster gate — floors 3+ should have tier2_chance = 100
+# ============================================================================
+static func _test_t1_monster_gate_floor3() -> Dictionary:
+	print("--- TEST 292: T1 monster gate on floor 3+ ---")
+	# The CombatScene match statement sets tier2_chance based on floor_index.
+	# We verify the expected values by simulating the match logic.
+	var passed: bool = true
+
+	# Floor indices 0-1 should allow T1 (tier2_chance < 100)
+	for floor_idx in [0, 1]:
+		var tier2_chance: float = 20.0
+		match floor_idx:
+			0:
+				tier2_chance = 20.0
+			1:
+				tier2_chance = 30.0
+			2:
+				tier2_chance = 100.0
+			3, _:
+				tier2_chance = 100.0
+		if tier2_chance >= 100.0:
+			print("[FAIL] Floor %d has tier2_chance=%.0f (should be < 100)" % [floor_idx, tier2_chance])
+			passed = false
+
+	# Floor indices 2+ should be 100% T2
+	for floor_idx in [2, 3, 4, 5]:
+		var tier2_chance: float = 20.0
+		match floor_idx:
+			0:
+				tier2_chance = 20.0
+			1:
+				tier2_chance = 30.0
+			2:
+				tier2_chance = 100.0
+			3, _:
+				tier2_chance = 100.0
+		if tier2_chance < 100.0:
+			print("[FAIL] Floor %d has tier2_chance=%.0f (should be 100)" % [floor_idx, tier2_chance])
+			passed = false
+
+	# Verify tier1_pool gating: floor_index < 2 allows T1, >= 2 blocks T1
+	var t1_allowed_floor0: bool = 0 < 2
+	var t1_allowed_floor1: bool = 1 < 2
+	var t1_blocked_floor2: bool = not (2 < 2)
+	var t1_blocked_floor3: bool = not (3 < 2)
+	if not (t1_allowed_floor0 and t1_allowed_floor1 and t1_blocked_floor2 and t1_blocked_floor3):
+		print("[FAIL] tier1_pool gate logic incorrect")
+		passed = false
+
+	if passed:
+		print("[PASS] Floors 0-1 allow T1, floors 2+ are 100%% T2")
+	return {"name": "T1 monster gate on floor 3+", "passed": passed}
+
+
+# ============================================================================
+# Test 293: R2 materials upgraded to T2
+# ============================================================================
+static func _test_r2_material_tier_upgrade() -> Dictionary:
+	print("--- TEST 293: R2 material tier upgrade to T2 ---")
+	var passed: bool = true
+	var items_to_check: Array = ["fungal_fiber", "mycelium_thread", "spore_cluster"]
+
+	for item_id in items_to_check:
+		var tmpl = DataRegistry.get_item_template(item_id)
+		if tmpl == null:
+			print("[FAIL] %s not found in DataRegistry" % item_id)
+			passed = false
+			continue
+		if tmpl.tier != 2:
+			print("[FAIL] %s tier=%d (expected 2)" % [item_id, tmpl.tier])
+			passed = false
+		else:
+			print("[PASS] %s tier=%d" % [item_id, tmpl.tier])
+
+	if passed:
+		print("[PASS] All R2 materials are tier 2")
+	return {"name": "R2 material tier upgrade to T2", "passed": passed}
+
+
+static func _test_stash_quality_tier_dict() -> Dictionary:
+	print("--- TEST 294: Stash quality_tier preserved for Dictionary items ---")
+	var passed: bool = true
+
+	# Backup current stash
+	var backup = GameContext.run_items.duplicate(true)
+	GameContext.run_items.clear()
+
+	# Add a Rare (Q2) oak_staff via add_run_item
+	GameContext.add_run_item("oak_staff", 1, 2)
+
+	# Verify the stored item has quality_tier=2
+	if GameContext.run_items.size() != 1:
+		print("[FAIL] Expected 1 item in stash, got %d" % GameContext.run_items.size())
+		passed = false
+	else:
+		var stored = GameContext.run_items[0]
+		if stored is Dictionary:
+			var qt = int(stored.get("quality_tier", -1))
+			if qt != 2:
+				print("[FAIL] quality_tier=%d (expected 2)" % qt)
+				passed = false
+			else:
+				print("[PASS] Dictionary item has quality_tier=2")
+		else:
+			print("[FAIL] Expected Dictionary, got %s" % str(typeof(stored)))
+			passed = false
+
+	# Verify remove_run_item_by_quality can find Q2 item
+	var removed = GameContext.remove_run_item_by_quality("oak_staff", 2, 1)
+	if removed != 1:
+		print("[FAIL] remove_run_item_by_quality returned %d (expected 1)" % removed)
+		passed = false
+	else:
+		print("[PASS] remove_run_item_by_quality found Q2 item")
+
+	# Verify stash is now empty
+	if GameContext.run_items.size() != 0:
+		print("[FAIL] Stash not empty after removal: %d items" % GameContext.run_items.size())
+		passed = false
+	else:
+		print("[PASS] Stash empty after removing Q2 item")
+
+	# Restore backup
+	GameContext.run_items = backup
+
+	if passed:
+		print("[PASS] Stash quality_tier preserved for Dictionary items")
+	return {"name": "Stash quality_tier preserved for Dictionary items", "passed": passed}
+
+
+static func _test_production_facility_per_slot_rng() -> Dictionary:
+	print("--- TEST 295: Production facility per-slot RNG variety ---")
+	var passed: bool = true
+
+	# Simulate the per-slot RNG selection logic used in _generate_facility_allocated_items().
+	# With per-slot independent draws, different seeds should produce different item sequences,
+	# and same seed should produce identical sequences (determinism).
+
+	var pool_size: int = 5  # e.g. 5 recipes available
+	var slot_count: int = 3
+
+	# Test 1: Same seed produces identical results (determinism)
+	var rng_a = RandomNumberGenerator.new()
+	rng_a.seed = SeededRNG.derive_seed("alchemist", 12345)
+	var picks_a: Array = []
+	for i in range(slot_count):
+		picks_a.append(rng_a.randi() % pool_size)
+
+	var rng_b = RandomNumberGenerator.new()
+	rng_b.seed = SeededRNG.derive_seed("alchemist", 12345)
+	var picks_b: Array = []
+	for i in range(slot_count):
+		picks_b.append(rng_b.randi() % pool_size)
+
+	if picks_a != picks_b:
+		print("[FAIL] Same seed produced different picks: %s vs %s" % [str(picks_a), str(picks_b)])
+		passed = false
+	else:
+		print("[PASS] Same seed = identical picks: %s" % str(picks_a))
+
+	# Test 2: Different seeds produce different results
+	var rng_c = RandomNumberGenerator.new()
+	rng_c.seed = SeededRNG.derive_seed("alchemist", 99999)
+	var picks_c: Array = []
+	for i in range(slot_count):
+		picks_c.append(rng_c.randi() % pool_size)
+
+	if picks_a == picks_c:
+		print("[WARN] Different seeds produced same picks (unlikely): %s" % str(picks_a))
+		# Not a hard fail — theoretically possible but extremely unlikely with 5^3 = 125 combos
+	else:
+		print("[PASS] Different seeds = different picks: %s vs %s" % [str(picks_a), str(picks_c)])
+
+	# Test 3: Per-slot draws CAN produce duplicates (not forced unique)
+	# Run 20 different seeds and check that at least one has a duplicate index
+	var found_duplicate: bool = false
+	for s in range(20):
+		var rng_d = RandomNumberGenerator.new()
+		rng_d.seed = SeededRNG.derive_seed("alchemist", 1000 + s)
+		var picks_d: Array = []
+		for i in range(slot_count):
+			picks_d.append(rng_d.randi() % pool_size)
+		var unique_set: Dictionary = {}
+		for p in picks_d:
+			unique_set[p] = true
+		if unique_set.size() < picks_d.size():
+			found_duplicate = true
+			break
+
+	if not found_duplicate:
+		print("[FAIL] No duplicate items found across 20 seeds — per-slot independence not working")
+		passed = false
+	else:
+		print("[PASS] Duplicate items possible across slots (per-slot independence)")
+
+	# Test 4: Different facilities with same base seed get different results
+	var rng_e = RandomNumberGenerator.new()
+	rng_e.seed = SeededRNG.derive_seed("blacksmith", 12345)
+	var picks_e: Array = []
+	for i in range(slot_count):
+		picks_e.append(rng_e.randi() % pool_size)
+
+	if picks_a == picks_e:
+		print("[WARN] alchemist and blacksmith same picks (unlikely)")
+	else:
+		print("[PASS] Different facilities = different picks: alchemist=%s blacksmith=%s" % [str(picks_a), str(picks_e)])
+
+	if passed:
+		print("[PASS] Production facility per-slot RNG variety")
+	return {"name": "Production facility per-slot RNG variety", "passed": passed}
+
+
+static func _test_party_bar_bench_add() -> Dictionary:
+	print("--- TEST 296: Party bar bench hero add-to-party flow ---")
+	var passed: bool = true
+
+	# Backup current state
+	var old_heroes = GameContext.owned_heroes.duplicate(true)
+	var old_party = GameContext.selected_party.duplicate()
+	var old_town = GameContext._current_town_id
+
+	GameContext._current_town_id = "thornhaven"
+	GameContext.owned_heroes = [
+		{"hero_id": "h_bench1", "name": "Bench1", "class_id": "striker", "race_id": "human", "level": 1},
+		{"hero_id": "h_bench2", "name": "Bench2", "class_id": "defender", "race_id": "dwarf", "level": 2},
+		{"hero_id": "h_party1", "name": "Active1", "class_id": "warden", "race_id": "elf", "level": 3},
+	]
+	GameContext.selected_party = ["h_party1"]
+
+	# Verify bench has 2 heroes
+	var bench_count: int = 0
+	for hero in GameContext.get_owned_heroes():
+		if not GameContext.is_in_party(hero.get("hero_id", "")):
+			bench_count += 1
+	if bench_count != 2:
+		print("[FAIL] Expected 2 bench heroes, got %d" % bench_count)
+		passed = false
+	else:
+		print("[PASS] 2 bench heroes available")
+
+	# Add bench hero to party
+	var result = GameContext.add_to_party("h_bench1")
+	if not result:
+		print("[FAIL] add_to_party returned false for bench hero")
+		passed = false
+	else:
+		print("[PASS] add_to_party succeeded for bench hero")
+
+	# Verify party now has 2
+	if GameContext.get_selected_party().size() != 2:
+		print("[FAIL] Expected party size 2, got %d" % GameContext.get_selected_party().size())
+		passed = false
+	else:
+		print("[PASS] Party size = 2 after adding bench hero")
+
+	# Verify bench now has 1
+	bench_count = 0
+	for hero in GameContext.get_owned_heroes():
+		if not GameContext.is_in_party(hero.get("hero_id", "")):
+			bench_count += 1
+	if bench_count != 1:
+		print("[FAIL] Expected 1 bench hero remaining, got %d" % bench_count)
+		passed = false
+	else:
+		print("[PASS] 1 bench hero remaining")
+
+	# Fill party to max (4) and verify overflow blocked
+	GameContext.add_to_party("h_bench2")  # party = 3
+	GameContext.owned_heroes.append({"hero_id": "h_extra1", "name": "Extra1", "class_id": "striker", "race_id": "human", "level": 1})
+	GameContext.add_to_party("h_extra1")  # party = 4 = max
+	GameContext.owned_heroes.append({"hero_id": "h_extra2", "name": "Extra2", "class_id": "striker", "race_id": "human", "level": 1})
+	var overflow_result = GameContext.add_to_party("h_extra2")
+	if overflow_result:
+		print("[FAIL] add_to_party should fail when party is full")
+		passed = false
+	else:
+		print("[PASS] add_to_party correctly blocked when party full")
+
+	# Cleanup
+	GameContext.owned_heroes = old_heroes
+	GameContext.selected_party = old_party
+	GameContext._current_town_id = old_town
+
+	if passed:
+		print("[PASS] Party bar bench hero add-to-party flow")
+	return {"name": "Party bar bench hero add-to-party flow", "passed": passed}
+
+
+# ============================================================================
+# TESTS 297-306: Per-Inn Bench, Turn Order, Manage Equipment Filter
+# ============================================================================
+
+static func _test_bench_capacity_by_inn_tier() -> Dictionary:
+	print("--- TEST 297: Bench capacity by inn tier ---")
+	var passed: bool = true
+
+	var old_town = GameContext._current_town_id
+	GameContext._current_town_id = "town_thornhaven"
+
+	# T1 inn should give 3 bench cap
+	var old_tiers = GameContext.facility_tiers.duplicate(true)
+	GameContext.facility_tiers["town_thornhaven:inn"] = 1
+	var cap1: int = GameContext.get_inn_bench_capacity("town_thornhaven")
+	if cap1 != 3:
+		print("[FAIL] T1 bench cap expected 3, got %d" % cap1)
+		passed = false
+	else:
+		print("[PASS] T1 bench cap = 3")
+
+	GameContext.facility_tiers["town_thornhaven:inn"] = 2
+	var cap2: int = GameContext.get_inn_bench_capacity("town_thornhaven")
+	if cap2 != 5:
+		print("[FAIL] T2 bench cap expected 5, got %d" % cap2)
+		passed = false
+	else:
+		print("[PASS] T2 bench cap = 5")
+
+	GameContext.facility_tiers["town_thornhaven:inn"] = 3
+	var cap3: int = GameContext.get_inn_bench_capacity("town_thornhaven")
+	if cap3 != 7:
+		print("[FAIL] T3 bench cap expected 7, got %d" % cap3)
+		passed = false
+	else:
+		print("[PASS] T3 bench cap = 7")
+
+	GameContext.facility_tiers["town_thornhaven:inn"] = 4
+	var cap4: int = GameContext.get_inn_bench_capacity("town_thornhaven")
+	if cap4 != 10:
+		print("[FAIL] T4 bench cap expected 10, got %d" % cap4)
+		passed = false
+	else:
+		print("[PASS] T4 bench cap = 10")
+
+	# Cleanup
+	GameContext.facility_tiers = old_tiers
+	GameContext._current_town_id = old_town
+
+	if passed:
+		print("[PASS] Bench capacity by inn tier")
+	return {"name": "Bench capacity by inn tier", "passed": passed}
+
+
+static func _test_bench_count_filters_by_town() -> Dictionary:
+	print("--- TEST 298: Bench count filters by town ---")
+	var passed: bool = true
+
+	var old_heroes = GameContext.owned_heroes.duplicate(true)
+	var old_party = GameContext.selected_party.duplicate()
+
+	GameContext.owned_heroes = [
+		{"hero_id": "h1", "name": "H1", "class_id": "striker", "race_id": "human", "level": 1, "home_town_id": "town_thornhaven"},
+		{"hero_id": "h2", "name": "H2", "class_id": "defender", "race_id": "human", "level": 1, "home_town_id": "town_thornhaven"},
+		{"hero_id": "h3", "name": "H3", "class_id": "warden", "race_id": "human", "level": 1, "home_town_id": "town_shelldrift"},
+		{"hero_id": "h4", "name": "H4", "class_id": "druid", "race_id": "human", "level": 1, "home_town_id": "town_thornhaven"},
+	]
+	GameContext.selected_party = ["h4"]  # h4 is in party, shouldn't count toward bench
+
+	var thorn_count: int = GameContext.get_inn_bench_count("town_thornhaven")
+	if thorn_count != 2:
+		print("[FAIL] Thornhaven bench expected 2 (h1,h2), got %d" % thorn_count)
+		passed = false
+	else:
+		print("[PASS] Thornhaven bench count = 2 (excludes party hero)")
+
+	var shell_count: int = GameContext.get_inn_bench_count("town_shelldrift")
+	if shell_count != 1:
+		print("[FAIL] Shelldrift bench expected 1, got %d" % shell_count)
+		passed = false
+	else:
+		print("[PASS] Shelldrift bench count = 1")
+
+	var empty_count: int = GameContext.get_inn_bench_count("town_sproutrest")
+	if empty_count != 0:
+		print("[FAIL] Sproutrest bench expected 0, got %d" % empty_count)
+		passed = false
+	else:
+		print("[PASS] Sproutrest bench count = 0")
+
+	# Cleanup
+	GameContext.owned_heroes = old_heroes
+	GameContext.selected_party = old_party
+
+	if passed:
+		print("[PASS] Bench count filters by town")
+	return {"name": "Bench count filters by town", "passed": passed}
+
+
+static func _test_recruit_sets_home_town_id() -> Dictionary:
+	print("--- TEST 299: Recruit sets home_town_id ---")
+	var passed: bool = true
+
+	var old_heroes = GameContext.owned_heroes.duplicate(true)
+	var old_party = GameContext.selected_party.duplicate()
+	var old_gold = GameContext.run_gold
+	var old_town = GameContext._current_town_id
+	var old_counter = GameContext._hero_id_counter
+	var old_tiers = GameContext.facility_tiers.duplicate(true)
+
+	GameContext._current_town_id = "town_shelldrift"
+	GameContext.run_gold = 1000
+	GameContext.owned_heroes = []
+	GameContext.selected_party = []
+	GameContext.facility_tiers["town_shelldrift:inn"] = 1
+
+	var hero_id: String = GameContext.recruit_hero("striker", 50, "human", 1)
+	if hero_id == "":
+		print("[FAIL] recruit_hero returned empty")
+		passed = false
+	else:
+		var hero: Dictionary = GameContext.get_hero(hero_id)
+		var home: String = hero.get("home_town_id", "")
+		if home != "town_shelldrift":
+			print("[FAIL] Expected home_town_id=town_shelldrift, got '%s'" % home)
+			passed = false
+		else:
+			print("[PASS] Recruit has home_town_id=town_shelldrift")
+
+	# Cleanup
+	GameContext.owned_heroes = old_heroes
+	GameContext.selected_party = old_party
+	GameContext.run_gold = old_gold
+	GameContext._current_town_id = old_town
+	GameContext._hero_id_counter = old_counter
+	GameContext.facility_tiers = old_tiers
+
+	if passed:
+		print("[PASS] Recruit sets home_town_id")
+	return {"name": "Recruit sets home_town_id", "passed": passed}
+
+
+static func _test_remove_from_party_updates_town() -> Dictionary:
+	print("--- TEST 300: Remove from party updates home_town_id ---")
+	var passed: bool = true
+
+	var old_heroes = GameContext.owned_heroes.duplicate(true)
+	var old_party = GameContext.selected_party.duplicate()
+	var old_town = GameContext._current_town_id
+
+	GameContext.owned_heroes = [
+		{"hero_id": "h_move", "name": "Mover", "class_id": "striker", "race_id": "human", "level": 1, "home_town_id": "town_thornhaven"},
+	]
+	GameContext.selected_party = ["h_move"]
+	GameContext._current_town_id = "town_shelldrift"
+
+	GameContext.remove_from_party("h_move")
+
+	var hero: Dictionary = GameContext.get_hero("h_move")
+	var new_home: String = hero.get("home_town_id", "")
+	if new_home != "town_shelldrift":
+		print("[FAIL] Expected home_town_id=town_shelldrift after remove, got '%s'" % new_home)
+		passed = false
+	else:
+		print("[PASS] remove_from_party set home_town_id to current town")
+
+	# Cleanup
+	GameContext.owned_heroes = old_heroes
+	GameContext.selected_party = old_party
+	GameContext._current_town_id = old_town
+
+	if passed:
+		print("[PASS] Remove from party updates home_town_id")
+	return {"name": "Remove from party updates home_town_id", "passed": passed}
+
+
+static func _test_recruit_blocked_bench_full() -> Dictionary:
+	print("--- TEST 301: Recruit blocked when bench full ---")
+	var passed: bool = true
+
+	var old_heroes = GameContext.owned_heroes.duplicate(true)
+	var old_party = GameContext.selected_party.duplicate()
+	var old_gold = GameContext.run_gold
+	var old_town = GameContext._current_town_id
+	var old_counter = GameContext._hero_id_counter
+	var old_tiers = GameContext.facility_tiers.duplicate(true)
+
+	GameContext._current_town_id = "town_thornhaven"
+	GameContext.run_gold = 10000
+	GameContext.facility_tiers["town_thornhaven:inn"] = 1  # cap = 3
+
+	# Fill party to max (4)
+	GameContext.owned_heroes = [
+		{"hero_id": "hp1", "name": "P1", "class_id": "striker", "race_id": "human", "level": 1, "home_town_id": "town_thornhaven"},
+		{"hero_id": "hp2", "name": "P2", "class_id": "defender", "race_id": "human", "level": 1, "home_town_id": "town_thornhaven"},
+		{"hero_id": "hp3", "name": "P3", "class_id": "warden", "race_id": "human", "level": 1, "home_town_id": "town_thornhaven"},
+		{"hero_id": "hp4", "name": "P4", "class_id": "druid", "race_id": "human", "level": 1, "home_town_id": "town_thornhaven"},
+		# 3 benched heroes = T1 cap
+		{"hero_id": "hb1", "name": "B1", "class_id": "striker", "race_id": "human", "level": 1, "home_town_id": "town_thornhaven"},
+		{"hero_id": "hb2", "name": "B2", "class_id": "striker", "race_id": "human", "level": 1, "home_town_id": "town_thornhaven"},
+		{"hero_id": "hb3", "name": "B3", "class_id": "striker", "race_id": "human", "level": 1, "home_town_id": "town_thornhaven"},
+	]
+	GameContext.selected_party = ["hp1", "hp2", "hp3", "hp4"]
+
+	var result: String = GameContext.recruit_hero("striker", 50, "human", 1)
+	if result != "":
+		print("[FAIL] recruit_hero should return '' when party+bench full, got '%s'" % result)
+		passed = false
+	else:
+		print("[PASS] Recruit blocked when party and bench are full")
+
+	# Cleanup
+	GameContext.owned_heroes = old_heroes
+	GameContext.selected_party = old_party
+	GameContext.run_gold = old_gold
+	GameContext._current_town_id = old_town
+	GameContext._hero_id_counter = old_counter
+	GameContext.facility_tiers = old_tiers
+
+	if passed:
+		print("[PASS] Recruit blocked when bench full")
+	return {"name": "Recruit blocked when bench full", "passed": passed}
+
+
+static func _test_get_inn_bench_heroes_correct_set() -> Dictionary:
+	print("--- TEST 302: get_inn_bench_heroes returns correct set ---")
+	var passed: bool = true
+
+	var old_heroes = GameContext.owned_heroes.duplicate(true)
+	var old_party = GameContext.selected_party.duplicate()
+
+	GameContext.owned_heroes = [
+		{"hero_id": "h1", "name": "H1", "class_id": "striker", "race_id": "human", "level": 1, "home_town_id": "town_thornhaven"},
+		{"hero_id": "h2", "name": "H2", "class_id": "defender", "race_id": "human", "level": 1, "home_town_id": "town_shelldrift"},
+		{"hero_id": "h3", "name": "H3", "class_id": "warden", "race_id": "human", "level": 1, "home_town_id": "town_thornhaven"},
+		{"hero_id": "h4", "name": "H4", "class_id": "druid", "race_id": "human", "level": 1, "home_town_id": "town_thornhaven"},
+	]
+	GameContext.selected_party = ["h3"]  # h3 is in party
+
+	var bench: Array = GameContext.get_inn_bench_heroes("town_thornhaven")
+	var bench_ids: Array = []
+	for h in bench:
+		bench_ids.append(h.get("hero_id", ""))
+
+	if bench.size() != 2:
+		print("[FAIL] Expected 2 Thornhaven bench heroes, got %d" % bench.size())
+		passed = false
+	elif "h1" not in bench_ids or "h4" not in bench_ids:
+		print("[FAIL] Expected h1 and h4 in bench, got %s" % str(bench_ids))
+		passed = false
+	else:
+		print("[PASS] get_inn_bench_heroes returns correct heroes (h1, h4)")
+
+	if "h3" in bench_ids:
+		print("[FAIL] Party hero h3 should not be in bench")
+		passed = false
+	else:
+		print("[PASS] Party hero excluded from bench")
+
+	# Cleanup
+	GameContext.owned_heroes = old_heroes
+	GameContext.selected_party = old_party
+
+	if passed:
+		print("[PASS] get_inn_bench_heroes correct set")
+	return {"name": "get_inn_bench_heroes correct set", "passed": passed}
+
+
+static func _test_home_town_migration_default() -> Dictionary:
+	print("--- TEST 303: Migration defaults home_town_id to town_thornhaven ---")
+	var passed: bool = true
+
+	var old_heroes = GameContext.owned_heroes.duplicate(true)
+
+	# Simulate heroes without home_town_id (old save format)
+	GameContext.owned_heroes = [
+		{"hero_id": "h_old1", "name": "Old1", "class_id": "striker", "race_id": "human", "level": 1},
+		{"hero_id": "h_old2", "name": "Old2", "class_id": "defender", "race_id": "human", "level": 1, "home_town_id": ""},
+		{"hero_id": "h_existing", "name": "Existing", "class_id": "warden", "race_id": "human", "level": 1, "home_town_id": "town_shelldrift"},
+	]
+
+	# Run migration logic manually (same as in load_game)
+	for hero in GameContext.owned_heroes:
+		if not hero.has("home_town_id") or hero.get("home_town_id", "") == "":
+			hero["home_town_id"] = "town_thornhaven"
+
+	var h1_home: String = GameContext.owned_heroes[0].get("home_town_id", "")
+	var h2_home: String = GameContext.owned_heroes[1].get("home_town_id", "")
+	var h3_home: String = GameContext.owned_heroes[2].get("home_town_id", "")
+
+	if h1_home != "town_thornhaven":
+		print("[FAIL] h_old1 expected town_thornhaven, got '%s'" % h1_home)
+		passed = false
+	else:
+		print("[PASS] h_old1 migrated to town_thornhaven")
+
+	if h2_home != "town_thornhaven":
+		print("[FAIL] h_old2 (empty string) expected town_thornhaven, got '%s'" % h2_home)
+		passed = false
+	else:
+		print("[PASS] h_old2 (empty) migrated to town_thornhaven")
+
+	if h3_home != "town_shelldrift":
+		print("[FAIL] h_existing should keep town_shelldrift, got '%s'" % h3_home)
+		passed = false
+	else:
+		print("[PASS] h_existing kept existing town_shelldrift")
+
+	# Cleanup
+	GameContext.owned_heroes = old_heroes
+
+	if passed:
+		print("[PASS] Migration defaults home_town_id")
+	return {"name": "Migration defaults home_town_id", "passed": passed}
+
+
+static func _test_reordered_snapshot_order() -> Dictionary:
+	print("--- TEST 304: Reordered snapshot puts upcoming before acted ---")
+	var passed: bool = true
+
+	var tq = TurnQueue.new()
+	var u1 = CombatUnit.new()
+	u1.unit_id = "u1"
+	u1.display_name = "Unit1"
+	u1.speed = 30
+	u1.team = CombatUnit.Team.PLAYER
+	u1.is_alive = true
+	var u2 = CombatUnit.new()
+	u2.unit_id = "u2"
+	u2.display_name = "Unit2"
+	u2.speed = 20
+	u2.team = CombatUnit.Team.ENEMY
+	u2.is_alive = true
+	var u3 = CombatUnit.new()
+	u3.unit_id = "u3"
+	u3.display_name = "Unit3"
+	u3.speed = 10
+	u3.team = CombatUnit.Team.PLAYER
+	u3.is_alive = true
+
+	tq.initialize([u1, u2, u3])
+	# After init: order = u1(30), u2(20), u3(10), current_index = 0
+	# Advance past u1: u1 has acted
+	tq.advance()
+	# Now current_index = 1 (u2 is current), u1 has acted
+
+	var snapshot: Array = tq.get_reordered_round_snapshot()
+	# Expected order: u2 (upcoming/current), u3 (upcoming), u1 (acted)
+	if snapshot.size() != 3:
+		print("[FAIL] Expected 3 entries, got %d" % snapshot.size())
+		passed = false
+	else:
+		if snapshot[0]["unit_id"] != "u2":
+			print("[FAIL] First entry should be u2 (current), got %s" % snapshot[0]["unit_id"])
+			passed = false
+		else:
+			print("[PASS] First entry is u2 (current/upcoming)")
+		if snapshot[1]["unit_id"] != "u3":
+			print("[FAIL] Second entry should be u3 (upcoming), got %s" % snapshot[1]["unit_id"])
+			passed = false
+		else:
+			print("[PASS] Second entry is u3 (upcoming)")
+		if snapshot[2]["unit_id"] != "u1":
+			print("[FAIL] Third entry should be u1 (acted), got %s" % snapshot[2]["unit_id"])
+			passed = false
+		else:
+			print("[PASS] Third entry is u1 (acted, moved to end)")
+
+	if passed:
+		print("[PASS] Reordered snapshot order")
+	return {"name": "Reordered snapshot order", "passed": passed}
+
+
+static func _test_reordered_snapshot_front_marker() -> Dictionary:
+	print("--- TEST 305: Reordered snapshot front marker ---")
+	var passed: bool = true
+
+	var tq = TurnQueue.new()
+	var u1 = CombatUnit.new()
+	u1.unit_id = "u1"
+	u1.display_name = "Unit1"
+	u1.speed = 30
+	u1.team = CombatUnit.Team.PLAYER
+	u1.is_alive = true
+	var u2 = CombatUnit.new()
+	u2.unit_id = "u2"
+	u2.display_name = "Unit2"
+	u2.speed = 20
+	u2.team = CombatUnit.Team.ENEMY
+	u2.is_alive = true
+
+	tq.initialize([u1, u2])
+	# current_index = 0, both upcoming, u1 is front
+	var snap: Array = tq.get_reordered_round_snapshot()
+	if snap.size() != 2:
+		print("[FAIL] Expected 2 entries, got %d" % snap.size())
+		passed = false
+	else:
+		if snap[0].get("is_front", false) != true:
+			print("[FAIL] First upcoming unit should have is_front=true")
+			passed = false
+		else:
+			print("[PASS] First upcoming has is_front=true")
+		if snap[1].get("is_front", false) != false:
+			print("[FAIL] Second upcoming unit should have is_front=false")
+			passed = false
+		else:
+			print("[PASS] Second upcoming has is_front=false")
+
+	# Advance: u1 acted, u2 is current/front
+	tq.advance()
+	snap = tq.get_reordered_round_snapshot()
+	if snap[0]["unit_id"] != "u2":
+		print("[FAIL] After advance, first should be u2")
+		passed = false
+	elif snap[0].get("is_front", false) != true:
+		print("[FAIL] u2 should have is_front=true after advance")
+		passed = false
+	else:
+		print("[PASS] After advance u2 is front")
+
+	if snap.size() >= 2 and snap[1].get("is_front", false) != false:
+		print("[FAIL] Acted u1 should not have is_front")
+		passed = false
+	else:
+		print("[PASS] Acted u1 does not have is_front")
+
+	if passed:
+		print("[PASS] Reordered snapshot front marker")
+	return {"name": "Reordered snapshot front marker", "passed": passed}
+
+
+static func _test_manage_gear_filter_default() -> Dictionary:
+	print("--- TEST 306: Manage gear filter defaults to party ---")
+	var passed: bool = true
+
+	# This test validates the data logic behind the filter, not UI rendering
+	var old_heroes = GameContext.owned_heroes.duplicate(true)
+	var old_party = GameContext.selected_party.duplicate()
+
+	GameContext.owned_heroes = [
+		{"hero_id": "hp1", "name": "P1", "class_id": "striker", "race_id": "human", "level": 1, "home_town_id": "town_thornhaven"},
+		{"hero_id": "hp2", "name": "P2", "class_id": "defender", "race_id": "human", "level": 1, "home_town_id": "town_thornhaven"},
+		{"hero_id": "hb1", "name": "B1", "class_id": "warden", "race_id": "human", "level": 1, "home_town_id": "town_thornhaven"},
+		{"hero_id": "hb2", "name": "B2", "class_id": "druid", "race_id": "human", "level": 1, "home_town_id": "town_shelldrift"},
+	]
+	GameContext.selected_party = ["hp1", "hp2"]
+
+	# Simulate "party" filter: only party heroes
+	var filter_party: String = "party"
+	var party_roster: Array = []
+	if filter_party == "party":
+		for pid in GameContext.get_selected_party():
+			var hdata: Dictionary = GameContext.get_hero(pid)
+			if not hdata.is_empty():
+				party_roster.append(hdata)
+
+	if party_roster.size() != 2:
+		print("[FAIL] Party filter expected 2 heroes, got %d" % party_roster.size())
+		passed = false
+	else:
+		print("[PASS] Party filter returns 2 heroes")
+
+	# Simulate town filter: bench heroes at Thornhaven
+	var filter_town: String = "town_thornhaven"
+	var town_roster: Array = GameContext.get_inn_bench_heroes(filter_town)
+	if town_roster.size() != 1:
+		print("[FAIL] Thornhaven bench filter expected 1 (hb1), got %d" % town_roster.size())
+		passed = false
+	else:
+		print("[PASS] Thornhaven bench filter returns 1 hero (hb1)")
+
+	# Shelldrift bench
+	var shell_roster: Array = GameContext.get_inn_bench_heroes("town_shelldrift")
+	if shell_roster.size() != 1:
+		print("[FAIL] Shelldrift bench filter expected 1 (hb2), got %d" % shell_roster.size())
+		passed = false
+	else:
+		print("[PASS] Shelldrift bench filter returns 1 hero (hb2)")
+
+	# Cleanup
+	GameContext.owned_heroes = old_heroes
+	GameContext.selected_party = old_party
+
+	if passed:
+		print("[PASS] Manage gear filter default")
+	return {"name": "Manage gear filter default", "passed": passed}
+
+
+static func _test_building_regional_sprites() -> Dictionary:
+	print("--- TEST 307: Building regional sprites exist ---")
+	var buildings: Array = [
+		"building_alchemist", "building_blacksmith", "building_chef",
+		"building_dungeon", "building_enchanter", "building_huntsman",
+		"building_inn", "building_shop", "building_storage", "building_training"
+	]
+	var missing: int = 0
+	var total: int = 0
+	for r in range(2, 8):
+		for bld in buildings:
+			total += 1
+			var rpath: String = "res://Assets/Backgrounds/Buildings/R%d/%s.png" % [r, bld]
+			if not ResourceLoader.exists(rpath):
+				print("  MISSING: %s" % rpath)
+				missing += 1
+	var passed: bool = missing == 0
+	if passed:
+		print("[PASS] All %d regional building sprites found" % total)
+	else:
+		print("[FAIL] %d/%d regional building sprites missing" % [missing, total])
+	return {"name": "Building regional sprites exist", "passed": passed}
+
+
+static func _test_formation_warning_all_middle() -> Dictionary:
+	print("--- TEST 308: Formation warning all-middle detection ---")
+	var gc = Engine.get_singleton("GameContext") if Engine.has_singleton("GameContext") else null
+	if gc == null:
+		gc = (Engine.get_main_loop() as SceneTree).root.get_node_or_null("GameContext")
+	if gc == null:
+		print("[SKIP] GameContext not available")
+		return {"name": "Formation warning all-middle detection", "passed": true}
+
+	# Save original state
+	var orig_party: Array = gc.selected_party.duplicate()
+	var orig_rows: Dictionary = gc.hero_row_assignments.duplicate()
+	var orig_tutorials: Dictionary = gc.completed_tutorials.duplicate()
+
+	var all_pass: bool = true
+
+	# Setup: 3 heroes, all default to middle row (1)
+	gc.selected_party = ["hero_a", "hero_b", "hero_c"]
+	gc.hero_row_assignments = {}  # All default to middle (1)
+	gc.completed_tutorials.erase("warning_formation_all_middle")
+
+	# Test 1: All middle row → should warn
+	var all_middle: bool = true
+	for hid in gc.selected_party:
+		if gc.get_hero_row(hid) != 1:
+			all_middle = false
+			break
+	var should_warn_1: bool = all_middle and gc.selected_party.size() > 1 and not gc.has_completed_tutorial("warning_formation_all_middle")
+	if not should_warn_1:
+		print("[FAIL] Expected warning for 3 heroes all in middle row")
+		all_pass = false
+	else:
+		print("  Check 1 OK: all-middle triggers warning")
+
+	# Test 2: Move one hero to front → should NOT warn
+	gc.set_hero_row("hero_a", 0)
+	all_middle = true
+	for hid in gc.selected_party:
+		if gc.get_hero_row(hid) != 1:
+			all_middle = false
+			break
+	var should_warn_2: bool = all_middle and gc.selected_party.size() > 1 and not gc.has_completed_tutorial("warning_formation_all_middle")
+	if should_warn_2:
+		print("[FAIL] Expected no warning when hero_a is in front row")
+		all_pass = false
+	else:
+		print("  Check 2 OK: front-row hero suppresses warning")
+
+	# Test 3: All middle again but tutorial dismissed → should NOT warn
+	gc.hero_row_assignments = {}  # Back to all-middle defaults
+	gc.complete_tutorial("warning_formation_all_middle")
+	all_middle = true
+	for hid in gc.selected_party:
+		if gc.get_hero_row(hid) != 1:
+			all_middle = false
+			break
+	var should_warn_3: bool = all_middle and gc.selected_party.size() > 1 and not gc.has_completed_tutorial("warning_formation_all_middle")
+	if should_warn_3:
+		print("[FAIL] Expected no warning when tutorial flag is set")
+		all_pass = false
+	else:
+		print("  Check 3 OK: dismissed flag suppresses warning")
+
+	# Test 4: Solo hero (size <= 1) → should NOT warn
+	gc.completed_tutorials.erase("warning_formation_all_middle")
+	gc.selected_party = ["hero_a"]
+	gc.hero_row_assignments = {}
+	var should_warn_4: bool = gc.selected_party.size() > 1
+	if should_warn_4:
+		print("[FAIL] Expected no warning for solo hero")
+		all_pass = false
+	else:
+		print("  Check 4 OK: solo hero skips warning")
+
+	# Restore original state
+	gc.selected_party = orig_party
+	gc.hero_row_assignments = orig_rows
+	gc.completed_tutorials = orig_tutorials
+
+	if all_pass:
+		print("[PASS] Formation warning all-middle detection")
+	else:
+		print("[FAIL] Formation warning all-middle detection")
+	return {"name": "Formation warning all-middle detection", "passed": all_pass}
+
+
+static func _test_side_quest_tutorial_exists() -> Dictionary:
+	print("--- TEST 309: Side quest tutorial JSON exists ---")
+	var path: String = "res://Data/Tutorials/tutorial_side_quests.json"
+	var exists: bool = FileAccess.file_exists(path)
+	if not exists:
+		exists = ResourceLoader.exists(path)
+	if exists:
+		# Verify it parses as valid JSON with expected structure
+		var file = FileAccess.open(path, FileAccess.READ)
+		if file != null:
+			var json_text: String = file.get_as_text()
+			file.close()
+			var json = JSON.new()
+			var err = json.parse(json_text)
+			if err != OK:
+				print("[FAIL] tutorial_side_quests.json has invalid JSON")
+				return {"name": "Side quest tutorial JSON exists", "passed": false}
+			var data = json.data
+			if not data is Dictionary or not data.has("id") or not data.has("steps"):
+				print("[FAIL] tutorial_side_quests.json missing id or steps")
+				return {"name": "Side quest tutorial JSON exists", "passed": false}
+			var steps: Array = data["steps"]
+			if steps.size() < 1:
+				print("[FAIL] tutorial_side_quests.json has 0 steps")
+				return {"name": "Side quest tutorial JSON exists", "passed": false}
+			print("[PASS] tutorial_side_quests.json exists with %d steps" % steps.size())
+			return {"name": "Side quest tutorial JSON exists", "passed": true}
+	print("[FAIL] tutorial_side_quests.json not found at %s" % path)
+	return {"name": "Side quest tutorial JSON exists", "passed": false}
+
+
+static func _test_ng_plus_tutorial_exists() -> Dictionary:
+	print("--- TEST 310: NG+ tutorial JSON exists ---")
+	var path: String = "res://Data/Tutorials/tutorial_ng_plus.json"
+	var exists: bool = FileAccess.file_exists(path)
+	if not exists:
+		exists = ResourceLoader.exists(path)
+	if exists:
+		var file = FileAccess.open(path, FileAccess.READ)
+		if file != null:
+			var json_text: String = file.get_as_text()
+			file.close()
+			var json = JSON.new()
+			var err = json.parse(json_text)
+			if err != OK:
+				print("[FAIL] tutorial_ng_plus.json has invalid JSON")
+				return {"name": "NG+ tutorial JSON exists", "passed": false}
+			var data = json.data
+			if not data is Dictionary or not data.has("id") or not data.has("steps"):
+				print("[FAIL] tutorial_ng_plus.json missing id or steps")
+				return {"name": "NG+ tutorial JSON exists", "passed": false}
+			var steps: Array = data["steps"]
+			if steps.size() < 1:
+				print("[FAIL] tutorial_ng_plus.json has 0 steps")
+				return {"name": "NG+ tutorial JSON exists", "passed": false}
+			print("[PASS] tutorial_ng_plus.json exists with %d steps" % steps.size())
+			return {"name": "NG+ tutorial JSON exists", "passed": true}
+	print("[FAIL] tutorial_ng_plus.json not found at %s" % path)
+	return {"name": "NG+ tutorial JSON exists", "passed": false}

@@ -102,11 +102,396 @@ var player_gold: int = 400  # Starting gold
 var player_items: Dictionary = {}  # item_id -> qty
 
 # ============================================================================
+# NEW GAME PLUS (NG+) — Persistent across cycles
+# ============================================================================
+
+# Current NG+ cycle: 0 = first playthrough, 1 = NG+1, up to 8 (true ending)
+var ng_plus_cycle: int = 0
+
+# Accumulated permanent stat bonus for heroes (stacking +5% per cycle from NG+4 onward)
+var ng_plus_perm_stat_bonus: float = 0.0
+
+# Abilities the player has seen used in combat (persists across NG+ cycles)
+# { "ability_id": true }
+var seen_abilities: Dictionary = {}
+
+# ============================================================================
+# SIDE QUEST SYSTEM
+# ============================================================================
+
+# Active side quests (max 3 — one per type: kill, resupply, mini_dungeon)
+var active_side_quests: Array = []
+
+# Flag set when exiting dungeon to town — triggers side quest offer check
+var returned_from_dungeon: bool = false
+
+# Counter for unique quest IDs
+var _side_quest_counter: int = 0
+
+# Mini-dungeon runtime state (NOT saved — reset on scene change or defeat)
+# Keys: active (bool), quest_id (String), fight_index (int), total_fights (int),
+#        region_id (String), is_final_fight (bool)
+var mini_dungeon_state: Dictionary = {}
+
+# Max carry-over heroes per cycle (cycle 0→1 = 1 hero, 1→2 = 2, 2→3 = 3, 3→4 = 4, 4+ = all)
+func get_ng_carry_limit() -> int:
+	if ng_plus_cycle >= 4:
+		return owned_heroes.size()
+	return mini(ng_plus_cycle + 1, owned_heroes.size())
+
+# NG+ difficulty multipliers by cycle
+const NG_DIFFICULTY_MULT: Array[Dictionary] = [
+	{"hp": 1.00, "atk": 1.00, "def": 1.00, "spd": 1.00},  # Cycle 0
+	{"hp": 1.15, "atk": 1.10, "def": 1.10, "spd": 1.05},  # Cycle 1
+	{"hp": 1.30, "atk": 1.20, "def": 1.20, "spd": 1.08},  # Cycle 2
+	{"hp": 1.50, "atk": 1.30, "def": 1.30, "spd": 1.10},  # Cycle 3
+	{"hp": 1.70, "atk": 1.40, "def": 1.40, "spd": 1.12},  # Cycle 4
+	{"hp": 1.90, "atk": 1.50, "def": 1.50, "spd": 1.14},  # Cycle 5
+	{"hp": 2.10, "atk": 1.60, "def": 1.60, "spd": 1.16},  # Cycle 6
+	{"hp": 2.30, "atk": 1.70, "def": 1.70, "spd": 1.18},  # Cycle 7
+	{"hp": 2.50, "atk": 1.80, "def": 1.80, "spd": 1.20},  # Cycle 8
+]
+
+## Get NG+ difficulty multipliers for current cycle.
+func get_ng_difficulty_multipliers() -> Dictionary:
+	var idx: int = clampi(ng_plus_cycle, 0, NG_DIFFICULTY_MULT.size() - 1)
+	return NG_DIFFICULTY_MULT[idx]
+
+## Mark an ability as seen (called from CombatController after ability execution).
+func mark_ability_seen(ability_id: String) -> void:
+	if ability_id != "" and ability_id != "basic_attack" and not seen_abilities.has(ability_id):
+		seen_abilities[ability_id] = true
+		print("[NG+] Ability seen: %s (total=%d)" % [ability_id, seen_abilities.size()])
+
+## Check if an ability has been seen.
+func has_seen_ability(ability_id: String) -> bool:
+	return seen_abilities.get(ability_id, false)
+
+## Infuse an equipment item with an ability. Replaces any existing infusion.
+func infuse_item_ability(hero_id: String, slot: String, ability_id: String) -> bool:
+	if not has_seen_ability(ability_id):
+		print("[NG+] Infusion rejected: ability %s not seen" % ability_id)
+		return false
+	var equip = get_hero_equipment(hero_id)
+	if not equip.has(slot):
+		print("[NG+] Infusion rejected: hero %s has no item in slot %s" % [hero_id, slot])
+		return false
+	var slot_data: Dictionary = equip[slot]
+	if slot_data.get("id", "") == "":
+		print("[NG+] Infusion rejected: slot %s is empty" % slot)
+		return false
+	slot_data["infused_ability_id"] = ability_id
+	hero_equipment[hero_id][slot] = slot_data
+	print("[NG+] Infused hero=%s slot=%s ability=%s" % [hero_id, slot, ability_id])
+	save_game()
+	return true
+
+## Start a New Game Plus cycle. Carries over selected heroes and resets world.
+func start_new_game_plus(selected_hero_ids: Array) -> void:
+	var carry_limit: int = get_ng_carry_limit()
+	var to_carry: Array = []
+	for hid in selected_hero_ids:
+		if to_carry.size() >= carry_limit:
+			break
+		var hero = get_hero(hid)
+		if not hero.is_empty():
+			to_carry.append(hero.duplicate(true))
+
+	print("[NG+] Starting cycle %d → %d, carrying %d heroes" % [ng_plus_cycle, ng_plus_cycle + 1, to_carry.size()])
+
+	# Increment cycle
+	ng_plus_cycle += 1
+
+	# Apply perm stat bonus from cycle 5+ (0-indexed cycle 4)
+	if ng_plus_cycle >= 5:
+		ng_plus_perm_stat_bonus += 0.05
+		print("[NG+] Perm stat bonus now %.0f%%" % (ng_plus_perm_stat_bonus * 100))
+
+	# Collect equipment from carried heroes → run_items (stash)
+	var carry_equipment: Array = []
+	for hero in to_carry:
+		var hid: String = hero.get("hero_id", "")
+		if hero_equipment.has(hid):
+			var equip: Dictionary = hero_equipment[hid]
+			for slot in ALL_EQUIP_SLOTS:
+				var slot_data: Dictionary = equip.get(slot, {})
+				var item_id: String = slot_data.get("id", "")
+				if item_id != "":
+					var item_entry: Dictionary = {
+						"item_id": item_id,
+						"qty": 1,
+						"quality_tier": int(slot_data.get("quality", 0))
+					}
+					if slot_data.has("affix_id"):
+						item_entry["affix_id"] = slot_data["affix_id"]
+						item_entry["affix_stats"] = slot_data.get("affix_stats", {})
+						item_entry["affix_prefix"] = slot_data.get("affix_prefix", "")
+					if slot_data.has("infused_ability_id"):
+						item_entry["infused_ability_id"] = slot_data["infused_ability_id"]
+					# Preserve NG+ bonus stat lines
+					var carry_bonus_lines: Array = slot_data.get("bonus_stat_lines", [])
+					if carry_bonus_lines.size() > 0:
+						item_entry["bonus_stat_lines"] = carry_bonus_lines
+					carry_equipment.append(item_entry)
+			hero_equipment.erase(hid)
+
+	# Add non-carried heroes to dead_heroes as "left behind"
+	for hero in owned_heroes:
+		var hid: String = hero.get("hero_id", "")
+		var is_carried: bool = false
+		for ch in to_carry:
+			if ch.get("hero_id", "") == hid:
+				is_carried = true
+				break
+		if not is_carried:
+			dead_heroes.append({
+				"hero_id": hid,
+				"name": hero.get("name", "Unknown"),
+				"race_id": hero.get("race_id", "human"),
+				"class_id": hero.get("class_id", ""),
+				"level": int(hero.get("level", 1)),
+				"cause": "ng_plus_left_behind",
+				"ng_cycle_of_death": ng_plus_cycle - 1,
+				"timestamp": Time.get_unix_time_from_system()
+			})
+
+	# Gold carry: 25% of run_gold, capped at 500
+	var carry_gold: int = mini(int(run_gold * 0.25), 500)
+
+	# Preserve knowledge
+	var keep_learned_classes: Dictionary = learned_classes.duplicate()
+	var keep_discovered_mixes: Dictionary = discovered_mixes.duplicate()
+	var keep_seen_abilities: Dictionary = seen_abilities.duplicate()
+	var keep_campaign_flags: Dictionary = {}
+	for flag_key in campaign_flags:
+		# Carry story_* flags for lore continuity and shown_* flags to prevent base dialog re-trigger
+		if flag_key.begins_with("story_") or flag_key.begins_with("shown_"):
+			keep_campaign_flags[flag_key] = campaign_flags[flag_key]
+	var keep_dead_heroes: Array = dead_heroes.duplicate(true)
+	var keep_hero_id_counter: int = _hero_id_counter
+	var keep_ng_cycle: int = ng_plus_cycle
+	var keep_perm_bonus: float = ng_plus_perm_stat_bonus
+	var keep_text_size: int = text_size
+	var keep_auto_loot: bool = auto_loot
+	var keep_alt_bgm: bool = use_alt_bgm
+	var keep_tester: bool = tester_mode
+
+	# === WORLD RESET (mirrors reset_save_game structure) ===
+	player_gold = 400
+	player_items = {}
+	next_run_bonus_max_hp = 0
+	next_run_trained = false
+	pending_combat_modifier = {}
+	pending_combat_statuses.clear()
+	equipped_weapon_id = ""
+	equipped_weapon_quality = 0
+	equipped_offhand_id = ""
+	equipped_offhand_quality = 0
+	hero_equipment = {}
+	hero_bags = {}
+	_gear_logged_heroes.clear()
+	shopkeeper_bag = []
+	hero_hp = {}
+	hero_statuses = {}
+	_combat_consumables_used = {}
+	loot_pref = {}
+	unlocked_groups = {}
+	unlocked_item_ids = {}
+	unlocked_recipes = {}
+	completed_tutorials = {}
+	campaign_flags = {}
+	discovered_mixes = {}
+	alchemist_mishap_streak = 0
+	locked_facilities = {}
+	inn_lockout = false
+	unlocked_dungeon_floors = {}
+	selected_start_floors = {}
+	facility_tiers = {}
+	learned_classes = {}
+	town_tiers = {}
+	owned_heroes = []
+	selected_party = []
+	_hero_id_counter = 0
+	housing_upgrades = {}
+	bonus_stash_capacity = 0
+	shop_refresh_counts = {}
+	shop_restock_version = {}
+	active_side_quests = []
+	returned_from_dungeon = false
+	mini_dungeon_state = {}
+	shop_purchased_slots = {}
+	shop_slot_allocations = {}
+	inn_restock_counts = {}
+	run_gold = 400
+	run_items = []
+	dungeon_gold = 0
+	dungeon_items = []
+	current_dungeon_id = ""
+	current_floor = 0
+	current_room_index = 0
+	rooms_per_floor = 1
+	current_room_type = "combat"
+	current_room_is_elite = false
+	pending_room_choices = {}
+	pending_selected_choice = {}
+	current_room_payload = {}
+	_last_room_was_event = false
+	_run_id = ""
+	_run_seed = 0
+	_run_active = false
+	_run_counter = 0
+	_current_phase = GamePhase.TOWN
+	_current_region_id = "region_1"
+	_current_town_id = "town_thornhaven"
+	_selected_floor_index = 1
+	_party_hero_ids = []
+	current_region = 1
+	completed_regions = {}
+	_rewarded_dungeon_id = ""
+	_rewarded_floor = -1
+	hero_row_assignments = {}
+	dead_heroes = []
+
+	# === RESTORE CARRY-OVER DATA ===
+	ng_plus_cycle = keep_ng_cycle
+	ng_plus_perm_stat_bonus = keep_perm_bonus
+	seen_abilities = keep_seen_abilities
+	learned_classes = keep_learned_classes
+	discovered_mixes = keep_discovered_mixes
+	campaign_flags = keep_campaign_flags
+	dead_heroes = keep_dead_heroes
+	_hero_id_counter = keep_hero_id_counter
+	text_size = keep_text_size
+	auto_loot = keep_auto_loot
+	use_alt_bgm = keep_alt_bgm
+	tester_mode = keep_tester
+	run_gold = carry_gold
+
+	# Restore carried heroes — bench all at Thornhaven for the new cycle
+	owned_heroes = to_carry
+	for hero in owned_heroes:
+		hero["home_town_id"] = "town_thornhaven"
+	# Restore carried equipment into stash
+	for item_entry in carry_equipment:
+		run_items.append(item_entry)
+
+	save_game()
+	print("[NG+] Cycle %d started. Heroes=%d, Gold=%d, Equipment in stash=%d" % [
+		ng_plus_cycle, owned_heroes.size(), run_gold, carry_equipment.size()])
+
+# ============================================================================
+# SIDE QUEST CRUD API
+# ============================================================================
+
+## Get the next unique side quest ID.
+func _next_side_quest_id(region_id: String, quest_type: String) -> String:
+	_side_quest_counter += 1
+	return "sq_%s_%s_%d" % [region_id, quest_type, _side_quest_counter]
+
+## Get active side quest by type. Returns null if none active for that type.
+func get_active_quest_by_type(quest_type: String):
+	for q in active_side_quests:
+		if q is SideQuestData and q.quest_type == quest_type:
+			return q
+	return null
+
+## Get active side quest by ID. Returns null if not found.
+func get_side_quest(quest_id: String):
+	for q in active_side_quests:
+		if q is SideQuestData and q.quest_id == quest_id:
+			return q
+	return null
+
+## Add a side quest to active list (enforces 1 per type).
+func add_side_quest(quest: SideQuestData) -> bool:
+	if get_active_quest_by_type(quest.quest_type) != null:
+		print("[SideQuest] Already have active %s quest — rejecting" % quest.quest_type)
+		return false
+	active_side_quests.append(quest)
+	print("[SideQuest] Added: %s (%s in %s)" % [quest.quest_id, quest.quest_type, quest.region_id])
+	save_game()
+	return true
+
+## Remove a side quest by ID.
+func remove_side_quest(quest_id: String) -> void:
+	for i in range(active_side_quests.size() - 1, -1, -1):
+		var q = active_side_quests[i]
+		if q is SideQuestData and q.quest_id == quest_id:
+			active_side_quests.remove_at(i)
+			print("[SideQuest] Removed: %s" % quest_id)
+			break
+	save_game()
+
+## Get all active side quests.
+func get_active_side_quests() -> Array:
+	return active_side_quests
+
+# ============================================================================
 # CHALLENGE LEVEL (session-only playtest tool — NOT saved)
 # ============================================================================
 
 var challenge_level: int = 0
 const MAX_CHALLENGE := 10
+
+# ============================================================================
+# NG+ EQUIPMENT STAT LINE PROGRESSION
+# ============================================================================
+# Bonus stat lines added to equipment drops based on region completions + NG+ cycle.
+# Stat pool by slot type for bonus line generation.
+
+const STAT_LINE_POOL_WEAPON: Array[String] = ["attack", "speed", "crit_chance", "armor_penetration"]
+const STAT_LINE_POOL_ARMOR: Array[String] = ["defense", "health", "resist", "thorns"]
+const STAT_LINE_POOL_OFFHAND: Array[String] = ["defense", "health", "speed", "evasion"]
+const STAT_LINE_POOL_ACCESSORY: Array[String] = ["crit_chance", "evasion", "speed", "life_steal"]
+
+# Value ranges per bonus stat line (min, max)
+const STAT_LINE_VALUES: Dictionary = {
+	"health": [3, 5], "attack": [1, 2], "defense": [1, 2], "speed": [1, 1],
+	"crit_chance": [2, 3], "evasion": [1, 2], "resist": [1, 2],
+	"thorns": [1, 2], "armor_penetration": [1, 2], "life_steal": [1, 1]
+}
+
+## Generate bonus stat lines for an equipment drop.
+## region_completions: number of completed regions in current cycle.
+## rng: RandomNumberGenerator for deterministic generation.
+## equip_slot: the item's equip_slot ("weapon", "armor", "helmet", "legs", "offhand", "ring", "amulet")
+func generate_bonus_stat_lines(equip_slot: String, region_completions: int, rng: RandomNumberGenerator) -> Array:
+	# Total bonus lines = region lines + NG+ cycle lines (capped at cycle 3 for line additions)
+	var ng_cycle_lines: int = mini(ng_plus_cycle, 3)  # NG+1-3: +1 line per cycle
+	var total_lines: int = region_completions + ng_cycle_lines
+	if total_lines <= 0:
+		return []
+
+	# Pick stat pool based on slot
+	var pool: Array[String]
+	match equip_slot:
+		"weapon":
+			pool = STAT_LINE_POOL_WEAPON
+		"armor", "helmet", "legs":
+			pool = STAT_LINE_POOL_ARMOR
+		"offhand":
+			pool = STAT_LINE_POOL_OFFHAND
+		"ring", "amulet":
+			pool = STAT_LINE_POOL_ACCESSORY
+		_:
+			pool = STAT_LINE_POOL_WEAPON  # Fallback
+
+	var lines: Array = []
+	for i in range(total_lines):
+		var stat: String = pool[rng.randi() % pool.size()]
+		var val_range: Array = STAT_LINE_VALUES.get(stat, [1, 1])
+		var val: int = val_range[0]
+		if val_range[1] > val_range[0]:
+			val += rng.randi() % (val_range[1] - val_range[0] + 1)
+		lines.append({"stat": stat, "value": val})
+	return lines
+
+## Get the NG+4-8 base stat multiplier for equipment.
+## Returns 1.0 for cycles 0-3; 1.10 for cycle 4, 1.20 for cycle 5, etc.
+func get_ng_base_stat_multiplier() -> float:
+	if ng_plus_cycle <= 3:
+		return 1.0
+	return 1.0 + (ng_plus_cycle - 3) * 0.10
 
 # ============================================================================
 # TRAINING BUFFS (apply to NEXT dungeon run only, then clear)
@@ -177,7 +562,7 @@ var tester_mode: bool = false
 var text_size: int = 1
 
 # UI preferences (persisted across sessions)
-var loot_panel_size: Vector2 = Vector2(620, 400)
+var loot_panel_size: Vector2 = Vector2(620, 600)
 
 
 ## Returns font size adjusted for text_size setting: Small=-2, Medium=0, Large=+2
@@ -387,6 +772,9 @@ var selected_party: Array = []
 # Party size per Inn tier (base 4 for all tiers — no scaling for now)
 const PARTY_SIZE_BY_INN_TIER: Dictionary = {1: 4, 2: 4, 3: 4, 4: 4}
 
+# Bench capacity per Inn tier (max heroes benched at each inn)
+const BENCH_CAP_BY_INN_TIER: Dictionary = {1: 3, 2: 5, 3: 7, 4: 10}
+
 # ============================================================================
 # HERO ROW ASSIGNMENTS (3-Row Formation v1)
 # ============================================================================
@@ -508,6 +896,10 @@ var shop_slot_allocations: Dictionary = {}
 # Used to show empty slots after purchase instead of regenerating items.
 var shop_purchased_slots: Dictionary = {}
 
+# Tracks Inn restock count per town: { "town_id": restock_count }
+# Persisted so recruit seeds vary across auto-restocks even after scene reload.
+var inn_restock_counts: Dictionary = {}
+
 # Shop tier constants: max total slots available based on shop tier
 const SHOP_TIER_MAX_SLOTS: Dictionary = {
 	1: 4,   # Tier 1: 4 total slots
@@ -560,6 +952,10 @@ func _initialize_default_state() -> void:
 	# Load saved game data (floor unlocks, selected floors, etc.)
 	load_game()
 	apply_text_size_to_theme()
+	# Ensure run_seed is non-zero even before first dungeon entry
+	# (existing saves restore _run_seed via load_game; fresh games need one now for shop RNG)
+	if _run_seed == 0:
+		_run_seed = SeededRNG.generate_random_seed()
 
 
 # ============================================================================
@@ -1515,7 +1911,8 @@ func count_equipped_ability_items(hero_id: String) -> int:
 
 
 ## Get the ability IDs granted by a hero's equipped items.
-## Returns an array of ability_id strings (max 2).
+## Returns an array of ability_id strings.
+## Checks infused_ability_id first (NG+ infusion), falls back to template ability_id.
 func get_hero_equipment_ability_ids(hero_id: String) -> Array:
 	var ids: Array = []
 	var equip = get_hero_equipment(hero_id)
@@ -1523,9 +1920,14 @@ func get_hero_equipment_ability_ids(hero_id: String) -> Array:
 		var slot_data = equip.get(slot, {})
 		var eid = slot_data.get("id", "")
 		if eid != "":
-			var template = DataRegistry.get_item_template(eid)
-			if template != null and template.ability_id != "":
-				ids.append(template.ability_id)
+			# NG+ infusion takes priority over template ability
+			var infused: String = slot_data.get("infused_ability_id", "")
+			if infused != "":
+				ids.append(infused)
+			else:
+				var template = DataRegistry.get_item_template(eid)
+				if template != null and template.ability_id != "":
+					ids.append(template.ability_id)
 	return ids
 
 
@@ -1605,6 +2007,8 @@ func equip_hero_item(hero_id: String, slot: String, item_id: String, target_qual
 						"affix_stats": item.affix_stats,
 						"affix_prefix": item.affix_prefix
 					}
+				if item.bonus_stat_lines.size() > 0:
+					equip_affix_data["bonus_stat_lines"] = item.bonus_stat_lines
 				break
 			elif item is Dictionary and item.get("item_id", "") == item_id:
 				quality_tier = int(item.get("quality_tier", 0))
@@ -1615,6 +2019,9 @@ func equip_hero_item(hero_id: String, slot: String, item_id: String, target_qual
 						"affix_stats": item.get("affix_stats", {}),
 						"affix_prefix": item.get("affix_prefix", "")
 					}
+				var legacy_bonus_lines: Array = item.get("bonus_stat_lines", [])
+				if legacy_bonus_lines.size() > 0:
+					equip_affix_data["bonus_stat_lines"] = legacy_bonus_lines
 				break
 
 	# Remove from run stash (quality-specific when we know the quality)
@@ -1639,6 +2046,10 @@ func equip_hero_item(hero_id: String, slot: String, item_id: String, target_qual
 			slot_entry["affix_id"] = equip_affix_data.get("affix_id", "")
 			slot_entry["affix_stats"] = equip_affix_data.get("affix_stats", {})
 			slot_entry["affix_prefix"] = equip_affix_data.get("affix_prefix", "")
+		# NG+ bonus stat lines
+		var equip_bonus_lines: Array = equip_affix_data.get("bonus_stat_lines", [])
+		if equip_bonus_lines.size() > 0:
+			slot_entry["bonus_stat_lines"] = equip_bonus_lines
 		hero_equipment[hero_id][slot] = slot_entry
 
 	print("[Equip] hero=%s slot=%s item=%s q=%d from_stash=true" % [hero_id, slot, item_id, quality_tier])
@@ -1667,6 +2078,10 @@ func unequip_hero_item(hero_id: String, slot: String) -> void:
 			"affix_stats": slot_data.get("affix_stats", {}),
 			"affix_prefix": slot_data.get("affix_prefix", "")
 		}
+	# Preserve NG+ bonus stat lines
+	var unequip_bonus_lines: Array = slot_data.get("bonus_stat_lines", [])
+	if unequip_bonus_lines.size() > 0:
+		unequip_affix["bonus_stat_lines"] = unequip_bonus_lines
 	hero_equipment[hero_id][slot] = {"id": "", "quality": 0}
 
 	if item_id != "":
@@ -1690,6 +2105,10 @@ func _add_item_with_quality(item_id: String, quality_tier: int, affix_data: Dict
 			instance.affix_id = affix_data.get("affix_id", "")
 			instance.affix_stats = affix_data.get("affix_stats", {})
 			instance.affix_prefix = affix_data.get("affix_prefix", "")
+		# Restore NG+ bonus stat lines
+		var restore_bonus_lines: Array = affix_data.get("bonus_stat_lines", [])
+		if restore_bonus_lines.size() > 0:
+			instance.bonus_stat_lines = restore_bonus_lines
 		# Build display name: [affix_prefix] [quality_prefix] template_name
 		var prefix = ItemInstance.QUALITY_PREFIXES[quality_tier] if quality_tier < ItemInstance.QUALITY_PREFIXES.size() else ""
 		var base_name: String = prefix + tpl.display_name
@@ -1761,6 +2180,12 @@ func _get_hero_equipment_stat_bonuses(hero_id: String) -> Dictionary:
 			var template = DataRegistry.get_item_template(item_id)
 			if template != null:
 				var bonuses = template.get_stat_bonuses_with_quality(quality, region_bonus)
+				# NG+4-8: apply base stat multiplier to template bonuses
+				var ng_mult: float = get_ng_base_stat_multiplier()
+				if ng_mult > 1.0:
+					for bk in bonuses:
+						if bonuses[bk] > 0:
+							bonuses[bk] = maxi(int(bonuses[bk] * ng_mult), bonuses[bk] + 1)
 				for stat_key in bonuses:
 					if result.has(stat_key):
 						result[stat_key] += bonuses[stat_key]
@@ -1770,6 +2195,13 @@ func _get_hero_equipment_stat_bonuses(hero_id: String) -> Dictionary:
 				for affix_key in affix_stats_val:
 					if result.has(affix_key):
 						result[affix_key] += int(affix_stats_val[affix_key])
+			# NG+ bonus stat lines (generated at drop time)
+			var bonus_lines: Array = slot_data.get("bonus_stat_lines", [])
+			for line in bonus_lines:
+				var line_stat: String = line.get("stat", "")
+				var line_val: int = int(line.get("value", 0))
+				if line_stat != "" and result.has(line_stat):
+					result[line_stat] += line_val
 
 	# Bag slot: backpacks with base_stats also contribute combat bonuses
 	var bag_data = equip.get("bag", {})
@@ -1930,6 +2362,10 @@ func add_item_to_hero_bag(hero_id: String, item_id: String, qty: int = 1, qualit
 				entry["affix_id"] = affix_data.get("affix_id", "")
 				entry["affix_stats"] = affix_data.get("affix_stats", {})
 				entry["affix_prefix"] = affix_data.get("affix_prefix", "")
+			# NG+ bonus stat lines
+			var bag_bonus_lines: Array = affix_data.get("bonus_stat_lines", [])
+			if bag_bonus_lines.size() > 0:
+				entry["bonus_stat_lines"] = bag_bonus_lines
 			bag.append(entry)
 
 	var used = _get_hero_bag_used(hero_id)
@@ -2534,6 +2970,57 @@ func get_discovered_mix_count(facility_id: String) -> int:
 	return count
 
 
+## Auto-discover base mixing recipes for alchemist and chef.
+## Only reads from the base recipe files (mixing_alchemist.json / mixing_chef.json),
+## NOT regional files (mixing_*_r2.json etc.), to avoid leaking regional items.
+## Called on new game and as a migration step during load_game().
+func auto_discover_base_recipes() -> void:
+	for facility_id in ["alchemist", "chef"]:
+		var file_path: String = "res://Data/Recipes/mixing_%s.json" % facility_id
+		var file = FileAccess.open(file_path, FileAccess.READ)
+		if file == null:
+			continue
+		var json = JSON.new()
+		var err = json.parse(file.get_as_text())
+		file.close()
+		if err != OK or not (json.data is Dictionary):
+			continue
+		var recipes: Array = json.data.get("recipes", [])
+		for recipe in recipes:
+			if recipe.get("required_tier", 1) > 1:
+				continue
+			var ia: String = recipe.get("input_a", "")
+			var ib: String = recipe.get("input_b", "")
+			var ic: String = recipe.get("input_c", "")
+			if not is_mix_discovered(facility_id, ia, ib, ic):
+				discovered_mixes[facility_id + ":" + mix_key(ia, ib, ic)] = true
+	print("[Mix] Base recipes auto-discovered: alchemist=%d, chef=%d" % [
+		get_discovered_mix_count("alchemist"), get_discovered_mix_count("chef")])
+
+
+## Get the shop recipe pool for a production facility.
+## Merges static DEFAULT_UNLOCKED_RECIPES with discovered mixing recipes.
+func get_facility_shop_recipes(facility_id: String) -> Array:
+	var base: Array = get_facility_unlocked_recipes(facility_id)
+	var seen: Dictionary = {}
+	for entry in base:
+		seen[entry.item_id] = true
+
+	var all_recipes: Array = DataRegistry.get_mixing_recipes(facility_id)
+	for recipe in all_recipes:
+		var ia: String = recipe.get("input_a", "")
+		var ib: String = recipe.get("input_b", "")
+		var ic: String = recipe.get("input_c", "")
+		if not is_mix_discovered(facility_id, ia, ib, ic):
+			continue
+		var output_id: String = recipe.get("output_id", "")
+		if output_id == "" or seen.has(output_id):
+			continue
+		seen[output_id] = true
+		base.append({"item_id": output_id, "upgrade_tier": 1, "facility_tier": 1})
+	return base
+
+
 ## Process a failed mix at a facility. Returns a result dictionary.
 ## Only the alchemist has mishap consequences; chef just loses materials.
 func process_failed_mix(facility_id: String) -> Dictionary:
@@ -2846,35 +3333,80 @@ func has_hero_of_class(class_id: String) -> bool:
 	return false
 
 
-## Generate starting equipment for a recruit based on inn tier.
-## T1: none. T2-T3: 1-2 common items. T4: 1-2 uncommon items.
+## Generate starting equipment for a recruit based on inn tier and region.
+## R1: class-specific item (Striker=weapon, Defender=shield, Warden=healing tonic).
+## R2+: random equipment slot (no consumables).
+## T2+: 50% chance of a second armor/offhand item on top.
 ## Returns array of { item_id, slot, quality_tier } dictionaries.
 func generate_recruit_equipment(class_id: String, current_region: int, inn_tier: int, rng: RandomNumberGenerator) -> Array:
-	if inn_tier < 2:
+	if inn_tier < 1:
 		return []
 
 	var class_data = DataRegistry.get_class_data(class_id)
 	if class_data == null:
 		return []
 
-	var quality_tier: int = 0  # T2-T3: common
+	var quality_tier: int = 0  # T1-T3: common
 	if inn_tier >= 4:
 		quality_tier = 1  # T4: uncommon
 
-	# Collect eligible equipment from base + current region (T1-T2 items only)
+	var result: Array = []
+
+	# --- First item: R1 = class-specific, R2+ = random slot ---
+	if current_region == 1:
+		result = _generate_r1_recruit_item(class_data, quality_tier, rng)
+	else:
+		result = _generate_random_slot_recruit_item(class_data, current_region, quality_tier, rng)
+
+	# --- T2+ bonus: 50% chance of a second armor/offhand item ---
+	if inn_tier >= 2:
+		var filled_slots: Dictionary = {}
+		for eq in result:
+			filled_slots[eq.get("slot", "")] = true
+		var eligible_armor: Array = _collect_eligible_armor(current_region)
+		# Filter out items whose slot is already filled
+		var available: Array = []
+		for tpl in eligible_armor:
+			if not filled_slots.has(tpl.equip_slot):
+				available.append(tpl)
+		if available.size() > 0 and rng.randf() < 0.5:
+			var idx: int = rng.randi() % available.size()
+			var tpl = available[idx]
+			result.append({"item_id": tpl.template_id, "slot": tpl.equip_slot, "quality_tier": quality_tier})
+
+	return result
+
+
+## R1 class-specific starting item based on archetype.
+func _generate_r1_recruit_item(class_data, quality_tier: int, rng: RandomNumberGenerator) -> Array:
+	var archetype: String = class_data.archetype if class_data.archetype != null else ""
+
+	match archetype:
+		"vanguard":
+			return [{"item_id": "wooden_shield", "slot": "offhand", "quality_tier": quality_tier}]
+		"warden":
+			return [{"item_id": "healing_tonic", "slot": "bag_item", "quality_tier": 0}]
+		_:  # "striker" and any fallback (dps, healer, etc.)
+			var weapon_id: String = _pick_recruit_weapon(class_data, 1, rng)
+			if weapon_id != "":
+				return [{"item_id": weapon_id, "slot": "weapon", "quality_tier": quality_tier}]
+			return []
+
+
+## R2+ random equipment slot: pick a random equip_slot, then a random item in it.
+func _generate_random_slot_recruit_item(class_data, current_region: int, quality_tier: int, rng: RandomNumberGenerator) -> Array:
 	var weapon_types: Array = []
 	for wt in class_data.weapon_types:
 		weapon_types.append(wt)
-	var eligible_weapons: Array = []
-	var eligible_armor: Array = []
 
+	var slot_pools: Dictionary = {}  # equip_slot -> Array[template]
 	for template in DataRegistry.get_all_item_templates():
-		if template.equip_slot == "":
+		if template.equip_slot == "" or template.equip_slot == "bag":
 			continue
-		# Only T1-T2 tier items for recruits
+		if template.item_type == "consumable":
+			continue
 		if template.tier > 2:
 			continue
-		# Filter by region: base items (region_1) or current region
 		var region_match: bool = false
 		for tag in template.tags:
 			if tag == "region_1" or tag == "region_%d" % current_region:
@@ -2882,25 +3414,68 @@ func generate_recruit_equipment(class_id: String, current_region: int, inn_tier:
 				break
 		if not region_match:
 			continue
+		if template.equip_slot == "weapon" and not (template.item_subtype in weapon_types):
+			continue
+		if not slot_pools.has(template.equip_slot):
+			slot_pools[template.equip_slot] = []
+		slot_pools[template.equip_slot].append(template)
 
-		if template.equip_slot == "weapon" and template.item_subtype in weapon_types:
-			eligible_weapons.append(template)
-		elif template.equip_slot in ["armor", "offhand"]:
-			eligible_armor.append(template)
+	var available_slots: Array = slot_pools.keys()
+	if available_slots.is_empty():
+		return []
+	var slot_idx: int = rng.randi() % available_slots.size()
+	var chosen_slot: String = available_slots[slot_idx]
+	var pool: Array = slot_pools[chosen_slot]
+	var item_idx: int = rng.randi() % pool.size()
+	var chosen = pool[item_idx]
+	return [{"item_id": chosen.template_id, "slot": chosen_slot, "quality_tier": quality_tier}]
 
+
+## Collect eligible armor/offhand/helmet/legs items for the T2+ bonus.
+func _collect_eligible_armor(current_region: int) -> Array:
 	var result: Array = []
-	# Always pick 1 weapon if possible
-	if eligible_weapons.size() > 0:
-		var idx: int = rng.randi() % eligible_weapons.size()
-		result.append({"item_id": eligible_weapons[idx].template_id, "slot": "weapon", "quality_tier": quality_tier})
-
-	# 50% chance of a second item (armor or offhand)
-	if eligible_armor.size() > 0 and rng.randf() < 0.5:
-		var idx: int = rng.randi() % eligible_armor.size()
-		var tpl = eligible_armor[idx]
-		result.append({"item_id": tpl.template_id, "slot": tpl.equip_slot, "quality_tier": quality_tier})
-
+	for template in DataRegistry.get_all_item_templates():
+		if template.equip_slot == "" or template.item_type == "consumable":
+			continue
+		if template.tier > 2:
+			continue
+		if template.equip_slot not in ["armor", "offhand", "helmet", "legs"]:
+			continue
+		var region_match: bool = false
+		for tag in template.tags:
+			if tag == "region_1" or tag == "region_%d" % current_region:
+				region_match = true
+				break
+		if not region_match:
+			continue
+		result.append(template)
 	return result
+
+
+## Pick a random weapon matching a class's weapon_types from base + current region.
+func _pick_recruit_weapon(class_data, current_region: int, rng: RandomNumberGenerator) -> String:
+	var weapon_types: Array = []
+	for wt in class_data.weapon_types:
+		weapon_types.append(wt)
+	var eligible: Array = []
+	for template in DataRegistry.get_all_item_templates():
+		if template.equip_slot != "weapon":
+			continue
+		if template.tier > 2:
+			continue
+		if not (template.item_subtype in weapon_types):
+			continue
+		var region_match: bool = false
+		for tag in template.tags:
+			if tag == "region_1" or tag == "region_%d" % current_region:
+				region_match = true
+				break
+		if not region_match:
+			continue
+		eligible.append(template)
+	if eligible.is_empty():
+		return ""
+	return eligible[rng.randi() % eligible.size()].template_id
 
 ## Recruit a new hero of the given class. Costs run stash gold.
 ## Returns the new hero's ID on success, empty string on failure.
@@ -2913,6 +3488,13 @@ func recruit_hero(class_id: String, cost_gold: int, race_id: String = "human", l
 
 	if run_gold < cost_gold:
 		print("[Inn] recruit failed class=%s cost=%d reason=insufficient_gold have=%d" % [class_id, cost_gold, run_gold])
+		return ""
+
+	# Block recruit if party full AND bench at this inn is full
+	var party_full: bool = selected_party.size() >= get_max_party_size()
+	var bench_full: bool = not can_bench_at_inn(_current_town_id)
+	if party_full and bench_full:
+		print("[Inn] recruit failed class=%s reason=party_and_bench_full town=%s bench=%d/%d" % [class_id, _current_town_id, get_inn_bench_count(_current_town_id), get_inn_bench_capacity(_current_town_id)])
 		return ""
 
 	# Spend gold from run stash
@@ -2932,11 +3514,12 @@ func recruit_hero(class_id: String, cost_gold: int, race_id: String = "human", l
 		"name": "Hero #%d" % _hero_id_counter,
 		"level": level,
 		"xp": 0,
-		"portrait_path": _pick_race_portrait(race_id)
+		"portrait_path": _pick_race_portrait(race_id),
+		"home_town_id": _current_town_id
 	}
 	owned_heroes.append(hero)
 
-	# Assign starting equipment if provided (T2+ inn recruits)
+	# Assign starting equipment if provided
 	if starting_equipment.size() > 0:
 		if not hero_equipment.has(hero_id):
 			hero_equipment[hero_id] = _create_empty_equipment()
@@ -2944,7 +3527,12 @@ func recruit_hero(class_id: String, cost_gold: int, race_id: String = "human", l
 			var item_id: String = equip_entry.get("item_id", "")
 			var slot: String = equip_entry.get("slot", "")
 			var eq_quality: int = int(equip_entry.get("quality_tier", 0))
-			if item_id != "" and slot != "":
+			if item_id == "":
+				continue
+			if slot == "bag_item":
+				add_item_to_hero_bag(hero_id, item_id, 1)
+				print("[Inn] starting_bag_item hero=%s item=%s" % [hero_id, item_id])
+			elif slot != "":
 				hero_equipment[hero_id][slot] = {"id": item_id, "quality": eq_quality}
 				print("[Inn] starting_equip hero=%s slot=%s item=%s q=%d" % [hero_id, slot, item_id, eq_quality])
 
@@ -3020,13 +3608,17 @@ func swap_party_positions(idx_a: int, idx_b: int) -> bool:
 	return true
 
 
-## Remove a hero from the party.
+## Remove a hero from the party. Benches them at the current town's inn.
 func remove_from_party(hero_id: String) -> bool:
 	var idx = selected_party.find(hero_id)
 	if idx == -1:
 		return false
 	selected_party.remove_at(idx)
-	print("[Inn] remove_from_party hero=%s party=%s" % [hero_id, str(selected_party)])
+	# Bench hero at current town's inn
+	var hero = get_hero(hero_id)
+	if not hero.is_empty():
+		hero["home_town_id"] = _current_town_id
+	print("[Inn] remove_from_party hero=%s town=%s party=%s" % [hero_id, _current_town_id, str(selected_party)])
 	party_changed.emit(selected_party)
 	save_game()
 	return true
@@ -3057,6 +3649,31 @@ func get_roster() -> Array:
 ## Check if a hero is currently in the selected party.
 func is_in_party(hero_id: String) -> bool:
 	return hero_id in selected_party
+
+
+## Get heroes benched at a specific town's inn (non-party heroes with matching home_town_id).
+func get_inn_bench_heroes(town_id: String) -> Array:
+	var result: Array = []
+	for hero in owned_heroes:
+		if hero.get("home_town_id", "") == town_id and not is_in_party(hero.get("hero_id", "")):
+			result.append(hero)
+	return result
+
+
+## Get bench count at a specific town's inn.
+func get_inn_bench_count(town_id: String) -> int:
+	return get_inn_bench_heroes(town_id).size()
+
+
+## Get bench capacity for a town's inn based on facility tier.
+func get_inn_bench_capacity(town_id: String) -> int:
+	var tier: int = get_facility_tier(town_id, "inn")
+	return BENCH_CAP_BY_INN_TIER.get(tier, 3)
+
+
+## Check if there is room to bench a hero at this town's inn.
+func can_bench_at_inn(town_id: String) -> bool:
+	return get_inn_bench_count(town_id) < get_inn_bench_capacity(town_id)
 
 
 ## Add a hero definition to the roster.
@@ -3259,6 +3876,12 @@ func grant_party_xp(xp_amount: int, source: String = "unknown") -> Dictionary:
 	print("[XP] party_gain source=%s base=%d party=%d" % [source, xp_amount, selected_party.size()])
 
 	for hero_id in selected_party:
+		# Skip dead heroes — they don't earn XP
+		var hp_data = get_hero_hp(hero_id)
+		if not hp_data.is_empty() and int(hp_data.get("current", 0)) <= 0:
+			print("[XP] hero=%s SKIPPED (dead)" % hero_id)
+			continue
+
 		var hero = get_hero(hero_id)
 		if hero.is_empty():
 			continue
@@ -3349,6 +3972,13 @@ func get_hero_effective_stats(hero_id: String) -> Dictionary:
 	defense += gear_bonus.get("defense", 0)
 	speed += gear_bonus.get("speed", 0)
 
+	# NG+ permanent stat bonus (stacking +5% per cycle from NG+4 onward)
+	if ng_plus_perm_stat_bonus > 0.0:
+		health = int(health * (1.0 + ng_plus_perm_stat_bonus))
+		attack = int(attack * (1.0 + ng_plus_perm_stat_bonus))
+		defense = int(defense * (1.0 + ng_plus_perm_stat_bonus))
+		speed = int(speed * (1.0 + ng_plus_perm_stat_bonus))
+
 	# New equipment stats (gear-only, no class/race base)
 	var crit_chance: int = gear_bonus.get("crit_chance", 0)
 	var evasion_val: int = gear_bonus.get("evasion", 0)
@@ -3416,6 +4046,26 @@ func get_hero_xp_to_next_level(hero_id: String) -> int:
 
 	var next_level_xp = get_xp_for_level(level + 1)
 	return max(0, next_level_xp - xp)
+
+
+## Get XP progress within current level for a hero.
+## Returns { "current": xp_in_level, "needed": xp_for_level, "level": level, "is_max": bool }
+## Used by all UI scenes for XP progress bars and text.
+func get_hero_xp_progress(hero_id: String) -> Dictionary:
+	var hero = get_hero(hero_id)
+	if hero.is_empty():
+		return {"current": 0, "needed": 100, "level": 1, "is_max": false}
+	var xp: int = int(hero.get("xp", 0))
+	var level: int = int(hero.get("level", 1))
+	if level >= MAX_HERO_LEVEL:
+		return {"current": 0, "needed": 1, "level": level, "is_max": true}
+	var current_threshold: int = XP_THRESHOLDS[mini(level - 1, XP_THRESHOLDS.size() - 1)]
+	var next_threshold: int = XP_THRESHOLDS[mini(level, XP_THRESHOLDS.size() - 1)]
+	var xp_in_level: int = maxi(xp - current_threshold, 0)
+	var xp_for_level: int = next_threshold - current_threshold
+	if xp_for_level <= 0:
+		xp_for_level = 1
+	return {"current": xp_in_level, "needed": xp_for_level, "level": level, "is_max": false}
 
 
 ## Assign a class directly to a hero. Overwrites existing class.
@@ -3627,11 +4277,17 @@ func spend_shop_refresh(shop_id: String) -> bool:
 
 ## Restock shop on dungeon return: new inventory + fresh refresh allowance.
 ## Increments restock version (new seed), clears purchases, resets manual refresh uses.
+## Also clears slot allocations so player re-chooses what to stock each visit.
 func restock_shop(shop_id: String) -> void:
 	shop_restock_version[shop_id] = get_shop_restock_version(shop_id) + 1
 	shop_purchased_slots[shop_id] = []
 	shop_refresh_counts[shop_id] = 0
-	print("[ShopRNG] restock shop=%s version=%d (refresh uses reset)" % [shop_id, get_shop_restock_version(shop_id)])
+	# Clear allocations so shop opens in allocation view each visit
+	var town_id: String = shop_id.replace("shop_", "town_")
+	if shop_slot_allocations.has(town_id):
+		for facility_id in shop_slot_allocations[town_id]:
+			shop_slot_allocations[town_id][facility_id] = 0
+	print("[ShopRNG] restock shop=%s version=%d (refresh uses + allocations reset)" % [shop_id, get_shop_restock_version(shop_id)])
 
 
 ## Mark a shop slot as purchased (shows empty slot instead of item)
@@ -4729,6 +5385,9 @@ func _serialize_run_items(items: Array) -> Array:
 				entry["affix_id"] = item.affix_id
 				entry["affix_stats"] = item.affix_stats
 				entry["affix_prefix"] = item.affix_prefix
+			# Save NG+ bonus stat lines
+			if item.bonus_stat_lines.size() > 0:
+				entry["bonus_stat_lines"] = item.bonus_stat_lines
 			result.append(entry)
 		elif item is Dictionary:
 			var entry: Dictionary = {
@@ -4743,6 +5402,10 @@ func _serialize_run_items(items: Array) -> Array:
 				entry["affix_id"] = item.get("affix_id", "")
 				entry["affix_stats"] = item.get("affix_stats", {})
 				entry["affix_prefix"] = item.get("affix_prefix", "")
+			# Preserve NG+ bonus stat lines
+			var ser_bonus_lines: Array = item.get("bonus_stat_lines", [])
+			if ser_bonus_lines.size() > 0:
+				entry["bonus_stat_lines"] = ser_bonus_lines
 			result.append(entry)
 	return result
 
@@ -4772,6 +5435,10 @@ func _deserialize_run_items(items_data: Array) -> Array:
 			var affix_stats_val = data.get("affix_stats", {})
 			instance.affix_stats = affix_stats_val if affix_stats_val is Dictionary else {}
 			instance.affix_prefix = data.get("affix_prefix", "")
+			# Restore NG+ bonus stat lines
+			var deser_bonus_lines: Array = data.get("bonus_stat_lines", [])
+			if deser_bonus_lines.size() > 0:
+				instance.bonus_stat_lines = deser_bonus_lines
 			# Always rebuild display_name from template (avoids stale names)
 			if instance.template_id != "":
 				var tpl = DataRegistry.get_item_template(instance.template_id)
@@ -4799,6 +5466,10 @@ func _deserialize_run_items(items_data: Array) -> Array:
 				dict_entry["affix_id"] = data.get("affix_id", "")
 				dict_entry["affix_stats"] = data.get("affix_stats", {})
 				dict_entry["affix_prefix"] = data.get("affix_prefix", "")
+			# Restore NG+ bonus stat lines for dicts
+			var deser_dict_bonus: Array = data.get("bonus_stat_lines", [])
+			if deser_dict_bonus.size() > 0:
+				dict_entry["bonus_stat_lines"] = deser_dict_bonus
 			result.append(dict_entry)
 			dict_count += 1
 		else:
@@ -4884,6 +5555,23 @@ func _deserialize_run_items(items_data: Array) -> Array:
 
 ## Save game data to user://savegame.json.
 ## Saves: unlocked_dungeon_floors, selected_start_floors, equipment, unlocked_groups, facility_tiers, town_tiers, heroes, housing
+## Serialize active side quests for save.
+func _serialize_side_quests() -> Array:
+	var result: Array = []
+	for q in active_side_quests:
+		if q is SideQuestData:
+			result.append(q.to_dict())
+	return result
+
+## Deserialize side quests from save data.
+func _deserialize_side_quests(data: Array) -> Array:
+	var result: Array = []
+	for entry in data:
+		if entry is Dictionary:
+			result.append(SideQuestData.from_dict(entry))
+	return result
+
+
 func save_game() -> void:
 	if _dungeon_save_lock:
 		print("[Save] BLOCKED — dungeon save lock active (mid-dungeon)")
@@ -4915,6 +5603,7 @@ func save_game() -> void:
 		"shop_restock_version": shop_restock_version,
 		"shop_purchased_slots": shop_purchased_slots,
 		"shop_slot_allocations": shop_slot_allocations,
+		"inn_restock_counts": inn_restock_counts,
 		# Player gold (town persistent)
 		"player_gold": player_gold,
 		# Run stash (banked gold persists across sessions)
@@ -4945,7 +5634,14 @@ func save_game() -> void:
 		"discovered_mixes": discovered_mixes,
 		"alchemist_mishap_streak": alchemist_mishap_streak,
 		"locked_facilities": locked_facilities,
-		"inn_lockout": inn_lockout
+		"inn_lockout": inn_lockout,
+		# NG+ state
+		"ng_plus_cycle": ng_plus_cycle,
+		"ng_plus_perm_stat_bonus": ng_plus_perm_stat_bonus,
+		"seen_abilities": seen_abilities,
+		# Side quests
+		"active_side_quests": _serialize_side_quests(),
+		"side_quest_counter": _side_quest_counter
 	}
 
 	print("[Save] run_items serialized count=%d" % run_items.size())
@@ -5027,6 +5723,17 @@ func reset_save_game() -> void:
 	# Campaign
 	campaign_flags = {}
 
+	# NG+ state
+	ng_plus_cycle = 0
+	ng_plus_perm_stat_bonus = 0.0
+	seen_abilities = {}
+
+	# Side quests
+	active_side_quests = []
+	returned_from_dungeon = false
+	_side_quest_counter = 0
+	mini_dungeon_state = {}
+
 	# Mixing system
 	discovered_mixes = {}
 	alchemist_mishap_streak = 0
@@ -5064,6 +5771,9 @@ func reset_save_game() -> void:
 
 	# Shop slot allocations
 	shop_slot_allocations = {}
+
+	# Inn restock counts per town
+	inn_restock_counts = {}
 
 	# Run stash
 	run_gold = 400  # Starting gold (town council investment)
@@ -5104,6 +5814,9 @@ func reset_save_game() -> void:
 	_rewarded_dungeon_id = ""
 	_rewarded_floor = -1
 
+	# Auto-discover base T1 recipes for fresh game
+	auto_discover_base_recipes()
+
 	# Save the fresh state to disk immediately
 	save_game()
 
@@ -5119,6 +5832,7 @@ func load_game() -> void:
 	if not FileAccess.file_exists(SAVE_FILE_PATH):
 		print("[GameContext] No save file found, using defaults")
 		_ensure_default_unlocks()
+		auto_discover_base_recipes()
 		return
 
 	var file = FileAccess.open(SAVE_FILE_PATH, FileAccess.READ)
@@ -5205,6 +5919,18 @@ func load_game() -> void:
 		var locked_val = save_data.get("locked_facilities", {})
 		locked_facilities = locked_val if locked_val is Dictionary else {}
 		inn_lockout = bool(save_data.get("inn_lockout", false))
+		# NG+ state
+		if save_data.has("ng_plus_cycle"):
+			ng_plus_cycle = int(save_data.ng_plus_cycle)
+		if save_data.has("ng_plus_perm_stat_bonus"):
+			ng_plus_perm_stat_bonus = float(save_data.ng_plus_perm_stat_bonus)
+		if save_data.has("seen_abilities") and save_data.seen_abilities is Dictionary:
+			seen_abilities = save_data.seen_abilities
+		# Side quests
+		if save_data.has("active_side_quests") and save_data.active_side_quests is Array:
+			active_side_quests = _deserialize_side_quests(save_data.active_side_quests)
+		if save_data.has("side_quest_counter"):
+			_side_quest_counter = int(save_data.side_quest_counter)
 		if save_data.has("facility_tiers") and save_data.facility_tiers is Dictionary:
 			facility_tiers = save_data.facility_tiers
 			# Migration: Greenroot/Timberfall → Thornhaven consolidation
@@ -5284,7 +6010,7 @@ func load_game() -> void:
 					hero["xp"] = 0
 					print("[Migration] hero %s: added xp=0" % hero.get("hero_id", "?"))
 			# Migration: strip unknown keys from hero dicts (e.g., stale "gold" field)
-			var _HERO_ALLOWED_KEYS = ["hero_id", "class_id", "race_id", "name", "level", "xp", "portrait_path"]
+			var _HERO_ALLOWED_KEYS = ["hero_id", "class_id", "race_id", "name", "level", "xp", "portrait_path", "home_town_id"]
 			for hero in owned_heroes:
 				var keys_to_remove: Array = []
 				for key in hero.keys():
@@ -5293,6 +6019,11 @@ func load_game() -> void:
 				for key in keys_to_remove:
 					hero.erase(key)
 					print("[Migration] hero %s: stripped unknown key '%s'" % [hero.get("hero_id", "?"), key])
+			# Migration: add home_town_id to heroes that don't have it (default: town_thornhaven)
+			for hero in owned_heroes:
+				if not hero.has("home_town_id") or hero.get("home_town_id", "") == "":
+					hero["home_town_id"] = "town_thornhaven"
+					print("[Migration] hero %s: added home_town_id=town_thornhaven" % hero.get("hero_id", "?"))
 		if save_data.has("selected_party") and save_data.selected_party is Array:
 			selected_party = save_data.selected_party
 		if save_data.has("hero_id_counter"):
@@ -5318,6 +6049,9 @@ func load_game() -> void:
 		# Load shop slot allocations
 		if save_data.has("shop_slot_allocations") and save_data.shop_slot_allocations is Dictionary:
 			shop_slot_allocations = save_data.shop_slot_allocations
+		# Load Inn restock counts per town
+		if save_data.has("inn_restock_counts") and save_data.inn_restock_counts is Dictionary:
+			inn_restock_counts = save_data.inn_restock_counts
 		# Load player gold (town persistent)
 		if save_data.has("player_gold"):
 			player_gold = int(save_data.player_gold)
@@ -5375,6 +6109,8 @@ func load_game() -> void:
 
 	# Ensure default unlocks exist and migrate legacy item unlocks to groups
 	_ensure_default_unlocks()
+	# Auto-discover base T1 mixing recipes (migration for existing saves)
+	auto_discover_base_recipes()
 
 
 # ============================================================================
@@ -5732,6 +6468,7 @@ func exit_to_town() -> void:
 	_rewarded_dungeon_id = ""
 	_rewarded_floor = -1
 	_last_room_was_event = false
+	returned_from_dungeon = true  # Side quest trigger flag
 	set_phase(GamePhase.TOWN)
 
 	# v1.2: Bank shopkeeper bag to stash on extract

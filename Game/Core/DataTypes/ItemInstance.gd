@@ -22,6 +22,9 @@ var affix_id: String = ""         # Regional affix key (e.g., "region_1")
 var affix_stats: Dictionary = {}  # Bonus stats from affix (e.g., { "health": 2 })
 var affix_prefix: String = ""     # Display prefix (e.g., "Verdant")
 
+# NG+ bonus stat lines (generated at drop time based on region completions + cycle)
+var bonus_stat_lines: Array = []  # [{"stat": "speed", "value": 1}, ...]
+
 # Quality tier weights for deterministic rolling
 const QUALITY_WEIGHTS := [
 	{ "value": 0, "weight": 70.0 },  # common

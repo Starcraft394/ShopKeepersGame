@@ -1,0 +1,24 @@
+{
+  "id": "tutorial_side_quests",
+  "steps": [
+    {
+      "speaker": "Mira",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
+      "title": "A Side Quest!",
+      "body": "Interesting — someone in town has a job for you. Side quests appear when you return from a dungeon run. There are three types:\n\n- Hunt: Slay specific monsters in regular dungeon combat\n- Resupply: Gather materials and turn them in\n- Mini-Dungeon: Fight through a short chain of elite encounters right from town"
+    },
+    {
+      "speaker": "Mira",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
+      "title": "Tracking Progress",
+      "body": "Open the Quest Log from the left menu to check your progress. It shows your Main Story objective at the top and any active side quests below — including how close you are to completing each one.\n\nHunt quests track kills automatically during dungeon combat. Resupply quests check your stash when you return to town."
+    },
+    {
+      "speaker": "Mira",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
+      "title": "Rare Rewards",
+      "body": "Complete a side quest and you'll receive Rare or Epic equipment as a reward — much better than what you'll find in normal dungeon drops. The reward is added straight to your Storage.\n\nYou can have one quest of each type active at a time. Higher-tier regions offer side quests more often.",
+      "button_text": "Let's see it!"
+    }
+  ]
+}

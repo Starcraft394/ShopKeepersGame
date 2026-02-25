@@ -297,6 +297,7 @@ func _update_display() -> void:
 		choice_c_container.visible = false
 		choice_c_button_container.visible = false
 		no_alternate_hint.visible = false
+		choice_a_label.visible = true
 		choice_a_label.text = "Dungeon Complete!"
 		extract_button.visible = true
 		extract_button.disabled = false
@@ -311,6 +312,7 @@ func _update_display() -> void:
 			choice_c_container.visible = false
 			choice_c_button_container.visible = false
 			no_alternate_hint.visible = false
+			choice_a_label.visible = true
 			choice_a_label.text = "Floor Complete! Return to town to regroup."
 			extract_button.visible = true
 			extract_button.disabled = false
@@ -326,6 +328,7 @@ func _update_display() -> void:
 			no_alternate_hint.visible = false
 			extract_button.visible = true
 			extract_button.disabled = false
+			choice_a_label.visible = true
 			choice_a_label.text = "Floor %d complete!" % floor_num
 			hotkey_hint.text = "A=Descend | E=Extract"
 
@@ -364,10 +367,12 @@ func _update_display() -> void:
 			else:
 				combat_choice = c  # Normal combat
 
+		# Hide labels — buttons are self-explanatory
+		choice_a_label.visible = false
+
 		# Button A: Combat (always present, or forced boss/elite)
 		var a_display: String = combat_choice.get("display", "Combat")
-		choice_a_label.text = "A: Room %d - %s" % [next_room_num, a_display]
-		choice_a_button.text = "A: %s (A)" % a_display
+		choice_a_button.text = "A: %s" % a_display
 		choice_a_button.visible = true
 		choice_a_button.disabled = false
 
@@ -376,8 +381,8 @@ func _update_display() -> void:
 		choice_b_container.visible = has_event
 		choice_b_button_container.visible = has_event
 		if has_event:
-			choice_b_label.text = "B: Room %d - %s" % [next_room_num, event_choice.get("display", "Event")]
-			choice_b_button.text = "B: %s (B)" % event_choice.get("display", "Event")
+			choice_b_label.visible = false
+			choice_b_button.text = "B: %s" % event_choice.get("display", "Event")
 			choice_b_button.disabled = false
 
 		# Button C: Elite (if rolled)
@@ -385,8 +390,8 @@ func _update_display() -> void:
 		choice_c_container.visible = has_elite
 		choice_c_button_container.visible = has_elite
 		if has_elite:
-			choice_c_label.text = "C: Room %d - %s" % [next_room_num, elite_choice.get("display", "Elite Combat")]
-			choice_c_button.text = "C: %s (C)" % elite_choice.get("display", "Elite Combat")
+			choice_c_label.visible = false
+			choice_c_button.text = "C: %s" % elite_choice.get("display", "Elite Combat")
 			choice_c_button.disabled = false
 
 		# No alternate hint: show when only combat is available
@@ -650,12 +655,18 @@ func _populate_hero_rows() -> void:
 		hero_rows.add_child(hint)
 		return
 
-	# Build a row for each hero
+	# Build a row for each living hero (skip dead heroes)
+	var shown: int = 0
 	for i in range(party.size()):
-		var row = _create_hero_row(party[i], i, party.size())
+		var hero_id: String = party[i]
+		var hp_data: Dictionary = GameContext.get_hero_hp(hero_id)
+		if not hp_data.is_empty() and int(hp_data.get("current", 1)) <= 0:
+			continue  # Dead hero — don't show in camp
+		var row = _create_hero_row(hero_id, i, party.size())
 		hero_rows.add_child(row)
+		shown += 1
 
-	print("[Camp] Populated %d hero rows" % party.size())
+	print("[Camp] Populated %d hero rows (%d alive)" % [party.size(), shown])
 
 
 ## Create a single hero card: [Arrows | Portrait | Name + Class + HP Bar | Info | Bag Slots]
@@ -776,6 +787,46 @@ func _create_hero_row(hero_id: String, party_idx: int = 0, party_size: int = 1) 
 	hp_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7, 0.8))
 	info_col.add_child(hp_label)
 
+	# Level + XP progress
+	var hero_level: int = int(hero.get("level", 1)) if hero else 1
+	var xp_row = HBoxContainer.new()
+	xp_row.add_theme_constant_override("separation", 6)
+	var lvl_lbl = Label.new()
+	lvl_lbl.text = "Lv%d" % hero_level
+	lvl_lbl.add_theme_font_size_override("font_size", GameContext.fs(11))
+	lvl_lbl.add_theme_color_override("font_color", Color(0.7, 0.7, 0.9, 0.9))
+	xp_row.add_child(lvl_lbl)
+
+	var xp_prog: Dictionary = GameContext.get_hero_xp_progress(hero_id)
+	if xp_prog.is_max:
+		var xp_max_lbl = Label.new()
+		xp_max_lbl.text = "MAX"
+		xp_max_lbl.add_theme_font_size_override("font_size", GameContext.fs(10))
+		xp_max_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.3))
+		xp_row.add_child(xp_max_lbl)
+	else:
+		var xp_bar = ProgressBar.new()
+		xp_bar.custom_minimum_size = Vector2(80, 8)
+		xp_bar.min_value = 0
+		xp_bar.max_value = xp_prog.needed
+		xp_bar.value = xp_prog.current
+		xp_bar.show_percentage = false
+		var xp_bar_bg = StyleBoxFlat.new()
+		xp_bar_bg.bg_color = Color(0.15, 0.15, 0.2, 0.8)
+		xp_bar_bg.set_corner_radius_all(2)
+		xp_bar.add_theme_stylebox_override("background", xp_bar_bg)
+		var xp_bar_fill = StyleBoxFlat.new()
+		xp_bar_fill.bg_color = Color(0.3, 0.7, 1.0, 0.9)
+		xp_bar_fill.set_corner_radius_all(2)
+		xp_bar.add_theme_stylebox_override("fill", xp_bar_fill)
+		xp_row.add_child(xp_bar)
+		var xp_txt = Label.new()
+		xp_txt.text = "%d/%d" % [xp_prog.current, xp_prog.needed]
+		xp_txt.add_theme_font_size_override("font_size", GameContext.fs(10))
+		xp_txt.add_theme_color_override("font_color", Color(0.6, 0.9, 1.0, 0.8))
+		xp_row.add_child(xp_txt)
+	info_col.add_child(xp_row)
+
 	# Info button
 	var info_btn = Button.new()
 	info_btn.text = "Info"
@@ -888,10 +939,14 @@ func _create_hero_row(hero_id: String, party_idx: int = 0, party_size: int = 1) 
 	return card
 
 
-## Handle input on bag slots (right-click to use consumable)
+## Handle input on bag slots (right-click to use consumable via hero picker)
 func _on_bag_slot_input(event: InputEvent, hero_id: String, item_id: String, slot_idx: int) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
-		_use_hero_bag_item(hero_id, item_id)
+		var template = DataRegistry.get_item_template(item_id)
+		if template != null and template.category == "consumable":
+			_show_hero_picker_for_consumable(item_id, hero_id, "hero_bag")
+		else:
+			print("[Camp] Right-click on non-consumable %s — ignored" % item_id)
 
 
 ## Use a consumable from hero's bag
@@ -1813,9 +1868,13 @@ func _perform_swap(src: Dictionary, dst: Dictionary) -> void:
 				bag[dst.index] = temp
 				print("[Camp] Swapped hero %s bag[%d] <-> bag[%d]" % [src.hero_id, src.index, dst.index])
 		else:
-			# Cross-hero bag transfer
-			var src_bag: Array = GameContext.hero_bags.get(src.hero_id, [])
-			var dst_bag: Array = GameContext.hero_bags.get(dst.hero_id, [])
+			# Cross-hero bag transfer — ensure dict entries exist so we get real references
+			if not GameContext.hero_bags.has(src.hero_id):
+				GameContext.hero_bags[src.hero_id] = []
+			if not GameContext.hero_bags.has(dst.hero_id):
+				GameContext.hero_bags[dst.hero_id] = []
+			var src_bag: Array = GameContext.hero_bags[src.hero_id]
+			var dst_bag: Array = GameContext.hero_bags[dst.hero_id]
 			if src.index < src_bag.size():
 				if dst.index < dst_bag.size():
 					# Both filled: swap items between heroes

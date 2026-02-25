@@ -1,0 +1,18 @@
+{
+  "id": "tutorial_region_progression",
+  "steps": [
+    {
+      "speaker": "Sir Cedric Ashmore",
+      "portrait": "res://Assets/_ArtPacks/Avatars_Human/PNG/Transperent/Icon39.png",
+      "title": "A New Horizon",
+      "body": "Congratulations, ShopKeeper! By defeating the dungeon's master, you've proven this region can be secured. The road to the next territory is now open.\n\nEach new region brings tougher monsters, rarer materials, and stronger equipment recipes."
+    },
+    {
+      "speaker": "Sir Cedric Ashmore",
+      "portrait": "res://Assets/_ArtPacks/Avatars_Human/PNG/Transperent/Icon39.png",
+      "title": "Preparation is Key",
+      "body": "Before venturing forth, I'd recommend:\n\n- Upgrade your facilities to unlock better recipes\n- Craft or buy stronger equipment from the Shop\n- Train your heroes at the Training Hall\n- Stock up on potions from the Alchemist\n\nThe next region's monsters won't go down as easily.",
+      "button_text": "Onward!"
+    }
+  ]
+}

@@ -53,7 +53,7 @@ The Shopkeeper was sent to Thornhaven by the Crown to supply frontier settlement
 All keepers are established characters with portraits and dialog. Key story-relevant keepers:
 - **Mira** (Inn) — Warm, community-focused. Source of rumors and town morale.
 - **Thalric** (Training Hall) — Scarred veteran. Delivers combat wisdom and hero loss context.
-- **Pemberton** (Thornhaven Shop) — Elderly, warm. First friendly face. Tutorial narrator.
+- **Pemberton** (Thornhaven Shop Assistant) — Elderly, warm. The player's loyal shop assistant. Tutorial narrator.
 - **The Null Merchant** (R7 Shop) — Existential, phasing. Knows more than they should.
 
 ---

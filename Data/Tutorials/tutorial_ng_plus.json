@@ -1,0 +1,24 @@
+{
+  "id": "tutorial_ng_plus",
+  "steps": [
+    {
+      "speaker": "Sir Cedric Ashmore",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon39.png",
+      "title": "The New Cycle",
+      "body": "You've conquered the final realm — but the Anchor Stone offers another path. Starting a New Cycle resets the world while letting you carry a select few heroes forward.\n\nYour carried heroes keep their levels, equipment, and experience. Everyone else is recorded in the Book of the Dead. Choose wisely — you can carry more heroes in later cycles."
+    },
+    {
+      "speaker": "Sir Cedric Ashmore",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon39.png",
+      "title": "What Changes",
+      "body": "Each cycle makes monsters tougher — more health, stronger attacks, better defenses. But your carried heroes start with a head start that grows with every cycle.\n\nYou'll keep 25% of your gold (up to 500) and all carried equipment goes to your stash. Facilities and recipes reset, so plan your early upgrades carefully."
+    },
+    {
+      "speaker": "Sir Cedric Ashmore",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon39.png",
+      "title": "Ability Infusion",
+      "body": "Before the cycle turns, you can infuse one piece of equipment with an ability your heroes have used in battle. That item will grant the infused ability to whoever wields it in the next cycle.\n\nFrom Cycle 5 onward, your heroes also gain a permanent stat bonus that compounds each cycle. The road gets harder — but so do you.",
+      "button_text": "Begin the Cycle"
+    }
+  ]
+}

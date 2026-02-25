@@ -11,7 +11,7 @@
       "speaker": "Mira",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
       "title": "Gear Management",
-      "body": "Click the Gear button on any hero card to equip weapons, armor, and accessories. You can also equip a backpack in the Bag slot to carry more items into the dungeon.\n\nBelow the equipment you'll see the hero's bag — fill it with consumables like potions before heading out. Preparation saves lives."
+      "body": "Click the Gear button on any hero card to equip weapons, armor, and accessories. You can also equip a backpack in the Bag slot to carry more items into the dungeon."
     },
     {
       "speaker": "Mira",
@@ -22,8 +22,8 @@
     {
       "speaker": "Mira",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
-      "title": "One More Thing",
-      "body": "Before you head into the dungeon, visit the Shop! You'll find consumables like healing potions as well as weapons and armor. What's available depends on your facility tiers and unlocked recipes, so invest in upgrades when you can.\n\nGood luck out there, Shopkeeper. I'll keep an eye out for fresh recruits while you're gone — there's always a few brave souls drifting through the Inn looking for work.",
+      "title": "Before You Go",
+      "body": "Beyond the basics like Attack and Defense, look out for Evasion (dodge chance), Crit (bonus damage), Resist (reduces magic damage), Thorns (hurts melee attackers), Armor Penetration (ignores defense), and Life Steal (heals on hit). Fill hero bags with consumables before heading out.\n\nVisit the Shop for healing potions, weapons, and armor. What's available depends on your facility tiers and unlocked recipes, so invest in upgrades when you can. Good luck out there, Shopkeeper!",
       "button_text": "Let's get started!"
     }
   ]

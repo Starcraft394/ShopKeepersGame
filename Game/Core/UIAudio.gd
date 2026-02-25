@@ -326,6 +326,11 @@ func _load_bgm_tracks() -> void:
 			print("[UIAudio] Loaded BGM: %s" % track_key)
 
 	print("[UIAudio] Loaded %d BGM tracks" % _bgm_tracks.size())
+	# Diagnostic: check for missing alt region tracks
+	for region_key in ALT_REGION_BGM:
+		var alt_key: String = ALT_REGION_BGM[region_key]
+		if not _bgm_tracks.has(alt_key):
+			push_warning("[UIAudio] Alt BGM missing for %s: %s" % [region_key, alt_key])
 
 
 ## Returns the active region BGM dict based on the toggle state.
@@ -402,12 +407,22 @@ func toggle_bgm_set() -> void:
 	# Find which region the current track belongs to in the OLD set and swap
 	var active_bgm: Dictionary = get_active_region_bgm()
 	var other_bgm: Dictionary = REGION_BGM if _use_alt_bgm else ALT_REGION_BGM
+	var old_track_key: String = _current_track_key
+	var swapped: bool = false
 	for region_key in other_bgm:
 		if other_bgm[region_key] == _current_track_key:
 			var new_key: String = active_bgm.get(region_key, "")
 			if new_key != "" and _bgm_tracks.has(new_key):
 				_play_track(new_key)
+				swapped = true
 			break
+	# Fallback: if current track wasn't a region track (scene BGM), play current region's track
+	if not swapped:
+		var region_id: String = GameContext.get_current_region_id()
+		if region_id != "":
+			var new_key: String = active_bgm.get(region_id, "")
+			if new_key != "" and _bgm_tracks.has(new_key):
+				_play_track(new_key)
 	print("[UIAudio] BGM set toggled to %s" % ("Alt" if _use_alt_bgm else "Original"))
 
 
@@ -589,6 +604,38 @@ func _open_pause_menu() -> void:
 	_sfx_value_label.add_theme_font_size_override("font_size", GameContext.fs(14))
 	_sfx_value_label.custom_minimum_size.x = 40
 	sfx_row.add_child(_sfx_value_label)
+
+	# --- Soundtrack Toggle ---
+	var st_row = HBoxContainer.new()
+	st_row.add_theme_constant_override("separation", 8)
+	st_row.alignment = BoxContainer.ALIGNMENT_BEGIN
+	vbox.add_child(st_row)
+
+	var st_label = Label.new()
+	st_label.text = "Soundtrack:"
+	st_label.add_theme_font_size_override("font_size", GameContext.fs(15))
+	st_label.add_theme_color_override("font_color", Color(0.8, 0.75, 0.6))
+	st_row.add_child(st_label)
+
+	var st_btn = Button.new()
+	st_btn.text = "Alt" if _use_alt_bgm else "Original"
+	st_btn.custom_minimum_size = Vector2(100, 28)
+	st_btn.add_theme_font_size_override("font_size", GameContext.fs(14))
+	st_btn.tooltip_text = "Toggle between Original and Alt region soundtracks"
+	st_btn.pressed.connect(func():
+		toggle_bgm_set()
+		var was_paused = get_tree().paused
+		_close_pause_menu()
+		get_tree().paused = was_paused
+		_open_pause_menu()
+	)
+	st_row.add_child(st_btn)
+
+	var st_track = Label.new()
+	st_track.text = get_current_track_display_name()
+	st_track.add_theme_font_size_override("font_size", GameContext.fs(12))
+	st_track.add_theme_color_override("font_color", Color(0.6, 0.6, 0.5))
+	st_row.add_child(st_track)
 
 	# --- Display ---
 	var display_sep = HSeparator.new()

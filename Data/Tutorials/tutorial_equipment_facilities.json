@@ -11,7 +11,13 @@
       "speaker": "Garrick",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon3.png",
       "title": "Tiers and Specialties",
-      "body": "Upgrade my facility with gold and materials to unlock higher-tier recipes. The Huntsman handles bows, leather, and backpacks. The Enchanter handles staves, focuses, and rings.\n\nEach of us has our specialty — check in after every run to see what's new.",
+      "body": "Upgrade my facility with gold and materials to unlock higher-tier recipes. Better tools on the anvil means finer work — a Tier 1 forge hammers out basics, but a Tier 4 forge has the precision to craft masterwork gear.\n\nThe Huntsman handles bows, leather, and backpacks. The Enchanter handles staves, focuses, and rings. Each of us has our specialty — check in after every run to see what's new."
+    },
+    {
+      "speaker": "Garrick",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon3.png",
+      "title": "Quality Matters",
+      "body": "Higher facility tiers also improve the quality of items sold in the Shop. At Tier 1 everything's Common, but upgrade to Tier 2 and you'll start seeing Uncommon and Rare gear on the shelves.\n\nReach Tier 4 and there's even a chance of Epic equipment. Better tools make better heroes.",
       "button_text": "Let's see what you've got"
     }
   ]

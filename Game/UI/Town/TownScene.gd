@@ -50,6 +50,8 @@ var _resize_start_panel_pos: Vector2 = Vector2.ZERO
 const RESIZE_MARGIN := 8
 const PANEL_MIN_SIZE := Vector2(360, 300)
 const PANEL_MAX_SIZE := Vector2(1200, 900)
+# Regional Inn recruit base cost (index 0 unused, 1-7 for regions)
+const RECRUIT_BASE_COST_BY_REGION: Array = [0, 50, 65, 85, 110, 145, 185, 235]
 
 # ============================================================================
 # CRAFTPIX SKIN (optional visual override — default false)
@@ -69,10 +71,12 @@ var _current_facility_id: String = ""  # Facility ID for seeding/logging
 var _storage_filter: String = "all"  # "all", "materials", "consumables", "equipment", "books"
 var _storage_view: String = "stash"  # "stash", "equipment"
 var _storage_selected_hero_id: String = ""
+var _storage_hero_filter: String = "party"  # "party" or town_id like "town_thornhaven"
 
 # Manage Gear overlay (used from Inn roster)
 var _manage_gear_overlay: CanvasLayer = null
 var _manage_gear_hero_id: String = ""
+var _manage_gear_filter: String = "party"  # "party" or town_id like "town_thornhaven"
 var _manage_gear_content: VBoxContainer = null
 
 # Dismiss warning overlay
@@ -80,8 +84,16 @@ var _dismiss_warning_overlay: CanvasLayer = null
 
 # Sell overlay (replaces broken Window popup)
 var _sell_overlay: CanvasLayer = null
+
+# Bench hero picker overlay (opened from empty party bar slots)
+var _bench_picker_overlay: CanvasLayer = null
 var _sell_gold_label: Label = null
 var _sell_items_container: VBoxContainer = null
+
+# Bag select overlay (party bar quick-bag button)
+var _bag_select_overlay: CanvasLayer = null
+var _bag_select_hero_id: String = ""
+var _bag_select_content: VBoxContainer = null
 
 # Training Hall: selected hero for class assignment
 var _training_selected_hero_id: String = ""
@@ -125,6 +137,7 @@ var party_bar_target: Control = null
 var _equip_pending_item_id: String = ""
 var _equip_pending_slot: String = ""
 var _equip_pending_quality: int = 0
+var _equip_pending_affix_data: Dictionary = {}
 var _equip_selected_hero_id: String = ""
 
 # Storage bag-transfer flow state
@@ -177,8 +190,12 @@ func _build_facility_overlay() -> void:
 func _create_facility_panel(facility_id: String) -> Dictionary:
 	var panel = PanelContainer.new()
 	panel.name = "FacilityPanel_%s" % facility_id
-	# Restore remembered size or use default
-	var remembered_size = _panel_sizes.get(facility_id, Vector2(520, 420))
+	# Restore remembered size or use default (larger default to reduce scrolling)
+	var remembered_size = _panel_sizes.get(facility_id, Vector2(560, 600))
+	# Clamp to 85% of viewport so panels never extend off-screen
+	var vp_size = get_viewport().get_visible_rect().size
+	remembered_size.x = mini(int(remembered_size.x), int(vp_size.x * 0.85))
+	remembered_size.y = mini(int(remembered_size.y), int(vp_size.y * 0.85))
 	panel.custom_minimum_size = remembered_size
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 
@@ -357,6 +374,7 @@ func _on_close_facility_panel(facility_id: String) -> void:
 	_equip_pending_item_id = ""
 	_equip_pending_slot = ""
 	_equip_pending_quality = 0
+	_equip_pending_affix_data = {}
 	_equip_selected_hero_id = ""
 	print("[FacilityOverlay] Closed panel: %s" % facility_id)
 	# After Inn close: show Mira's party bar / gear / formation tutorial (once)
@@ -554,6 +572,38 @@ func _sync_accent_overlay(panel: PanelContainer, facility_id: String) -> void:
 	accent.position = panel.position
 	accent.size = panel.size
 	accent.queue_redraw()
+
+
+## Auto-fit panel height to content, clamped to viewport limits.
+func _auto_fit_panel_height(facility_id: String) -> void:
+	if not _open_panels.has(facility_id):
+		return
+	var info = _open_panels[facility_id]
+	var panel = info.get("panel") as PanelContainer
+	var actions = info.get("actions_container") as VBoxContainer
+	if panel == null or actions == null:
+		return
+
+	# Wait one frame for layout to propagate minimum sizes
+	await get_tree().process_frame
+	if not is_instance_valid(panel):
+		return
+
+	# Calculate ideal height: title bar + margins + content
+	var content_min_h: float = actions.get_combined_minimum_size().y
+	var overhead: float = 80.0  # title bar (~40) + margins (8+4+8) + separators + padding
+	var ideal_h: float = content_min_h + overhead
+
+	# Clamp to panel limits and 85% viewport
+	var vp_h: float = get_viewport().get_visible_rect().size.y
+	var max_h: float = minf(vp_h * 0.85, PANEL_MAX_SIZE.y)
+	ideal_h = clampf(ideal_h, PANEL_MIN_SIZE.y, max_h)
+
+	var new_size = Vector2(panel.size.x, ideal_h)
+	panel.custom_minimum_size = new_size
+	panel.size = new_size
+	_panel_sizes[facility_id] = new_size
+	_sync_accent_overlay(panel, facility_id)
 
 
 ## Bring accent overlay to front (above its panel).
@@ -859,14 +909,16 @@ func _populate_stash_list() -> void:
 			display_name = item.display_name  # Already has quality prefix
 			qty = item.quantity
 		elif item is Dictionary:
-			# Dictionary from shop purchase { item_id, qty }
+			# Dictionary from shop purchase or add_run_item { item_id, qty, quality_tier }
 			template_id = item.get("item_id", "")
 			qty = item.get("qty", 1)
+			quality_tier = int(item.get("quality_tier", 0))
 			# Look up template for display name
 			if template_id != "":
 				var tpl = DataRegistry.get_item_template(template_id)
 				if tpl != null:
-					display_name = tpl.display_name
+					var prefix: String = ItemInstance.QUALITY_PREFIXES[clampi(quality_tier, 0, 3)]
+					display_name = prefix + tpl.display_name
 				else:
 					print("[TownUI] Missing item template for id=%s" % template_id)
 					display_name = template_id
@@ -962,6 +1014,134 @@ func _populate_stash_list() -> void:
 # BUTTON HANDLERS
 # ============================================================================
 
+## Check if all party heroes are in the middle row and warning not yet dismissed.
+func _check_formation_warning() -> bool:
+	if GameContext.has_completed_tutorial("warning_formation_all_middle"):
+		return false
+	var party: Array = GameContext.selected_party
+	if party.size() <= 1:
+		return false  # Solo hero — row positioning less critical
+	for hero_id in party:
+		if GameContext.get_hero_row(hero_id) != 1:
+			return false  # At least one hero is NOT in middle row
+	return true
+
+
+## Show formation warning overlay. Returns true if user chose to continue anyway.
+func _show_formation_warning() -> bool:
+	var user_continue: bool = false
+
+	# Overlay
+	var overlay := CanvasLayer.new()
+	overlay.layer = 11
+
+	# Full-screen backdrop
+	var backdrop := ColorRect.new()
+	backdrop.color = Color(0, 0, 0, 0.6)
+	backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
+	backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
+	overlay.add_child(backdrop)
+
+	# Center container
+	var center := CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.add_child(center)
+
+	# Panel
+	var panel := PanelContainer.new()
+	panel.custom_minimum_size = Vector2(460, 0)
+	center.add_child(panel)
+
+	# Content VBox
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 12)
+	panel.add_child(vbox)
+
+	# Margin inside panel
+	var margin := MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 20)
+	margin.add_theme_constant_override("margin_right", 20)
+	margin.add_theme_constant_override("margin_top", 16)
+	margin.add_theme_constant_override("margin_bottom", 16)
+	panel.add_child(margin)
+
+	var inner_vbox := VBoxContainer.new()
+	inner_vbox.add_theme_constant_override("separation", 12)
+	margin.add_child(inner_vbox)
+
+	# Title
+	var title := Label.new()
+	title.text = "Formation Warning"
+	title.add_theme_font_size_override("font_size", GameContext.fs(18))
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	inner_vbox.add_child(title)
+
+	# Separator
+	var sep := HSeparator.new()
+	inner_vbox.add_child(sep)
+
+	# Message
+	var msg := Label.new()
+	msg.text = "All your heroes are positioned in the Middle row. Consider moving some to the Front row (to absorb melee hits) or Back row (to protect ranged/mage heroes).\n\nYou can change positions using the [F] [M] [B] buttons on hero cards."
+	msg.add_theme_font_size_override("font_size", GameContext.fs(14))
+	msg.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	inner_vbox.add_child(msg)
+
+	# Checkbox
+	var checkbox := CheckBox.new()
+	checkbox.text = "Don't show this again"
+	checkbox.add_theme_font_size_override("font_size", GameContext.fs(13))
+	inner_vbox.add_child(checkbox)
+
+	# Button row
+	var btn_row := HBoxContainer.new()
+	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	btn_row.add_theme_constant_override("separation", 16)
+	inner_vbox.add_child(btn_row)
+
+	var back_btn := Button.new()
+	back_btn.text = "Go Back"
+	back_btn.custom_minimum_size = Vector2(120, 36)
+	back_btn.add_theme_font_size_override("font_size", GameContext.fs(14))
+	btn_row.add_child(back_btn)
+
+	var continue_btn := Button.new()
+	continue_btn.text = "Continue Anyway"
+	continue_btn.custom_minimum_size = Vector2(160, 36)
+	continue_btn.add_theme_font_size_override("font_size", GameContext.fs(14))
+	btn_row.add_child(continue_btn)
+
+	add_child(overlay)
+
+	# Await user response
+	var clicked_continue: bool = false
+	var done_signal: Signal = back_btn.pressed  # placeholder
+
+	back_btn.pressed.connect(func():
+		clicked_continue = false
+		overlay.set_meta("done", true)
+	)
+	continue_btn.pressed.connect(func():
+		clicked_continue = true
+		overlay.set_meta("done", true)
+	)
+
+	# Poll until a button is pressed (overlay.set_meta triggers exit)
+	while not overlay.has_meta("done"):
+		await get_tree().process_frame
+
+	# Handle dismiss checkbox
+	if clicked_continue and checkbox.button_pressed:
+		GameContext.complete_tutorial("warning_formation_all_middle")
+		print("[TownUI] Formation warning dismissed permanently")
+
+	user_continue = clicked_continue
+	overlay.queue_free()
+
+	print("[TownUI] Formation warning -> %s" % ("continue" if user_continue else "go back"))
+	return user_continue
+
+
 func _on_enter_dungeon_pressed() -> void:
 	var town_id = GameContext.get_current_town_id()
 	var town = DataRegistry.get_town(town_id) if DataRegistry.has_method("get_town") else null
@@ -976,6 +1156,12 @@ func _on_enter_dungeon_pressed() -> void:
 		progress_label.text = "Need at least 1 hero! Visit Inn to recruit."
 		progress_label.modulate = Color(1, 0.5, 0.5, 1)
 		return
+
+	# Formation warning: all heroes in middle row
+	if _check_formation_warning():
+		var proceed: bool = await _show_formation_warning()
+		if not proceed:
+			return
 
 	# Tutorial before first dungeon run
 	var overlay = TutorialOverlay.try_show(self, "tutorial_first_dungeon")
@@ -1319,6 +1505,9 @@ func _create_facility_actions(facility) -> void:
 			info.modulate = Color(0.78, 0.78, 0.78, 1)
 			_facility_actions_container.add_child(info)
 
+	# Auto-fit panel height to content
+	_auto_fit_panel_height(_current_facility_id)
+
 
 # ============================================================================
 # FACILITY UI BUILDERS
@@ -1440,33 +1629,48 @@ func _build_storage_ui() -> void:
 
 
 func _get_aggregated_stash_items() -> Array:
-	# Returns Array of { template_id, quality_tier, qty, display_name, category }
+	# Returns Array of { template_id, quality_tier, qty, display_name, category, affix_id, affix_prefix, affix_stats, source_region }
 	var result: Array = []
-	var aggregated: Dictionary = {}  # key -> { template_id, quality_tier, qty, display_name, category }
+	var aggregated: Dictionary = {}
 
 	for item in GameContext.run_items:
 		var template_id := ""
 		var quality_tier := 0
 		var display_name := ""
 		var qty := 1
+		var affix_id := ""
+		var affix_prefix := ""
+		var affix_stats: Dictionary = {}
+		var source_region := ""
 
 		if item is ItemInstance:
 			template_id = item.template_id
 			quality_tier = item.quality_tier
 			display_name = item.display_name
 			qty = item.quantity
+			affix_id = item.affix_id if "affix_id" in item else ""
+			affix_prefix = item.affix_prefix if "affix_prefix" in item else ""
+			affix_stats = item.affix_stats if "affix_stats" in item else {}
+			source_region = item.source_region if "source_region" in item else ""
 		elif item is Dictionary:
 			template_id = item.get("item_id", "")
 			qty = item.get("qty", 1)
+			quality_tier = int(item.get("quality_tier", 0))
+			affix_id = item.get("affix_id", "")
+			affix_prefix = item.get("affix_prefix", "")
+			affix_stats = item.get("affix_stats", {})
+			source_region = item.get("source_region", "")
 			var tpl = DataRegistry.get_item_template(template_id)
 			if tpl != null:
-				display_name = tpl.display_name
+				var prefix: String = ItemInstance.QUALITY_PREFIXES[clampi(quality_tier, 0, 3)]
+				display_name = prefix + tpl.display_name
 			else:
 				display_name = template_id
 		else:
 			continue
 
-		var key = "%s:%d" % [template_id, quality_tier]
+		# Include affix_id in key so different affixes stay separate
+		var key = "%s:%d:%s" % [template_id, quality_tier, affix_id]
 		if aggregated.has(key):
 			aggregated[key].qty += qty
 		else:
@@ -1476,7 +1680,11 @@ func _get_aggregated_stash_items() -> Array:
 				"quality_tier": quality_tier,
 				"qty": qty,
 				"display_name": display_name,
-				"category": category
+				"category": category,
+				"affix_id": affix_id,
+				"affix_prefix": affix_prefix,
+				"affix_stats": affix_stats,
+				"source_region": source_region,
 			}
 
 	for key in aggregated.keys():
@@ -1565,7 +1773,11 @@ func _create_stash_item_row(item: Dictionary) -> HBoxContainer:
 	var quality_prefix = ""
 	if item.quality_tier > 0:
 		quality_prefix = "[Q%d] " % item.quality_tier
-	label.text = "%s%s x%d" % [quality_prefix, item.display_name, item.qty]
+	var affix_prefix_text: String = item.get("affix_prefix", "")
+	if affix_prefix_text != "":
+		label.text = "%s%s %s x%d" % [quality_prefix, affix_prefix_text, item.display_name, item.qty]
+	else:
+		label.text = "%s%s x%d" % [quality_prefix, item.display_name, item.qty]
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	if tpl != null:
 		var tooltip_parts: Array[String] = []
@@ -1618,6 +1830,11 @@ func _create_stash_item_row(item: Dictionary) -> HBoxContainer:
 				for recipe_info in recipes:
 					tooltip_parts.append("  • %s (%s)" % [recipe_info.recipe_name, recipe_info.facility_name])
 
+		# Consumables: Show effect description
+		if item.category == "consumables" and tpl.use_effect != "":
+			tooltip_parts.append("")
+			tooltip_parts.append("Effect: %s" % tpl.get_effect_label())
+
 		tooltip_parts.append("")
 		tooltip_parts.append("Sell: %d gold" % tpl.base_value)
 		label.tooltip_text = "\n".join(tooltip_parts)
@@ -1632,10 +1849,18 @@ func _create_stash_item_row(item: Dictionary) -> HBoxContainer:
 
 	# v3: Equip button for all equipment items (hero picker flow)
 	if tpl != null and tpl.equip_slot != "":
+		var affix_data: Dictionary = {}
+		if item.get("affix_id", "") != "":
+			affix_data = {
+				"source_region": item.get("source_region", ""),
+				"affix_id": item.get("affix_id", ""),
+				"affix_stats": item.get("affix_stats", {}),
+				"affix_prefix": item.get("affix_prefix", ""),
+			}
 		var equip_btn = Button.new()
 		equip_btn.text = "Equip"
 		equip_btn.custom_minimum_size = Vector2(60, 24)
-		equip_btn.pressed.connect(_on_equip_item_pressed.bind(item.template_id, tpl.equip_slot, item.quality_tier))
+		equip_btn.pressed.connect(_on_equip_item_pressed.bind(item.template_id, tpl.equip_slot, item.quality_tier, affix_data))
 		row.add_child(equip_btn)
 
 	# "To Bag" button for consumables (hero picker flow)
@@ -1760,10 +1985,88 @@ func _build_storage_upgrade_view() -> void:
 
 
 func _build_storage_equipment_ui() -> void:
-	var roster = GameContext.get_roster()
-	if roster.size() == 0:
+	var full_roster = GameContext.get_roster()
+	if full_roster.size() == 0:
 		var empty_lbl = Label.new()
 		empty_lbl.text = "No heroes recruited yet."
+		empty_lbl.modulate = Color(0.78, 0.78, 0.78, 1)
+		_facility_actions_container.add_child(empty_lbl)
+		return
+
+	# ---- Filter tab row: [Party] [Town1 (N)] [Town2 (N)] ... ----
+	var filter_row = HBoxContainer.new()
+	filter_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	filter_row.add_theme_constant_override("separation", 4)
+	_facility_actions_container.add_child(filter_row)
+
+	# Party tab
+	var party_tab = Button.new()
+	party_tab.text = "Party (%d)" % GameContext.selected_party.size()
+	party_tab.custom_minimum_size = Vector2(70, 26)
+	party_tab.add_theme_font_size_override("font_size", GameContext.fs(13))
+	party_tab.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	if _storage_hero_filter == "party":
+		var tab_style = StyleBoxFlat.new()
+		tab_style.bg_color = Color(0.1, 0.2, 0.15, 0.9)
+		tab_style.border_color = Color(0.3, 0.8, 0.6, 0.9)
+		tab_style.set_border_width_all(2)
+		tab_style.set_corner_radius_all(4)
+		party_tab.add_theme_stylebox_override("normal", tab_style)
+	party_tab.pressed.connect(func():
+		_storage_hero_filter = "party"
+		_storage_selected_hero_id = ""
+		_refresh_facility_panel()
+	)
+	filter_row.add_child(party_tab)
+
+	# Town bench tabs — show towns with benched heroes or current town
+	var current_town: String = GameContext.get_current_town_id()
+	var all_regions = DataRegistry.get_all_regions()
+	for region in all_regions:
+		if region == null:
+			continue
+		for town_id in region.town_ids:
+			var bench_count: int = GameContext.get_inn_bench_count(town_id)
+			if bench_count == 0 and town_id != current_town:
+				continue
+			var town_data = DataRegistry.get_town(town_id)
+			var town_name: String = town_data.display_name if town_data != null else town_id
+			var tab_btn = Button.new()
+			tab_btn.text = "%s (%d)" % [town_name, bench_count]
+			tab_btn.custom_minimum_size = Vector2(60, 26)
+			tab_btn.add_theme_font_size_override("font_size", GameContext.fs(12))
+			tab_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+			if _storage_hero_filter == town_id:
+				var tab_style = StyleBoxFlat.new()
+				tab_style.bg_color = Color(0.1, 0.2, 0.15, 0.9)
+				tab_style.border_color = Color(0.3, 0.8, 0.6, 0.9)
+				tab_style.set_border_width_all(2)
+				tab_style.set_corner_radius_all(4)
+				tab_btn.add_theme_stylebox_override("normal", tab_style)
+			var bound_town: String = town_id
+			tab_btn.pressed.connect(func():
+				_storage_hero_filter = bound_town
+				_storage_selected_hero_id = ""
+				_refresh_facility_panel()
+			)
+			filter_row.add_child(tab_btn)
+
+	# ---- Build roster based on filter ----
+	var roster: Array = []
+	if _storage_hero_filter == "party":
+		for pid in GameContext.get_selected_party():
+			var hdata: Dictionary = GameContext.get_hero(pid)
+			if not hdata.is_empty():
+				roster.append(hdata)
+	else:
+		roster = GameContext.get_inn_bench_heroes(_storage_hero_filter)
+
+	if roster.is_empty():
+		var empty_lbl = Label.new()
+		if _storage_hero_filter == "party":
+			empty_lbl.text = "(No heroes in party)"
+		else:
+			empty_lbl.text = "(No heroes benched at this inn)"
 		empty_lbl.modulate = Color(0.78, 0.78, 0.78, 1)
 		_facility_actions_container.add_child(empty_lbl)
 		return
@@ -2068,6 +2371,8 @@ func _build_storage_equipment_ui() -> void:
 				item_lbl.add_theme_font_size_override("font_size", GameContext.fs(13))
 				item_lbl.modulate = Color(0.9, 0.7, 0.5, 1)
 				item_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+				item_lbl.tooltip_text = _build_equipment_slot_tooltip(slot, item_id, quality, slot_data)
+				item_lbl.mouse_filter = Control.MOUSE_FILTER_STOP
 				slot_hbox.add_child(item_lbl)
 			else:
 				var empty_item = Label.new()
@@ -2268,7 +2573,11 @@ func _build_shop_unstocked_view(facility, current_tier: int, town_id: String, sh
 		var facility_data = DataRegistry.get_facility(contrib_facility_id)
 		var display_name: String = facility_data.display_name if facility_data != null else contrib_facility_id.capitalize()
 		var current_alloc: int = _temp_shop_allocations.get(contrib_facility_id, 0)
-		var recipe_count: int = GameContext.get_facility_unlocked_recipes(contrib_facility_id).size()
+		var recipe_count: int
+		if facility_data != null and facility_data.mixing_recipe_file != "":
+			recipe_count = GameContext.get_facility_shop_recipes(contrib_facility_id).size()
+		else:
+			recipe_count = GameContext.get_facility_unlocked_recipes(contrib_facility_id).size()
 
 		var alloc_row = HBoxContainer.new()
 		alloc_row.add_theme_constant_override("separation", 4)
@@ -2424,23 +2733,24 @@ func _build_shop_stocked_view(facility, current_tier: int, town_id: String, shop
 	_facility_actions_container.add_child(items_sep)
 
 	# Get context for seeded RNG
-	var town = DataRegistry.get_town(town_id) if DataRegistry.has_method("get_town") else null
-	var dungeon_id: String = town.dungeon_id if town != null else ""
+	var region_id: String = GameContext.get_current_region_id()
 	var town_tier: int = GameContext.get_town_tier(town_id)
-	var highest_floor: int = GameContext.get_unlocked_floor(dungeon_id) if dungeon_id != "" else 1
 	var restock_ver: int = GameContext.get_shop_restock_version(shop_id)
+	var run_seed: int = GameContext.get_run_seed()
 
 	# Get shop profile for town-unique inventory
 	var shop_profile = facility.shop_profile
 	var profile_id: String = shop_profile.get("profile_id", "default") if shop_profile else "default"
 
-	# Generate deterministic seed using restock version (changes on dungeon return + manual refresh)
-	var seed_str = "%s_%s_%d_%d_%d" % [town_id, shop_id, town_tier, highest_floor, restock_ver]
-	var shop_seed: int = seed_str.hash()
+	# Use SeededRNG.shop_seed() with run_seed for per-playthrough variety
+	var base_shop_seed: int = SeededRNG.shop_seed(region_id, town_id, restock_ver, run_seed)
+	# Mix in facility tier so shop re-rolls on town upgrades
+	var seed_str = "%s_%d_%d" % [shop_id, town_tier, base_shop_seed]
+	var shop_seed_val: int = seed_str.hash()
 	var shop_rng = RandomNumberGenerator.new()
-	shop_rng.seed = shop_seed
+	shop_rng.seed = shop_seed_val
 
-	print("[ShopRNG] shop=%s town=%s profile=%s version=%d slots=%d/%d" % [shop_id, town_id, profile_id, restock_ver, allocated_slots, max_slots])
+	print("[ShopRNG] shop=%s town=%s profile=%s version=%d slots=%d/%d run_seed=%d" % [shop_id, town_id, profile_id, restock_ver, allocated_slots, max_slots, run_seed])
 
 	# Facility-allocated equipment section (items based on saved allocations)
 	var facility_items = _generate_facility_allocated_items(town_id, shop_rng)
@@ -2881,7 +3191,12 @@ func _on_temp_slot_plus(facility_id: String) -> void:
 	if _get_temp_allocated_total() >= max_slots:
 		return
 	# Cap at recipe count — can't allocate more slots than unique recipes
-	var recipe_count: int = GameContext.get_facility_unlocked_recipes(facility_id).size()
+	var fac_data = DataRegistry.get_facility(facility_id)
+	var recipe_count: int
+	if fac_data != null and fac_data.mixing_recipe_file != "":
+		recipe_count = GameContext.get_facility_shop_recipes(facility_id).size()
+	else:
+		recipe_count = GameContext.get_facility_unlocked_recipes(facility_id).size()
 	var current_alloc: int = _temp_shop_allocations.get(facility_id, 0)
 	if recipe_count > 0 and current_alloc >= recipe_count:
 		return
@@ -3180,8 +3495,13 @@ func _generate_facility_allocated_items(town_id: String, base_rng: RandomNumberG
 		if slots <= 0:
 			continue
 
-		# Get unlocked recipes for this facility (dict entries with upgrade_tier)
-		var recipes = GameContext.get_facility_unlocked_recipes(facility_id)
+		# Get recipes for this facility — production facilities use discovered mixes
+		var fac_data = DataRegistry.get_facility(facility_id)
+		var recipes: Array
+		if fac_data != null and fac_data.mixing_recipe_file != "":
+			recipes = GameContext.get_facility_shop_recipes(facility_id)
+		else:
+			recipes = GameContext.get_facility_unlocked_recipes(facility_id)
 		if recipes.is_empty():
 			continue
 
@@ -3189,24 +3509,17 @@ func _generate_facility_allocated_items(town_id: String, base_rng: RandomNumberG
 		var current_equip_fac_tier: int = GameContext.get_facility_tier(town_id, facility_id)
 
 		# Create a separate RNG for this facility so allocations don't affect other facilities
-		var facility_seed = ("%s_%s" % [base_rng.seed, facility_id]).hash()
+		var facility_seed = SeededRNG.derive_seed(facility_id, base_rng.seed)
 		var facility_rng = RandomNumberGenerator.new()
 		facility_rng.seed = facility_seed
 
-		# Shuffle recipes (Fisher-Yates) then assign round-robin for dedup
-		var shuffled_recipes: Array = recipes.duplicate()
-		for j in range(shuffled_recipes.size() - 1, 0, -1):
-			var k: int = facility_rng.randi() % (j + 1)
-			var tmp = shuffled_recipes[j]
-			shuffled_recipes[j] = shuffled_recipes[k]
-			shuffled_recipes[k] = tmp
-
-		# Generate one item per allocated slot
+		# Generate one item per allocated slot — each slot rolls independently
 		for i in range(slots):
 			var slot_key = "%s:%d" % [facility_id, i]
 
-			# Pick recipe via round-robin from shuffled list (unique when slots <= recipes)
-			var recipe_entry: Dictionary = shuffled_recipes[i % shuffled_recipes.size()]
+			# Each slot independently picks a recipe from the full pool
+			var recipe_idx: int = facility_rng.randi() % recipes.size()
+			var recipe_entry: Dictionary = recipes[recipe_idx]
 			var item_id: String = recipe_entry.get("item_id", "")
 			var upgrade_tier: int = int(recipe_entry.get("upgrade_tier", 1))
 			var facility_tier: int = int(recipe_entry.get("facility_tier", 1))
@@ -3343,6 +3656,15 @@ func _create_shop_row(shop_item: Dictionary, shop_id: String = "") -> HBoxContai
 	name_label.mouse_filter = Control.MOUSE_FILTER_STOP
 	row.add_child(name_label)
 
+	# Compare button for equipment items (not bags/consumables/materials)
+	if template != null and template.equip_slot != "" and template.equip_slot != "bag":
+		var cmp_btn = Button.new()
+		cmp_btn.text = "Compare"
+		cmp_btn.custom_minimum_size = Vector2(70, 26)
+		cmp_btn.tooltip_text = "Compare to party equipment"
+		cmp_btn.pressed.connect(_on_shop_compare_pressed.bind(item_id, quality_tier, affix_data, price, shop_id, slot_key))
+		row.add_child(cmp_btn)
+
 	# Buy button with gold cost
 	var can_afford = GameContext.get_run_gold() >= price
 	var stash_full = not GameContext.can_add_to_stash(item_id)
@@ -3384,11 +3706,24 @@ func _build_item_tooltip(template, quality_tier: int) -> String:
 
 	var lines: Array[String] = []
 
-	# Item name and description
+	# Item name and type
 	lines.append(template.display_name)
+	if template.item_type != "":
+		var type_str: String = template.item_type.capitalize()
+		if template.item_subtype != "":
+			type_str += " (%s)" % template.item_subtype.capitalize()
+		lines.append(type_str)
 	if template.description != "":
 		lines.append(template.description)
 	lines.append("")
+
+	# Consumable effect (heal amount, buff, cure, etc.)
+	var effect_label: String = template.get_effect_label()
+	if effect_label != "":
+		lines.append(effect_label)
+		if template.is_refillable:
+			lines.append("Refillable (cooldown: %d turns)" % template.use_cooldown)
+		lines.append("")
 
 	# Equipment slot
 	var slot = template.equip_slot if template.equip_slot != "" else template.slot
@@ -3456,6 +3791,323 @@ func _on_shop_buy_pressed(item_id: String, price: int, quality_tier: int = 0, sh
 	_refresh_facility_panel()
 
 
+## Show a comparison panel for a shop item vs each party hero's equipped item in the same slot.
+## Uses the same draggable/resizable facility panel pattern as other town panels.
+func _on_shop_compare_pressed(item_id: String, quality_tier: int, affix_data: Dictionary, price: int = 0, shop_id: String = "", slot_key: String = "") -> void:
+	# Close any existing compare panel first
+	if _open_panels.has("shop_compare"):
+		_on_close_facility_panel("shop_compare")
+
+	var template = DataRegistry.get_item_template(item_id)
+	if template == null:
+		return
+	var equip_slot: String = template.equip_slot
+	if equip_slot == "" or equip_slot == "bag":
+		return
+
+	var region_bonus: float = GameContext.get_completed_region_count() * 0.1
+	# Shop item stats (template + affix)
+	var shop_stats: Dictionary = template.get_stat_bonuses_with_quality(quality_tier, region_bonus)
+	var shop_affix_stats: Dictionary = affix_data.get("affix_stats", {}) if affix_data is Dictionary else {}
+	for ak in shop_affix_stats:
+		shop_stats[ak] = shop_stats.get(ak, 0) + int(shop_affix_stats[ak])
+
+	# Build display name
+	var affix_prefix: String = affix_data.get("affix_prefix", "") if affix_data is Dictionary else ""
+	var quality_prefix: String = ItemInstance.QUALITY_PREFIXES[clampi(quality_tier, 0, 3)]
+	var shop_display: String = ""
+	if affix_prefix != "":
+		shop_display = "%s %s%s" % [affix_prefix, quality_prefix, template.display_name]
+	elif quality_prefix != "":
+		shop_display = "%s%s" % [quality_prefix, template.display_name]
+	else:
+		shop_display = template.display_name
+
+	# Build stat summary text
+	var shop_stat_parts: Array = []
+	for sk in CombatUnit.STAT_KEYS:
+		var sv: int = int(shop_stats.get(sk, 0))
+		if sv > 0:
+			shop_stat_parts.append("%s +%d" % [CombatUnit.STAT_ABBREV.get(sk, sk), sv])
+	var shop_stat_text: String = "  ".join(shop_stat_parts) if shop_stat_parts.size() > 0 else "(no stats)"
+
+	# --- Create facility-style panel ---
+	var panel = PanelContainer.new()
+	panel.name = "FacilityPanel_shop_compare"
+	var panel_size: Vector2 = _panel_sizes.get("shop_compare", Vector2(480, 500))
+	var vp_size: Vector2 = get_viewport().get_visible_rect().size
+	panel_size.x = mini(int(panel_size.x), int(vp_size.x * 0.85))
+	panel_size.y = mini(int(panel_size.y), int(vp_size.y * 0.85))
+	panel.custom_minimum_size = panel_size
+	panel.mouse_filter = Control.MOUSE_FILTER_STOP
+
+	# Theme
+	if use_craftpix_skin:
+		panel.theme = _CRAFTPIX_THEME
+	else:
+		panel.theme = preload("res://Themes/game_theme.tres")
+
+	# Panel styling (solid background)
+	var panel_body_style = StyleBoxFlat.new()
+	panel_body_style.bg_color = _region_palette.get("bg_dark", Color(0.14, 0.12, 0.10, 0.95))
+	panel_body_style.border_color = _region_palette.get("border", Color(0.35, 0.30, 0.22, 0.8))
+	panel_body_style.set_border_width_all(1)
+	panel_body_style.set_corner_radius_all(4)
+	panel_body_style.set_content_margin_all(4)
+	panel.add_theme_stylebox_override("panel", panel_body_style)
+
+	# Stagger position
+	var offset_idx: int = _open_panels.size()
+	panel.position = Vector2(80 + offset_idx * 30, 40 + offset_idx * 30)
+
+	# Main content VBox
+	var main_vbox = VBoxContainer.new()
+	main_vbox.add_theme_constant_override("separation", 4)
+	panel.add_child(main_vbox)
+
+	# --- Title bar (drag handle) ---
+	var title_style = StyleBoxFlat.new()
+	title_style.bg_color = _region_palette.get("title_bar", Color(0.18, 0.22, 0.3, 0.9))
+	title_style.content_margin_left = 8
+	title_style.content_margin_top = 4
+	title_style.content_margin_right = 4
+	title_style.content_margin_bottom = 4
+	title_style.set_corner_radius_all(2)
+
+	var title_panel = PanelContainer.new()
+	title_panel.add_theme_stylebox_override("panel", title_style)
+	title_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	main_vbox.add_child(title_panel)
+
+	var title_hbox = HBoxContainer.new()
+	title_hbox.add_theme_constant_override("separation", 4)
+	title_panel.add_child(title_hbox)
+
+	var title_label = Label.new()
+	title_label.text = "Compare: %s" % shop_display
+	title_label.add_theme_font_size_override("font_size", GameContext.fs(16))
+	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	title_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title_hbox.add_child(title_label)
+
+	var gold_label = Label.new()
+	gold_label.text = "Gold: %d" % GameContext.get_run_gold()
+	gold_label.add_theme_font_size_override("font_size", GameContext.fs(15))
+	gold_label.modulate = Color(1, 0.9, 0.5, 1)
+	gold_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title_hbox.add_child(gold_label)
+
+	var close_btn = Button.new()
+	close_btn.text = "X"
+	close_btn.custom_minimum_size = Vector2(28, 28)
+	close_btn.pressed.connect(_on_close_facility_panel.bind("shop_compare"))
+	title_hbox.add_child(close_btn)
+
+	# Drag + resize input
+	panel.gui_input.connect(_on_panel_gui_input.bind(panel, "shop_compare"))
+
+	# --- Scroll content ---
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 8)
+	margin.add_theme_constant_override("margin_top", 4)
+	margin.add_theme_constant_override("margin_right", 8)
+	margin.add_theme_constant_override("margin_bottom", 8)
+	margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	main_vbox.add_child(margin)
+
+	var scroll = ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	margin.add_child(scroll)
+
+	var content_vbox = VBoxContainer.new()
+	content_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	content_vbox.add_theme_constant_override("separation", 6)
+	scroll.add_child(content_vbox)
+
+	# Slot + quality + stats header
+	var slot_label = Label.new()
+	var q_names: Array = ["Common", "Uncommon", "Rare", "Epic"]
+	slot_label.text = "Slot: %s | %s (Q%d) | %dg" % [equip_slot.capitalize(), q_names[clampi(quality_tier, 0, 3)], quality_tier, price]
+	slot_label.add_theme_font_size_override("font_size", GameContext.fs(13))
+	slot_label.modulate = Color(0.7, 0.7, 0.9)
+	content_vbox.add_child(slot_label)
+
+	var stats_label = Label.new()
+	stats_label.text = shop_stat_text
+	stats_label.add_theme_font_size_override("font_size", GameContext.fs(13))
+	stats_label.modulate = Color(0.9, 0.85, 0.7)
+	content_vbox.add_child(stats_label)
+
+	var sep = HSeparator.new()
+	content_vbox.add_child(sep)
+
+	# Per-hero comparison with Buy & Equip buttons
+	var party: Array = GameContext.get_selected_party()
+	var can_afford: bool = GameContext.get_run_gold() >= price
+	if party.is_empty():
+		var empty_label = Label.new()
+		empty_label.text = "(No heroes in party)"
+		empty_label.modulate = Color(0.6, 0.6, 0.6)
+		content_vbox.add_child(empty_label)
+	else:
+		for hero_id in party:
+			var hero: Dictionary = GameContext.get_hero(hero_id)
+			if hero.is_empty():
+				continue
+			var hero_name: String = hero.get("name", hero_id)
+			var hero_class: String = hero.get("class_id", "").capitalize()
+
+			var hero_vbox = VBoxContainer.new()
+			hero_vbox.add_theme_constant_override("separation", 2)
+
+			# Hero name + class row with Buy & Equip button
+			var hero_row = HBoxContainer.new()
+			hero_row.add_theme_constant_override("separation", 8)
+
+			var hero_label = Label.new()
+			hero_label.text = "%s (%s)" % [hero_name, hero_class]
+			hero_label.add_theme_font_size_override("font_size", GameContext.fs(15))
+			hero_label.modulate = Color(0.85, 0.9, 1.0)
+			hero_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			hero_row.add_child(hero_label)
+
+			# Check weapon_types compatibility for weapons/offhand
+			var can_equip: bool = true
+			if equip_slot == "weapon":
+				var class_data = DataRegistry.get_class_data(hero.get("class_id", ""))
+				if class_data != null and class_data.weapon_types.size() > 0:
+					if template.item_subtype not in class_data.weapon_types:
+						can_equip = false
+
+			var buy_equip_btn = Button.new()
+			buy_equip_btn.text = "Buy & Equip (%dg)" % price
+			buy_equip_btn.custom_minimum_size = Vector2(140, 26)
+			buy_equip_btn.add_theme_font_size_override("font_size", GameContext.fs(13))
+			if not can_afford:
+				buy_equip_btn.disabled = true
+				buy_equip_btn.tooltip_text = "Not enough gold"
+			elif not can_equip:
+				buy_equip_btn.disabled = true
+				buy_equip_btn.tooltip_text = "Cannot equip this weapon type"
+			else:
+				buy_equip_btn.pressed.connect(_on_shop_buy_and_equip.bind(
+					hero_id, equip_slot, item_id, quality_tier, affix_data, price, shop_id, slot_key))
+			hero_row.add_child(buy_equip_btn)
+			hero_vbox.add_child(hero_row)
+
+			# Currently equipped item in this slot
+			var current_id: String = GameContext.get_hero_slot_item(hero_id, equip_slot)
+			var current_quality: int = GameContext.get_hero_slot_quality(hero_id, equip_slot)
+			var current_stats: Dictionary = {}
+
+			var equip_label = Label.new()
+			equip_label.add_theme_font_size_override("font_size", GameContext.fs(13))
+			if current_id != "":
+				var current_tpl = DataRegistry.get_item_template(current_id)
+				if current_tpl != null:
+					current_stats = current_tpl.get_stat_bonuses_with_quality(current_quality, region_bonus)
+				var hero_equip: Dictionary = GameContext.get_hero_equipment(hero_id)
+				var current_slot_data: Dictionary = hero_equip.get(equip_slot, {})
+				var current_affix: Dictionary = current_slot_data.get("affix_stats", {})
+				if current_affix is Dictionary:
+					for cak in current_affix:
+						current_stats[cak] = current_stats.get(cak, 0) + int(current_affix[cak])
+				var current_bonus_lines: Array = current_slot_data.get("bonus_stat_lines", [])
+				for line in current_bonus_lines:
+					var line_stat: String = line.get("stat", "")
+					var line_val: int = int(line.get("value", 0))
+					if line_stat != "":
+						current_stats[line_stat] = current_stats.get(line_stat, 0) + line_val
+
+				var cur_prefix: String = ItemInstance.QUALITY_PREFIXES[clampi(current_quality, 0, 3)]
+				var cur_affix_prefix: String = current_slot_data.get("affix_prefix", "")
+				var cur_display: String = ""
+				if cur_affix_prefix != "":
+					cur_display = "%s %s%s" % [cur_affix_prefix, cur_prefix, current_tpl.display_name if current_tpl else current_id]
+				else:
+					cur_display = "%s%s" % [cur_prefix, current_tpl.display_name if current_tpl else current_id]
+				equip_label.text = "  Equipped: %s" % cur_display
+				equip_label.modulate = Color(0.65, 0.65, 0.65)
+			else:
+				equip_label.text = "  Equipped: (empty)"
+				equip_label.modulate = Color(0.5, 0.5, 0.5)
+			hero_vbox.add_child(equip_label)
+
+			# Delta comparison
+			var compare_label = Label.new()
+			compare_label.add_theme_font_size_override("font_size", GameContext.fs(14))
+			var delta_parts: Array = []
+			var total_delta: int = 0
+			for sk in CombatUnit.STAT_KEYS:
+				var new_val: int = int(shop_stats.get(sk, 0))
+				var old_val: int = int(current_stats.get(sk, 0))
+				var delta: int = new_val - old_val
+				if delta != 0:
+					var sign_str: String = "+" if delta > 0 else ""
+					delta_parts.append("%s %s%d" % [CombatUnit.STAT_ABBREV.get(sk, sk), sign_str, delta])
+				total_delta += delta
+
+			if delta_parts.size() > 0:
+				compare_label.text = "  %s" % "  ".join(delta_parts)
+				if total_delta > 0:
+					compare_label.modulate = Color(0.5, 1, 0.5)
+				elif total_delta < 0:
+					compare_label.modulate = Color(1, 0.5, 0.5)
+				else:
+					compare_label.modulate = Color(0.8, 0.8, 0.8)
+			else:
+				compare_label.text = "  (no stat change)"
+				compare_label.modulate = Color(0.78, 0.78, 0.78)
+			hero_vbox.add_child(compare_label)
+
+			content_vbox.add_child(hero_vbox)
+
+	# Add panel to facility overlay and register
+	_facility_overlay.add_child(panel)
+	var accent_overlay = _create_accent_overlay(panel, "shop_compare")
+	_open_panels["shop_compare"] = {
+		"panel": panel,
+		"title_label": title_label,
+		"gold_label": gold_label,
+		"actions_container": content_vbox,
+		"accent_overlay": accent_overlay,
+	}
+	UIAudio.register_closeable(panel, _on_close_facility_panel.bind("shop_compare"))
+
+
+## Buy a shop item and immediately equip it on a hero. Old item returns to stash automatically.
+func _on_shop_buy_and_equip(hero_id: String, slot: String, item_id: String, quality_tier: int, affix_data: Dictionary, price: int, shop_id: String, slot_key: String) -> void:
+	# Check gold
+	if GameContext.get_run_gold() < price:
+		UIAudio.play_sfx("error_insufficient")
+		return
+
+	# Spend gold and add item to stash
+	GameContext.spend_run_gold(price)
+	UIAudio.play_sfx("item_buy")
+	if quality_tier > 0 or not affix_data.is_empty():
+		GameContext._add_item_with_quality(item_id, quality_tier, affix_data)
+	else:
+		GameContext.add_run_item(item_id, 1)
+
+	# Mark shop slot as purchased
+	if shop_id != "" and slot_key != "":
+		GameContext.mark_shop_slot_purchased(shop_id, slot_key)
+
+	# Equip (unequips old item to stash, removes new from stash)
+	var equipped: bool = GameContext.equip_hero_item(hero_id, slot, item_id, quality_tier, affix_data)
+	if equipped:
+		print("[Shop] Buy & Equip item=%s q=%d hero=%s slot=%s cost=%d" % [item_id, quality_tier, hero_id, slot, price])
+	else:
+		print("[Shop] Buy & Equip FAILED equip step item=%s hero=%s slot=%s" % [item_id, hero_id, slot])
+
+	# Close compare panel and refresh shop
+	_on_close_facility_panel("shop_compare")
+	_refresh_facility_panel()
+
+
 ## Get sellable items from run stash (excludes books for now).
 func _get_sellable_stash_items() -> Array:
 	var result: Array = []
@@ -3475,9 +4127,11 @@ func _get_sellable_stash_items() -> Array:
 		elif item is Dictionary:
 			template_id = item.get("item_id", "")
 			qty = item.get("qty", 1)
+			quality_tier = int(item.get("quality_tier", 0))
 			var tpl = DataRegistry.get_item_template(template_id)
 			if tpl != null:
-				display_name = tpl.display_name
+				var prefix: String = ItemInstance.QUALITY_PREFIXES[clampi(quality_tier, 0, 3)]
+				display_name = prefix + tpl.display_name
 			else:
 				display_name = template_id
 		else:
@@ -5275,13 +5929,31 @@ func _create_training_hero_row(hero: Dictionary) -> HBoxContainer:
 	var class_id = hero.get("class_id", "none")
 	var is_selected = (hero_id == _training_selected_hero_id)
 
-	# Label: Name (Race Class)
+	# Name + Level + XP column
+	var hero_level: int = int(hero.get("level", 1))
+	var info_col = VBoxContainer.new()
+	info_col.add_theme_constant_override("separation", 0)
+	info_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
 	var label = Label.new()
-	label.text = "%s (%s %s)" % [hero_name, race_id.capitalize(), class_id.capitalize()]
-	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	label.text = "%s (%s %s Lv%d)" % [hero_name, race_id.capitalize(), class_id.capitalize(), hero_level]
 	if is_selected:
 		label.modulate = Color(0.6, 0.5, 0.3, 1)
-	row.add_child(label)
+	info_col.add_child(label)
+
+	var hero_xp: int = int(hero.get("xp", 0))
+	var is_max_level: bool = hero_level >= GameContext.MAX_HERO_LEVEL
+	var xp_sub = Label.new()
+	if is_max_level:
+		xp_sub.text = "XP: MAX"
+		xp_sub.modulate = Color(1.0, 0.85, 0.3, 0.8)
+	else:
+		var next_xp: int = GameContext.get_xp_for_level(hero_level + 1)
+		xp_sub.text = format_xp_line(hero_xp, next_xp, false)
+		xp_sub.modulate = Color(0.5, 0.8, 1.0, 0.8)
+	xp_sub.add_theme_font_size_override("font_size", GameContext.fs(12))
+	info_col.add_child(xp_sub)
+	row.add_child(info_col)
 
 	# Select button
 	var btn = Button.new()
@@ -5431,10 +6103,9 @@ func _populate_heroes_section() -> void:
 		bags_btn.pressed.connect(_on_manage_bags_pressed)
 		btn_row.add_child(bags_btn)
 
-	# Hero party cards (compact with expand toggle)
-	if party.size() > 0:
-		var bar_target: Control = party_bar_target if party_bar_target != null else heroes_vbox
-		_build_hero_party_bar(party, bar_target)
+	# Hero party cards — always rendered, even when party is empty
+	var bar_target: Control = party_bar_target if party_bar_target != null else heroes_vbox
+	_build_hero_party_bar(party, bar_target)
 
 
 ## Refresh party bar when party composition changes (recruit, dismiss, etc.)
@@ -5487,10 +6158,11 @@ func _build_hero_party_bar(party: Array, target: Control) -> void:
 		if card != null:
 			grid.add_child(card)
 
-	# Empty placeholder slots to fill up to 6
+	# Empty slots: fillable (up to max party) vs locked (decorative padding beyond max)
 	var filled = party.size()
+	var max_party = GameContext.get_max_party_size()
 	for i in range(filled, 6):
-		grid.add_child(_create_empty_party_slot())
+		grid.add_child(_create_empty_party_slot(i < max_party))
 
 
 ## Create a compact party slot for a hero.
@@ -5525,10 +6197,38 @@ func _create_party_card(hero_id: String) -> PanelContainer:
 	card.tooltip_text = _build_hero_tooltip(hero_id)
 	card.mouse_filter = Control.MOUSE_FILTER_STOP
 
+	var card_hbox = HBoxContainer.new()
+	card_hbox.add_theme_constant_override("separation", 4)
+	card_hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(card_hbox)
+
+	# Row selector (vertical F/M/B buttons on the left)
+	var row_vbox = VBoxContainer.new()
+	row_vbox.add_theme_constant_override("separation", 2)
+	row_vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	var row_names = ["F", "M", "B"]
+	var row_tips = ["Front — Targeted first by melee", "Middle — Targeted after Front", "Back — Targeted last by melee"]
+	var current_row: int = GameContext.get_hero_row(hero_id)
+	for i in range(3):
+		var rbtn = Button.new()
+		rbtn.text = row_names[i]
+		rbtn.add_theme_font_size_override("font_size", GameContext.fs(11))
+		rbtn.custom_minimum_size = Vector2(22, 0)
+		rbtn.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		rbtn.tooltip_text = row_tips[i]
+		if i == current_row:
+			_apply_selected_button_style(rbtn)
+		else:
+			rbtn.modulate = Color(1, 1, 1, 1)
+		rbtn.pressed.connect(_on_party_card_row_changed.bind(i, hero_id))
+		row_vbox.add_child(rbtn)
+	card_hbox.add_child(row_vbox)
+
 	var card_vbox = VBoxContainer.new()
 	card_vbox.add_theme_constant_override("separation", 2)
 	card_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(card_vbox)
+	card_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	card_hbox.add_child(card_vbox)
 
 	# Remove from party button (top-right X)
 	var remove_row = HBoxContainer.new()
@@ -5631,50 +6331,93 @@ func _create_party_card(hero_id: String) -> PanelContainer:
 	stat_lbl.tooltip_text = build_inn_stats_combined_tooltip(hero_id)
 	card_vbox.add_child(stat_lbl)
 
-	# Gear button
+	# XP progress (compact)
+	var hero_xp: int = int(hero.get("xp", 0))
+	var is_max_level: bool = hero_level >= GameContext.MAX_HERO_LEVEL
+	var xp_lbl = Label.new()
+	if is_max_level:
+		xp_lbl.text = "XP: MAX"
+		xp_lbl.modulate = Color(1.0, 0.85, 0.3, 1)
+	else:
+		var next_level_xp: int = GameContext.get_xp_for_level(hero_level + 1)
+		xp_lbl.text = "XP: %d/%d" % [hero_xp, next_level_xp]
+		xp_lbl.modulate = Color(0.6, 0.9, 1.0, 0.8)
+	xp_lbl.add_theme_font_size_override("font_size", GameContext.fs(10))
+	xp_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	card_vbox.add_child(xp_lbl)
+
+	# Button row: Gear + Bag
+	var btn_row = HBoxContainer.new()
+	btn_row.add_theme_constant_override("separation", 4)
+	btn_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	card_vbox.add_child(btn_row)
+
 	var gear_btn = Button.new()
 	gear_btn.text = "Gear"
 	gear_btn.add_theme_font_size_override("font_size", GameContext.fs(12))
 	gear_btn.custom_minimum_size = Vector2(0, 22)
 	gear_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	gear_btn.pressed.connect(_on_manage_gear_pressed.bind(hero_id))
-	card_vbox.add_child(gear_btn)
+	btn_row.add_child(gear_btn)
 
-	# Row selector (compact F/M/B toggle buttons)
-	var row_hbox = HBoxContainer.new()
-	row_hbox.add_theme_constant_override("separation", 2)
-	row_hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var row_names = ["F", "M", "B"]
-	var row_tips = ["Front — Targeted first by melee", "Middle — Targeted after Front", "Back — Targeted last by melee"]
-	var current_row: int = GameContext.get_hero_row(hero_id)
-	for i in range(3):
-		var rbtn = Button.new()
-		rbtn.text = row_names[i]
-		rbtn.add_theme_font_size_override("font_size", GameContext.fs(11))
-		rbtn.custom_minimum_size = Vector2(0, 18)
-		rbtn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		rbtn.tooltip_text = row_tips[i]
-		if i == current_row:
-			_apply_selected_button_style(rbtn)
-		else:
-			rbtn.modulate = Color(1, 1, 1, 1)
-		rbtn.pressed.connect(_on_party_card_row_changed.bind(i, hero_id))
-		row_hbox.add_child(rbtn)
-	card_vbox.add_child(row_hbox)
+	# Bag button (icon with consumable status border)
+	var bag_btn = TextureButton.new()
+	bag_btn.custom_minimum_size = Vector2(26, 22)
+	var bag_icon_tex = load("res://Assets/_ArtPacks/RPGThings/PNG/Transperent/icons_30_32.png")
+	if bag_icon_tex != null:
+		bag_btn.texture_normal = bag_icon_tex
+		bag_btn.ignore_texture_size = true
+		bag_btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	bag_btn.pressed.connect(_on_party_card_bag_pressed.bind(hero_id))
+
+	var bag_items = GameContext.get_hero_bag(hero_id)
+	var has_consumable: bool = false
+	for entry in bag_items:
+		var tpl = DataRegistry.get_item_template(entry.get("item_id", ""))
+		if tpl != null and tpl.item_type == "consumable":
+			has_consumable = true
+			break
+	var bag_panel = PanelContainer.new()
+	var bag_style = StyleBoxFlat.new()
+	bag_style.bg_color = Color(0.15, 0.15, 0.2, 0.8)
+	bag_style.set_border_width_all(2)
+	bag_style.border_color = Color(0.8, 0.2, 0.2, 1.0) if not has_consumable else Color(0.3, 0.5, 0.3, 0.6)
+	bag_style.set_corner_radius_all(3)
+	bag_panel.add_theme_stylebox_override("panel", bag_style)
+	bag_panel.add_child(bag_btn)
+	btn_row.add_child(bag_panel)
 
 	return card
 
 
 ## Create an empty placeholder party slot.
-func _create_empty_party_slot() -> PanelContainer:
+## If is_fillable is true AND bench heroes exist, the slot is clickable.
+func _create_empty_party_slot(is_fillable: bool = false) -> PanelContainer:
 	var slot = PanelContainer.new()
 	var slot_style = StyleBoxFlat.new()
-	slot_style.bg_color = Color(0.12, 0.12, 0.15, 0.4)
+
+	# Check if bench heroes exist for clickable slots
+	var has_bench_heroes: bool = false
+	if is_fillable:
+		var owned = GameContext.get_owned_heroes()
+		for hero in owned:
+			if not GameContext.is_in_party(hero.get("hero_id", "")):
+				has_bench_heroes = true
+				break
+
+	var is_clickable: bool = is_fillable and has_bench_heroes
+
+	if is_clickable:
+		slot_style.bg_color = Color(0.15, 0.20, 0.15, 0.5)
+		slot_style.border_color = Color(0.3, 0.5, 0.3, 0.4)
+	else:
+		slot_style.bg_color = Color(0.12, 0.12, 0.15, 0.4)
+		slot_style.border_color = Color(0.25, 0.25, 0.3, 0.3)
+
 	slot_style.border_width_left = 1
 	slot_style.border_width_top = 1
 	slot_style.border_width_right = 1
 	slot_style.border_width_bottom = 1
-	slot_style.border_color = Color(0.25, 0.25, 0.3, 0.3)
 	slot_style.set_corner_radius_all(4)
 	slot_style.content_margin_left = 6
 	slot_style.content_margin_top = 4
@@ -5684,15 +6427,229 @@ func _create_empty_party_slot() -> PanelContainer:
 	slot.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	var lbl = Label.new()
-	lbl.text = "Empty"
 	lbl.add_theme_font_size_override("font_size", GameContext.fs(12))
-	lbl.modulate = Color(0.65, 0.65, 0.65, 0.8)
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	lbl.custom_minimum_size = Vector2(0, 60)
 	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	if is_clickable:
+		lbl.text = "+ Add Hero"
+		lbl.modulate = Color(0.5, 0.9, 0.5, 0.9)
+		slot.mouse_filter = Control.MOUSE_FILTER_STOP
+		slot.tooltip_text = "Click to add a benched hero to the party"
+		slot.gui_input.connect(func(event: InputEvent):
+			if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+				_open_bench_picker_overlay()
+		)
+	elif is_fillable:
+		lbl.text = "Empty"
+		lbl.modulate = Color(0.65, 0.65, 0.65, 0.8)
+		slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	else:
+		lbl.text = ""
+		lbl.modulate = Color(0.4, 0.4, 0.4, 0.4)
+		slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 	slot.add_child(lbl)
 	return slot
+
+
+# ============================================================================
+# BENCH HERO PICKER (opened from empty party bar slots)
+# ============================================================================
+
+## Open a bench hero picker overlay so the player can add a benched hero to the party.
+func _open_bench_picker_overlay() -> void:
+	_close_bench_picker_overlay()
+
+	var owned = GameContext.get_owned_heroes()
+	var party = GameContext.get_selected_party()
+	var bench_heroes: Array = []
+	for hero in owned:
+		if not GameContext.is_in_party(hero.get("hero_id", "")):
+			bench_heroes.append(hero)
+
+	if bench_heroes.is_empty():
+		print("[PartyBar] No bench heroes to add")
+		return
+
+	_bench_picker_overlay = CanvasLayer.new()
+	_bench_picker_overlay.layer = 10
+	add_child(_bench_picker_overlay)
+
+	# Dark backdrop (click to dismiss)
+	var backdrop = ColorRect.new()
+	backdrop.color = Color(0, 0, 0, 0.6)
+	backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
+	backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
+	backdrop.gui_input.connect(func(event: InputEvent):
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			_close_bench_picker_overlay()
+	)
+	_bench_picker_overlay.add_child(backdrop)
+
+	# Centered panel
+	var center = CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_bench_picker_overlay.add_child(center)
+
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(420, 0)
+	var style = StyleBoxFlat.new()
+	style.bg_color = _region_palette.get("bg_dark", Color(0.14, 0.12, 0.10, 0.95))
+	style.set_border_width_all(2)
+	style.border_color = _region_palette.get("border", Color(0.55, 0.4, 0.25, 0.8))
+	style.set_corner_radius_all(8)
+	style.set_content_margin_all(16)
+	panel.add_theme_stylebox_override("panel", style)
+	panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	center.add_child(panel)
+
+	var scroll = ScrollContainer.new()
+	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	var vp_h: int = int(get_viewport().get_visible_rect().size.y)
+	scroll.custom_minimum_size = Vector2(0, mini(int(vp_h * 0.5), 500))
+	panel.add_child(scroll)
+
+	var content = VBoxContainer.new()
+	content.add_theme_constant_override("separation", 6)
+	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(content)
+
+	# Title
+	var title = Label.new()
+	title.text = "Add Hero to Party (%d / %d)" % [party.size(), GameContext.get_max_party_size()]
+	title.add_theme_font_size_override("font_size", GameContext.fs(18))
+	title.modulate = Color(0.5, 1, 0.5, 1)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	content.add_child(title)
+
+	var sep = HSeparator.new()
+	content.add_child(sep)
+
+	# Bench hero rows
+	for hero in bench_heroes:
+		var row = _create_bench_picker_row(hero)
+		content.add_child(row)
+
+	# Close button
+	var sep2 = HSeparator.new()
+	content.add_child(sep2)
+
+	var close_btn = Button.new()
+	close_btn.text = "Cancel"
+	close_btn.custom_minimum_size = Vector2(120, 28)
+	close_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	close_btn.pressed.connect(_close_bench_picker_overlay)
+	content.add_child(close_btn)
+
+	# Register with ESC-close stack
+	UIAudio.register_closeable(_bench_picker_overlay, _close_bench_picker_overlay)
+	print("[PartyBar] Bench picker opened — %d bench heroes" % bench_heroes.size())
+
+
+## Create a compact row for a bench hero in the bench picker overlay.
+func _create_bench_picker_row(hero: Dictionary) -> PanelContainer:
+	var hero_id: String = hero.get("hero_id", "")
+	var race_id: String = hero.get("race_id", "human")
+	var class_id: String = hero.get("class_id", "")
+	var hero_name: String = hero.get("name", "Unknown")
+	var hero_level: int = int(hero.get("level", 1))
+
+	var race_name: String = race_id.capitalize()
+	var race_data = DataRegistry.get_race(race_id)
+	if race_data != null and race_data.display_name != "":
+		race_name = race_data.display_name
+
+	var cls_name: String = class_id.capitalize()
+	var class_data = DataRegistry.get_class_data(class_id)
+	if class_data != null and class_data.display_name != "":
+		cls_name = class_data.display_name
+
+	var row_panel = PanelContainer.new()
+	var style = StyleBoxFlat.new()
+	style.bg_color = _region_palette.get("bg_medium", Color(0.15, 0.18, 0.22, 0.9))
+	style.border_color = _region_palette.get("border", Color(0.55, 0.4, 0.25, 0.8))
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(4)
+	style.set_content_margin_all(8)
+	row_panel.add_theme_stylebox_override("panel", style)
+
+	var hbox = HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 10)
+	row_panel.add_child(hbox)
+
+	# Portrait
+	var portrait_path: String = hero.get("portrait_path", "")
+	if portrait_path != "" and ResourceLoader.exists(portrait_path):
+		var portrait_tex = ResourceLoader.load(portrait_path) as Texture2D
+		if portrait_tex != null:
+			var portrait_rect = TextureRect.new()
+			portrait_rect.texture = portrait_tex
+			portrait_rect.custom_minimum_size = Vector2(36, 36)
+			portrait_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			portrait_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			portrait_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			hbox.add_child(portrait_rect)
+
+	# Info column
+	var info = VBoxContainer.new()
+	info.add_theme_constant_override("separation", 2)
+	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hbox.add_child(info)
+
+	var name_label = Label.new()
+	name_label.text = hero_name
+	name_label.add_theme_font_size_override("font_size", GameContext.fs(16))
+	info.add_child(name_label)
+
+	var detail_label = Label.new()
+	detail_label.text = "%s %s  Lv %d" % [race_name, cls_name, hero_level]
+	detail_label.add_theme_font_size_override("font_size", GameContext.fs(13))
+	detail_label.modulate = Color(0.7, 0.7, 0.8, 1)
+	info.add_child(detail_label)
+
+	# Stats summary
+	var eff_stats = GameContext.get_hero_effective_stats(hero_id)
+	if not eff_stats.is_empty():
+		var stats_label = Label.new()
+		stats_label.text = "HP:%d  ATK:%d  DEF:%d  SPD:%d" % [
+			int(eff_stats.get("health", 0)),
+			int(eff_stats.get("attack", 0)),
+			int(eff_stats.get("defense", 0)),
+			int(eff_stats.get("speed", 0))
+		]
+		stats_label.add_theme_font_size_override("font_size", GameContext.fs(12))
+		stats_label.modulate = Color(0.6, 0.6, 0.7, 1)
+		info.add_child(stats_label)
+
+	# Add to Party button
+	var add_btn = Button.new()
+	add_btn.text = "Add"
+	add_btn.custom_minimum_size = Vector2(70, 30)
+	add_btn.pressed.connect(_on_bench_picker_add_pressed.bind(hero_id))
+	hbox.add_child(add_btn)
+
+	return row_panel
+
+
+## Handle adding a hero from the bench picker overlay.
+func _on_bench_picker_add_pressed(hero_id: String) -> void:
+	var result = GameContext.add_to_party(hero_id)
+	if result:
+		print("[PartyBar] Added %s to party from bench picker" % hero_id)
+	_close_bench_picker_overlay()
+
+
+## Close the bench hero picker overlay.
+func _close_bench_picker_overlay() -> void:
+	if _bench_picker_overlay != null and is_instance_valid(_bench_picker_overlay):
+		UIAudio.unregister_closeable(_bench_picker_overlay)
+		_bench_picker_overlay.queue_free()
+		_bench_picker_overlay = null
 
 
 ## Build a rich tooltip with full hero details (abilities, passives, equipment).
@@ -5724,6 +6681,15 @@ func _build_hero_tooltip(hero_id: String) -> String:
 	lines.append("%s — %s %s Lv%d" % [hero_name, race_name, cls_name, hero_level])
 	lines.append("Position: %s" % row_names[hero_row])
 	lines.append("HP: %d | ATK: %d | DEF: %d | SPD: %d" % [max_hp, atk, def_val, spd])
+
+	# XP progress
+	var hero_xp: int = int(hero.get("xp", 0))
+	var is_max_level: bool = hero_level >= GameContext.MAX_HERO_LEVEL
+	if is_max_level:
+		lines.append("XP: MAX LEVEL")
+	else:
+		var next_xp: int = GameContext.get_xp_for_level(hero_level + 1)
+		lines.append("XP: %d / %d (%d to next)" % [hero_xp, next_xp, next_xp - hero_xp])
 
 	# Abilities with level locks
 	if class_data != null:
@@ -6029,29 +6995,59 @@ func _build_inn_ui() -> void:
 	print("[Inn] facility=%s tier=%d view=%s phase=%s" % [facility_id, current_tier, _inn_view, str(GameContext.get_phase())])
 
 
-## Soft-lock safety: if no heroes owned and gold < min recruit cost, grant a free Lv1 hero.
+## Soft-lock safety: if no heroes owned and gold too low to rebuild, grant recovery party.
+## Triggers when: Region 1 only, 0 heroes AND gold < 150 (can't afford 2 recruits at ~70g each).
+## Grants: 2 equipped heroes (Defender + Striker) + enough gold to recruit 2 more from Inn.
 func _check_softlock_free_recruit() -> void:
+	# Pity recovery only available in Region 1 (Thornhaven)
+	# Forces bankrupt players in later regions to travel back to R1
+	if GameContext.get_current_region() != 1:
+		return
 	var owned = GameContext.get_owned_heroes()
 	if not owned.is_empty():
 		return
 	var gold = GameContext.get_run_gold()
-	var min_cost: int = 50
-	if gold >= min_cost:
-		return
-	# Soft-lock detected — grant free hero
-	print("[SoftLock] No heroes and gold=%d < %d — granting free defender" % [gold, min_cost])
-	var hero_id = GameContext.recruit_hero("defender", 0, "human", 1, [])
-	if hero_id != "":
-		GameContext.add_to_party(hero_id)
-		var notice = Label.new()
-		notice.text = "A volunteer defender has joined your cause!"
-		notice.add_theme_font_size_override("font_size", GameContext.fs(15))
-		notice.modulate = Color(0.4, 1.0, 0.5, 1)
-		notice.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		_facility_actions_container.add_child(notice)
-		var sep = HSeparator.new()
-		_facility_actions_container.add_child(sep)
+	if gold >= 150:
+		return  # Can afford at least 2 recruits at ~70g each — not a true soft-lock
+
+	# Soft-lock detected — grant recovery party
+	print("[SoftLock] No heroes and gold=%d < 150 — granting recovery party" % gold)
+
+	# Grant enough gold for a full party of 4 (R1 recruits cost ~70g each)
+	var recovery_gold: int = maxi(250 - gold, 0)
+	if recovery_gold > 0:
+		GameContext.add_run_gold(recovery_gold)
+		print("[SoftLock] Granted %d recovery gold (total now %d)" % [recovery_gold, GameContext.get_run_gold()])
+
+	# Grant 2 free equipped heroes (Defender + Striker with basic weapons)
+	var rng = RandomNumberGenerator.new()
+	rng.seed = hash("pity_%d" % Time.get_unix_time_from_system())
+	var current_region = GameContext.get_current_region()
+
+	var equip_def = GameContext.generate_recruit_equipment("defender", current_region, 1, rng)
+	var hero1 = GameContext.recruit_hero("defender", 0, "human", 1, equip_def)
+	if hero1 != "":
+		GameContext.add_to_party(hero1)
+
+	var equip_str = GameContext.generate_recruit_equipment("striker", current_region, 1, rng)
+	var hero2 = GameContext.recruit_hero("striker", 0, "human", 1, equip_str)
+	if hero2 != "":
+		GameContext.add_to_party(hero2)
+
+	var notice = Label.new()
+	notice.text = "The Town Council has provided emergency volunteers and funds to rebuild your party!"
+	notice.add_theme_font_size_override("font_size", GameContext.fs(15))
+	notice.modulate = Color(0.4, 1.0, 0.5, 1)
+	notice.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_facility_actions_container.add_child(notice)
+	_facility_actions_container.add_child(HSeparator.new())
+
+
+## Returns a town-scoped shop ID for Inn slot tracking (e.g. "town_thornhaven:inn").
+## Each town's Inn tracks purchased slots independently.
+func _get_inn_shop_id() -> String:
+	return "%s:%s" % [GameContext.get_current_town_id(), _current_facility_id]
 
 
 ## Inn recruit view: available candidates to hire
@@ -6059,12 +7055,30 @@ func _build_inn_recruit_view(facility, current_tier: int) -> void:
 	# Soft-lock safety: if no heroes and can't afford any, offer a free recruit
 	_check_softlock_free_recruit()
 
-	# Party status bar
+	# Party + bench status bar
 	var selected_party = GameContext.get_selected_party()
+	var town_id: String = GameContext.get_current_town_id()
+	var bench_count: int = GameContext.get_inn_bench_count(town_id)
+	var bench_cap: int = GameContext.get_inn_bench_capacity(town_id)
+	var party_full: bool = selected_party.size() >= GameContext.get_max_party_size()
+	var bench_full: bool = bench_count >= bench_cap
+
 	var party_label = Label.new()
-	party_label.text = "Party: %d / %d" % [selected_party.size(), GameContext.get_max_party_size()]
-	party_label.modulate = Color(0.5, 1, 0.5, 1) if selected_party.size() > 0 else Color(0.8, 0.8, 0.8, 1)
+	party_label.text = "Party: %d / %d  |  Bench: %d / %d" % [selected_party.size(), GameContext.get_max_party_size(), bench_count, bench_cap]
+	if party_full and bench_full:
+		party_label.modulate = Color(1.0, 0.5, 0.5, 1)
+	elif selected_party.size() > 0:
+		party_label.modulate = Color(0.5, 1, 0.5, 1)
+	else:
+		party_label.modulate = Color(0.8, 0.8, 0.8, 1)
 	_facility_actions_container.add_child(party_label)
+
+	if party_full and bench_full:
+		var full_warn = Label.new()
+		full_warn.text = "Inn bench full! Dismiss a hero or upgrade inn."
+		full_warn.add_theme_font_size_override("font_size", GameContext.fs(12))
+		full_warn.modulate = Color(1.0, 0.6, 0.4, 1)
+		_facility_actions_container.add_child(full_warn)
 
 	# Get recruit level from facility tier, with regional minimum floor
 	var recruit_level = 1
@@ -6090,7 +7104,7 @@ func _build_inn_recruit_view(facility, current_tier: int) -> void:
 	# Dynamic recruit candidates from DataRegistry (races + classes filtered by unlock_region)
 	var current_region = GameContext.get_current_region()
 	var candidates = _generate_inn_recruit_candidates(current_region, recruit_level, max_candidates, current_tier)
-	var inn_id = _current_facility_id
+	var inn_id = _get_inn_shop_id()
 
 	if candidates.size() == 0:
 		var no_candidates = Label.new()
@@ -6131,32 +7145,30 @@ func _build_inn_roster_view(facility, current_tier: int) -> void:
 	permadeath_warning.modulate = Color(1.0, 0.6, 0.4, 1)
 	_facility_actions_container.add_child(permadeath_warning)
 
-	var owned_heroes = GameContext.get_owned_heroes()
 	var selected_party = GameContext.get_selected_party()
+	var town_id: String = GameContext.get_current_town_id()
 
-	# Filter to bench heroes only (not in active party)
-	var bench_heroes: Array = []
-	for hero in owned_heroes:
-		if not GameContext.is_in_party(hero.get("hero_id", "")):
-			bench_heroes.append(hero)
+	# Filter to bench heroes at THIS inn only
+	var bench_heroes: Array = GameContext.get_inn_bench_heroes(town_id)
+	var bench_cap: int = GameContext.get_inn_bench_capacity(town_id)
 
-	# Party status bar
+	# Party + bench status bar
 	var party_label = Label.new()
-	party_label.text = "Bench: %d | Party: %d / %d" % [bench_heroes.size(), selected_party.size(), GameContext.get_max_party_size()]
+	party_label.text = "Bench: %d / %d  |  Party: %d / %d" % [bench_heroes.size(), bench_cap, selected_party.size(), GameContext.get_max_party_size()]
 	party_label.modulate = Color(0.5, 1, 0.5, 1) if selected_party.size() > 0 else Color(0.8, 0.8, 0.8, 1)
 	_facility_actions_container.add_child(party_label)
 
 	var sep = HSeparator.new()
 	_facility_actions_container.add_child(sep)
 
-	if owned_heroes.size() == 0:
+	if GameContext.get_owned_heroes().size() == 0:
 		var no_heroes = Label.new()
 		no_heroes.text = "(No heroes recruited yet)"
 		no_heroes.modulate = Color(0.78, 0.78, 0.78, 1)
 		_facility_actions_container.add_child(no_heroes)
 	elif bench_heroes.size() == 0:
 		var no_bench = Label.new()
-		no_bench.text = "(All heroes are in your active party)"
+		no_bench.text = "(No heroes benched at this inn)"
 		no_bench.modulate = Color(0.78, 0.78, 0.78, 1)
 		_facility_actions_container.add_child(no_bench)
 	else:
@@ -6164,7 +7176,7 @@ func _build_inn_roster_view(facility, current_tier: int) -> void:
 			var row = _create_hero_row(hero, selected_party)
 			_facility_actions_container.add_child(row)
 
-	print("[Inn] roster: owned=%d bench=%d party=%d" % [owned_heroes.size(), bench_heroes.size(), selected_party.size()])
+	print("[Inn] roster: town=%s bench=%d/%d party=%d" % [town_id, bench_heroes.size(), bench_cap, selected_party.size()])
 
 
 ## Inn upgrade view: tier tabs with benefits and upgrade button
@@ -6635,7 +7647,8 @@ func _create_recruit_row(candidate: Dictionary, slot_key: String = "") -> HBoxCo
 		for eq in starting_equipment:
 			var eq_tpl = DataRegistry.get_item_template(eq.get("item_id", ""))
 			if eq_tpl != null:
-				equip_names.append(eq_tpl.display_name)
+				var suffix: String = " (Bag)" if eq.get("slot", "") == "bag_item" else ""
+				equip_names.append(eq_tpl.display_name + suffix)
 		if equip_names.size() > 0:
 			var equip_label = Label.new()
 			equip_label.text = "+" + ", ".join(equip_names)
@@ -6643,11 +7656,14 @@ func _create_recruit_row(candidate: Dictionary, slot_key: String = "") -> HBoxCo
 			equip_label.modulate = Color(0.6, 0.9, 0.6, 1)
 			row.add_child(equip_label)
 
-	# Recruit button
+	# Recruit button — disabled if can't afford OR if party + bench are both full
+	var recruit_town: String = GameContext.get_current_town_id()
+	var recruit_party_full: bool = GameContext.get_selected_party().size() >= GameContext.get_max_party_size()
+	var recruit_bench_full: bool = not GameContext.can_bench_at_inn(recruit_town)
 	var btn = Button.new()
 	btn.text = "Recruit"
 	btn.custom_minimum_size = Vector2(80, 26)
-	btn.disabled = not can_afford
+	btn.disabled = not can_afford or (recruit_party_full and recruit_bench_full)
 	btn.pressed.connect(_on_recruit_hero_pressed.bind(class_id, cost, race_id, level, slot_key, starting_equipment))
 	row.add_child(btn)
 
@@ -6688,6 +7704,7 @@ func _on_equip_slot_pressed(hero_id: String, slot: String) -> void:
 func _on_manage_gear_pressed(hero_id: String) -> void:
 	_close_manage_gear_overlay()
 	_manage_gear_hero_id = hero_id
+	_manage_gear_filter = "party"
 	_open_manage_gear_overlay()
 
 
@@ -6726,7 +7743,9 @@ func _open_manage_gear_overlay() -> void:
 	var scroll = ScrollContainer.new()
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll.custom_minimum_size = Vector2(0, 500)
+	# Viewport-relative height: 70% of screen, capped at 700px
+	var vp_h: int = int(get_viewport().get_visible_rect().size.y)
+	scroll.custom_minimum_size = Vector2(0, mini(int(vp_h * 0.7), 700))
 	panel.add_child(scroll)
 
 	_manage_gear_content = VBoxContainer.new()
@@ -6739,16 +7758,103 @@ func _open_manage_gear_overlay() -> void:
 
 	_build_manage_gear_content()
 
+	# Tutorial: first time opening Manage Gear
+	TutorialOverlay.try_show(self, "tutorial_manage_roster")
+
 
 func _build_manage_gear_content() -> void:
 	for child in _manage_gear_content.get_children():
 		child.queue_free()
 
-	var roster = GameContext.get_roster()
+	# ---- Filter tab row: [Party] [Town1 (N)] [Town2 (N)] ... ----
+	var filter_row = HBoxContainer.new()
+	filter_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	filter_row.add_theme_constant_override("separation", 4)
+	_manage_gear_content.add_child(filter_row)
+
+	# Party tab
+	var party_tab = Button.new()
+	party_tab.text = "Party"
+	party_tab.custom_minimum_size = Vector2(60, 26)
+	party_tab.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	if _manage_gear_filter == "party":
+		var tab_style = StyleBoxFlat.new()
+		tab_style.bg_color = Color(0.1, 0.2, 0.15, 0.9)
+		tab_style.border_color = Color(0.3, 0.8, 0.6, 0.9)
+		tab_style.set_border_width_all(2)
+		tab_style.set_corner_radius_all(4)
+		party_tab.add_theme_stylebox_override("normal", tab_style)
+	party_tab.pressed.connect(func():
+		_manage_gear_filter = "party"
+		_manage_gear_hero_id = ""
+		_build_manage_gear_content()
+	)
+	filter_row.add_child(party_tab)
+
+	# Town bench tabs — show towns with bench heroes or current town
+	var current_town: String = GameContext.get_current_town_id()
+	var all_regions = DataRegistry.get_all_regions()
+	for region in all_regions:
+		if region == null:
+			continue
+		for town_id in region.town_ids:
+			var bench_count: int = GameContext.get_inn_bench_count(town_id)
+			if bench_count == 0 and town_id != current_town:
+				continue
+			var town_data = DataRegistry.get_town(town_id)
+			var town_name: String = town_data.display_name if town_data != null else town_id
+			var tab_btn = Button.new()
+			tab_btn.text = "%s (%d)" % [town_name, bench_count]
+			tab_btn.custom_minimum_size = Vector2(60, 26)
+			tab_btn.add_theme_font_size_override("font_size", GameContext.fs(12))
+			tab_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+			if _manage_gear_filter == town_id:
+				var tab_style = StyleBoxFlat.new()
+				tab_style.bg_color = Color(0.1, 0.2, 0.15, 0.9)
+				tab_style.border_color = Color(0.3, 0.8, 0.6, 0.9)
+				tab_style.set_border_width_all(2)
+				tab_style.set_corner_radius_all(4)
+				tab_btn.add_theme_stylebox_override("normal", tab_style)
+			var bound_town: String = town_id
+			tab_btn.pressed.connect(func():
+				_manage_gear_filter = bound_town
+				_manage_gear_hero_id = ""
+				_build_manage_gear_content()
+			)
+			filter_row.add_child(tab_btn)
+
+	# ---- Build hero list based on filter ----
+	var roster: Array = []
+	var hero_ids_in_filter: Array = []
+	if _manage_gear_filter == "party":
+		var party_ids: Array = GameContext.get_selected_party()
+		for pid in party_ids:
+			var hdata: Dictionary = GameContext.get_hero(pid)
+			if not hdata.is_empty():
+				roster.append(hdata)
+				hero_ids_in_filter.append(pid)
+	else:
+		# Town bench filter
+		var bench_heroes: Array = GameContext.get_inn_bench_heroes(_manage_gear_filter)
+		for hdata in bench_heroes:
+			roster.append(hdata)
+			hero_ids_in_filter.append(hdata.get("hero_id", ""))
+
 	if roster.is_empty():
+		var empty_lbl = Label.new()
+		if _manage_gear_filter == "party":
+			empty_lbl.text = "(No heroes in party)"
+		else:
+			empty_lbl.text = "(No heroes benched at this inn)"
+		empty_lbl.modulate = Color(0.78, 0.78, 0.78, 1)
+		_manage_gear_content.add_child(empty_lbl)
 		return
 
 	var hero_id: String = _manage_gear_hero_id
+	# If current hero is not in filtered list, default to first hero
+	if hero_id == "" or hero_id not in hero_ids_in_filter:
+		hero_id = hero_ids_in_filter[0]
+		_manage_gear_hero_id = hero_id
 
 	# ---- Hero selector row with portraits ----
 	var hero_row = HBoxContainer.new()
@@ -6851,6 +7957,22 @@ func _build_manage_gear_content() -> void:
 	race_lbl.add_theme_font_size_override("font_size", GameContext.fs(14))
 	race_lbl.modulate = Color(0.7, 0.7, 0.7, 1)
 	identity_vbox.add_child(race_lbl)
+
+	# XP progress line
+	var hero_xp: int = int(hero.get("xp", 0))
+	var is_max_level: bool = hero_level >= GameContext.MAX_HERO_LEVEL
+	var xp_lbl = Label.new()
+	if is_max_level:
+		xp_lbl.text = format_xp_line(hero_xp, 0, true)
+		xp_lbl.modulate = Color(1.0, 0.85, 0.3, 1)
+	else:
+		var next_level_xp: int = GameContext.get_xp_for_level(hero_level + 1)
+		xp_lbl.text = format_xp_line(hero_xp, next_level_xp, false)
+		xp_lbl.modulate = Color(0.5, 0.8, 1.0, 1)
+	xp_lbl.add_theme_font_size_override("font_size", GameContext.fs(13))
+	xp_lbl.tooltip_text = build_level_tooltip(hero_id)
+	xp_lbl.mouse_filter = Control.MOUSE_FILTER_STOP
+	identity_vbox.add_child(xp_lbl)
 
 	# Stats grid
 	var eff_stats: Dictionary = GameContext.get_hero_effective_stats(hero_id)
@@ -7035,6 +8157,8 @@ func _build_manage_gear_content() -> void:
 				item_lbl.add_theme_font_size_override("font_size", GameContext.fs(13))
 				item_lbl.modulate = ItemInstance.QUALITY_COLORS[clampi(quality, 0, 3)]
 				item_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+				item_lbl.tooltip_text = _build_equipment_slot_tooltip(slot, item_id, quality, slot_data)
+				item_lbl.mouse_filter = Control.MOUSE_FILTER_STOP
 				slot_hbox.add_child(item_lbl)
 			else:
 				var unk_lbl = Label.new()
@@ -7149,6 +8273,180 @@ func _close_manage_gear_overlay() -> void:
 		_manage_gear_overlay = null
 		_manage_gear_content = null
 		_refresh_facility_panel()
+
+
+## Open bag select overlay from party bar — shows consumables from storage.
+func _on_party_card_bag_pressed(hero_id: String) -> void:
+	if _bag_select_overlay != null:
+		_close_bag_select_overlay()
+	_bag_select_hero_id = hero_id
+	_bag_select_overlay = CanvasLayer.new()
+	_bag_select_overlay.layer = 10
+	add_child(_bag_select_overlay)
+
+	# Backdrop — click to close
+	var backdrop = ColorRect.new()
+	backdrop.color = Color(0, 0, 0, 0.6)
+	backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
+	backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
+	backdrop.gui_input.connect(func(event: InputEvent):
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			_close_bag_select_overlay()
+	)
+	_bag_select_overlay.add_child(backdrop)
+
+	var center = CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_bag_select_overlay.add_child(center)
+
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(380, 0)
+	var style = StyleBoxFlat.new()
+	style.bg_color = _region_palette.get("bg_dark", Color(0.14, 0.12, 0.10, 0.95))
+	style.set_border_width_all(2)
+	style.border_color = _region_palette.get("border", Color(0.55, 0.4, 0.25, 0.8))
+	style.set_corner_radius_all(8)
+	style.set_content_margin_all(12)
+	panel.add_theme_stylebox_override("panel", style)
+	panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	center.add_child(panel)
+
+	var scroll = ScrollContainer.new()
+	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	var vp_h: int = int(get_viewport().get_visible_rect().size.y)
+	scroll.custom_minimum_size = Vector2(0, mini(int(vp_h * 0.5), 400))
+	panel.add_child(scroll)
+
+	_bag_select_content = VBoxContainer.new()
+	_bag_select_content.add_theme_constant_override("separation", 4)
+	_bag_select_content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(_bag_select_content)
+
+	UIAudio.register_closeable(_bag_select_overlay, _close_bag_select_overlay)
+	_build_bag_select_content()
+
+
+## Build/rebuild the consumable list inside the bag select overlay.
+func _build_bag_select_content() -> void:
+	for child in _bag_select_content.get_children():
+		child.queue_free()
+
+	var hero = GameContext.get_hero(_bag_select_hero_id)
+	var hero_name: String = hero.get("name", _bag_select_hero_id) if hero != null else _bag_select_hero_id
+	var bag = GameContext.get_hero_bag(_bag_select_hero_id)
+	var cap = GameContext.get_hero_bag_capacity(_bag_select_hero_id)
+	var bag_full: bool = bag.size() >= cap
+
+	# Header
+	var header = Label.new()
+	header.text = "%s — Bag (%d/%d)" % [hero_name, bag.size(), cap]
+	header.add_theme_font_size_override("font_size", GameContext.fs(16))
+	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	header.modulate = Color(1.0, 0.85, 0.4, 1)
+	_bag_select_content.add_child(header)
+
+	_bag_select_content.add_child(HSeparator.new())
+
+	# Current bag contents (read-only display)
+	if bag.size() > 0:
+		for entry in bag:
+			var tpl = DataRegistry.get_item_template(entry.get("item_id", ""))
+			var dname: String = tpl.display_name if tpl != null else entry.get("item_id", "")
+			var qty: int = int(entry.get("qty", 1))
+			var item_lbl = Label.new()
+			item_lbl.text = "  %s x%d" % [dname, qty]
+			item_lbl.add_theme_font_size_override("font_size", GameContext.fs(13))
+			item_lbl.modulate = Color(0.6, 0.9, 0.6, 1)
+			_bag_select_content.add_child(item_lbl)
+		_bag_select_content.add_child(HSeparator.new())
+
+	if bag_full:
+		var full_lbl = Label.new()
+		full_lbl.text = "Bag Full"
+		full_lbl.add_theme_font_size_override("font_size", GameContext.fs(14))
+		full_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		full_lbl.modulate = Color(0.8, 0.3, 0.3, 1)
+		_bag_select_content.add_child(full_lbl)
+		return
+
+	# Collect consumables from storage (run_items)
+	var consumable_map: Dictionary = {}
+	for inst in GameContext.run_items:
+		var iid: String = inst.template_id if inst is ItemInstance else inst.get("item_id", inst.get("template_id", ""))
+		if iid == "":
+			continue
+		var tpl = DataRegistry.get_item_template(iid)
+		if tpl == null or tpl.item_type != "consumable":
+			continue
+		var q: int = int(inst.qty) if inst is ItemInstance else int(inst.get("qty", 1))
+		consumable_map[iid] = consumable_map.get(iid, 0) + q
+
+	if consumable_map.is_empty():
+		var empty_lbl = Label.new()
+		empty_lbl.text = "No consumables in storage"
+		empty_lbl.add_theme_font_size_override("font_size", GameContext.fs(13))
+		empty_lbl.modulate = Color(0.7, 0.7, 0.7, 1)
+		empty_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_bag_select_content.add_child(empty_lbl)
+		return
+
+	# List each consumable with Equip button
+	for item_id in consumable_map:
+		var tpl = DataRegistry.get_item_template(item_id)
+		var qty: int = consumable_map[item_id]
+		var hbox = HBoxContainer.new()
+		hbox.add_theme_constant_override("separation", 8)
+		_bag_select_content.add_child(hbox)
+
+		var name_lbl = Label.new()
+		name_lbl.text = "%s (x%d)" % [tpl.display_name, qty]
+		name_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		name_lbl.add_theme_font_size_override("font_size", GameContext.fs(13))
+		hbox.add_child(name_lbl)
+
+		var equip_btn = Button.new()
+		equip_btn.text = "Equip"
+		equip_btn.add_theme_font_size_override("font_size", GameContext.fs(12))
+		equip_btn.custom_minimum_size = Vector2(60, 24)
+		var captured_id: String = item_id
+		equip_btn.pressed.connect(func():
+			_on_bag_select_equip(captured_id)
+		)
+		hbox.add_child(equip_btn)
+
+
+## Handle equip button press in bag select overlay.
+func _on_bag_select_equip(item_id: String) -> void:
+	var success: bool = GameContext.move_item_stash_to_hero_bag(_bag_select_hero_id, item_id)
+	if not success:
+		print("[BagSelect] Failed to move %s to hero %s bag" % [item_id, _bag_select_hero_id])
+		return
+	print("[BagSelect] Equipped %s to hero %s bag" % [item_id, _bag_select_hero_id])
+
+	# Check if bag is now full → auto-close
+	var bag = GameContext.get_hero_bag(_bag_select_hero_id)
+	var cap = GameContext.get_hero_bag_capacity(_bag_select_hero_id)
+	if bag.size() >= cap:
+		_close_bag_select_overlay()
+		_populate_heroes_section()
+		return
+
+	# Refresh list in-place (still room left)
+	_build_bag_select_content()
+	_populate_heroes_section()
+
+
+## Close the bag select overlay.
+func _close_bag_select_overlay() -> void:
+	if _bag_select_overlay != null:
+		UIAudio.unregister_closeable(_bag_select_overlay)
+		_bag_select_overlay.queue_free()
+		_bag_select_overlay = null
+	_bag_select_hero_id = ""
+	_bag_select_content = null
+	_populate_heroes_section()
 
 
 func _on_unequip_slot_pressed(hero_id: String, slot: String) -> void:
@@ -7483,11 +8781,37 @@ func _on_recruit_hero_pressed(class_id: String, cost: int, race_id: String = "hu
 		print("[Inn] recruited %s Lv %d hero_id=%s slot=%s" % [class_id, level, hero_id, slot_key])
 		# Mark slot as purchased so it shows [Recruited] until refresh
 		if slot_key != "" and _current_facility_id != "":
-			GameContext.mark_shop_slot_purchased(_current_facility_id, slot_key)
+			GameContext.mark_shop_slot_purchased(_get_inn_shop_id(), slot_key)
+			# Auto-restock: if all recruit slots are now purchased, refresh with new candidates
+			_check_inn_auto_restock()
 		# Highlight "Manage Roster" tab after first hire
 		if not GameContext.has_completed_tutorial("visited_roster_after_hire"):
 			_highlight_roster_tab = true
 	_refresh_facility_panel()
+
+
+## Auto-restock Inn when all recruit slots have been purchased.
+## Clears purchased state and increments restock counter for seed variation.
+func _check_inn_auto_restock() -> void:
+	if _current_facility_id == "":
+		return
+	var town_id: String = GameContext.get_current_town_id()
+	var current_tier: int = GameContext.get_facility_tier(town_id, _current_facility_id)
+	var max_candidates: int = 2 + current_tier  # T1=3, T2=4, T3=5, T4=6
+
+	# Check if all recruit slots are purchased
+	var inn_shop_id: String = _get_inn_shop_id()
+	for i in range(max_candidates):
+		var slot_key: String = "recruit_%d" % i
+		if not GameContext.is_shop_slot_purchased(inn_shop_id, slot_key):
+			return  # Not all purchased yet
+
+	# All slots purchased — clear them for restock
+	if GameContext.shop_purchased_slots.has(inn_shop_id):
+		GameContext.shop_purchased_slots[inn_shop_id] = []
+	GameContext.inn_restock_counts[town_id] = GameContext.inn_restock_counts.get(town_id, 0) + 1
+	var restock_num: int = GameContext.inn_restock_counts[town_id]
+	print("[Inn] All %d recruit slots purchased — auto-restocked (restock #%d)" % [max_candidates, restock_num])
 
 
 func _on_rename_hero_pressed(hero_id: String) -> void:
@@ -7777,8 +9101,8 @@ func _generate_inn_recruit_candidates(current_region: int, recruit_level: int, m
 	if available_classes.is_empty():
 		available_classes = ["defender", "striker", "warden"]
 
-	# Base cost per recruit (could be tier-based in future)
-	var base_cost = 50
+	# Regional base cost (scales with region to match economy progression)
+	var region_cost: int = RECRUIT_BASE_COST_BY_REGION[clampi(current_region, 1, 7)]
 
 	# Generate all race+class combinations as potential candidates
 	var all_combinations: Array = []
@@ -7787,17 +9111,18 @@ func _generate_inn_recruit_candidates(current_region: int, recruit_level: int, m
 			all_combinations.append({
 				"race_id": race_id,
 				"class_id": class_id,
-				"cost_gold": base_cost,
+				"cost_gold": region_cost,
 				"level": recruit_level
 			})
 
 	# For MVP: Show a subset of candidates (one per class, varying races)
-	# Use seeded RNG for determinism based on town_id + refresh counter
+	# Use seeded RNG for determinism based on town_id + restock counter
 	var town_id = GameContext.get_current_town_id()
 	if town_id == "":
 		town_id = "default"
 	var base_seed = GameContext.get_run_seed() if GameContext.get_run_seed() != 0 else 42
-	var recruit_seed = SeededRNG.derive_seed("inn_recruit:" + town_id, base_seed)
+	var restock_count: int = GameContext.inn_restock_counts.get(town_id, 0)
+	var recruit_seed = SeededRNG.derive_seed("inn_recruit:%s:%d" % [town_id, restock_count], base_seed)
 	var rng = SeededRNG.create_rng(recruit_seed)
 
 	# Shuffle combinations deterministically using seeded RNG (Fisher-Yates)
@@ -7814,6 +9139,13 @@ func _generate_inn_recruit_candidates(current_region: int, recruit_level: int, m
 		if not selected_classes.has(class_id):
 			# Generate starting equipment for T2+ inns
 			combo["starting_equipment"] = GameContext.generate_recruit_equipment(class_id, current_region, inn_tier, rng)
+			# Add equipment value surcharge to recruit cost
+			var equip_value: int = 0
+			for eq in combo["starting_equipment"]:
+				var eq_tpl = DataRegistry.get_item_template(eq.get("item_id", ""))
+				if eq_tpl != null:
+					equip_value += eq_tpl.base_value
+			combo["cost_gold"] = region_cost + equip_value
 			candidates.append(combo)
 			selected_classes[class_id] = true
 		if candidates.size() >= max_candidates:
@@ -8233,12 +9565,6 @@ func _on_mix_pressed() -> void:
 	# Look up recipe
 	var recipe: Dictionary = DataRegistry.lookup_mix(facility_id, slot_a, slot_b, slot_c)
 
-	# Tier check — don't consume materials for tier-locked recipes
-	if recipe.size() > 0 and recipe.get("required_tier", 1) > current_tier:
-		ms["result"] = "This recipe requires Tier %d." % recipe.get("required_tier", 1)
-		_refresh_facility_panel()
-		return
-
 	# Check materials in stash before consuming
 	var run_items_dict: Dictionary = GameContext.get_run_items_dict()
 	var items_to_consume: Dictionary = {}
@@ -8346,7 +9672,7 @@ func _on_mix_clear_pressed() -> void:
 ## Discovery Log view — shows found/total recipes.
 func _build_discovery_log_view(facility, facility_id: String, town_id: String, current_tier: int) -> void:
 	var all_recipes: Array = DataRegistry.get_mixing_recipes(facility_id)
-	var total_available: int = DataRegistry.get_mixing_recipe_count(facility_id, current_tier)
+	var total_available: int = all_recipes.size()
 	var found: int = GameContext.get_discovered_mix_count(facility_id)
 
 	var header = Label.new()
@@ -8355,11 +9681,21 @@ func _build_discovery_log_view(facility, facility_id: String, town_id: String, c
 	header.modulate = Color(0.9, 0.85, 0.6, 1)
 	_facility_actions_container.add_child(header)
 
-	for recipe in all_recipes:
-		var req_tier: int = recipe.get("required_tier", 1)
-		if req_tier > current_tier:
-			continue
+	# Two-column layout for recipe list
+	var columns_hbox = HBoxContainer.new()
+	columns_hbox.add_theme_constant_override("separation", 12)
+	_facility_actions_container.add_child(columns_hbox)
+	var col_left = VBoxContainer.new()
+	col_left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	col_left.add_theme_constant_override("separation", 3)
+	columns_hbox.add_child(col_left)
+	var col_right = VBoxContainer.new()
+	col_right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	col_right.add_theme_constant_override("separation", 3)
+	columns_hbox.add_child(col_right)
 
+	var recipe_idx: int = 0
+	for recipe in all_recipes:
 		var input_a: String = recipe.get("input_a", "")
 		var input_b: String = recipe.get("input_b", "")
 		var input_c: String = recipe.get("input_c", "")
@@ -8383,7 +9719,7 @@ func _build_discovery_log_view(facility, facility_id: String, town_id: String, c
 			text += " = %s" % name_out
 			var label = Label.new()
 			label.text = text
-			label.add_theme_font_size_override("font_size", GameContext.fs(13))
+			label.add_theme_font_size_override("font_size", GameContext.fs(12))
 			label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			label.modulate = Color(0.8, 1.0, 0.8, 1)
 			row.add_child(label)
@@ -8413,10 +9749,15 @@ func _build_discovery_log_view(facility, facility_id: String, town_id: String, c
 			else:
 				label.text = "??? + ??? = ???"
 			label.modulate = Color(0.7, 0.7, 0.7, 0.85)
-			label.add_theme_font_size_override("font_size", GameContext.fs(14))
+			label.add_theme_font_size_override("font_size", GameContext.fs(12))
 			row.add_child(label)
 
-		_facility_actions_container.add_child(row)
+		# Alternate between left and right columns
+		if recipe_idx % 2 == 0:
+			col_left.add_child(row)
+		else:
+			col_right.add_child(row)
+		recipe_idx += 1
 
 
 ## Upgrade view for mixing facilities — tier-tab style matching Training Hall.
@@ -8923,9 +10264,9 @@ func _build_dungeon_floor_info(dungeon, floor_num: int) -> void:
 		theme_label.modulate = Color(1.0, 0.85, 0.4, 1)
 		_facility_actions_container.add_child(theme_label)
 
-	# Collect all monster IDs for this floor
+	# Collect all monster IDs for this floor (T1 only on floors 1-2)
 	var monster_ids: Array[String] = []
-	if floor_idx < dungeon.tier1_by_floor.size():
+	if floor_idx < 2 and floor_idx < dungeon.tier1_by_floor.size():
 		for mid in dungeon.tier1_by_floor[floor_idx]:
 			if mid not in monster_ids:
 				monster_ids.append(mid)
@@ -8953,6 +10294,15 @@ func _build_dungeon_floor_info(dungeon, floor_num: int) -> void:
 			max_hp = hp
 		if monster.loot_table_id != "" and monster.loot_table_id not in loot_table_ids:
 			loot_table_ids.append(monster.loot_table_id)
+
+	# Include boss loot table on the final floor
+	if floor_num == dungeon.floor_count:
+		for bid in [dungeon.boss_id, dungeon.alt_boss_id]:
+			if bid == "":
+				continue
+			var boss_monster = DataRegistry.get_monster(bid)
+			if boss_monster != null and boss_monster.loot_table_id != "" and boss_monster.loot_table_id not in loot_table_ids:
+				loot_table_ids.append(boss_monster.loot_table_id)
 
 	# Monster info line
 	if monster_ids.size() > 0:
@@ -9067,6 +10417,13 @@ func _on_dungeon_enter_pressed(dungeon_id: String) -> void:
 		if _facility_actions_container != null:
 			_facility_actions_container.add_child(error_label)
 		return
+
+	# Formation warning: all heroes in middle row
+	if _check_formation_warning():
+		var proceed: bool = await _show_formation_warning()
+		if not proceed:
+			return
+
 	GameContext.enter_dungeon(dungeon_id)
 	GameContext.set_phase(GameContext.GamePhase.COMBAT)
 	print("[DungeonFacility] Entering %s at floor %d" % [dungeon_id, GameContext.get_current_floor()])
@@ -9118,12 +10475,13 @@ func _on_unequip_offhand_pressed() -> void:
 	_refresh_facility_panel()
 
 
-func _on_equip_item_pressed(item_id: String, slot: String, quality: int) -> void:
+func _on_equip_item_pressed(item_id: String, slot: String, quality: int, affix_data: Dictionary = {}) -> void:
 	_equip_pending_item_id = item_id
 	_equip_pending_slot = slot
 	_equip_pending_quality = quality
+	_equip_pending_affix_data = affix_data
 	_equip_selected_hero_id = ""
-	print("[Storage] Equip flow started: item=%s slot=%s q=%d" % [item_id, slot, quality])
+	print("[Storage] Equip flow started: item=%s slot=%s q=%d affix=%s" % [item_id, slot, quality, affix_data.get("affix_id", "")])
 	_refresh_facility_panel()
 
 
@@ -9306,14 +10664,32 @@ func _build_equip_comparison_ui() -> void:
 		if old_tpl != null:
 			old_name = old_tpl.display_name
 			var q_prefix: String = ItemInstance.QUALITY_PREFIXES[old_quality] if old_quality < ItemInstance.QUALITY_PREFIXES.size() and old_quality > 0 else ""
-			old_name = "%s%s" % [q_prefix, old_name]
+			# Include old item's affix prefix in name
+			var old_affix_prefix: String = slot_data.get("affix_prefix", "")
+			if old_affix_prefix != "":
+				old_name = "%s %s%s" % [old_affix_prefix, q_prefix, old_name]
+			else:
+				old_name = "%s%s" % [q_prefix, old_name]
 			var cmp_region_bonus: float = GameContext.get_completed_region_count() * 0.1
 			old_stats = old_tpl.get_stat_bonuses_with_quality(old_quality, cmp_region_bonus)
+			# Include old item's affix stats in comparison
+			var old_affix_stats: Dictionary = slot_data.get("affix_stats", {})
+			if old_affix_stats is Dictionary:
+				for ak in old_affix_stats:
+					old_stats[ak] = int(old_stats.get(ak, 0)) + int(old_affix_stats[ak])
 
 	var cmp_rb: float = GameContext.get_completed_region_count() * 0.1
 	var new_stats: Dictionary = tpl.get_stat_bonuses_with_quality(_equip_pending_quality, cmp_rb) if tpl != null else {}
+	# Include affix stats in comparison
+	var pending_affix_stats: Dictionary = _equip_pending_affix_data.get("affix_stats", {})
+	if pending_affix_stats is Dictionary:
+		for ak in pending_affix_stats:
+			new_stats[ak] = int(new_stats.get(ak, 0)) + int(pending_affix_stats[ak])
 	var new_q_prefix: String = ItemInstance.QUALITY_PREFIXES[_equip_pending_quality] if _equip_pending_quality < ItemInstance.QUALITY_PREFIXES.size() and _equip_pending_quality > 0 else ""
+	var affix_prefix_str: String = _equip_pending_affix_data.get("affix_prefix", "")
 	var new_display: String = "%s%s" % [new_q_prefix, item_name]
+	if affix_prefix_str != "":
+		new_display = "%s %s" % [affix_prefix_str, new_display]
 
 	# Comparison panel
 	var comp_panel = PanelContainer.new()
@@ -9490,12 +10866,13 @@ func _on_equip_hero_selected(hero_id: String) -> void:
 
 
 func _on_equip_confirmed() -> void:
-	print("[Storage] Equip confirmed: hero=%s slot=%s item=%s q=%d" % [
-		_equip_selected_hero_id, _equip_pending_slot, _equip_pending_item_id, _equip_pending_quality])
-	GameContext.equip_hero_item(_equip_selected_hero_id, _equip_pending_slot, _equip_pending_item_id, _equip_pending_quality)
+	print("[Storage] Equip confirmed: hero=%s slot=%s item=%s q=%d affix=%s" % [
+		_equip_selected_hero_id, _equip_pending_slot, _equip_pending_item_id, _equip_pending_quality, _equip_pending_affix_data.get("affix_id", "")])
+	GameContext.equip_hero_item(_equip_selected_hero_id, _equip_pending_slot, _equip_pending_item_id, _equip_pending_quality, _equip_pending_affix_data)
 	_equip_pending_item_id = ""
 	_equip_pending_slot = ""
 	_equip_pending_quality = 0
+	_equip_pending_affix_data = {}
 	_equip_selected_hero_id = ""
 	_refresh_facility_panel()
 
@@ -9505,6 +10882,7 @@ func _on_equip_cancelled() -> void:
 	_equip_pending_item_id = ""
 	_equip_pending_slot = ""
 	_equip_pending_quality = 0
+	_equip_pending_affix_data = {}
 	_equip_selected_hero_id = ""
 	_refresh_facility_panel()
 

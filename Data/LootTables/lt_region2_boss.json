@@ -1,14 +1,14 @@
 {
   "id": "lt_region2_boss",
   "display_name": "Region 2 Boss Loot",
-  "description": "Rewarding drops from the Spiral Mycelium and Fungalmire bosses.",
+  "description": "Rich drops from Fungalmire bosses.",
   "min_drops": 3,
   "max_drops": 5,
   "entries": [
     { "item_id": "boss_trophy_fungalmire", "weight": 20, "min_qty": 1, "max_qty": 1 },
     { "item_id": "spore_cluster", "weight": 18, "min_qty": 3, "max_qty": 5 },
     { "item_id": "fungal_fiber", "weight": 15, "min_qty": 3, "max_qty": 5 },
-    { "item_id": "healing_tonic", "weight": 15, "min_qty": 2, "max_qty": 3 },
+    { "item_id": "strong_healing_tonic", "weight": 15, "min_qty": 2, "max_qty": 3 },
     { "item_id": "fm_spore_blade", "weight": 8, "min_qty": 1, "max_qty": 1 },
     { "item_id": "fm_fungal_longbow", "weight": 7, "min_qty": 1, "max_qty": 1 },
     { "item_id": "fm_fungal_staff", "weight": 7, "min_qty": 1, "max_qty": 1 },

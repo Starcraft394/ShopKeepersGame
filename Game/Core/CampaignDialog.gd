@@ -15,6 +15,9 @@ static func get_pending_dialogs(trigger: String, region_id: String = "", floor_n
 	for dialog in all_dialogs:
 		if dialog.trigger != trigger:
 			continue
+		# NG+ cycle gate: skip if current cycle is below dialog's minimum
+		if dialog.min_ng_cycle > GameContext.ng_plus_cycle:
+			continue
 		# Already shown?
 		if GameContext.has_campaign_flag("shown_" + dialog.id):
 			continue

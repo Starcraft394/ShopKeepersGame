@@ -183,10 +183,12 @@ const QUALITY_WEIGHTS := [
 	{ "value": 3, "weight": 1.0 }
 ]
 
-# Quality roll weights for DUNGEON gear drops: Q2=85%, Q3=15% (Rare or Epic only)
+# Quality roll weights for DUNGEON gear drops: Q0=20%, Q1=40%, Q2=30%, Q3=10%
 const GEAR_DROP_QUALITY_WEIGHTS := [
-	{ "value": 2, "weight": 85.0 },
-	{ "value": 3, "weight": 15.0 }
+	{ "value": 0, "weight": 20.0 },
+	{ "value": 1, "weight": 40.0 },
+	{ "value": 2, "weight": 30.0 },
+	{ "value": 3, "weight": 10.0 }
 ]
 
 
@@ -250,7 +252,7 @@ func _roll_gear_drop(bias_tags: Array) -> ItemInstance:
 	# Select random gear from pool
 	var gear_id: String = pool[_rng.randi() % pool.size()]
 
-	# Roll quality tier (Rare or Epic only for dungeon drops)
+	# Roll quality tier for dungeon gear drops (Q0-Q3)
 	var quality_tier: int = SeededRNG.choose_weighted(GEAR_DROP_QUALITY_WEIGHTS, _rng)
 
 	# Create ItemInstance
@@ -279,7 +281,14 @@ func _roll_gear_drop(bias_tags: Array) -> ItemInstance:
 	else:
 		instance.display_name = base_name
 
-	print("[Loot] gear_drop item=%s q=%d chance=%.1f%% source=%s floor=%d tier=T%d pool=%d affix=%s" % [gear_id, quality_tier, drop_chance * 100.0, source_type, floor_index, equip_tier, pool.size(), instance.affix_prefix])
+	# NG+ bonus stat lines: generated at drop time based on region completions + cycle
+	var region_completions: int = GameContext.get_completed_region_count()
+	if region_completions > 0 or GameContext.ng_plus_cycle > 0:
+		var bonus_lines: Array = GameContext.generate_bonus_stat_lines(template.equip_slot, region_completions, _rng)
+		if bonus_lines.size() > 0:
+			instance.bonus_stat_lines = bonus_lines
+
+	print("[Loot] gear_drop item=%s q=%d chance=%.1f%% source=%s floor=%d tier=T%d pool=%d affix=%s bonus_lines=%d" % [gear_id, quality_tier, drop_chance * 100.0, source_type, floor_index, equip_tier, pool.size(), instance.affix_prefix, instance.bonus_stat_lines.size()])
 	return instance
 
 

@@ -17,7 +17,13 @@
       "speaker": "Thalric",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
       "title": "After the Fight",
-      "body": "After victory, loot drops from defeated enemies. You'll route each piece into your hero bags or shopkeeper bag before moving on.\n\nSpeed gear and buffs can help your heroes act before monsters in later fights — worth investing in!",
+      "body": "After victory, loot drops from defeated enemies. You'll route each piece into your hero bags or shopkeeper bag before moving on.\n\nSpeed gear and buffs can help your heroes act before monsters in later fights — worth investing in!"
+    },
+    {
+      "speaker": "Thalric",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
+      "title": "Speed & Shields",
+      "body": "Here's a secret worth knowing: heroes with 40+ Speed get two actions per turn, and 80+ Speed grants three! Fast heroes can swing twice before the enemy moves once.\n\nSome abilities grant temporary shields — bonus HP that absorbs damage before your real health is touched. Shields expire after a few rounds, so make them count.",
       "button_text": "To battle!"
     }
   ]

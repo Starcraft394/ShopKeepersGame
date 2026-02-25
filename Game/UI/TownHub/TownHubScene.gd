@@ -49,6 +49,17 @@ const BUILDING_SPRITES_BY_TYPE: Dictionary = {
 
 const BUILDING_SPRITE_PATH := "res://Assets/Backgrounds/"
 
+## Resolve building sprite path, preferring region-specific variant.
+## Checks Assets/Backgrounds/Buildings/R{N}/{sprite_key}.png first,
+## falls back to Assets/Backgrounds/{sprite_key}.png (R1 base).
+func _resolve_building_sprite_path(sprite_key: String) -> String:
+	var region_num: int = GameContext.current_region
+	if region_num >= 2 and region_num <= 7:
+		var regional_path: String = "res://Assets/Backgrounds/Buildings/R%d/%s.png" % [region_num, sprite_key]
+		if ResourceLoader.exists(regional_path):
+			return regional_path
+	return BUILDING_SPRITE_PATH + sprite_key + ".png"
+
 ## Preferred display order for facility buildings (by facility_id or facility_type).
 ## Row 1 = first 5, Row 2 = next 5.  Facilities not listed here append at the end.
 const FACILITY_DISPLAY_ORDER: Array = [
@@ -158,6 +169,8 @@ func _ready() -> void:
 	# otherwise multiple dialogs/tutorials stack on screen simultaneously.
 	await _check_campaign_dialogs()
 	await _check_first_launch_guidance()
+	await _check_side_quest_completion()
+	await _check_side_quest_offer()
 	await _check_facilities_overview()
 	_check_region_unlock_notification()
 
@@ -176,6 +189,37 @@ func _check_campaign_dialogs() -> void:
 	overlay = CampaignDialog.try_show(self, "keeper_story")
 	if overlay != null:
 		await overlay.dialog_finished
+
+
+## Check if any active side quests are complete and show reward overlay.
+func _check_side_quest_completion() -> void:
+	# Copy array to avoid modification during iteration
+	var quests: Array = GameContext.get_active_side_quests().duplicate()
+	for quest in quests:
+		if quest is SideQuestData and quest.check_completion():
+			print("[TownHub] Side quest complete: %s" % quest.quest_id)
+			var overlay = SideQuestSystem.show_quest_complete(self, quest)
+			if overlay != null:
+				await overlay.reward_collected
+
+
+## Roll for a new side quest offer on dungeon return.
+func _check_side_quest_offer() -> void:
+	if not GameContext.returned_from_dungeon:
+		return
+	GameContext.returned_from_dungeon = false  # Consume the flag
+
+	var region_id: String = GameContext.get_current_region_id()
+	var quest = SideQuestSystem.try_generate_quest(region_id)
+	if quest != null:
+		# Tutorial: explain side quests on first offer
+		var tut_overlay = TutorialOverlay.try_show(self, "tutorial_side_quests")
+		if tut_overlay != null:
+			await tut_overlay.tutorial_finished
+		print("[TownHub] Offering side quest: %s" % quest.quest_id)
+		var overlay = SideQuestSystem.show_quest_offer(self, quest)
+		if overlay != null:
+			await overlay.quest_resolved
 
 
 # ============================================================================
@@ -299,6 +343,15 @@ func _build_nav_rail() -> void:
 		_nav_vbox.add_child(btn)
 		_nav_facility_buttons.append(btn)
 
+	# Quests button — opens quest log overlay
+	var btn_quests = Button.new()
+	btn_quests.text = "Quests"
+	btn_quests.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	btn_quests.modulate = Color(0.7, 0.85, 1.0)
+	btn_quests.pressed.connect(_on_quests_pressed)
+	btn_quests.name = "QuestsBtn"
+	_nav_vbox.add_child(btn_quests)
+
 	# Region navigation section
 	var all_regions: Array = DataRegistry.get_all_regions() if DataRegistry.has_method("get_all_regions") else []
 	if all_regions.size() > 1:
@@ -368,6 +421,18 @@ func _build_nav_rail() -> void:
 			btn.pressed.connect(_on_travel_pressed.bind(tid))
 			_nav_vbox.add_child(btn)
 			_nav_travel_buttons.append(btn)
+
+	# New Cycle button (NG+ — visible after defeating R7 boss)
+	if NGPlusTransition.can_start_new_cycle():
+		var btn_new_cycle = Button.new()
+		var cycle_num: int = GameContext.ng_plus_cycle + 1
+		btn_new_cycle.text = "New Cycle (%d)" % cycle_num
+		btn_new_cycle.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn_new_cycle.modulate = Color(1.0, 0.82, 0.35)
+		btn_new_cycle.pressed.connect(_on_new_cycle_pressed)
+		btn_new_cycle.name = "NewCycle"
+		btn_new_cycle.tooltip_text = "Begin NG+ Cycle %d — carry heroes and start over with increased difficulty" % cycle_num
+		_nav_vbox.add_child(btn_new_cycle)
 
 	# Options button (opens pause/settings menu)
 	var btn_options = Button.new()
@@ -523,6 +588,11 @@ func _check_region_unlock_notification() -> void:
 	timer.timeout.connect(func(): canvas.queue_free())
 	print("[TownHub] Showing region unlock notification: %s" % region_name)
 
+	# Tutorial: first time unlocking a new region (delay so banner shows first)
+	get_tree().create_timer(1.0).timeout.connect(func():
+		TutorialOverlay.try_show(self, "tutorial_region_progression")
+	)
+
 
 func _create_notification_style() -> StyleBoxFlat:
 	var style = StyleBoxFlat.new()
@@ -610,7 +680,10 @@ func _create_town_header(town) -> void:
 	header_panel.offset_bottom = 42 * sf
 
 	var header_label = Label.new()
-	header_label.text = town.display_name
+	var header_text: String = town.display_name
+	if GameContext.ng_plus_cycle > 0:
+		header_text += "  [NG+%d]" % GameContext.ng_plus_cycle
+	header_label.text = header_text
 	header_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	header_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	header_label.add_theme_font_size_override("font_size", GameContext.fs(int(BASE_HEADER_FS * sf)))
@@ -733,25 +806,15 @@ func _create_building_button(facility_id: String, facility, sf: float) -> VBoxCo
 
 	var tex: Texture2D = null
 	if sprite_key != "":
-		var sprite_path: String = BUILDING_SPRITE_PATH + sprite_key + ".png"
-		tex = _load_icon(sprite_path)
+		tex = _load_icon(_resolve_building_sprite_path(sprite_key))
 
 	var bld: float = BASE_BUILDING_SIZE * sf
 
-	# Wrapper allows building sprite + shadow to overlap
+	# Wrapper for building sprite
 	var sprite_wrapper = Control.new()
 	sprite_wrapper.name = "SpriteWrapper"
-	sprite_wrapper.custom_minimum_size = Vector2(bld, BASE_WRAPPER_H * sf)
+	sprite_wrapper.custom_minimum_size = Vector2(bld, bld)
 	sprite_wrapper.mouse_filter = Control.MOUSE_FILTER_IGNORE
-
-	# Drop shadow at bottom of wrapper (elliptical via rounded ColorRect)
-	var shadow = ColorRect.new()
-	shadow.name = "Shadow"
-	shadow.color = Color(0, 0, 0, 0.3)
-	shadow.size = Vector2(BASE_SHADOW_W * sf, BASE_SHADOW_H * sf)
-	shadow.position = Vector2(BASE_SHADOW_OX * sf, BASE_SHADOW_OY * sf)
-	shadow.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	sprite_wrapper.add_child(shadow)
 
 	# TextureButton with the building sprite
 	var btn = TextureButton.new()
@@ -760,6 +823,12 @@ func _create_building_button(facility_id: String, facility, sf: float) -> VBoxCo
 	btn.size = Vector2(bld, bld)
 	btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 	btn.ignore_texture_size = true
+	# Suppress inherited Button theme background (dark StyleBox shows through padding)
+	var empty_style = StyleBoxEmpty.new()
+	btn.add_theme_stylebox_override("normal", empty_style)
+	btn.add_theme_stylebox_override("hover", empty_style)
+	btn.add_theme_stylebox_override("pressed", empty_style)
+	btn.add_theme_stylebox_override("focus", empty_style)
 	if tex != null:
 		btn.texture_normal = tex
 	btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -874,7 +943,7 @@ func _create_edit_mode_building(facility_id: String, facility, data: Dictionary,
 		sprite_key = BUILDING_SPRITES_BY_TYPE[facility.facility_type]
 	var tex: Texture2D = null
 	if sprite_key != "":
-		tex = _load_icon(BUILDING_SPRITE_PATH + sprite_key + ".png")
+		tex = _load_icon(_resolve_building_sprite_path(sprite_key))
 
 	var btn = TextureButton.new()
 	btn.name = "Btn_" + facility_id
@@ -1099,6 +1168,24 @@ func _on_location_changed(_region_id: String, _town_id: String) -> void:
 
 	# Defer overlay rebuild so queue_free from old overlay completes first
 	call_deferred("_build_building_overlay")
+
+
+func _on_quests_pressed() -> void:
+	print("[TownHub] Quests pressed — opening quest log")
+	var overlay = SideQuestSystem.show_quest_log(self)
+	if overlay != null:
+		await overlay.quest_log_closed
+
+
+func _on_new_cycle_pressed() -> void:
+	print("[TownHub] New Cycle pressed — opening NG+ transition")
+	# Tutorial: explain NG+ mechanics on first cycle
+	var tut_overlay = TutorialOverlay.try_show(self, "tutorial_ng_plus")
+	if tut_overlay != null:
+		await tut_overlay.tutorial_finished
+	var overlay = NGPlusTransition.show(self)
+	if overlay != null:
+		await overlay.transition_complete
 
 
 func _on_options_pressed() -> void:

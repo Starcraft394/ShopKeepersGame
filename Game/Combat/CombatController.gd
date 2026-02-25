@@ -208,6 +208,14 @@ func _create_units(hero_ids: Array, enemy_ids: Array) -> void:
 	print("\n[HeroStats] === Combat Spawning ===")
 	for i in range(hero_ids.size()):
 		var hero_id = hero_ids[i]
+
+		# Skip dead heroes — they shouldn't enter combat
+		if GameContext.has_method("has_hero_hp") and GameContext.has_hero_hp(hero_id):
+			var hp_check = GameContext.get_hero_hp(hero_id)
+			if int(hp_check.get("current", 1)) <= 0:
+				print("[HP] skip_dead_hero hero=%s hp=0 (excluded from combat)" % hero_id)
+				continue
+
 		var class_id = "defender"  # Default fallback
 		var effective_stats: Dictionary = {}
 
@@ -651,6 +659,9 @@ func _clamp_player_hp() -> void:
 			print("[HP] clamp unit=%s current=%d max=%d (clamped to %d)" % [
 				unit.display_name, unit.current_health, unit.max_health, unit.max_health])
 			unit.current_health = unit.max_health
+		if unit.current_health <= 0:
+			unit.is_alive = false
+			print("[HP] dead_sync unit=%s hp=%d (marked dead)" % [unit.display_name, unit.current_health])
 
 
 # ============================================================================
@@ -1050,8 +1061,11 @@ func step_one_turn() -> Array:
 		_turn_queue.start_new_round()
 		_apply_round_start_passives()  # Trigger round-start passives (e.g., verdant_renewal)
 		_process_round_start_tag_effects()  # T4 round_start tag effects (e.g., regen)
+		_process_round_start_deaths()  # Emit death actions for DOT/tag kills
 		_unit_remaining_actions.clear()  # Reset action counts for new round
 		round_ended.emit(_current_round)
+		if _check_combat_end():
+			return _pending_actions
 
 	# Get next unit
 	var unit = _turn_queue.get_next_unit()
@@ -1100,6 +1114,30 @@ func _tick_all_statuses() -> void:
 			if expired.size() > 0:
 				last_expired_statuses[unit.unit_id] = expired
 	all_statuses_ticked.emit()  # Status UI v1.6: Notify UI to refresh all badges
+
+
+## Check for deaths caused by round-start effects (DOT, tag damage).
+## Units killed by status ticks or tag effects need death actions emitted
+## so the UI updates and targeting correctly excludes them.
+func _process_round_start_deaths() -> void:
+	for unit in _all_units:
+		if not unit.is_alive and not unit.get_meta("death_emitted", false):
+			unit.set_meta("death_emitted", true)
+			print("[Combat] %s died from round-start effects (DOT/tag)" % unit.display_name)
+			var death_action = CombatAction.create_death(unit)
+			_pending_actions.append(death_action)
+			_result.add_action(death_action)
+			action_performed.emit(death_action)
+
+
+## Get list of defeated enemy monster_ids (source_id for dead enemies).
+## Used by SideQuestSystem for kill tracking.
+func get_defeated_enemy_ids() -> Array:
+	var result: Array = []
+	for unit in _enemy_units:
+		if unit.current_health <= 0:
+			result.append(unit.source_id)
+	return result
 
 
 ## Get snapshot of all units for UI display.
@@ -1186,6 +1224,7 @@ func _unit_to_snapshot(unit: CombatUnit) -> Dictionary:
 		"shield_hp": unit.shield_hp,
 		"shield_remaining_rounds": unit.shield_remaining_rounds,
 		"reflect_percent": unit.reflect_percent,
+		"attack_type": unit.attack_type,
 	}
 
 
@@ -1347,16 +1386,123 @@ func get_unit_buff_snapshot_sorted(unit_id: String) -> Array:
 	return unit.get_buff_snapshot_sorted()
 
 
-## v1.9B: Get turn timeline snapshot showing upcoming N units.
-## Returns Array of {unit_id, name, team, speed, is_current, portrait_path}.
-func get_turn_timeline_snapshot(count: int = 6) -> Array:
+## v1.9B: Get turn timeline snapshot showing all alive units in the full round order.
+## Returns Array of {unit_id, name, team, speed, is_current, has_acted, portrait_path, intent}.
+func get_turn_timeline_snapshot(_count: int = 6) -> Array:
 	if _turn_queue == null:
 		return []
-	var snapshot = _turn_queue.get_upcoming_units_snapshot(count)
+	var snapshot = _turn_queue.get_full_round_snapshot()
 	for entry in snapshot:
 		var unit = get_unit_by_id(entry["unit_id"])
 		entry["portrait_path"] = _get_unit_portrait(unit) if unit != null else ""
+		entry["intent"] = get_unit_intent_preview(entry["unit_id"]) if unit != null else {}
 	return snapshot
+
+
+## Get reordered timeline: upcoming units first, then acted units (for "move to end" display).
+func get_reordered_timeline_snapshot() -> Array:
+	if _turn_queue == null:
+		return []
+	var snapshot = _turn_queue.get_reordered_round_snapshot()
+	for entry in snapshot:
+		var unit = get_unit_by_id(entry["unit_id"])
+		entry["portrait_path"] = _get_unit_portrait(unit) if unit != null else ""
+		entry["intent"] = get_unit_intent_preview(entry["unit_id"]) if unit != null else {}
+	return snapshot
+
+
+## Predict what a unit will do on its next turn (read-only, no side effects).
+## Returns dict with action_type, ability_name, ability_desc, target_name, ready_abilities, is_stunned.
+func get_unit_intent_preview(unit_id: String) -> Dictionary:
+	var unit = get_unit_by_id(unit_id)
+	if unit == null:
+		return {}
+
+	var result: Dictionary = {
+		"action_type": "",
+		"ability_name": "",
+		"ability_desc": "",
+		"target_name": "",
+		"target_rule": "",
+		"is_player": unit.team == CombatUnit.Team.PLAYER,
+		"ready_abilities": [],
+		"is_stunned": false,
+	}
+
+	# Check stun
+	if unit.has_status_v1("stunned"):
+		result["is_stunned"] = true
+		result["action_type"] = "stunned"
+		return result
+
+	# Player heroes: list abilities with cooldown info
+	if unit.team == CombatUnit.Team.PLAYER:
+		result["action_type"] = "player"
+		if unit.ability_a_id != "":
+			var ab = DataRegistry.get_ability(unit.ability_a_id)
+			if ab:
+				result["ready_abilities"].append({
+					"name": ab.display_name,
+					"desc": ab.description,
+					"ready": unit.is_ability_a_ready(),
+					"cooldown": unit.ability_a_cooldown,
+				})
+		if unit.ability_b_id != "":
+			var ab = DataRegistry.get_ability(unit.ability_b_id)
+			if ab:
+				result["ready_abilities"].append({
+					"name": ab.display_name,
+					"desc": ab.description,
+					"ready": unit.is_ability_b_ready(),
+					"cooldown": unit.ability_b_cooldown,
+				})
+		if unit.weapon_ability_id != "":
+			result["ready_abilities"].append({
+				"name": "Weapon Attack",
+				"desc": "1.5x attack damage",
+				"ready": unit.is_weapon_ability_ready(),
+				"cooldown": unit.weapon_ability_cooldown,
+			})
+		return result
+
+	# Tactical enemies (ai_tier 2): can't predict due to RNG, list ready abilities
+	if unit.ai_tier == 2:
+		result["action_type"] = "tactical"
+		if unit.ability_a_id != "" and unit.is_ability_a_ready():
+			var ab = DataRegistry.get_ability(unit.ability_a_id)
+			if ab:
+				result["ready_abilities"].append({"name": ab.display_name, "desc": ab.description})
+		if unit.ability_b_id != "" and unit.is_ability_b_ready():
+			var ab = DataRegistry.get_ability(unit.ability_b_id)
+			if ab:
+				result["ready_abilities"].append({"name": ab.display_name, "desc": ab.description})
+		if unit.is_weapon_ability_ready():
+			result["ready_abilities"].append({"name": "Weapon Attack", "desc": ""})
+		if result["ready_abilities"].is_empty():
+			result["ready_abilities"].append({"name": "Basic Attack", "desc": ""})
+		return result
+
+	# Deterministic enemies (ai_tier 0, 1, 3): predict exact action
+	var choice = _get_ability_to_use(unit)
+	var ability: AbilityData = choice["ability"]
+
+	if ability != null:
+		result["action_type"] = "ability"
+		result["ability_name"] = ability.display_name
+		result["ability_desc"] = ability.description
+		var target = _pick_target_for_ability(unit, ability)
+		if target != null:
+			result["target_name"] = target.display_name
+		result["target_rule"] = ability.target_rule
+	else:
+		result["action_type"] = choice["type"]
+		result["ability_name"] = "Weapon Attack" if choice["type"] == "weapon" else "Basic Attack"
+		var enemies = TargetingPolicy.get_enemies_for_team(_all_units, unit.team)
+		var target = _targeting_policy.select_target(unit, enemies)
+		if target != null:
+			result["target_name"] = target.display_name
+
+	return result
 
 
 # ============================================================================
@@ -1390,6 +1536,9 @@ func _run_combat_loop() -> void:
 		_turn_queue.start_new_round()
 		_apply_round_start_passives()  # Trigger round-start passives (e.g., verdant_renewal)
 		_process_round_start_tag_effects()  # T4 round_start tag effects (e.g., regen)
+		_process_round_start_deaths()  # Emit death actions for DOT/tag kills
+		if _check_combat_end():
+			return
 
 	if _current_round >= MAX_ROUNDS:
 		print("[CombatController] Combat ended: MAX ROUNDS reached")
@@ -1705,6 +1854,14 @@ func _pick_target_for_ability(caster: CombatUnit, ability: AbilityData) -> Comba
 			ability.ability_id, caster.display_name, target_team, target_rule])
 		return null
 
+	# Taunt enforcement: if targeting enemies and any candidate is taunting, force target
+	if target_team == "enemy":
+		for c in candidates:
+			if c.has_status_v1("taunting"):
+				print("[Target] ability=%s caster=%s picked=%s team=%s rule=%s reason=taunt_forced" % [
+					ability.ability_id, caster.display_name, c.display_name, target_team, target_rule])
+				return c
+
 	# Apply target_rule to select from candidates
 	var target: CombatUnit = null
 
@@ -1806,6 +1963,10 @@ func _execute_class_ability_step(unit: CombatUnit, ability: AbilityData, ability
 	print("[Ability] %s uses %s (effect=%s, target=%s, team=%s, rule=%s)" % [
 		unit.display_name, ability.display_name, ability.effect_type, ability.target_type,
 		ability.target_team, ability.target_rule])
+
+	# NG+: Track seen abilities for infusion system
+	if ability != null and ability.ability_id != "":
+		GameContext.mark_ability_seen(ability.ability_id)
 
 	# v1.9B: Pre-determine target for intent signal
 	var intent_target_id = ""
@@ -2616,6 +2777,9 @@ func _check_combat_end() -> bool:
 							"affix_stats": item.affix_stats,
 							"affix_prefix": item.affix_prefix
 						}
+					# NG+ bonus stat lines (generated at drop time)
+					if item.bonus_stat_lines.size() > 0:
+						drop_affix["bonus_stat_lines"] = item.bonus_stat_lines
 				elif item is Dictionary:
 					drop_id = item.get("item_id", item.get("template_id", ""))
 					drop_quality = int(item.get("quality_tier", 0))
@@ -3549,8 +3713,11 @@ func _continue_to_next_turn() -> void:
 			_turn_queue.start_new_round()
 			_apply_round_start_passives()
 			_process_round_start_tag_effects()
+			_process_round_start_deaths()  # Emit death actions for DOT/tag kills
 			_unit_remaining_actions.clear()
 			round_ended.emit(_current_round)
+			if _check_combat_end():
+				return
 
 		# Get next unit
 		var unit = _turn_queue.get_next_unit()

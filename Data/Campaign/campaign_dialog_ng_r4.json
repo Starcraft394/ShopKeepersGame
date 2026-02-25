@@ -1,0 +1,24 @@
+{
+  "region": "region_4",
+  "region_name": "Ashen Hollows (NG+)",
+  "dialogs": [
+    {
+      "id": "ng_r4_sovereign_echo",
+      "trigger": "boss_first_kill",
+      "flag_required": null,
+      "flag_set": null,
+      "display_type": "full_screen_overlay",
+      "min_ng_cycle": 1,
+      "speaker_id": "void_sovereign",
+      "speaker_name": "The Void Sovereign (echo)",
+      "speaker_portrait": "",
+      "lines": [
+        "We've done this before, haven't we?",
+        "I can feel it. Layers of memory, folded on top of each other.",
+        "You defeat me here. I reform deeper. The cycle continues.",
+        "How many times, Shopkeeper? How many times will you walk this path?",
+        "...It doesn't matter. Each time, you build something new. That is your curse and your gift."
+      ]
+    }
+  ]
+}

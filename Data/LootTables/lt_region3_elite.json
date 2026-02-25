@@ -9,7 +9,7 @@
     { "item_id": "ss_brine_venom", "weight": 16, "min_qty": 1, "max_qty": 2 },
     { "item_id": "ss_kelp_sinew", "weight": 16, "min_qty": 2, "max_qty": 3 },
     { "item_id": "tidal_pearl", "weight": 10, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "healing_tonic", "weight": 10, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "strong_healing_tonic", "weight": 10, "min_qty": 1, "max_qty": 2 },
     { "item_id": "stormglass_fragment", "weight": 8, "min_qty": 1, "max_qty": 1 },
     { "item_id": "ancient_bone", "weight": 6, "min_qty": 1, "max_qty": 1 },
     { "item_id": "ss_tidal_tonic", "weight": 5, "min_qty": 1, "max_qty": 1 },

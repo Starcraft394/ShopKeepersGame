@@ -1,15 +1,15 @@
 {
   "id": "lt_region2_uncommon",
   "display_name": "Region 2 Uncommon Loot",
-  "description": "Materials and consumables from tier 2 Fungalmire monsters.",
+  "description": "Better drops from Fungalmire tier 2 monsters.",
   "min_drops": 1,
   "max_drops": 3,
   "entries": [
     { "item_id": "fungal_fiber", "weight": 30, "min_qty": 1, "max_qty": 2 },
     { "item_id": "mycelium_thread", "weight": 20, "min_qty": 1, "max_qty": 2 },
     { "item_id": "spore_cluster", "weight": 15, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "iron_scrap", "weight": 10, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "healing_tonic", "weight": 10, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "wyvern_scale", "weight": 10, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "strong_healing_tonic", "weight": 10, "min_qty": 1, "max_qty": 1 },
     { "item_id": "", "weight": 15, "min_qty": 0, "max_qty": 0 }
   ]
 }

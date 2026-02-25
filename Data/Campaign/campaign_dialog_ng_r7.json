@@ -1,0 +1,94 @@
+{
+  "region": "region_7",
+  "region_name": "The Final Realm (NG+)",
+  "dialogs": [
+    {
+      "id": "ng_r7_arrival",
+      "trigger": "region_first_arrival",
+      "flag_required": null,
+      "flag_set": "story_ng_r7_arrived",
+      "display_type": "full_screen_overlay",
+      "min_ng_cycle": 1,
+      "speaker_id": "null_merchant",
+      "speaker_name": "The Null Merchant",
+      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_GoblinOrc/PNG/Transperent/Icon40.png",
+      "lines": [
+        "Again. The threshold. The ending that is also a beginning.",
+        "Each cycle, the corruption runs a little deeper. The Sovereign remembers a little more.",
+        "But so do you. And that, I think, is the difference.",
+        "The Grail waits. It always waits. Go."
+      ]
+    },
+    {
+      "id": "ng_r7_boss_kill",
+      "trigger": "boss_first_kill",
+      "flag_required": null,
+      "flag_set": "story_ng_r7_boss_killed",
+      "display_type": "full_screen_overlay",
+      "min_ng_cycle": 1,
+      "speaker_id": "narrator",
+      "speaker_name": null,
+      "speaker_portrait": null,
+      "lines": [
+        "Again. The Sovereign falls. The Grail pulses. Reality shudders.",
+        "But this time, something is different. The stone's rhythm is faster. Stronger.",
+        "The cycle tightens. Each loop, the world remembers more.",
+        "The corruption recedes. The void tears seal.",
+        "But the Anchor Stone does not rest. It never rests.",
+        "...",
+        "How many more times?"
+      ],
+      "notes": "NG+ boss kill (cycles 1-7). Shorter, more weary tone."
+    },
+    {
+      "id": "ng_r7_true_ending",
+      "trigger": "boss_first_kill",
+      "flag_required": null,
+      "flag_set": "story_true_ending",
+      "display_type": "full_screen_overlay",
+      "min_ng_cycle": 8,
+      "speaker_id": "narrator",
+      "speaker_name": null,
+      "speaker_portrait": null,
+      "lines": [
+        "The Sovereign falls for the last time.",
+        "The Grail doesn't pulse. It shatters.",
+        "Every fragment carries a memory — every cycle, every town, every hero who fought and fell and fought again.",
+        "The Anchor Stone cracks. Light pours from the fracture, warm and steady.",
+        "The Void Sovereign looks up. Not with rage. With something like peace.",
+        "\"You remembered. Every time. Every cycle. You chose to build forward.\"",
+        "\"That was always the answer. I just... couldn't accept it.\"",
+        "The corruption doesn't recede this time. It dissolves. Every trace, across every region, gone.",
+        "The void tears don't seal. They simply... aren't.",
+        "In Thornhaven, the Anchor Stone goes silent for the first time in living memory.",
+        "The supply lines hold. The trade routes thrive. The frontier flourishes.",
+        "Not because of magic. Not because of artifacts.",
+        "Because one shopkeeper kept the world alive long enough for it to heal itself.",
+        "...",
+        "The Null Merchant tips his hat and vanishes.",
+        "Adventure awaits. But this time — it's a new one."
+      ],
+      "notes": "TRUE ENDING. Cycle 8 only. The stone shatters, the cycle breaks permanently. Credits hook."
+    },
+    {
+      "id": "ng_r7_merchant_loop",
+      "trigger": "keeper_story",
+      "flag_required": "story_ng_r7_boss_killed",
+      "flag_set": null,
+      "display_type": "full_screen_overlay",
+      "min_ng_cycle": 1,
+      "speaker_id": "null_merchant",
+      "speaker_name": "The Null Merchant",
+      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_GoblinOrc/PNG/Transperent/Icon40.png",
+      "lines": [
+        "The stone pulses. The cycle continues.",
+        "Each loop, the world fractures a little differently. New patterns. New possibilities.",
+        "I wonder — is the stone trapping you? Or are you the one keeping it alive?",
+        "Either way, your supply lines grow stronger with each pass.",
+        "The Sovereign will try again. You will stop him again.",
+        "And so it goes."
+      ],
+      "notes": "NG+ post-boss merchant dialog. Loop awareness."
+    }
+  ]
+}

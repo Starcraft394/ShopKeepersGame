@@ -381,6 +381,20 @@ static func create_monster(monster_id: String, unit_index: int) -> CombatUnit:
 		if scale != 1.0:
 			unit.speed = int(unit.speed * scale)
 
+	# Apply NG+ difficulty scaling
+	if _gc and _gc.ng_plus_cycle > 0:
+		var mult: Dictionary = _gc.get_ng_difficulty_multipliers()
+		unit.max_health = int(unit.max_health * mult.get("hp", 1.0))
+		unit.attack = int(unit.attack * mult.get("atk", 1.0))
+		unit.defense = int(unit.defense * mult.get("def", 1.0))
+		unit.speed = int(unit.speed * mult.get("spd", 1.0))
+
+	# Apply mini-dungeon final fight buff
+	if _gc and _gc.mini_dungeon_state.get("is_final_fight", false):
+		unit.max_health = int(unit.max_health * SideQuestSystem.MINI_BOSS_HP_MULT)
+		unit.attack = int(unit.attack * SideQuestSystem.MINI_BOSS_ATK_MULT)
+		unit.defense = int(unit.defense * SideQuestSystem.MINI_BOSS_DEF_MULT)
+
 	unit.current_health = unit.max_health
 	unit.statuses = StatusRuntime.new(unit.unit_id)
 

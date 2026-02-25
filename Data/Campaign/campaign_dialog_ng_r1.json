@@ -1,0 +1,40 @@
+{
+  "region": "region_1",
+  "region_name": "Thornhaven (NG+)",
+  "dialogs": [
+    {
+      "id": "ng_r1_arrival",
+      "trigger": "region_first_arrival",
+      "flag_required": null,
+      "flag_set": "story_ng_r1_arrived",
+      "display_type": "full_screen_overlay",
+      "min_ng_cycle": 1,
+      "speaker_id": "null_merchant",
+      "speaker_name": "The Null Merchant",
+      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_GoblinOrc/PNG/Transperent/Icon40.png",
+      "lines": [
+        "You remember. The Anchor Stone ensures it.",
+        "The corruption has reset. The towns have forgotten. But you have not.",
+        "Your heroes carry scars from a timeline that no longer exists. Interesting.",
+        "The Sovereign will try again. He always tries again.",
+        "But this time, you know the road. Use that knowledge well."
+      ]
+    },
+    {
+      "id": "ng_r1_cedric_return",
+      "trigger": "herald_visit",
+      "flag_required": "story_ng_r1_arrived",
+      "flag_set": null,
+      "display_type": "portrait_text_box",
+      "min_ng_cycle": 1,
+      "speaker_id": "cedric",
+      "speaker_name": "Sir Cedric Ashmore",
+      "speaker_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon39.png",
+      "lines": [
+        "Shopkeeper! The King sends his regards and... wait.",
+        "Have we met before? You look at me like you know what I'm going to say.",
+        "...Nevermind. The frontier needs supplies. Same as always, I suppose."
+      ]
+    }
+  ]
+}

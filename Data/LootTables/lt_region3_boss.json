@@ -9,7 +9,7 @@
     { "item_id": "ss_crustacean_shell", "weight": 13, "min_qty": 3, "max_qty": 5 },
     { "item_id": "tidal_pearl", "weight": 15, "min_qty": 1, "max_qty": 2 },
     { "item_id": "stormglass_fragment", "weight": 12, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "healing_tonic", "weight": 12, "min_qty": 2, "max_qty": 3 },
+    { "item_id": "strong_healing_tonic", "weight": 12, "min_qty": 2, "max_qty": 3 },
     { "item_id": "ss_coral_blade", "weight": 8, "min_qty": 1, "max_qty": 1 },
     { "item_id": "ss_tidestriker_bow", "weight": 8, "min_qty": 1, "max_qty": 1 },
     { "item_id": "ss_abalone_shield", "weight": 8, "min_qty": 1, "max_qty": 1 },

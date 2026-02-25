@@ -42,6 +42,35 @@ func _ready() -> void:
 	var region_num: int = GameContext.get_current_region()
 	BackgroundManager.apply_background(self, "event", "R%d" % region_num)
 
+	# Region-tinted text backdrop for readability over background art
+	var palette: Dictionary = RegionTheme.get_palette_for_current_region()
+	var backdrop = PanelContainer.new()
+	backdrop.name = "TextBackdrop"
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(palette.bg_dark.r, palette.bg_dark.g, palette.bg_dark.b, 0.7)
+	style.set_corner_radius_all(8)
+	style.set_content_margin_all(16)
+	backdrop.add_theme_stylebox_override("panel", style)
+	backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	# Reparent MainVBox into the backdrop panel
+	var main_vbox: VBoxContainer = $MainVBox
+	main_vbox.get_parent().remove_child(main_vbox)
+	backdrop.add_child(main_vbox)
+
+	# Place backdrop where MainVBox was (center-anchored, wider for padding)
+	backdrop.anchor_left = 0.5
+	backdrop.anchor_top = 0.5
+	backdrop.anchor_right = 0.5
+	backdrop.anchor_bottom = 0.5
+	backdrop.offset_left = -240.0
+	backdrop.offset_top = -220.0
+	backdrop.offset_right = 240.0
+	backdrop.offset_bottom = 220.0
+	backdrop.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	backdrop.grow_vertical = Control.GROW_DIRECTION_BOTH
+	add_child(backdrop)
+
 	# Connect buttons
 	for i in range(choice_buttons.size()):
 		choice_buttons[i].pressed.connect(_on_choice_pressed.bind(i))

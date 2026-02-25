@@ -65,6 +65,11 @@ func select_target(attacker: CombatUnit, enemies: Array) -> CombatUnit:
 	if alive_enemies.is_empty():
 		return null
 
+	# Taunt enforcement: if any enemy has "taunting" status, force target
+	for enemy in alive_enemies:
+		if enemy.has_status_v1("taunting"):
+			return enemy
+
 	match _mode:
 		TargetMode.LOWEST_HP:
 			return _select_lowest_hp(alive_enemies)

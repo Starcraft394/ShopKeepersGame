@@ -50,6 +50,14 @@ var _shopkeeper_bag_panel: PanelContainer = null
 var _shopkeeper_bag_row: HBoxContainer = null
 var _shopkeeper_bag_label: Label = null
 
+# Hero Bag Display (active hero's bag shown in combat)
+var _hero_bag_panel: PanelContainer = null
+var _hero_bag_row: HBoxContainer = null
+var _hero_bag_label: Label = null
+
+# Bags wrapper (holds shopkeeper + hero bags side-by-side)
+var _bags_hbox: HBoxContainer = null
+
 # Swap system (Feature K: Insurance UI)
 var _swap_source: Dictionary = {}  # {type: "shopkeeper", index: int}
 var _swap_highlight_btn: Button = null  # Currently highlighted slot for swap
@@ -63,6 +71,7 @@ var _loot_routing_bar: HBoxContainer = null  # Routing buttons row
 var _loot_swap_mode: bool = false  # True when in swap mode for a hero bag
 var _loot_swap_hero_id: String = ""  # Hero ID for active swap
 var _loot_swap_acq_index: int = -1  # Pending acq index for swap
+var _loot_confirm_overlay: CanvasLayer = null  # Confirmation overlay for slot replacement
 
 # Loot panel resize state
 var _loot_resizing: bool = false
@@ -493,6 +502,9 @@ func _start_encounter() -> void:
 	# Feature J: Shopkeeper bag display (above action panel)
 	_create_shopkeeper_bag_display()
 
+	# Hero bag display (above shopkeeper bag, shows active hero's items)
+	_create_hero_bag_display()
+
 	# Hide Step button - using player action buttons instead
 	step_button.visible = false
 
@@ -587,6 +599,19 @@ func _log_combat_modifier(mod: Dictionary) -> void:
 ## Select enemies based on current dungeon floor using per-floor pools.
 ## Returns Dictionary with: enemies, dungeon_id, floor, floor_count, is_boss, boss_id
 func _select_floor_enemies(rng: RandomNumberGenerator) -> Dictionary:
+	# Side quest mini-dungeon: use SideQuestSystem enemy generation
+	if SideQuestSystem.is_in_mini_dungeon():
+		var md_state: Dictionary = GameContext.mini_dungeon_state
+		var md_enemies: Array = SideQuestSystem.get_mini_dungeon_enemies(rng)
+		return {
+			"enemies": md_enemies,
+			"dungeon_id": "",
+			"floor": md_state.get("fight_index", 0) + 1,
+			"floor_count": md_state.get("total_fights", 1),
+			"is_boss": false,
+			"boss_id": ""
+		}
+
 	var dungeon_id = GameContext.get_current_dungeon_id()
 	var floor_num = GameContext.get_current_floor()
 	var room_idx = GameContext.get_current_room_index()
@@ -627,7 +652,7 @@ func _select_floor_enemies(rng: RandomNumberGenerator) -> Dictionary:
 	# Boss floor: spawn boss only (supports alt_boss_id for randomized boss)
 	if is_boss and dungeon.boss_id != "":
 		var actual_boss: String = dungeon.boss_id
-		var alt_boss: String = dungeon.get("alt_boss_id", "")
+		var alt_boss: String = dungeon.alt_boss_id
 		if alt_boss != "" and rng.randf() < 0.5:
 			actual_boss = alt_boss
 		print("[Encounter] dungeon=%s floor=%d/%d room=%d/%d enemies=[%s] boss=true elite=false" % [
@@ -676,11 +701,12 @@ func _select_floor_enemies(rng: RandomNumberGenerator) -> Dictionary:
 
 	# NORMAL COMBAT: Get floor-specific pools with fallback to global pools
 	var tier1_pool: Array = []
-	if floor_index < dungeon.tier1_by_floor.size() and dungeon.tier1_by_floor[floor_index].size() > 0:
-		tier1_pool = dungeon.tier1_by_floor[floor_index]
-	else:
-		for m_id in dungeon.tier1_monster_ids:
-			tier1_pool.append(m_id)
+	if floor_index < 2:  # T1 monsters only on floors 1-2 (index 0-1)
+		if floor_index < dungeon.tier1_by_floor.size() and dungeon.tier1_by_floor[floor_index].size() > 0:
+			tier1_pool = dungeon.tier1_by_floor[floor_index]
+		else:
+			for m_id in dungeon.tier1_monster_ids:
+				tier1_pool.append(m_id)
 
 	var tier2_pool: Array = []
 	if floor_index < dungeon.tier2_by_floor.size() and dungeon.tier2_by_floor[floor_index].size() > 0:
@@ -701,17 +727,17 @@ func _select_floor_enemies(rng: RandomNumberGenerator) -> Dictionary:
 			tier2_chance = 30.0
 		2:
 			enemy_count = 3
-			tier2_chance = 50.0
+			tier2_chance = 100.0  # All T2 on floor 3
 		3, _:
 			enemy_count = rng.randi_range(3, 4)
-			tier2_chance = 60.0
+			tier2_chance = 100.0  # All T2 on floor 4+
 
 	var enemies: Array = []
 	for i in range(enemy_count):
 		var roll = rng.randf() * 100.0
 		var pool = tier1_pool if roll >= tier2_chance else tier2_pool
 		if pool.is_empty():
-			pool = tier1_pool if tier1_pool.size() > 0 else ["goblin"]
+			pool = tier2_pool if tier2_pool.size() > 0 else (tier1_pool if tier1_pool.size() > 0 else ["goblin"])
 		var idx = rng.randi_range(0, pool.size() - 1)
 		enemies.append(pool[idx])
 
@@ -938,11 +964,14 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 	card_hbox.add_theme_constant_override("separation", 6)
 	card_hbox.name = "UnitContent_%s" % unit_data["id"]
 
-	# Portrait (48x48)
+	# Portrait (48x48) — also serves as click target for target selection + quick attack
 	var portrait_rect = TextureRect.new()
+	portrait_rect.name = "Portrait"
 	portrait_rect.custom_minimum_size = Vector2(48, 48)
 	portrait_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
 	portrait_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	portrait_rect.mouse_filter = Control.MOUSE_FILTER_STOP
+	portrait_rect.gui_input.connect(_on_unit_left_click_input.bind(unit_data["id"]))
 	var portrait_path = unit_data.get("portrait_path", "")
 	if portrait_path != "":
 		var tex = load(portrait_path)
@@ -957,13 +986,17 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 	info_vbox.add_theme_constant_override("separation", 1)
 	info_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
-	# Name label
+	# Name label (enemies get attack type prefix + numbering)
 	var display_name = unit_data["name"]
 	if unit_data["team"] == "enemy":
 		var uid = unit_data.get("id", "")
+		var atk_type: String = unit_data.get("attack_type", "melee")
+		var type_prefix: String = "R" if atk_type == "ranged" else "M"
 		if uid.begins_with("enemy_"):
 			var enemy_num = int(uid.replace("enemy_", "")) + 1
-			display_name = "%s #%d" % [unit_data["name"], enemy_num]
+			display_name = "[%s] %s #%d" % [type_prefix, unit_data["name"], enemy_num]
+		else:
+			display_name = "[%s] %s" % [type_prefix, display_name]
 
 	var name_label = Label.new()
 	name_label.text = display_name
@@ -997,29 +1030,58 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 		info_vbox.add_child(turn_label)
 		_unit_turn_labels[unit_data["id"]] = turn_label
 
-	# D3: Basic stats row (player units only) - ATK/DEF/SPD with tooltips
-	if unit_data["team"] == "player":
-		var stats_hbox = HBoxContainer.new()
-		stats_hbox.name = "StatsRow"
-		stats_hbox.add_theme_constant_override("separation", 8)
-		var stat_defs: Array = [
-			{"key": "attack", "label": "ATK", "color": Color(0.9, 0.6, 0.3)},
-			{"key": "defense", "label": "DEF", "color": Color(0.4, 0.7, 0.9)},
-			{"key": "speed", "label": "SPD", "color": Color(0.7, 0.9, 0.5)}
+	# D3: Basic stats row - ATK/DEF/SPD with tooltips (all units)
+	var stats_hbox = HBoxContainer.new()
+	stats_hbox.name = "StatsRow"
+	stats_hbox.add_theme_constant_override("separation", 8)
+	var stat_defs: Array = [
+		{"key": "attack", "label": "ATK", "color": Color(0.9, 0.6, 0.3)},
+		{"key": "defense", "label": "DEF", "color": Color(0.4, 0.7, 0.9)},
+		{"key": "speed", "label": "SPD", "color": Color(0.7, 0.9, 0.5)}
+	]
+	var unit_stat_labels: Dictionary = {}
+	for stat_def in stat_defs:
+		var stat_label = Label.new()
+		var val: int = int(unit_data.get(stat_def.key, 0))
+		stat_label.text = "%s:%d" % [stat_def.label, val]
+		stat_label.add_theme_font_size_override("font_size", GameContext.fs(11))
+		stat_label.add_theme_color_override("font_color", stat_def.color)
+		stat_label.mouse_filter = Control.MOUSE_FILTER_STOP
+		stat_label.tooltip_text = _build_combat_card_stat_tooltip(stat_def.key, stat_def.label, unit_data)
+		stats_hbox.add_child(stat_label)
+		unit_stat_labels[stat_def.key] = stat_label
+	info_vbox.add_child(stats_hbox)
+	_unit_stat_labels[unit_data["id"]] = unit_stat_labels
+
+	# Secondary stats row (enemies only, compact colored badges for non-zero stats)
+	if unit_data["team"] == "enemy":
+		var sec_stat_defs: Array = [
+			{"key": "crit_chance", "label": "CRIT", "color": Color(1.0, 0.7, 0.3), "suffix": "%"},
+			{"key": "evasion", "label": "EVD", "color": Color(0.6, 0.9, 0.6), "suffix": "%"},
+			{"key": "resist", "label": "RES", "color": Color(0.7, 0.5, 0.9), "suffix": ""},
+			{"key": "thorns", "label": "THN", "color": Color(0.8, 0.4, 0.4), "suffix": ""},
+			{"key": "armor_penetration", "label": "PEN", "color": Color(0.9, 0.6, 0.5), "suffix": ""},
+			{"key": "life_steal", "label": "LSTL", "color": Color(0.8, 0.3, 0.3), "suffix": "%"},
 		]
-		var hero_stat_labels: Dictionary = {}
-		for stat_def in stat_defs:
-			var stat_label = Label.new()
-			var val: int = int(unit_data.get(stat_def.key, 0))
-			stat_label.text = "%s:%d" % [stat_def.label, val]
-			stat_label.add_theme_font_size_override("font_size", GameContext.fs(11))
-			stat_label.add_theme_color_override("font_color", stat_def.color)
-			stat_label.mouse_filter = Control.MOUSE_FILTER_STOP
-			stat_label.tooltip_text = _build_combat_card_stat_tooltip(stat_def.key, stat_def.label, unit_data)
-			stats_hbox.add_child(stat_label)
-			hero_stat_labels[stat_def.key] = stat_label
-		info_vbox.add_child(stats_hbox)
-		_unit_stat_labels[unit_data["id"]] = hero_stat_labels
+		var has_secondary := false
+		for sdef in sec_stat_defs:
+			if int(unit_data.get(sdef.key, 0)) > 0:
+				has_secondary = true
+				break
+		if has_secondary:
+			var sec_hbox = HBoxContainer.new()
+			sec_hbox.name = "SecondaryStatsRow"
+			sec_hbox.add_theme_constant_override("separation", 6)
+			for sdef in sec_stat_defs:
+				var sval: int = int(unit_data.get(sdef.key, 0))
+				if sval > 0:
+					var slbl = Label.new()
+					slbl.text = "%s:%d%s" % [sdef.label, sval, sdef.suffix]
+					slbl.add_theme_font_size_override("font_size", GameContext.fs(10))
+					slbl.add_theme_color_override("font_color", sdef.color)
+					slbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+					sec_hbox.add_child(slbl)
+			info_vbox.add_child(sec_hbox)
 
 	# HP bar (ProgressBar with custom styling)
 	var hp_bar = ProgressBar.new()
@@ -1125,24 +1187,21 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 		"buff_row": buff_badge_row
 	}
 
+	# Inspect button — small "i" button for stat inspection overlay
+	var inspect_btn = Button.new()
+	inspect_btn.name = "InspectBtn"
+	inspect_btn.text = "i"
+	inspect_btn.add_theme_font_size_override("font_size", GameContext.fs(11))
+	inspect_btn.custom_minimum_size = Vector2(22, 0)
+	inspect_btn.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	inspect_btn.tooltip_text = "Inspect unit stats"
+	inspect_btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	inspect_btn.pressed.connect(_show_stat_inspection.bind(unit_data["id"]))
+	card_hbox.add_child(inspect_btn)
+
 	card_hbox.add_child(info_vbox)
 
-	# Hover tooltip removed — use right-click inspection for full stats
-	# (hover was blocking buff/debuff badge tooltips)
-	wrapper.tooltip_text = ""
-
 	wrapper.add_child(card_hbox)
-
-	# Transparent overlay on top of card content — catches ALL mouse events.
-	# Children keep default mouse_filter so tooltip propagation still works
-	# (ClickPanel has no tooltip → Godot falls through to wrapper which does).
-	var click_panel = ColorRect.new()
-	click_panel.name = "ClickPanel"
-	click_panel.color = Color(0, 0, 0, 0)
-	click_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
-	click_panel.mouse_filter = Control.MOUSE_FILTER_PASS
-	click_panel.gui_input.connect(_on_unit_display_input.bind(unit_data["id"]))
-	wrapper.add_child(click_panel)
 
 	return wrapper
 
@@ -1212,17 +1271,20 @@ func _build_unit_card_tooltip(unit_data: Dictionary) -> String:
 	if not extra_stat_parts.is_empty():
 		lines.append(" | ".join(extra_stat_parts))
 
-	# Abilities (heroes only)
-	if unit_data["team"] == "player":
+	# Abilities (all units)
+	var tt_is_hero: bool = unit_data["team"] == "player"
+	var tt_hero_level := 1
+	if tt_is_hero:
 		var tt_hero_id: String = unit_data.get("source_id", unit_data["id"])
-		var tt_hero_level := 1
 		if GameContext.has_method("get_hero_effective_stats"):
 			var tt_stats = GameContext.get_hero_effective_stats(tt_hero_id)
 			tt_hero_level = tt_stats.get("level", 1)
-		var ability_a_id = unit_data.get("ability_a_id", "")
-		if ability_a_id != "":
-			var ability_a = DataRegistry.get_ability(ability_a_id) if DataRegistry.has_method("get_ability") else null
-			var a_name = ability_a.display_name if ability_a else ability_a_id.replace("_", " ").capitalize()
+
+	var ability_a_id = unit_data.get("ability_a_id", "")
+	if ability_a_id != "":
+		var ability_a = DataRegistry.get_ability(ability_a_id) if DataRegistry.has_method("get_ability") else null
+		var a_name = ability_a.display_name if ability_a else ability_a_id.replace("_", " ").capitalize()
+		if tt_is_hero:
 			if GameContext.is_ability_slot_unlocked("ability_a", tt_hero_level):
 				var cd_a = unit_data.get("ability_a_cooldown", 0)
 				var cd_str = " (CD: %d)" % cd_a if cd_a > 0 else " (Ready)"
@@ -1230,11 +1292,16 @@ func _build_unit_card_tooltip(unit_data: Dictionary) -> String:
 			else:
 				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("ability_a", 5)
 				lines.append("[A] %s (Lv %d)" % [a_name, req_lv])
+		else:
+			var cd_a = unit_data.get("ability_a_cooldown", 0)
+			var cd_str = " (CD: %d)" % cd_a if cd_a > 0 else " (Ready)"
+			lines.append("[A] %s%s" % [a_name, cd_str])
 
-		var ability_b_id = unit_data.get("ability_b_id", "")
-		if ability_b_id != "":
-			var ability_b = DataRegistry.get_ability(ability_b_id) if DataRegistry.has_method("get_ability") else null
-			var b_name = ability_b.display_name if ability_b else ability_b_id.replace("_", " ").capitalize()
+	var ability_b_id = unit_data.get("ability_b_id", "")
+	if ability_b_id != "":
+		var ability_b = DataRegistry.get_ability(ability_b_id) if DataRegistry.has_method("get_ability") else null
+		var b_name = ability_b.display_name if ability_b else ability_b_id.replace("_", " ").capitalize()
+		if tt_is_hero:
 			if GameContext.is_ability_slot_unlocked("ability_b", tt_hero_level):
 				var cd_b = unit_data.get("ability_b_cooldown", 0)
 				var cd_str = " (CD: %d)" % cd_b if cd_b > 0 else " (Ready)"
@@ -1242,29 +1309,40 @@ func _build_unit_card_tooltip(unit_data: Dictionary) -> String:
 			else:
 				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("ability_b", 25)
 				lines.append("[B] %s (Lv %d)" % [b_name, req_lv])
+		else:
+			var cd_b = unit_data.get("ability_b_cooldown", 0)
+			var cd_str = " (CD: %d)" % cd_b if cd_b > 0 else " (Ready)"
+			lines.append("[B] %s%s" % [b_name, cd_str])
 
-		# Passives
-		var passive_a_id = unit_data.get("passive_a_id", "")
-		if passive_a_id != "":
-			var passive_a = DataRegistry.get_passive(passive_a_id) if DataRegistry.has_method("get_passive") else null
-			var pa_name = passive_a.display_name if passive_a else passive_a_id.replace("_", " ").capitalize()
+	# Passives (all units)
+	var passive_a_id = unit_data.get("passive_a_id", "")
+	if passive_a_id != "":
+		var passive_a = DataRegistry.get_passive(passive_a_id) if DataRegistry.has_method("get_passive") else null
+		var pa_name = passive_a.display_name if passive_a else passive_a_id.replace("_", " ").capitalize()
+		if tt_is_hero:
 			if GameContext.is_ability_slot_unlocked("passive_a", tt_hero_level):
 				lines.append("[P] %s" % pa_name)
 			else:
 				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("passive_a", 15)
 				lines.append("[P] %s (Lv %d)" % [pa_name, req_lv])
+		else:
+			lines.append("[P] %s" % pa_name)
 
-		var passive_b_id = unit_data.get("passive_b_id", "")
-		if passive_b_id != "":
-			var passive_b = DataRegistry.get_passive(passive_b_id) if DataRegistry.has_method("get_passive") else null
-			var pb_name = passive_b.display_name if passive_b else passive_b_id.replace("_", " ").capitalize()
+	var passive_b_id = unit_data.get("passive_b_id", "")
+	if passive_b_id != "":
+		var passive_b = DataRegistry.get_passive(passive_b_id) if DataRegistry.has_method("get_passive") else null
+		var pb_name = passive_b.display_name if passive_b else passive_b_id.replace("_", " ").capitalize()
+		if tt_is_hero:
 			if GameContext.is_ability_slot_unlocked("passive_b", tt_hero_level):
 				lines.append("[P] %s" % pb_name)
 			else:
 				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("passive_b", 40)
 				lines.append("[P] %s (Lv %d)" % [pb_name, req_lv])
+		else:
+			lines.append("[P] %s" % pb_name)
 
-		# Bag
+	# Bag (heroes only)
+	if tt_is_hero:
 		var hero_id = unit_data.get("source_id", unit_data["id"])
 		var bag_summary = GameContext.get_hero_bag_summary(hero_id)
 		lines.append("BAG: %s" % bag_summary)
@@ -1537,17 +1615,20 @@ func _create_or_update_badge(snapshot: Dictionary, kind: String, existing_badge:
 		# Icon + text badge
 		var container = HBoxContainer.new()
 		container.add_theme_constant_override("separation", 2)
+		container.mouse_filter = Control.MOUSE_FILTER_PASS
 
 		var icon_rect = TextureRect.new()
 		icon_rect.texture = icon_texture
 		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		icon_rect.custom_minimum_size = Vector2(16, 16)
+		icon_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		container.add_child(icon_rect)
 
 		var label = Label.new()
 		label.text = badge_text
 		label.add_theme_font_size_override("font_size", GameContext.fs(12))
 		label.add_theme_color_override("font_color", badge_color)
+		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		container.add_child(label)
 
 		container.tooltip_text = tooltip
@@ -1559,6 +1640,7 @@ func _create_or_update_badge(snapshot: Dictionary, kind: String, existing_badge:
 		label.add_theme_font_size_override("font_size", GameContext.fs(12))
 		label.add_theme_color_override("font_color", badge_color)
 		label.tooltip_text = tooltip
+		label.mouse_filter = Control.MOUSE_FILTER_PASS
 		badge = label
 
 	return badge
@@ -1997,6 +2079,15 @@ func _update_top_bar() -> void:
 
 
 func _update_dungeon_progress_label() -> void:
+	# Mini-dungeon: show fight progress instead of dungeon progress
+	if SideQuestSystem.is_in_mini_dungeon():
+		var md_state: Dictionary = GameContext.mini_dungeon_state
+		var fight: int = md_state.get("fight_index", 0) + 1
+		var total: int = md_state.get("total_fights", 1)
+		var final_tag: String = " [FINAL]" if md_state.get("is_final_fight", false) else ""
+		dungeon_progress_label.text = "Mini-Dungeon | Fight %d/%d%s" % [fight, total, final_tag]
+		return
+
 	var dungeon_id = GameContext.get_current_dungeon_id()
 	if dungeon_id == "":
 		dungeon_progress_label.text = "Dungeon | Floor 0/0 | Room 0/0"
@@ -2105,6 +2196,12 @@ func _on_combat_ended(_result) -> void:
 		_pending_xp_results = GameContext.grant_party_xp(xp_amount, source)
 		_pending_xp_amount = xp_amount
 
+		# Side quest: track kills for active kill quests
+		if _combat_controller != null:
+			var defeated: Array = _combat_controller.get_defeated_enemy_ids()
+			for enemy_id in defeated:
+				SideQuestSystem.check_kill_progress(enemy_id)
+
 	# Show loot panel on ANY victory (even with zero item drops, to display gold earned)
 	var show_loot: bool = _result != null and _result.is_victory
 	var show_defeat: bool = _result != null and not _result.is_victory
@@ -2137,6 +2234,23 @@ func _do_combat_transition() -> void:
 	if not _scene_transition_pending:
 		_scene_transition_pending = true
 
+		# Mini-dungeon: chain to next fight or return to town
+		if SideQuestSystem.is_in_mini_dungeon():
+			var has_more: bool = SideQuestSystem.advance_mini_dungeon()
+			if has_more:
+				print("[Flow] Mini-dungeon: advancing to next fight")
+				await get_tree().create_timer(1.0).timeout
+				_scene_transition_pending = false
+				_start_encounter()
+				return
+			else:
+				# All fights done — return to town
+				print("[Flow] Mini-dungeon complete — returning to town")
+				GameContext.set_phase(GameContext.GamePhase.TOWN_HUB)
+				await get_tree().create_timer(1.5).timeout
+				get_tree().change_scene_to_file("res://Game/Boot/game_boot.tscn")
+				return
+
 		# Set phase for proper boot routing: DUNGEON_CAMP if still in dungeon, TOWN otherwise
 		if GameContext.get_current_dungeon_id() != "":
 			GameContext.enter_dungeon_camp()
@@ -2160,18 +2274,7 @@ func _do_combat_transition() -> void:
 
 ## Get XP progress within current level for a hero.
 func _get_xp_progress(hero_id: String) -> Dictionary:
-	var hero = GameContext.get_hero(hero_id)
-	if hero.is_empty():
-		return {"current": 0, "needed": 100, "level": 1}
-	var xp: int = int(hero.get("xp", 0))
-	var level: int = int(hero.get("level", 1))
-	var current_threshold: int = GameContext.XP_THRESHOLDS[mini(level - 1, GameContext.XP_THRESHOLDS.size() - 1)]
-	var next_threshold: int = GameContext.XP_THRESHOLDS[mini(level, GameContext.XP_THRESHOLDS.size() - 1)]
-	var xp_in_level: int = xp - current_threshold
-	var xp_for_level: int = next_threshold - current_threshold
-	if xp_for_level <= 0:
-		xp_for_level = 1
-	return {"current": xp_in_level, "needed": xp_for_level, "level": level}
+	return GameContext.get_hero_xp_progress(hero_id)
 
 
 ## Returns "+" if any entry in the bag has material stack room remaining.
@@ -2191,6 +2294,15 @@ func _bag_stack_room_indicator(bag: Array) -> String:
 func _show_loot_panel() -> void:
 	print("[LootPanel] _show_loot_panel() ENTERED — pending=%d" % GameContext.get_all_pending_acquisitions().size())
 	UIAudio.play_sfx("loot_appear")
+
+	# Hide dead hero unit displays at end of battle
+	for uid in _unit_displays.keys():
+		var display = _unit_displays[uid]
+		if _combat_controller != null:
+			var cunit: CombatUnit = _combat_controller.get_unit_by_id(uid)
+			if cunit != null and cunit.team == CombatUnit.Team.PLAYER and not cunit.is_alive:
+				display.visible = false
+				print("[LootPanel] Hiding dead hero display: %s (%s)" % [uid, cunit.display_name])
 
 	# Auto-Loot: deposit all items automatically if enabled
 	if GameContext.auto_loot:
@@ -2293,6 +2405,11 @@ func _show_loot_panel() -> void:
 		vbox.add_child(xp_header)
 
 		for hero_id in GameContext.selected_party:
+			# Skip dead heroes — they don't earn XP
+			var hp_data = GameContext.get_hero_hp(hero_id)
+			if not hp_data.is_empty() and int(hp_data.get("current", 1)) <= 0:
+				continue
+
 			var hero = GameContext.get_hero(hero_id)
 			if hero.is_empty():
 				continue
@@ -2305,12 +2422,20 @@ func _show_loot_panel() -> void:
 			hero_row.add_theme_constant_override("separation", 8)
 			vbox.add_child(hero_row)
 
+			# Name + Level
 			var name_lbl = Label.new()
 			name_lbl.text = "%s  Lv%d" % [hero_name, hero_level]
 			name_lbl.add_theme_font_size_override("font_size", GameContext.fs(13))
 			name_lbl.add_theme_color_override("font_color", Color(0.85, 0.8, 0.7))
 			name_lbl.custom_minimum_size = Vector2(120, 0)
 			hero_row.add_child(name_lbl)
+
+			# XP text (before progress bar)
+			var xp_lbl = Label.new()
+			xp_lbl.text = "%d/%d XP" % [xp_progress.current, xp_progress.needed]
+			xp_lbl.add_theme_font_size_override("font_size", GameContext.fs(11))
+			xp_lbl.add_theme_color_override("font_color", Color(0.7, 0.7, 0.8))
+			hero_row.add_child(xp_lbl)
 
 			# XP progress bar
 			var bar = ProgressBar.new()
@@ -2336,12 +2461,7 @@ func _show_loot_panel() -> void:
 			bar.add_theme_stylebox_override("fill", bar_fill_style)
 			hero_row.add_child(bar)
 
-			var xp_lbl = Label.new()
-			xp_lbl.text = "%d/%d" % [xp_progress.current, xp_progress.needed]
-			xp_lbl.add_theme_font_size_override("font_size", GameContext.fs(11))
-			xp_lbl.add_theme_color_override("font_color", Color(0.7, 0.7, 0.8))
-			hero_row.add_child(xp_lbl)
-
+			# Level up badge (at end)
 			if levels_gained > 0:
 				var lvl_up = Label.new()
 				lvl_up.text = "LEVEL UP!"
@@ -2414,7 +2534,7 @@ func _show_loot_panel() -> void:
 			var entry = GameContext.shopkeeper_bag[j]
 			shop_grid.add_child(_create_bag_slot(entry, 32, is_shop_swap, "__shop__", j))
 		else:
-			shop_grid.add_child(_create_empty_bag_slot(32))
+			shop_grid.add_child(_create_empty_bag_slot(32, "__shop__", j))
 
 	# ── Hero Bag visual grids (skip dead heroes) ──
 	for hero_id in GameContext.selected_party:
@@ -2450,7 +2570,7 @@ func _show_loot_panel() -> void:
 				var bag_slot = _create_bag_slot(entry, 32, is_swap_target, hero_id, j)
 				hero_grid.add_child(bag_slot)
 			else:
-				hero_grid.add_child(_create_empty_bag_slot(32))
+				hero_grid.add_child(_create_empty_bag_slot(32, hero_id, j))
 
 	# ── Swap mode warning ──
 	if _loot_swap_mode:
@@ -2581,6 +2701,21 @@ func _create_loot_item_slot(acq: Dictionary, index: int) -> Control:
 		if icon_ctrl != null:
 			slot.add_child(icon_ctrl)
 
+	# Qty label overlay for stacked items (materials)
+	var loot_qty: int = int(acq.get("qty", 1))
+	if loot_qty > 1:
+		var qty_label = Label.new()
+		qty_label.text = "x%d" % loot_qty
+		qty_label.add_theme_font_size_override("font_size", 10)
+		qty_label.add_theme_color_override("font_color", Color(1, 1, 1, 0.95))
+		qty_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.9))
+		qty_label.add_theme_constant_override("shadow_offset_x", 1)
+		qty_label.add_theme_constant_override("shadow_offset_y", 1)
+		qty_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		qty_label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+		qty_label.set_anchors_preset(Control.PRESET_FULL_RECT)
+		slot.add_child(qty_label)
+
 	# Tooltip with item info
 	var loot_affix_data: Dictionary = acq.get("affix_data", {})
 	var loot_affix_prefix: String = loot_affix_data.get("affix_prefix", "")
@@ -2612,6 +2747,8 @@ func _create_loot_item_slot(acq: Dictionary, index: int) -> Control:
 		var effect_label: String = tpl.get_effect_label()
 		if effect_label != "":
 			tip_parts.append(effect_label)
+	if loot_qty > 1:
+		tip_parts[0] += " x%d" % loot_qty
 	slot.tooltip_text = "\n".join(tip_parts)
 
 	# Click handler — select this slot
@@ -2647,12 +2784,15 @@ func _create_bag_slot(entry: Dictionary, slot_size: int = 32, is_swap_target: bo
 	style.content_margin_top = 2.0
 	style.content_margin_right = 2.0
 	style.content_margin_bottom = 2.0
-	if is_swap_target:
+
+	# Highlight clickable slots when a loot item is selected
+	var is_clickable: bool = _loot_selected_index >= 0 and bag_index >= 0
+	if is_swap_target or is_clickable:
 		style.border_width_left = 2
 		style.border_width_top = 2
 		style.border_width_right = 2
 		style.border_width_bottom = 2
-		style.border_color = Color(1.0, 0.5, 0.3, 0.9)
+		style.border_color = Color(0.8, 0.7, 0.3, 0.8) if is_clickable else Color(1.0, 0.5, 0.3, 0.9)
 	else:
 		style.border_width_left = 1
 		style.border_width_top = 1
@@ -2690,8 +2830,16 @@ func _create_bag_slot(entry: Dictionary, slot_size: int = 32, is_swap_target: bo
 		tip += " x%d" % entry_qty
 	slot.tooltip_text = tip
 
-	# Swap click handler — only active in swap mode for the target hero
-	if is_swap_target and bag_index >= 0:
+	# Click handler: direct placement when loot item is selected, or swap mode
+	if is_clickable and bag_index >= 0:
+		var click_btn = Button.new()
+		click_btn.flat = true
+		click_btn.anchor_right = 1.0
+		click_btn.anchor_bottom = 1.0
+		click_btn.modulate = Color(1, 1, 1, 0)
+		click_btn.pressed.connect(_on_loot_direct_place.bind(hero_id, bag_index, item_id))
+		slot.add_child(click_btn)
+	elif is_swap_target and bag_index >= 0:
 		var click_btn = Button.new()
 		click_btn.flat = true
 		click_btn.anchor_right = 1.0
@@ -2704,21 +2852,42 @@ func _create_bag_slot(entry: Dictionary, slot_size: int = 32, is_swap_target: bo
 
 
 ## Create an empty bag slot (dim placeholder).
-func _create_empty_bag_slot(slot_size: int = 32) -> Control:
+func _create_empty_bag_slot(slot_size: int = 32, hero_id: String = "", bag_index: int = -1) -> Control:
 	var slot = PanelContainer.new()
 	slot.custom_minimum_size = Vector2(slot_size + 4, slot_size + 4)
 	var style = StyleBoxFlat.new()
 	style.bg_color = Color(0.1, 0.08, 0.06, 0.3)
-	style.border_width_left = 1
-	style.border_width_top = 1
-	style.border_width_right = 1
-	style.border_width_bottom = 1
-	style.border_color = Color(0.3, 0.25, 0.18, 0.3)
 	style.corner_radius_top_left = 2
 	style.corner_radius_top_right = 2
 	style.corner_radius_bottom_left = 2
 	style.corner_radius_bottom_right = 2
+
+	# Highlight empty slots as clickable targets when a loot item is selected
+	var is_clickable: bool = _loot_selected_index >= 0 and bag_index >= 0
+	if is_clickable:
+		style.border_width_left = 2
+		style.border_width_top = 2
+		style.border_width_right = 2
+		style.border_width_bottom = 2
+		style.border_color = Color(0.4, 0.8, 0.4, 0.7)
+	else:
+		style.border_width_left = 1
+		style.border_width_top = 1
+		style.border_width_right = 1
+		style.border_width_bottom = 1
+		style.border_color = Color(0.3, 0.25, 0.18, 0.3)
 	slot.add_theme_stylebox_override("panel", style)
+
+	# Click handler: direct placement into empty slot
+	if is_clickable:
+		var click_btn = Button.new()
+		click_btn.flat = true
+		click_btn.anchor_right = 1.0
+		click_btn.anchor_bottom = 1.0
+		click_btn.modulate = Color(1, 1, 1, 0)
+		click_btn.pressed.connect(_on_loot_direct_place.bind(hero_id, bag_index, ""))
+		slot.add_child(click_btn)
+
 	return slot
 
 
@@ -2744,57 +2913,17 @@ func _update_routing_bar() -> void:
 
 	var acq = pending[_loot_selected_index]
 	var item_id: String = acq.get("item_id", "")
-	var quality: int = int(acq.get("quality", 0))
 	var tpl = DataRegistry.get_item_template(item_id)
 	var display_name: String = item_id.replace("_", " ").capitalize()
 	if tpl != null and tpl.display_name != "":
 		display_name = tpl.display_name
 
-	var send_label = Label.new()
-	send_label.text = "Send %s to:" % display_name
-	send_label.add_theme_font_size_override("font_size", GameContext.fs(14))
-	send_label.add_theme_color_override("font_color", Color(0.9, 0.85, 0.7))
-	_loot_routing_bar.add_child(send_label)
-
-	# Shop Bag button
-	var shop_used = GameContext.shopkeeper_bag.size()
-	var shop_cap = GameContext.get_shopkeeper_bag_capacity()
-	var shop_btn = Button.new()
-	shop_btn.custom_minimum_size = Vector2(100, 26)
-	if not GameContext.can_add_to_shopkeeper_bag(item_id, 1, quality):
-		shop_btn.text = "Swap Shop (%d/%d%s)" % [shop_used, shop_cap, _bag_stack_room_indicator(GameContext.shopkeeper_bag)]
-		shop_btn.modulate = Color(1.0, 0.8, 0.6)
-		shop_btn.tooltip_text = "Replace an item in the shop bag"
-		shop_btn.pressed.connect(_on_loot_shop_swap_request.bind(_loot_selected_index))
-	else:
-		shop_btn.text = "Shop Bag (%d/%d%s)" % [shop_used, shop_cap, _bag_stack_room_indicator(GameContext.shopkeeper_bag)]
-		shop_btn.pressed.connect(_on_loot_to_shop_bag.bind(_loot_selected_index))
-	_loot_routing_bar.add_child(shop_btn)
-
-	# Hero buttons (skip dead heroes)
-	for hero_id in GameContext.selected_party:
-		var hp_data = GameContext.get_hero_hp(hero_id)
-		if not hp_data.is_empty() and int(hp_data.get("current", 1)) <= 0:
-			continue
-		var hero = GameContext.get_hero(hero_id)
-		var hero_name: String = hero.get("name", hero_id) if not hero.is_empty() else hero_id
-		if hero_name.length() > 10:
-			hero_name = hero_name.substr(0, 9) + "."
-		var hero_bag = GameContext.get_hero_bag(hero_id)
-		var bag_used = hero_bag.size()
-		var bag_cap = GameContext.get_hero_bag_capacity(hero_id)
-		var bag_plus: String = _bag_stack_room_indicator(hero_bag)
-		var hero_btn = Button.new()
-		hero_btn.custom_minimum_size = Vector2(100, 26)
-		if not GameContext.can_add_to_hero_bag(hero_id, item_id, 1):
-			hero_btn.text = "Swap %s (%d/%d%s)" % [hero_name, bag_used, bag_cap, bag_plus]
-			hero_btn.modulate = Color(1.0, 0.8, 0.6)
-			hero_btn.tooltip_text = "Replace an item in %s's bag" % hero_name
-			hero_btn.pressed.connect(_on_loot_swap_request.bind(_loot_selected_index, hero_id))
-		else:
-			hero_btn.text = "%s (%d/%d%s)" % [hero_name, bag_used, bag_cap, bag_plus]
-			hero_btn.pressed.connect(_on_loot_to_hero.bind(_loot_selected_index, hero_id))
-		_loot_routing_bar.add_child(hero_btn)
+	# Instruction text instead of hero/shop buttons — click bag slots directly
+	var instruct = Label.new()
+	instruct.text = "Click a bag slot below to place %s  (or B for Shop Bag / 1-4 for Heroes)" % display_name
+	instruct.add_theme_font_size_override("font_size", GameContext.fs(13))
+	instruct.add_theme_color_override("font_color", Color(0.95, 0.9, 0.7))
+	_loot_routing_bar.add_child(instruct)
 
 
 ## Handle clicking a loot drop slot — select it for routing.
@@ -2898,6 +3027,155 @@ func _on_swap_cancel() -> void:
 	_loot_swap_hero_id = ""
 	_loot_swap_acq_index = -1
 	_refresh_loot_panel()
+
+
+## Direct placement: click a bag slot to place the selected loot item.
+## If slot is empty: place directly. If occupied: show confirmation.
+func _on_loot_direct_place(owner_id: String, slot_index: int, existing_item_id: String) -> void:
+	if _loot_selected_index < 0:
+		return
+	var pending = GameContext.get_all_pending_acquisitions()
+	if _loot_selected_index >= pending.size():
+		return
+
+	var acq = pending[_loot_selected_index]
+	var new_item_id: String = acq.get("item_id", "")
+	var new_tpl = DataRegistry.get_item_template(new_item_id)
+	var new_name: String = new_tpl.display_name if new_tpl != null else new_item_id
+
+	# Empty slot — place directly without confirmation
+	if existing_item_id == "":
+		_execute_loot_direct_place(owner_id, slot_index, "")
+		return
+
+	# Occupied slot — show confirmation
+	var old_tpl = DataRegistry.get_item_template(existing_item_id)
+	var old_name: String = old_tpl.display_name if old_tpl != null else existing_item_id
+
+	var warning: String = ""
+	if owner_id == "__shop__":
+		warning = "Replace %s with %s?\n(Displaced item returns to loot)" % [old_name, new_name]
+	else:
+		var hero = GameContext.get_hero(owner_id)
+		var hero_name: String = hero.get("name", owner_id) if not hero.is_empty() else owner_id
+		warning = "Replace %s in %s's bag with %s?\n(Old item will be DISCARDED)" % [old_name, hero_name, new_name]
+
+	_show_loot_confirm_overlay(warning, owner_id, slot_index, existing_item_id)
+
+
+## Show a confirmation overlay for loot slot replacement.
+func _show_loot_confirm_overlay(message: String, owner_id: String, slot_index: int, old_item_id: String) -> void:
+	_close_loot_confirm_overlay()
+
+	_loot_confirm_overlay = CanvasLayer.new()
+	_loot_confirm_overlay.layer = 11
+	add_child(_loot_confirm_overlay)
+
+	var root = Control.new()
+	root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root.mouse_filter = Control.MOUSE_FILTER_STOP
+	_loot_confirm_overlay.add_child(root)
+
+	var backdrop = ColorRect.new()
+	backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
+	backdrop.color = Color(0, 0, 0, 0.5)
+	backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
+	root.add_child(backdrop)
+
+	var center = CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root.add_child(center)
+
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(320, 100)
+	center.add_child(panel)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 10)
+	panel.add_child(vbox)
+
+	var msg_label = Label.new()
+	msg_label.text = message
+	msg_label.add_theme_font_size_override("font_size", GameContext.fs(14))
+	msg_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	msg_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	vbox.add_child(msg_label)
+
+	var btn_row = HBoxContainer.new()
+	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	btn_row.add_theme_constant_override("separation", 20)
+	vbox.add_child(btn_row)
+
+	var confirm_btn = Button.new()
+	confirm_btn.text = "Confirm"
+	confirm_btn.custom_minimum_size = Vector2(90, 30)
+	confirm_btn.pressed.connect(_on_loot_confirm_replace.bind(owner_id, slot_index, old_item_id))
+	btn_row.add_child(confirm_btn)
+
+	var cancel_btn = Button.new()
+	cancel_btn.text = "Cancel"
+	cancel_btn.custom_minimum_size = Vector2(90, 30)
+	cancel_btn.pressed.connect(_close_loot_confirm_overlay)
+	btn_row.add_child(cancel_btn)
+
+
+## Execute confirmed loot slot replacement.
+func _on_loot_confirm_replace(owner_id: String, slot_index: int, old_item_id: String) -> void:
+	_close_loot_confirm_overlay()
+	_execute_loot_direct_place(owner_id, slot_index, old_item_id)
+
+
+## Execute loot direct placement into a bag slot.
+func _execute_loot_direct_place(owner_id: String, slot_index: int, old_item_id: String) -> void:
+	if _loot_selected_index < 0:
+		return
+	var acq_index: int = _loot_selected_index
+
+	if old_item_id != "":
+		# Occupied slot — remove old item then place new one
+		if owner_id == "__shop__":
+			if slot_index >= 0 and slot_index < GameContext.shopkeeper_bag.size():
+				var displaced: Dictionary = GameContext.shopkeeper_bag[slot_index].duplicate()
+				GameContext.shopkeeper_bag.remove_at(slot_index)
+				var ok = GameContext.resolve_acquisition_at(acq_index, "shop_bag")
+				if ok:
+					var d_quality: int = int(displaced.get("quality_tier", 0))
+					var d_affix: Dictionary = {}
+					if displaced.get("affix_id", "") != "":
+						d_affix = {"affix_id": displaced.get("affix_id", ""), "affix_stats": displaced.get("affix_stats", {}), "affix_prefix": displaced.get("affix_prefix", ""), "source_region": displaced.get("source_region", "")}
+					GameContext.acquire_item_with_recipient(displaced.get("item_id", ""), int(displaced.get("qty", 1)), d_quality, "swap", d_affix)
+					print("[LootPanel] Direct place: shop slot %d, displaced %s" % [slot_index, old_item_id])
+				else:
+					GameContext.shopkeeper_bag.insert(slot_index, displaced)
+					print("[LootPanel] Direct place failed: couldn't add to shop")
+		else:
+			var success = GameContext.remove_item_from_hero_bag(owner_id, old_item_id, 1, 0)
+			if success:
+				print("[LootPanel] DISCARDED %s from hero=%s slot=%d" % [old_item_id, owner_id, slot_index])
+				var ok = GameContext.resolve_acquisition_at(acq_index, "hero_bag", owner_id)
+				if not ok:
+					print("[LootPanel] Direct place failed: couldn't add to hero=%s" % owner_id)
+			else:
+				print("[LootPanel] Direct place failed: couldn't remove old item")
+	else:
+		# Empty slot — direct placement
+		if owner_id == "__shop__":
+			GameContext.resolve_acquisition_at(acq_index, "shop_bag")
+		else:
+			GameContext.resolve_acquisition_at(acq_index, "hero_bag", owner_id)
+		print("[LootPanel] Direct place into empty slot: owner=%s slot=%d" % [owner_id, slot_index])
+
+	UIAudio.play_sfx("loot_assign")
+	_loot_selected_index = -1
+	_refresh_loot_panel()
+	_refresh_shopkeeper_bag_display()
+
+
+## Close the loot confirmation overlay.
+func _close_loot_confirm_overlay() -> void:
+	if _loot_confirm_overlay != null and is_instance_valid(_loot_confirm_overlay):
+		_loot_confirm_overlay.queue_free()
+		_loot_confirm_overlay = null
 
 
 ## v1.2: Discard all remaining pending items (explicit user action).
@@ -3252,6 +3530,9 @@ func _on_flee_confirmed() -> void:
 	if _flee_dialog != null:
 		_flee_dialog.queue_free()
 		_flee_dialog = null
+
+	# Cancel mini-dungeon on flee (quest remains active for retry)
+	SideQuestSystem.cancel_mini_dungeon()
 
 	# Strip gear from surviving heroes (shopkeeper bag preserved)
 	GameContext.strip_surviving_heroes_gear()
@@ -3617,6 +3898,9 @@ func _on_defeat_continue() -> void:
 		_defeat_panel.queue_free()
 		_defeat_panel = null
 
+	# Cancel mini-dungeon on defeat (quest remains active for retry)
+	SideQuestSystem.cancel_mini_dungeon()
+
 	# Clear any pending acquisitions (dungeon loot is lost on defeat)
 	GameContext.clear_pending_acquisitions()
 
@@ -3810,6 +4094,7 @@ func _on_all_statuses_ticked() -> void:
 			_show_pop_text(unit_id, dname + " expired", "status_expire")
 	refresh_all_status_badges()
 	refresh_all_buff_badges()  # Also refresh buffs (tick at round start too)
+	_refresh_all_panels()  # Update HP labels and death state after DOT damage
 
 
 # ============================================================================
@@ -4351,11 +4636,19 @@ func _refresh_timeline() -> void:
 	for i in range(children.size() - 1):  # Skip last child (intent label)
 		children[i].queue_free()
 
-	# Get timeline snapshot
-	var timeline = _combat_controller.get_turn_timeline_snapshot(TIMELINE_UNIT_COUNT)
+	# Get reordered timeline: upcoming first, then acted (moved to end)
+	var timeline = _combat_controller.get_reordered_timeline_snapshot()
 
 	var insert_idx = 0
+	var separator_inserted: bool = false
 	for entry in timeline:
+		# Insert separator between upcoming and acted sections
+		if entry.get("has_acted", false) and not separator_inserted:
+			var sep = _create_timeline_separator()
+			_timeline_container.add_child(sep)
+			_timeline_container.move_child(sep, insert_idx)
+			insert_idx += 1
+			separator_inserted = true
 		var pill = _create_timeline_pill(entry)
 		_timeline_container.add_child(pill)
 		_timeline_container.move_child(pill, insert_idx)
@@ -4367,6 +4660,7 @@ func _refresh_timeline() -> void:
 func _create_timeline_pill(entry: Dictionary) -> PanelContainer:
 	var is_active = entry["is_current"]
 	var is_player = entry["team"] == "P"
+	var has_acted: bool = entry.get("has_acted", false)
 	var pill_size: int = 40 if is_active else 36
 
 	var pill = PanelContainer.new()
@@ -4381,6 +4675,10 @@ func _create_timeline_pill(entry: Dictionary) -> PanelContainer:
 		bg_color = Color(0.30, 0.25, 0.10, 0.95)
 		border_color = Color(1.0, 0.85, 0.4, 0.9)
 		border_width = 2
+	elif has_acted:
+		# Dimmed style for units that already acted this round
+		bg_color = Color(0.10, 0.10, 0.10, 0.6)
+		border_color = Color(0.3, 0.3, 0.3, 0.4)
 	elif is_player:
 		bg_color = Color(0.12, 0.18, 0.14, 0.85)
 		border_color = Color(0.3, 0.55, 0.35, 0.7)
@@ -4419,10 +4717,10 @@ func _create_timeline_pill(entry: Dictionary) -> PanelContainer:
 
 	vbox.add_child(portrait_rect)
 
-	# Active indicator arrow
+	# Active/front indicator arrow
 	if is_active:
 		var arrow = Label.new()
-		arrow.text = "▼"
+		arrow.text = "▶"
 		arrow.add_theme_font_size_override("font_size", GameContext.fs(9))
 		arrow.add_theme_color_override("font_color", Color(1.0, 0.85, 0.4, 0.9))
 		arrow.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -4430,14 +4728,69 @@ func _create_timeline_pill(entry: Dictionary) -> PanelContainer:
 
 	pill.add_child(vbox)
 
-	# Tooltip with full info
-	pill.tooltip_text = "%s | SPD: %d | %s" % [
-		entry["name"],
-		entry["speed"],
-		"PLAYER" if is_player else "ENEMY"
-	]
+	# Rich tooltip with intent preview
+	var intent = entry.get("intent", {})
+	pill.tooltip_text = _build_timeline_tooltip(entry, intent)
 
 	return pill
+
+
+## Create a thin gold separator bar between upcoming and already-acted units in the timeline.
+func _create_timeline_separator() -> PanelContainer:
+	var sep = PanelContainer.new()
+	sep.custom_minimum_size = Vector2(4, 32)
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(1.0, 0.85, 0.4, 0.6)
+	style.set_corner_radius_all(1)
+	sep.add_theme_stylebox_override("panel", style)
+	sep.tooltip_text = "Turn order divider"
+	return sep
+
+
+## Build a multi-line tooltip for a timeline pill showing unit info and predicted intent.
+func _build_timeline_tooltip(entry: Dictionary, intent: Dictionary) -> String:
+	var lines: Array = []
+	var team_label: String = "Player" if entry["team"] == "P" else "Enemy"
+	lines.append("%s (%s)" % [entry["name"], team_label])
+	lines.append("SPD: %d" % entry["speed"])
+
+	if intent.is_empty():
+		return "\n".join(lines)
+
+	lines.append("───────────")
+
+	if intent.get("is_stunned", false):
+		lines.append("Stunned - will skip turn")
+		return "\n".join(lines)
+
+	var action_type: String = intent.get("action_type", "")
+
+	if action_type == "player":
+		var abilities = intent.get("ready_abilities", [])
+		if abilities.size() > 0:
+			lines.append("Abilities:")
+			for ab in abilities:
+				var status: String = "ready" if ab.get("ready", false) else "%d cd" % ab.get("cooldown", 0)
+				lines.append("  %s (%s)" % [ab.get("name", "?"), status])
+		else:
+			lines.append("Basic Attack")
+	elif action_type == "tactical":
+		var abilities = intent.get("ready_abilities", [])
+		lines.append("May use:")
+		for ab in abilities:
+			lines.append("  %s" % ab.get("name", "?"))
+	else:
+		# Deterministic enemy prediction
+		var ability_name: String = intent.get("ability_name", "Attack")
+		lines.append("Next: %s" % ability_name)
+		var desc: String = intent.get("ability_desc", "")
+		if desc != "":
+			lines.append("  \"%s\"" % desc)
+		var target: String = intent.get("target_name", "")
+		if target != "":
+			lines.append("Target: %s" % target)
+
+	return "\n".join(lines)
 
 
 ## v1.9B: Handle intent decided signal - show intent in timeline area.
@@ -4707,6 +5060,9 @@ func _on_player_input_required(unit: CombatUnit, available_actions: Array) -> vo
 	# Store the current input unit for tooltip calculations
 	_current_input_unit = unit
 
+	# Refresh hero bag display for the active hero
+	_refresh_hero_bag_display(unit.source_id)
+
 	# Auto mode: automatically select basic attack for player units
 	# Use call_deferred to let the current signal complete first, preventing state issues
 	if _is_auto_running:
@@ -4801,6 +5157,10 @@ func _on_player_input_required(unit: CombatUnit, available_actions: Array) -> vo
 
 	_log("[color=#ffcc66]%s's turn - choose an action[/color]" % unit.display_name)
 	print("[UI] Action panel shown, awaiting player input")
+
+	# Tutorial: first time a hero has an unlocked ability
+	if _btn_ability_a.visible and not _btn_ability_a.disabled:
+		TutorialOverlay.try_show(self, "tutorial_abilities")
 
 	# v2.0: Apply enhanced hero input highlight
 	_apply_hero_input_highlight(unit.unit_id)
@@ -5208,10 +5568,16 @@ func _on_target_selection_required(unit: CombatUnit, valid_targets: Array, actio
 	# Handle edge case: no valid targets
 	if valid_targets.size() == 0:
 		print("[UI] WARNING: No valid targets available!")
+		# Auto mode: pass the turn instead of canceling (cancel loops back infinitely)
+		if _is_auto_running and _combat_controller != null:
+			print("[UI] Auto mode: no targets, auto-passing turn")
+			_combat_controller.submit_pass_action()
+			return
 		_log("[color=red]No valid targets![/color]")
 		# Cancel back to action selection
 		if _combat_controller != null:
 			_combat_controller.cancel_player_action()
+		_ensure_action_panel_visible()
 		return
 
 	print("[UI] Entering target selection mode")
@@ -5264,23 +5630,23 @@ func _enter_target_selection_mode(valid_targets: Array) -> void:
 			highlight.visible = true
 			_target_highlights[unit_id] = highlight
 
-			# Connect click and hover handlers to ClickPanel (the transparent overlay)
-			var click_panel = display.get_node_or_null("ClickPanel")
-			if click_panel:
+			# Connect click and hover handlers to Portrait for target selection
+			var portrait = display.find_child("Portrait", true, false)
+			if portrait:
 				# Disconnect old target handlers to prevent duplicates
-				for connection in click_panel.gui_input.get_connections():
+				for connection in portrait.gui_input.get_connections():
 					if connection.callable.get_method() == "_on_unit_clicked":
-						click_panel.gui_input.disconnect(connection.callable)
-				for connection in click_panel.mouse_entered.get_connections():
+						portrait.gui_input.disconnect(connection.callable)
+				for connection in portrait.mouse_entered.get_connections():
 					if connection.callable.get_method() == "_on_target_mouse_entered":
-						click_panel.mouse_entered.disconnect(connection.callable)
-				for connection in click_panel.mouse_exited.get_connections():
+						portrait.mouse_entered.disconnect(connection.callable)
+				for connection in portrait.mouse_exited.get_connections():
 					if connection.callable.get_method() == "_on_target_mouse_exited":
-						click_panel.mouse_exited.disconnect(connection.callable)
+						portrait.mouse_exited.disconnect(connection.callable)
 
-				click_panel.gui_input.connect(_on_unit_clicked.bind(unit_id))
-				click_panel.mouse_entered.connect(_on_target_mouse_entered.bind(unit_id))
-				click_panel.mouse_exited.connect(_on_target_mouse_exited.bind(unit_id))
+				portrait.gui_input.connect(_on_unit_clicked.bind(unit_id))
+				portrait.mouse_entered.connect(_on_target_mouse_entered.bind(unit_id))
+				portrait.mouse_exited.connect(_on_target_mouse_exited.bind(unit_id))
 		else:
 			# Gray out non-valid targets
 			display.modulate = Color(0.7, 0.7, 0.7)
@@ -5315,18 +5681,18 @@ func _exit_target_selection_mode() -> void:
 		var display = _unit_displays[unit_id]
 		display.modulate = Color.WHITE
 
-		# Disconnect target selection handlers from ClickPanel
-		var click_panel = display.get_node_or_null("ClickPanel")
-		if click_panel:
-			for connection in click_panel.gui_input.get_connections():
+		# Disconnect target selection handlers from Portrait
+		var portrait = display.find_child("Portrait", true, false)
+		if portrait:
+			for connection in portrait.gui_input.get_connections():
 				if connection.callable.get_method() == "_on_unit_clicked":
-					click_panel.gui_input.disconnect(connection.callable)
-			for connection in click_panel.mouse_entered.get_connections():
+					portrait.gui_input.disconnect(connection.callable)
+			for connection in portrait.mouse_entered.get_connections():
 				if connection.callable.get_method() == "_on_target_mouse_entered":
-					click_panel.mouse_entered.disconnect(connection.callable)
-			for connection in click_panel.mouse_exited.get_connections():
+					portrait.mouse_entered.disconnect(connection.callable)
+			for connection in portrait.mouse_exited.get_connections():
 				if connection.callable.get_method() == "_on_target_mouse_exited":
-					click_panel.mouse_exited.disconnect(connection.callable)
+					portrait.mouse_exited.disconnect(connection.callable)
 
 		# Hide highlight
 		var highlight = display.get_node_or_null("TargetHighlight")
@@ -5334,6 +5700,9 @@ func _exit_target_selection_mode() -> void:
 			highlight.visible = false
 
 	_target_highlights.clear()
+
+	# Defensive re-show: ensure action panel is visible if still awaiting player input
+	_ensure_action_panel_visible()
 
 
 ## Handle click on unit display during target selection.
@@ -5352,6 +5721,13 @@ func _on_unit_clicked(event: InputEvent, unit_id: String) -> void:
 			_combat_controller.submit_player_target(unit_id)
 		else:
 			print("[UI] Click on invalid target - ignoring")
+
+
+## Defensive helper: re-show action panel if the combat controller is still waiting for player input.
+## Call this after any overlay close, cancel, or action completion that might leave the panel hidden.
+func _ensure_action_panel_visible() -> void:
+	if _action_panel != null and _combat_controller != null and _combat_controller.is_awaiting_player_input():
+		_action_panel.visible = true
 
 
 ## Handle Basic Attack button press.
@@ -5420,6 +5796,12 @@ func _auto_select_action() -> void:
 		print("[UI] _auto_select_action: not awaiting player input, skipping")
 		return
 
+	# Safety: if all enemies are dead, pass instead of attacking (prevents infinite loop)
+	if _combat_controller._turn_queue.is_team_wiped(CombatUnit.Team.ENEMY):
+		print("[UI] _auto_select_action: all enemies dead, auto-passing")
+		_combat_controller.submit_pass_action()
+		return
+
 	print("[UI] _auto_select_action: submitting basic attack")
 	_combat_controller.submit_player_action("basic")
 
@@ -5456,14 +5838,11 @@ func _auto_select_target() -> void:
 # UNIT DISPLAY INPUT — Unified Click Handler
 # ============================================================================
 
-## Unified input handler for unit display cards (replaces _on_unit_right_clicked).
-## Right-click: stat inspection. Left-click: quick basic attack on enemies.
-func _on_unit_display_input(event: InputEvent, unit_id: String) -> void:
+## Left-click input handler for Portrait — quick basic attack on enemies.
+func _on_unit_left_click_input(event: InputEvent, unit_id: String) -> void:
 	if not (event is InputEventMouseButton and event.pressed):
 		return
-	if event.button_index == MOUSE_BUTTON_RIGHT:
-		_show_stat_inspection(unit_id)
-	elif event.button_index == MOUSE_BUTTON_LEFT:
+	if event.button_index == MOUSE_BUTTON_LEFT:
 		_on_unit_left_clicked(unit_id)
 
 
@@ -5477,20 +5856,19 @@ func _on_unit_left_clicked(unit_id: String) -> void:
 		return
 	if not unit_id.begins_with("enemy_"):
 		return
+	# Hide panel BEFORE submit — submit may synchronously show it for the next hero
+	if _action_panel != null:
+		_action_panel.visible = false
 	if _combat_controller.submit_basic_attack_on_target(unit_id):
-		if _action_panel != null:
-			_action_panel.visible = false
 		print("[UI] Quick basic attack on %s" % unit_id)
+	else:
+		# Submit failed (invalid target) — restore panel
+		_ensure_action_panel_visible()
 
 
 # ============================================================================
-# STAT INSPECTION — Right-Click Popup (CanvasLayer overlay)
+# STAT INSPECTION — Inspect Button Popup (CanvasLayer overlay)
 # ============================================================================
-
-## Legacy handler: right-click on unit display to show stat inspection.
-func _on_unit_right_clicked(event: InputEvent, unit_id: String) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
-		_show_stat_inspection(unit_id)
 
 
 ## Show a stat inspection overlay for any unit (hero or enemy).
@@ -5572,12 +5950,26 @@ func _build_stat_inspection_content(vbox: VBoxContainer, unit_data: Dictionary) 
 			var stats = GameContext.get_hero_effective_stats(hero_id)
 			hero_level = stats.get("level", 1)
 		_add_inspect_header(vbox, "%s — %s Lv%d" % [display_name, cls_name, hero_level])
+		# XP progress (heroes only)
+		var xp_prog: Dictionary = GameContext.get_hero_xp_progress(hero_id)
+		var xp_lbl = Label.new()
+		if xp_prog.is_max:
+			xp_lbl.text = "XP: MAX LEVEL"
+			xp_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.3))
+		else:
+			xp_lbl.text = "XP: %d / %d" % [xp_prog.current, xp_prog.needed]
+			xp_lbl.add_theme_color_override("font_color", Color(0.6, 0.9, 1.0))
+		xp_lbl.add_theme_font_size_override("font_size", GameContext.fs(12))
+		xp_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		vbox.add_child(xp_lbl)
 	else:
 		var uid: String = unit_data.get("id", "")
 		if uid.begins_with("enemy_"):
 			var enemy_num: int = int(uid.replace("enemy_", "")) + 1
 			display_name = "%s #%d" % [unit_data["name"], enemy_num]
-		_add_inspect_header(vbox, display_name)
+		var inspect_atk_type: String = unit_data.get("attack_type", "melee")
+		var inspect_type_label: String = "Ranged" if inspect_atk_type == "ranged" else "Melee"
+		_add_inspect_header(vbox, "%s (%s)" % [display_name, inspect_type_label])
 
 	_add_inspect_separator(vbox)
 
@@ -5629,25 +6021,24 @@ func _build_stat_inspection_content(vbox: VBoxContainer, unit_data: Dictionary) 
 		if ins_val > 0:
 			_add_inspect_stat(vbox, ins.label, "%d%s" % [ins_val, ins.suffix], ins.color, ins.desc)
 
-	# --- Abilities (heroes) ---
-	if is_hero:
-		var inspect_hero_id: String = unit_data.get("source_id", unit_data["id"])
-		var inspect_hero_level := 1
-		if GameContext.has_method("get_hero_effective_stats"):
-			var h_stats = GameContext.get_hero_effective_stats(inspect_hero_id)
-			inspect_hero_level = h_stats.get("level", 1)
-		var has_abilities := false
-		var ability_a_id: String = unit_data.get("ability_a_id", "")
-		var ability_b_id: String = unit_data.get("ability_b_id", "")
-		if ability_a_id != "" or ability_b_id != "":
-			_add_inspect_separator(vbox)
-			_add_inspect_section_label(vbox, "Abilities")
-			has_abilities = true
+	# --- Abilities (all units) ---
+	var inspect_hero_id: String = unit_data.get("source_id", unit_data["id"])
+	var inspect_hero_level := 1
+	if is_hero and GameContext.has_method("get_hero_effective_stats"):
+		var h_stats = GameContext.get_hero_effective_stats(inspect_hero_id)
+		inspect_hero_level = h_stats.get("level", 1)
 
-		if ability_a_id != "":
-			var ability_a = DataRegistry.get_ability(ability_a_id) if DataRegistry.has_method("get_ability") else null
-			var a_name: String = ability_a.display_name if ability_a else ability_a_id.replace("_", " ").capitalize()
-			var a_desc: String = ability_a.description if ability_a != null else ""
+	var ability_a_id: String = unit_data.get("ability_a_id", "")
+	var ability_b_id: String = unit_data.get("ability_b_id", "")
+	if ability_a_id != "" or ability_b_id != "":
+		_add_inspect_separator(vbox)
+		_add_inspect_section_label(vbox, "Abilities")
+
+	if ability_a_id != "":
+		var ability_a = DataRegistry.get_ability(ability_a_id) if DataRegistry.has_method("get_ability") else null
+		var a_name: String = ability_a.display_name if ability_a else ability_a_id.replace("_", " ").capitalize()
+		var a_desc: String = ability_a.description if ability_a != null else ""
+		if is_hero:
 			if GameContext.is_ability_slot_unlocked("ability_a", inspect_hero_level):
 				var cd_a: int = unit_data.get("ability_a_cooldown", 0)
 				var cd_str: String = "CD: %d" % cd_a if cd_a > 0 else "Ready"
@@ -5655,11 +6046,16 @@ func _build_stat_inspection_content(vbox: VBoxContainer, unit_data: Dictionary) 
 			else:
 				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("ability_a", 5)
 				_add_inspect_ability(vbox, a_name, "Lv %d" % req_lv, a_desc)
+		else:
+			var cd_a: int = unit_data.get("ability_a_cooldown", 0)
+			var cd_str: String = "CD: %d" % cd_a if cd_a > 0 else "Ready"
+			_add_inspect_ability(vbox, a_name, cd_str, a_desc)
 
-		if ability_b_id != "":
-			var ability_b = DataRegistry.get_ability(ability_b_id) if DataRegistry.has_method("get_ability") else null
-			var b_name: String = ability_b.display_name if ability_b else ability_b_id.replace("_", " ").capitalize()
-			var b_desc: String = ability_b.description if ability_b != null else ""
+	if ability_b_id != "":
+		var ability_b = DataRegistry.get_ability(ability_b_id) if DataRegistry.has_method("get_ability") else null
+		var b_name: String = ability_b.display_name if ability_b else ability_b_id.replace("_", " ").capitalize()
+		var b_desc: String = ability_b.description if ability_b != null else ""
+		if is_hero:
 			if GameContext.is_ability_slot_unlocked("ability_b", inspect_hero_level):
 				var cd_b: int = unit_data.get("ability_b_cooldown", 0)
 				var cd_str: String = "CD: %d" % cd_b if cd_b > 0 else "Ready"
@@ -5667,51 +6063,79 @@ func _build_stat_inspection_content(vbox: VBoxContainer, unit_data: Dictionary) 
 			else:
 				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("ability_b", 25)
 				_add_inspect_ability(vbox, b_name, "Lv %d" % req_lv, b_desc)
+		else:
+			var cd_b: int = unit_data.get("ability_b_cooldown", 0)
+			var cd_str: String = "CD: %d" % cd_b if cd_b > 0 else "Ready"
+			_add_inspect_ability(vbox, b_name, cd_str, b_desc)
 
-		# Passives
-		var passive_a_id: String = unit_data.get("passive_a_id", "")
-		var passive_b_id: String = unit_data.get("passive_b_id", "")
-		if passive_a_id != "" or passive_b_id != "":
-			_add_inspect_separator(vbox)
-			_add_inspect_section_label(vbox, "Passives")
+	# --- Passives (all units) ---
+	var passive_a_id: String = unit_data.get("passive_a_id", "")
+	var passive_b_id: String = unit_data.get("passive_b_id", "")
+	if passive_a_id != "" or passive_b_id != "":
+		_add_inspect_separator(vbox)
+		_add_inspect_section_label(vbox, "Passives")
 
-		if passive_a_id != "":
-			var passive_a = DataRegistry.get_passive(passive_a_id) if DataRegistry.has_method("get_passive") else null
-			var pa_name: String = passive_a.display_name if passive_a else passive_a_id.replace("_", " ").capitalize()
-			var pa_desc: String = passive_a.description if passive_a != null else ""
+	if passive_a_id != "":
+		var passive_a = DataRegistry.get_passive(passive_a_id) if DataRegistry.has_method("get_passive") else null
+		var pa_name: String = passive_a.display_name if passive_a else passive_a_id.replace("_", " ").capitalize()
+		var pa_desc: String = passive_a.description if passive_a != null else ""
+		if is_hero:
 			if GameContext.is_ability_slot_unlocked("passive_a", inspect_hero_level):
 				_add_inspect_passive(vbox, pa_name, pa_desc)
 			else:
 				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("passive_a", 15)
 				_add_inspect_passive(vbox, "%s (Lv %d)" % [pa_name, req_lv], pa_desc)
+		else:
+			_add_inspect_passive(vbox, pa_name, pa_desc)
 
-		if passive_b_id != "":
-			var passive_b = DataRegistry.get_passive(passive_b_id) if DataRegistry.has_method("get_passive") else null
-			var pb_name: String = passive_b.display_name if passive_b else passive_b_id.replace("_", " ").capitalize()
-			var pb_desc: String = passive_b.description if passive_b != null else ""
+	if passive_b_id != "":
+		var passive_b = DataRegistry.get_passive(passive_b_id) if DataRegistry.has_method("get_passive") else null
+		var pb_name: String = passive_b.display_name if passive_b else passive_b_id.replace("_", " ").capitalize()
+		var pb_desc: String = passive_b.description if passive_b != null else ""
+		if is_hero:
 			if GameContext.is_ability_slot_unlocked("passive_b", inspect_hero_level):
 				_add_inspect_passive(vbox, pb_name, pb_desc)
 			else:
 				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("passive_b", 40)
 				_add_inspect_passive(vbox, "%s (Lv %d)" % [pb_name, req_lv], pb_desc)
+		else:
+			_add_inspect_passive(vbox, pb_name, pb_desc)
 
-	# --- Active Statuses ---
+	# --- Active Statuses (enhanced with descriptions + damage info) ---
 	var statuses: Array = unit_data.get("active_statuses_v1", [])
 	if statuses.size() > 0:
 		_add_inspect_separator(vbox)
 		_add_inspect_section_label(vbox, "Status Effects")
 		for s in statuses:
-			var s_name: String = s.get("ui_name", s.get("id", "?").capitalize())
+			var s_id: String = s.get("id", "?")
+			var s_name: String = s.get("ui_name", s_id.capitalize())
 			if s_name == "":
-				s_name = s.get("id", "?").capitalize()
+				s_name = s_id.capitalize()
 			var s_dur: int = s.get("remaining_rounds", 0)
 			var s_stacks: int = s.get("stacks", 1)
+			var s_tags: Array = s.get("tags", [])
 			var dur_text: String = "%d turns" % s_dur
 			if s_stacks > 1:
 				dur_text += " (x%d)" % s_stacks
 			_add_inspect_status_line(vbox, s_name, dur_text, Color(0.9, 0.5, 0.5))
 
-	# --- Active Buffs ---
+			# Enhanced: description + damage info from DataRegistry
+			var status_data = DataRegistry.get_status_effect(s_id) if DataRegistry.has_method("get_status_effect") else null
+			if status_data != null:
+				if status_data.description != "":
+					_add_inspect_detail_line(vbox, status_data.description, Color(0.75, 0.65, 0.6))
+				if "dot" in s_tags or status_data.category == "dot":
+					var base_dmg: int = status_data.base_value
+					var per_stack: int = status_data.value_per_stack
+					var total_dmg: int = base_dmg + (per_stack * (s_stacks - 1)) if s_stacks > 1 else base_dmg
+					if total_dmg > 0:
+						_add_inspect_detail_line(vbox, "  Damage: %d/turn" % total_dmg, Color(0.9, 0.6, 0.5))
+				if "control" in s_tags or status_data.category == "control":
+					_add_inspect_detail_line(vbox, "  Cannot act while active", Color(0.9, 0.6, 0.5))
+				if status_data.is_cleansable:
+					_add_inspect_detail_line(vbox, "  (Cleansable)", Color(0.7, 0.7, 0.6))
+
+	# --- Active Buffs (enhanced with descriptions) ---
 	var buffs: Array = unit_data.get("active_buffs_v1", [])
 	if buffs.size() > 0:
 		_add_inspect_separator(vbox)
@@ -5847,6 +6271,16 @@ func _add_inspect_status_line(vbox: VBoxContainer, status_name: String, duration
 	vbox.add_child(hbox)
 
 
+## Stat inspection: add a smaller detail/description line.
+func _add_inspect_detail_line(vbox: VBoxContainer, text: String, color: Color) -> void:
+	var lbl = Label.new()
+	lbl.text = text
+	lbl.add_theme_font_size_override("font_size", GameContext.fs(12))
+	lbl.add_theme_color_override("font_color", color)
+	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	vbox.add_child(lbl)
+
+
 ## Close the stat inspection overlay.
 func _close_stat_inspection() -> void:
 	if _inspect_overlay != null and is_instance_valid(_inspect_overlay):
@@ -5854,6 +6288,7 @@ func _close_stat_inspection() -> void:
 		_inspect_overlay.queue_free()
 		_inspect_overlay = null
 		_inspect_unit_id = ""
+	_ensure_action_panel_visible()
 
 
 ## Handle click on backdrop to close inspection.
@@ -5946,10 +6381,18 @@ func _show_item_select_overlay(hero_id: String, consumables: Array) -> void:
 	var sep = HSeparator.new()
 	vbox.add_child(sep)
 
-	# Item buttons
+	# Item buttons with effect descriptions
 	for entry in consumables:
 		var item_btn = Button.new()
-		item_btn.text = entry.template.display_name if entry.template else entry.item_id
+		var btn_name: String = entry.template.display_name if entry.template else entry.item_id
+		var effect_text: String = ""
+		if entry.template and entry.template.use_effect != "":
+			effect_text = entry.template.get_effect_label()
+		if effect_text != "":
+			item_btn.text = "%s — %s" % [btn_name, effect_text]
+			item_btn.tooltip_text = effect_text
+		else:
+			item_btn.text = btn_name
 		item_btn.custom_minimum_size = Vector2(0, 32)
 		item_btn.pressed.connect(_on_item_select_chosen.bind(entry.item_id, hero_id))
 		vbox.add_child(item_btn)
@@ -5984,6 +6427,7 @@ func _close_item_select_overlay() -> void:
 func _on_item_select_backdrop_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed:
 		_close_item_select_overlay()
+		_ensure_action_panel_visible()
 
 
 # ============================================================================
@@ -6048,6 +6492,15 @@ func _show_combat_consumable_hero_picker(item_id: String, source_hero_id: String
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(title)
 
+	# Show effect description below title
+	if template != null and template.use_effect != "":
+		var effect_lbl = Label.new()
+		effect_lbl.text = template.get_effect_label()
+		effect_lbl.add_theme_font_size_override("font_size", GameContext.fs(14))
+		effect_lbl.add_theme_color_override("font_color", Color(0.8, 0.8, 0.5))
+		effect_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		vbox.add_child(effect_lbl)
+
 	vbox.add_child(HSeparator.new())
 
 	# Hero buttons - show all alive party heroes with HP (read from live CombatUnit)
@@ -6091,14 +6544,15 @@ func _show_combat_consumable_hero_picker(item_id: String, source_hero_id: String
 func _on_combat_consumable_hero_chosen(item_id: String, target_hero_id: String, source_hero_id: String) -> void:
 	_close_combat_consumable_picker()
 	_combat_controller.submit_consumable_use(item_id, target_hero_id, true, source_hero_id)  # true = free action
+	# Refresh hero bag display since item was consumed
+	_refresh_hero_bag_display(source_hero_id)
+	_ensure_action_panel_visible()
 
 
 ## Cancel the combat consumable hero picker and re-show the action panel.
 func _on_combat_consumable_picker_cancel() -> void:
 	_close_combat_consumable_picker()
-	# Re-show action panel so the player can choose another action
-	if _action_panel != null and _combat_controller != null and _combat_controller.is_awaiting_player_input():
-		_action_panel.visible = true
+	_ensure_action_panel_visible()
 
 
 ## Close the combat consumable hero picker overlay.
@@ -6186,6 +6640,8 @@ func _on_consumable_selected(idx: int, hero_id: String, bag: Array) -> void:
 	if _consumable_popup != null:
 		_consumable_popup.queue_free()
 		_consumable_popup = null
+
+	_ensure_action_panel_visible()
 
 
 # ============================================================================
@@ -6703,16 +7159,22 @@ func _create_shopkeeper_bag_display() -> void:
 	_shopkeeper_bag_row.add_theme_constant_override("separation", 4)
 	vbox.add_child(_shopkeeper_bag_row)
 
-	# Insert into BottomPanel above action panel
+	# Create bags wrapper HBoxContainer to hold shopkeeper + hero bags side-by-side
+	_bags_hbox = HBoxContainer.new()
+	_bags_hbox.name = "BagsRow"
+	_bags_hbox.add_theme_constant_override("separation", 8)
+	_bags_hbox.add_child(_shopkeeper_bag_panel)
+
+	# Insert wrapper into BottomPanel above action panel
 	if _action_panel != null:
 		var parent_node = _action_panel.get_parent()
 		if parent_node != null:
-			parent_node.add_child(_shopkeeper_bag_panel)
-			parent_node.move_child(_shopkeeper_bag_panel, _action_panel.get_index())
+			parent_node.add_child(_bags_hbox)
+			parent_node.move_child(_bags_hbox, _action_panel.get_index())
 	else:
-		$BottomPanel.add_child(_shopkeeper_bag_panel)
+		$BottomPanel.add_child(_bags_hbox)
 		var button_row = $BottomPanel/ButtonRow
-		$BottomPanel.move_child(_shopkeeper_bag_panel, button_row.get_index())
+		$BottomPanel.move_child(_bags_hbox, button_row.get_index())
 
 	# Initial population
 	_refresh_shopkeeper_bag_display()
@@ -6883,3 +7345,112 @@ func _bag_slot_drop(at_pos: Vector2, data, target_index: int) -> void:
 	GameContext.swap_shopkeeper_bag_items(src_index, target_index)
 	_refresh_shopkeeper_bag_display()
 	print("[UI] Drag-swapped shopkeeper bag slots %d <-> %d" % [src_index, target_index])
+
+
+# ============================================================================
+# HERO BAG DISPLAY IN COMBAT
+# ============================================================================
+
+## Create the hero bag display panel and insert it above the shopkeeper bag.
+func _create_hero_bag_display() -> void:
+	if _hero_bag_panel != null:
+		_hero_bag_panel.queue_free()
+
+	_hero_bag_panel = PanelContainer.new()
+	_hero_bag_panel.name = "HeroBagPanel"
+
+	var bag_style = StyleBoxFlat.new()
+	bag_style.bg_color = Color(0.12, 0.15, 0.2, 0.9)
+	bag_style.border_color = Color(0.3, 0.5, 0.7, 0.6)
+	bag_style.set_border_width_all(1)
+	bag_style.set_corner_radius_all(3)
+	bag_style.content_margin_left = 6
+	bag_style.content_margin_right = 6
+	bag_style.content_margin_top = 3
+	bag_style.content_margin_bottom = 3
+	_hero_bag_panel.add_theme_stylebox_override("panel", bag_style)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 2)
+	_hero_bag_panel.add_child(vbox)
+
+	_hero_bag_label = Label.new()
+	_hero_bag_label.text = "Hero Bag"
+	_hero_bag_label.add_theme_font_size_override("font_size", GameContext.fs(13))
+	_hero_bag_label.add_theme_color_override("font_color", Color(0.6, 0.75, 0.9, 0.9))
+	vbox.add_child(_hero_bag_label)
+
+	_hero_bag_row = HBoxContainer.new()
+	_hero_bag_row.add_theme_constant_override("separation", 4)
+	vbox.add_child(_hero_bag_row)
+
+	# Add to bags wrapper (right of shopkeeper bag)
+	if _bags_hbox != null:
+		_bags_hbox.add_child(_hero_bag_panel)
+
+	_hero_bag_panel.visible = false  # Hidden until a hero's turn starts
+
+
+## Refresh the hero bag display for the given hero.
+func _refresh_hero_bag_display(hero_id: String) -> void:
+	if _hero_bag_row == null:
+		return
+	for child in _hero_bag_row.get_children():
+		child.queue_free()
+
+	if hero_id.is_empty():
+		_hero_bag_panel.visible = false
+		return
+
+	var bag: Array = GameContext.get_hero_bag(hero_id)
+	var cap: int = GameContext.get_hero_bag_capacity(hero_id)
+	var hero: Dictionary = GameContext.get_hero(hero_id)
+	var hero_name: String = hero.get("name", hero_id)
+
+	_hero_bag_label.text = "%s's Bag (%d/%d)" % [hero_name, bag.size(), cap]
+
+	if bag.is_empty():
+		_hero_bag_panel.visible = false
+		return
+
+	_hero_bag_panel.visible = true
+
+	for i in range(bag.size()):
+		var entry: Dictionary = bag[i]
+		var item_id: String = entry.get("item_id", "")
+		var qty: int = int(entry.get("qty", 1))
+		var tmpl = DataRegistry.get_item_template(item_id)
+
+		var btn = Button.new()
+		btn.custom_minimum_size = Vector2(32, 32)
+
+		if tmpl != null:
+			var icon_path: String = tmpl.icon_path
+			if icon_path != "" and ResourceLoader.exists(icon_path):
+				var tex = load(icon_path)
+				if tex != null:
+					btn.icon = tex
+					btn.expand_icon = true
+			btn.tooltip_text = "%s%s" % [tmpl.display_name, (" x%d" % qty if qty > 1 else "")]
+			if tmpl.item_type == "consumable":
+				btn.tooltip_text += "\nRight-click to use"
+		else:
+			btn.text = item_id.left(3)
+			btn.tooltip_text = item_id
+
+		# Right-click handler for consumables
+		btn.gui_input.connect(_on_hero_bag_slot_input.bind(hero_id, item_id, i))
+		_hero_bag_row.add_child(btn)
+
+
+## Handle right-click on a hero bag slot in combat — use consumable via hero picker.
+func _on_hero_bag_slot_input(event: InputEvent, hero_id: String, item_id: String, slot_idx: int) -> void:
+	if not (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT):
+		return
+	var tmpl = DataRegistry.get_item_template(item_id)
+	if tmpl == null or tmpl.item_type != "consumable":
+		return
+	if not GameContext.can_hero_use_consumable(hero_id):
+		_log("[color=gray]%s already used an item this combat[/color]" % GameContext.get_hero(hero_id).get("name", hero_id))
+		return
+	_show_combat_consumable_hero_picker(item_id, hero_id)

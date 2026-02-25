@@ -9,11 +9,11 @@
 
   "keeper_name": "Pemberton",
   "keeper_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon12.png",
-  "keeper_description": "Warm-eyed elderly merchant in a patched brown vest, round spectacles perched on his nose, shelves of sundries behind him",
+  "keeper_description": "Warm-eyed elderly clerk in a patched brown vest, round spectacles perched on his nose. Your most loyal assistant — keeps the shelves organized and customers happy.",
   "keeper_greetings": [
-    "Welcome to the General Store! Everything an adventurer needs, right here.",
-    "Ah, my favorite ShopKeeper! What can I get you today?",
-    "Fresh stock just arrived. Take a look before the other merchants snatch it up!"
+    "Welcome back, boss! Ready to stock the shelves?",
+    "The shop's all cleaned up and ready for your next shipment, ShopKeeper!",
+    "I've kept everything in order while you were gone. What are we selling today?"
   ],
 
   "slots_per_tier": {},

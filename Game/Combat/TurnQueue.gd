@@ -176,6 +176,56 @@ func get_upcoming_units_snapshot(count: int = 6) -> Array:
 	return result
 
 
+## Get snapshot of ALL alive units in the full round order for persistent timeline display.
+## Returns Array of dictionaries with unit_id, name, team, speed, is_current, has_acted.
+func get_full_round_snapshot() -> Array:
+	var result: Array = []
+	for i in range(_turn_order.size()):
+		var unit = _turn_order[i]
+		if not unit.is_alive:
+			continue
+		result.append({
+			"unit_id": unit.unit_id,
+			"name": unit.display_name,
+			"team": "P" if unit.team == CombatUnit.Team.PLAYER else "E",
+			"speed": unit.get_effective_speed(),
+			"is_current": (i == _current_index),
+			"has_acted": (i < _current_index),
+		})
+	return result
+
+
+## Get reordered snapshot: upcoming units first, then already-acted units.
+## Each entry includes is_front (true for first upcoming unit) for marker rendering.
+func get_reordered_round_snapshot() -> Array:
+	var upcoming: Array = []
+	var acted: Array = []
+	for i in range(_turn_order.size()):
+		var unit = _turn_order[i]
+		if not unit.is_alive:
+			continue
+		var entry: Dictionary = {
+			"unit_id": unit.unit_id,
+			"name": unit.display_name,
+			"team": "P" if unit.team == CombatUnit.Team.PLAYER else "E",
+			"speed": unit.get_effective_speed(),
+			"is_current": (i == _current_index),
+			"has_acted": (i < _current_index),
+			"is_front": false,
+		}
+		if i < _current_index:
+			acted.append(entry)
+		else:
+			upcoming.append(entry)
+	# Mark the first upcoming unit as front of the queue
+	if upcoming.size() > 0:
+		upcoming[0]["is_front"] = true
+	var result: Array = []
+	result.append_array(upcoming)
+	result.append_array(acted)
+	return result
+
+
 # ============================================================================
 # DEBUG
 # ============================================================================
