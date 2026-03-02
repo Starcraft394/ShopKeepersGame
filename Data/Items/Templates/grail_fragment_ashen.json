@@ -1,0 +1,32 @@
+{
+  "id": "grail_fragment_ashen",
+  "display_name": "Grail Fragment",
+  "description": "A crystalline shard that hums with residual energy. One of several fragments of something that was broken long ago \u2014 or deliberately shattered.",
+  "icon_hint": "glowing amber crystal fragment shard",
+  "item_type": "quest",
+  "item_subtype": "quest_item",
+  "category": "quest",
+  "slot": "",
+  "tier": 4,
+  "min_quality": 0,
+  "max_quality": 0,
+  "base_stats": {},
+  "use_effect": "",
+  "use_value": 0,
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": false,
+  "max_refinement": 0,
+  "base_value": 0,
+  "buy_value": 0,
+  "stack_max": 3,
+  "icon_path": "",
+  "tags": [
+    "region_4",
+    "quest",
+    "quest_item"
+  ]
+}

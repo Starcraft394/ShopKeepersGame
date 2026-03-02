@@ -180,6 +180,132 @@
       "scene_id": "building_training",
       "category": "building",
       "description": "Pixel art, SNES style, single fantasy building sprite. A training hall or small arena with wooden training dummies visible inside. Stone walls with a wide entrance archway. A weapon rack outside. Disciplined and sturdy. Side view."
+    },
+    {
+      "scene_id": "cutscene_intro_1",
+      "category": "cutscene",
+      "description": "Pixel art, SNES style, sweeping panoramic fantasy kingdom landscape. Rolling green countryside with farmland, winding dirt roads, and distant castle spires on a hilltop. Blue sky with golden-tinged clouds at sunset. Patchwork fields of wheat and grass in the foreground. A river winding through gentle hills in the middle distance. Pastoral, peaceful, prosperous atmosphere. Warm green and gold palette. Late afternoon golden light.",
+      "negative_description": "No characters, no monsters, no creatures, no text, no UI, no modern objects, no anime, no photorealism, no symmetry, no bright white, no neon"
+    },
+    {
+      "scene_id": "cutscene_intro_2",
+      "category": "cutscene",
+      "description": "Pixel art, SNES style, corrupted dark forest edge at twilight. Twisted black trees with unnatural thorny growths and bark discoloration on the left side. Blighted ground with sickly purple-green patches. Dense green-grey mist seeping from the treeline. A distant small village with flickering amber lanterns visible through the fog on the right. Dark ominous atmosphere. Muted green, sickly purple, and amber lantern palette. Low threatening light from the forest.",
+      "negative_description": "No characters, no monsters, no creatures, no text, no UI, no modern objects, no anime, no photorealism, no symmetry, no bright white, no neon"
+    },
+    {
+      "scene_id": "cutscene_intro_3",
+      "category": "cutscene",
+      "description": "Pixel art, SNES style, close-up of a royal parchment scroll with a large red wax seal on a dark wooden desk. Warm candlelight from the left illuminating the scroll and desk surface. A quill pen in an inkwell nearby. Partial view of stone chamber walls in the background. Rich wood grain texture on the desk. Formal and solemn atmosphere. Warm amber candlelight, parchment cream, dark wood brown, stone grey palette.",
+      "negative_description": "No characters, no monsters, no creatures, no text, no UI, no modern objects, no anime, no photorealism, no symmetry, no bright white, no neon"
+    },
+    {
+      "scene_id": "cutscene_intro_4",
+      "category": "cutscene",
+      "description": "Pixel art, SNES style, a loaded merchant wagon on a dirt road through rolling green farmland. Wooden wagon piled with crates, cloth bundles, potion bottles, and bundled weapons. Late afternoon sunlight from the right. Road stretching ahead toward distant dark forest on the horizon. Wildflowers along the roadside. A sense of journey and purpose. Warm green, brown, gold, and road-dust ochre palette.",
+      "negative_description": "No characters, no monsters, no creatures, no text, no UI, no modern objects, no anime, no photorealism, no symmetry, no bright white, no neon"
+    },
+    {
+      "scene_id": "cutscene_intro_5",
+      "category": "cutscene",
+      "description": "Pixel art, SNES style, small fantasy frontier town at dusk viewed from the approaching road. Wooden buildings with warm amber lantern glow from windows and posts. A crude wooden palisade and open gate. Dense dark ancient forest looming directly behind the town, towering over the rooftops. Wispy grey mist creeping at the forest edge. A dirt road leading into the town gate. Warm but vulnerable feeling. Amber lantern, dark forest green, dusk blue-purple sky palette.",
+      "negative_description": "No characters, no monsters, no creatures, no text, no UI, no modern objects, no anime, no photorealism, no symmetry, no bright white, no neon"
+    },
+    {
+      "scene_id": "cutscene_intro_6",
+      "category": "cutscene",
+      "description": "Pixel art, SNES style, atmospheric moody silhouette scene. A small shop building silhouette in the center with warm amber lantern glow spilling from its doorway and windows. Dark forest silhouette behind and above. Twilight sky with deep purple and orange gradient. Ground in deep shadow. Mysterious and inviting. Simple composition with strong mood. Dark silhouette, warm amber glow, deep purple-orange sky palette.",
+      "negative_description": "No characters, no monsters, no creatures, no text, no UI, no modern objects, no anime, no photorealism, no symmetry, no bright white, no neon"
+    },
+    {
+      "scene_id": "cutscene_title_screen",
+      "category": "cutscene",
+      "description": "Pixel art, SNES style, atmospheric fantasy landscape at dusk for a game title screen. A wide view of a frontier town nestled at the edge of a vast dark forest. Warm amber lights from the town contrast against the cold dark forest behind. A winding road approaches from the foreground. Dramatic sky with purple and gold clouds. Mountains in the far distance. Cinematic wide composition with dark edges for text readability. Deep moody atmosphere. Purple-gold sky, amber town lights, dark forest green, road brown palette. Center area slightly darker and lower contrast for title text overlay.",
+      "negative_description": "No characters, no monsters, no creatures, no text, no UI, no modern objects, no anime, no photorealism, no symmetry, no bright white, no neon"
+    },
+    {
+      "scene_id": "cutscene_boss_arena_r1",
+      "category": "cutscene",
+      "description": "Pixel art, SNES style, corrupted forest clearing boss arena. A wide ancient clearing with a massive split tree stump at center, pulsing amber corruption veins running through its bark and into the ground. Twisted thorn-covered roots radiate outward. Dark canopy overhead with sickly golden-amber light filtering through. Corrupted soil with patches of dead grass and glowing amber fungal growths. Ominous and oppressive atmosphere. Dark forest green, amber corruption veins, decayed brown palette. Center area is the corrupted stump clearing.",
+      "negative_description": "No characters, no monsters, no creatures, no text, no UI, no modern objects, no anime, no photorealism, no symmetry, no bright white, no neon"
+    },
+    {
+      "scene_id": "cutscene_boss_aftermath_r1",
+      "category": "cutscene",
+      "description": "Pixel art, SNES style, healed forest clearing after boss defeat. The same ancient clearing now bathed in warm green-gold sunlight breaking through a restored canopy. New green shoots sprout from rich dark soil. The shattered remains of a massive tree stump scatter across the clearing. A single crystalline shard glows faintly among the debris. Wildflowers blooming at the edges. Peaceful, hopeful atmosphere. Fresh green, warm gold sunlight, crystalline blue-white shard palette. Renewal and recovery mood.",
+      "negative_description": "No characters, no monsters, no creatures, no text, no UI, no modern objects, no anime, no photorealism, no symmetry, no bright white, no neon"
+    },
+    {
+      "scene_id": "cutscene_boss_arena_r2",
+      "category": "cutscene",
+      "description": "Pixel art, SNES style, bioluminescent fungal throne cavern boss arena. A vast underground chamber dominated by a massive mushroom formation resembling a throne. Spiraling mycelium tendrils cover walls and ceiling. Thick luminous spore mist at ground level. Pulsing bioluminescent caps in blue-green and sickly purple. Organic fungal pillars frame the scene. Alien and horrifying beauty. Dense spore fog. Cool blue-green bioluminescence, deep purple, spore mist palette. Oppressive fungal atmosphere.",
+      "negative_description": "No characters, no monsters, no creatures, no text, no UI, no modern objects, no anime, no photorealism, no symmetry, no bright white, no neon"
+    },
+    {
+      "scene_id": "cutscene_boss_aftermath_r2",
+      "category": "cutscene",
+      "description": "Pixel art, SNES style, cleared fungal cavern after boss defeat. The same underground chamber now with dissolving spore clouds and blackened mycelium curling inward. Fresh moss growing on clean stone. Warm sunlight streaming through newly revealed cracks in the cavern ceiling. Clear air replacing spore fog. Peaceful cave with natural beauty restored. Fresh green moss, warm sunlight beams, clean grey stone, dissolving purple-grey spore remnants palette. Relief and clarity mood.",
+      "negative_description": "No characters, no monsters, no creatures, no text, no UI, no modern objects, no anime, no photorealism, no symmetry, no bright white, no neon"
+    },
+    {
+      "scene_id": "cutscene_boss_arena_r3",
+      "category": "cutscene",
+      "description": "Pixel art, SNES style, drowned ruins throne chamber boss arena. A partially submerged ancient stone throne room with half-collapsed columns rising from dark water. A throne of coral and barnacle sits elevated on a stone platform. Tidal pools glow with unnatural pale blue-green light. Water laps at broken steps. Fog rolls across the water surface. Storm light from above through a broken ceiling. Cold, solemn, and imposing. Dark teal water, pale blue-green glow, grey stone, coral accents palette.",
+      "negative_description": "No characters, no monsters, no creatures, no text, no UI, no modern objects, no anime, no photorealism, no symmetry, no bright white, no neon"
+    },
+    {
+      "scene_id": "cutscene_boss_aftermath_r3",
+      "category": "cutscene",
+      "description": "Pixel art, SNES style, calmed coastal ruins after boss defeat. The same throne chamber now with receded waters revealing mosaic floors unseen for decades. Warm amber light replacing cold storm light. Sea foam dissolving on wet stone. Fog lifting to reveal a pale blue sky through the broken ceiling. Calm tidal pools reflecting warm light. Peaceful, restored atmosphere. Warm amber, pale blue sky, wet grey stone, sea foam white palette. Tranquility after storm.",
+      "negative_description": "No characters, no monsters, no creatures, no text, no UI, no modern objects, no anime, no photorealism, no symmetry, no bright white, no neon"
+    },
+    {
+      "scene_id": "cutscene_boss_arena_r4",
+      "category": "cutscene",
+      "description": "Pixel art, SNES style, volcanic magma throne chamber boss arena. A massive volcanic cavern with rivers of molten lava carving channels through the obsidian floor. A throne of cooling magma sits elevated on a volcanic rock platform. Obsidian pillars frame the scene. Intense orange-red glow from lava rivers. Ash particles in the air. Heat shimmer distortion. Hostile and awe-inspiring. Black obsidian, molten orange-red, ash grey, heat shimmer palette. Oppressive volcanic heat.",
+      "negative_description": "No characters, no monsters, no creatures, no text, no UI, no modern objects, no anime, no photorealism, no symmetry, no bright white, no neon"
+    },
+    {
+      "scene_id": "cutscene_boss_aftermath_r4",
+      "category": "cutscene",
+      "description": "Pixel art, SNES style, cooling volcanic chamber after boss defeat. The same volcanic cavern now with cooling lava darkening to black stone. Fading embers where rivers of fire once flowed. Obsidian solidifying with iridescent blue-purple cooling patterns. A faint dawn light visible through a distant opening. Crystalline fragments scattered on cooled stone, faintly glowing. Quiet aftermath of enormous power. Dark obsidian, fading orange embers, iridescent blue-purple cooling, dawn gold palette.",
+      "negative_description": "No characters, no monsters, no creatures, no text, no UI, no modern objects, no anime, no photorealism, no symmetry, no bright white, no neon"
+    },
+    {
+      "scene_id": "cutscene_boss_arena_r5",
+      "category": "cutscene",
+      "description": "Pixel art, SNES style, fractured crystal dimension boss arena. A chamber where reality is visibly broken. Floating crystal shards of pale blue and purple create impossible geometry. Prismatic light refracts in rainbow fragments across surfaces that exist at wrong angles. The floor is partly transparent crystal showing infinite depth. Gravity anomalies with some elements floating. Deep purple-black void visible between crystal formations. Beautiful and deeply wrong. Deep purple void, pale blue-white crystals, prismatic rainbow distortion palette.",
+      "negative_description": "No characters, no monsters, no creatures, no text, no UI, no modern objects, no anime, no photorealism, no symmetry, no bright white, no neon"
+    },
+    {
+      "scene_id": "cutscene_boss_aftermath_r5",
+      "category": "cutscene",
+      "description": "Pixel art, SNES style, realigned crystal chamber after boss defeat. The same crystal dimension now with shards settling into stable geometry. Soft steady blue light replacing chaotic prismatic distortion. Crystal formations aligned in harmonious patterns. Floor solid and translucent, showing gentle blue-white glow below. Floating stones gently descending to rest. Peaceful, ethereal beauty. Stable soft blue, white crystal, gentle purple, harmonious geometry palette. Serene and otherworldly calm.",
+      "negative_description": "No characters, no monsters, no creatures, no text, no UI, no modern objects, no anime, no photorealism, no symmetry, no bright white, no neon"
+    },
+    {
+      "scene_id": "cutscene_boss_arena_r6",
+      "category": "cutscene",
+      "description": "Pixel art, SNES style, gothic bone throne room boss arena. A vast chamber constructed entirely of bone. Skull-shaped sconces hold guttering cold blue soul-fire. A massive throne of femurs, ribs, and skulls dominates the far wall. Bone pillars support a vaulted ceiling of interlocking vertebrae. Grey dust covers the floor. Cold blue-green light creates harsh shadows. Gothic architecture of death. Oppressive and regal in the most terrible way. Charcoal grey, bone white, cold blue-green soul-light, dark purple shadow palette.",
+      "negative_description": "No characters, no monsters, no creatures, no text, no UI, no modern objects, no anime, no photorealism, no symmetry, no bright white, no neon"
+    },
+    {
+      "scene_id": "cutscene_boss_aftermath_r6",
+      "category": "cutscene",
+      "description": "Pixel art, SNES style, crumbling bone throne room after boss defeat. The same bone chamber now with bones settling to dust on the floor. Cold blue soul-light fading, replaced by warm amber light seeping through newly visible cracks in ancient walls. The throne collapsed into a pile of ordinary bones. Dust motes floating in warm light beams. Peace returning to a place of death. Warm amber replacing cold blue, settling bone-dust, grey stone walls revealed, gentle light palette. Rest and release mood.",
+      "negative_description": "No characters, no monsters, no creatures, no text, no UI, no modern objects, no anime, no photorealism, no symmetry, no bright white, no neon"
+    },
+    {
+      "scene_id": "cutscene_boss_arena_r7",
+      "category": "cutscene",
+      "description": "Pixel art, SNES style, void heart final boss arena. The edge of reality itself. Fragmented ground floating over absolute void darkness. Purple-white void energy seeps from cracks in every surface. Fragments of prior regions visible at the edges, broken and fused wrong: twisted tree roots, shattered crystals, dissolving stone. Reality unraveling into nothing. Void tears rip across the sky showing deeper void beyond. The most hostile environment imaginable. Void black, sickly purple-white energy, fragmented region color echoes palette. Ultimate dread.",
+      "negative_description": "No characters, no monsters, no creatures, no text, no UI, no modern objects, no anime, no photorealism, no symmetry, no bright white, no neon"
+    },
+    {
+      "scene_id": "cutscene_boss_aftermath_r7",
+      "category": "cutscene",
+      "description": "Pixel art, SNES style, void sealing aftermath of final boss defeat. The same void space now with tears in reality sealing themselves, light returning in warm golden threads. Through the closing rifts, fragments of all seven regions are visible: green forest, blue-green fungal glow, teal sea, orange volcanic fire, purple crystals, blue soul-light, void darkness. All connected, all healing. A warm golden-white glow at center as the void retreats. Hope palette: warm gold, healing white, echoes of all region colors. Dawn after the longest night.",
+      "negative_description": "No characters, no monsters, no creatures, no text, no UI, no modern objects, no anime, no photorealism, no symmetry, no bright white, no neon"
     }
   ]
 }

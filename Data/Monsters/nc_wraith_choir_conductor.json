@@ -1,33 +1,36 @@
 {
-  "id": "nc_wraith_choir_conductor",
-  "display_name": "Wraith Choir Conductor",
-  "description": "The maestro of a spectral chorus whose symphony of death extinguishes life.",
-  "icon_hint": "regal spectral figure wielding conductor's baton with a chorus of small ghosts behind it",
-  "family": "necro",
-  "region_id": "region_6",
-  "tier": 2,
-  "ai_tier": 2,
-  "attack_type": "ranged",
-  "combat_role": "mage",
-  "base_stats": {
-    "health": 390,
-    "attack": 60,
-    "defense": 26,
-    "speed": 50,
-    "evasion": 15,
-    "resist": 12
-  },
-  "ability_ids": [
-    "basic_attack",
-    "mon_chain_lightning",
-    "mon_life_siphon"
-  ],
-  "passive_ids": ["mon_spectral_form", "mon_magic_resist"],
-  "loot_table_id": "lt_region6_elite",
-  "gold_drop_min": 40,
-  "gold_drop_max": 66,
-  "sprite_path": "",
-  "is_elite": true,
-  "is_boss": false,
-  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/nc_wraith_choir_conductor.png"
+	"id": "nc_wraith_choir_conductor",
+	"display_name": "Wraith Choir Conductor",
+	"description": "The maestro of a spectral chorus whose symphony of death extinguishes life.",
+	"icon_hint": "regal spectral figure wielding conductor's baton with a chorus of small ghosts behind it",
+	"family": "necro",
+	"region_id": "region_6",
+	"tier": 2,
+	"ai_tier": 2,
+	"attack_type": "ranged",
+	"combat_role": "mage",
+	"base_stats": {
+		"health": 507,
+		"attack": 84,
+		"defense": 32,
+		"speed": 50,
+		"evasion": 15,
+		"resist": 12
+	},
+	"ability_ids": [
+		"basic_attack",
+		"mon_chain_lightning",
+		"mon_life_siphon"
+	],
+	"passive_ids": [
+		"mon_spectral_form",
+		"mon_magic_resist"
+	],
+	"loot_table_id": "lt_region6_elite",
+	"gold_drop_min": 40,
+	"gold_drop_max": 66,
+	"sprite_path": "",
+	"is_elite": true,
+	"is_boss": false,
+	"portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/nc_wraith_choir_conductor.png"
 }

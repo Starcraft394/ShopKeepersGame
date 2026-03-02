@@ -5,11 +5,11 @@
   "min_drops": 1,
   "max_drops": 2,
   "entries": [
-    { "item_id": "volcanic_glass", "weight": 26, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "ember_dust", "weight": 22, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "ah_scorched_fang", "weight": 18, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "ah_sulfite_gland", "weight": 12, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "iron_scrap", "weight": 10, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "", "weight": 12, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "volcanic_glass", "weight": 28, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "ember_dust", "weight": 24, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "obsidian_shard", "weight": 18, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "ah_sulfite_gland", "weight": 14, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "iron_scrap", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 8, "min_qty": 0, "max_qty": 0 }
   ]
 }

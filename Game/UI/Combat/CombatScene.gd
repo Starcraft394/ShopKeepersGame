@@ -37,6 +37,7 @@ var _combat_controller: Node = null
 var _is_auto_running: bool = false
 var _auto_timer: float = 0.0
 var _auto_delay: float = 0.5  # Seconds between auto steps
+var _stall_recovery_timer: float = 0.0  # Watchdog: detect hidden action panel during player input
 var _scene_transition_pending: bool = false
 var _loot_panel: Control = null  # Loot routing panel (CanvasLayer overlay)
 var _loot_overlay: CanvasLayer = null  # CanvasLayer for loot popup
@@ -68,10 +69,23 @@ var _region_palette: Dictionary = {}
 # Loot panel selection state
 var _loot_selected_index: int = -1  # Currently selected pending item index
 var _loot_routing_bar: HBoxContainer = null  # Routing buttons row
+# Loot panel grid refs for multi-zone D-pad navigation
+var _loot_drops_grid: GridContainer = null
+var _loot_shop_grid: GridContainer = null
+var _loot_hero_grids: Array = []
+var _loot_btn_row: HBoxContainer = null
 var _loot_swap_mode: bool = false  # True when in swap mode for a hero bag
 var _loot_swap_hero_id: String = ""  # Hero ID for active swap
 var _loot_swap_acq_index: int = -1  # Pending acq index for swap
 var _loot_confirm_overlay: CanvasLayer = null  # Confirmation overlay for slot replacement
+
+# Hold-to-discard state
+const DISCARD_HOLD_TIME := 1.5
+var _loot_discard_btn: Button = null
+var _loot_hold_container: Control = null
+var _loot_hold_bar_fill: ColorRect = null
+var _is_holding_discard: bool = false
+var _discard_hold_time: float = 0.0
 
 # Loot panel resize state
 var _loot_resizing: bool = false
@@ -409,17 +423,50 @@ func _ready() -> void:
 	# Make grid cells transparent so empty PanelContainers don't show themed rectangles
 	_clear_cell_backgrounds()
 
-	# Tutorial on first combat (non-blocking — overlay sits on top)
-	TutorialOverlay.try_show(self, "tutorial_first_combat")
+	# Tutorial on first combat (non-blocking — spotlight turn order + action panel)
+	var combat_tut_targets: Dictionary = {}
+	if _timeline_panel != null:
+		combat_tut_targets["turn_order"] = _timeline_panel
+	if _action_panel != null:
+		combat_tut_targets["action_panel"] = _action_panel
+	TutorialOverlay.try_show(self, "tutorial_first_combat", combat_tut_targets)
 
 	# Start initial encounter
 	_start_encounter()
 
 
 func _process(delta: float) -> void:
+	# Hold-to-discard timer for loot panel
+	if _is_holding_discard:
+		_discard_hold_time += delta
+		var ratio: float = clampf(_discard_hold_time / DISCARD_HOLD_TIME, 0.0, 1.0)
+		if _loot_hold_bar_fill != null:
+			_loot_hold_bar_fill.anchor_right = ratio
+		if _discard_hold_time >= DISCARD_HOLD_TIME:
+			_is_holding_discard = false
+			_discard_hold_time = 0.0
+			if _loot_hold_container != null:
+				_loot_hold_container.visible = false
+			_on_loot_discard_all()
+
 	# Null safety: _combat_controller may be null during initialization or after queue_free
 	if _combat_controller == null:
 		return
+
+	# Stall recovery: if awaiting player input but action panel is hidden and not in target
+	# selection or auto mode, re-show panel after a brief delay to prevent combat lock
+	if _combat_controller.is_awaiting_player_input() and not _is_auto_running and not _target_selection_active:
+		if _action_panel != null and not _action_panel.visible and not _combat_controller.is_combat_over():
+			_stall_recovery_timer += delta
+			if _stall_recovery_timer >= 0.5:
+				push_warning("[UI] Stall recovery: action panel hidden while awaiting input — force showing")
+				_action_panel.visible = true
+				_stall_recovery_timer = 0.0
+		else:
+			_stall_recovery_timer = 0.0
+	else:
+		_stall_recovery_timer = 0.0
+
 	if _is_auto_running and not _combat_controller.is_combat_over():
 		# Don't step if already waiting for player input (auto-selection handles this via signals)
 		if _combat_controller.is_awaiting_player_input():
@@ -444,7 +491,7 @@ func _start_encounter() -> void:
 		_log("[color=red]ERROR: No heroes in party! Returning to town...[/color]")
 		GameContext.exit_dungeon()
 		GameContext.set_phase(GameContext.GamePhase.TOWN)
-		get_tree().change_scene_to_file("res://Game/Boot/game_boot.tscn")
+		SceneTransition.fade_to("res://Game/Boot/game_boot.tscn")
 		return
 
 	# Clear previous state
@@ -471,6 +518,12 @@ func _start_encounter() -> void:
 	var is_boss: bool = GameContext.is_boss_room() if GameContext.has_method("is_boss_room") else false
 	UIAudio.play_bgm("combat_boss" if is_boss else "combat_normal")
 
+	# Boss entry cutscene (first time only, flag-gated)
+	if is_boss:
+		var entry_player = BossCutsceneManager.try_show(self, "boss_entry")
+		if entry_player != null:
+			await entry_player.cutscene_finished
+
 	# Consume any pending combat modifier from events (one-time use)
 	var combat_mod = GameContext.consume_pending_combat_modifier()
 	if not combat_mod.is_empty():
@@ -492,6 +545,7 @@ func _start_encounter() -> void:
 	_combat_controller.target_selection_required.connect(_on_target_selection_required)  # Player Actions v1
 	_combat_controller.multi_action_update.connect(_on_multi_action_update)  # Player Actions v1
 	_combat_controller.combat_continue_ready.connect(_on_combat_continue_ready)  # Player Actions v1.1: Auto-flow
+	TelemetryManager.hook_combat(_combat_controller)
 
 	# v1.9B: Initialize timeline and log overlay UI
 	_create_v19b_ui()
@@ -945,6 +999,7 @@ func _create_unit_display(unit_data: Dictionary) -> Control:
 	wrapper.add_theme_constant_override("margin_top", 3)
 	wrapper.add_theme_constant_override("margin_bottom", 3)
 	wrapper.mouse_filter = Control.MOUSE_FILTER_STOP
+	wrapper.set_meta("unit_id", unit_data["id"])
 
 	# Highlight frame (ColorRect behind content)
 	var highlight_frame = ColorRect.new()
@@ -2220,6 +2275,11 @@ func _on_combat_ended(_result) -> void:
 		_loot_result = _result
 		_show_loot_panel()
 	elif show_defeat:
+		# Boss defeat cutscene (repeatable, no flag gate)
+		if _result != null and _result.is_boss_encounter:
+			var defeat_player = BossCutsceneManager.try_show(self, "boss_defeat")
+			if defeat_player != null:
+				await defeat_player.cutscene_finished
 		# DEFEAT — show defeat screen before returning to town
 		_show_defeat_panel()
 	else:
@@ -2248,7 +2308,7 @@ func _do_combat_transition() -> void:
 				print("[Flow] Mini-dungeon complete — returning to town")
 				GameContext.set_phase(GameContext.GamePhase.TOWN_HUB)
 				await get_tree().create_timer(1.5).timeout
-				get_tree().change_scene_to_file("res://Game/Boot/game_boot.tscn")
+				SceneTransition.fade_to("res://Game/Boot/game_boot.tscn")
 				return
 
 		# Set phase for proper boot routing: DUNGEON_CAMP if still in dungeon, TOWN otherwise
@@ -2265,7 +2325,7 @@ func _do_combat_transition() -> void:
 
 		# Small delay so player sees result
 		await get_tree().create_timer(1.5).timeout
-		get_tree().change_scene_to_file("res://Game/Boot/game_boot.tscn")
+		SceneTransition.fade_to("res://Game/Boot/game_boot.tscn")
 
 
 # ============================================================================
@@ -2292,6 +2352,13 @@ func _bag_stack_room_indicator(bag: Array) -> String:
 ## Show the loot routing panel as a CanvasLayer popup overlay.
 ## v2: Visual slot-based overlay with icon grids instead of text lists.
 func _show_loot_panel() -> void:
+	# Reset discard hold state (panel may be rebuilt via _refresh_loot_panel)
+	_is_holding_discard = false
+	_discard_hold_time = 0.0
+	_loot_discard_btn = null
+	_loot_hold_container = null
+	_loot_hold_bar_fill = null
+
 	print("[LootPanel] _show_loot_panel() ENTERED — pending=%d" % GameContext.get_all_pending_acquisitions().size())
 	UIAudio.play_sfx("loot_appear")
 
@@ -2318,6 +2385,10 @@ func _show_loot_panel() -> void:
 		_loot_overlay = null
 		_loot_panel = null
 		_loot_routing_bar = null
+		_loot_drops_grid = null
+		_loot_shop_grid = null
+		_loot_hero_grids.clear()
+		_loot_btn_row = null
 
 	# Preserve swap state across panel rebuilds (set by _on_loot_swap_request)
 	# Only clear swap state when NOT already in swap mode (i.e. fresh open)
@@ -2377,6 +2448,7 @@ func _show_loot_panel() -> void:
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.custom_minimum_size = Vector2(0, 350)
 	scroll.add_theme_constant_override("scroll_deadzone", 0)
+	scroll.follow_focus = true
 	_loot_panel.add_child(scroll)
 
 	var vbox = VBoxContainer.new()
@@ -2474,6 +2546,7 @@ func _show_loot_panel() -> void:
 		vbox.add_child(xp_sep)
 
 	# ── Drops grid (48x48 icon slots) ──
+	_loot_hero_grids.clear()
 	if not pending.is_empty():
 		var drops_label = Label.new()
 		drops_label.text = "Drops:"
@@ -2486,6 +2559,7 @@ func _show_loot_panel() -> void:
 		drops_grid.add_theme_constant_override("h_separation", 4)
 		drops_grid.add_theme_constant_override("v_separation", 4)
 		vbox.add_child(drops_grid)
+		_loot_drops_grid = drops_grid
 
 		for i in range(pending.size()):
 			var slot = _create_loot_item_slot(pending[i], i)
@@ -2527,6 +2601,7 @@ func _show_loot_panel() -> void:
 	shop_grid.add_theme_constant_override("h_separation", 3)
 	shop_grid.add_theme_constant_override("v_separation", 3)
 	vbox.add_child(shop_grid)
+	_loot_shop_grid = shop_grid
 
 	var is_shop_swap: bool = _loot_swap_mode and _loot_swap_hero_id == "__shop__"
 	for j in range(shop_cap):
@@ -2562,6 +2637,7 @@ func _show_loot_panel() -> void:
 		hero_grid.add_theme_constant_override("h_separation", 3)
 		hero_grid.add_theme_constant_override("v_separation", 3)
 		hero_row.add_child(hero_grid)
+		_loot_hero_grids.append(hero_grid)
 
 		for j in range(bag_cap):
 			if j < bag.size():
@@ -2602,19 +2678,46 @@ func _show_loot_panel() -> void:
 	btn_row.add_theme_constant_override("separation", 16)
 	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
 	vbox.add_child(btn_row)
+	_loot_btn_row = btn_row
 
 	if not pending.is_empty():
-		var discard_btn = Button.new()
-		discard_btn.text = "Discard All"
-		discard_btn.custom_minimum_size = Vector2(120, 32)
-		discard_btn.modulate = Color(1.0, 0.7, 0.7)
-		discard_btn.pressed.connect(_on_loot_discard_all)
-		btn_row.add_child(discard_btn)
+		_loot_discard_btn = Button.new()
+		_loot_discard_btn.text = "Discard All"
+		_loot_discard_btn.custom_minimum_size = Vector2(120, 32)
+		_loot_discard_btn.modulate = Color(1.0, 0.7, 0.7)
+		_loot_discard_btn.button_down.connect(_on_discard_hold_start)
+		_loot_discard_btn.button_up.connect(_on_discard_hold_cancel)
+		btn_row.add_child(_loot_discard_btn)
+
+		# Hold-to-discard indicator (below the button row, visible immediately)
+		_loot_hold_container = Control.new()
+		_loot_hold_container.visible = true
+		_loot_hold_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_loot_hold_container.custom_minimum_size = Vector2(200, 30)
+		var hold_vbox = VBoxContainer.new()
+		hold_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+		_loot_hold_container.add_child(hold_vbox)
+		var hold_label := Label.new()
+		hold_label.text = "Hold to Discard"
+		hold_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		hold_label.add_theme_font_size_override("font_size", GameContext.fs(11))
+		hold_label.modulate = Color(1.0, 0.7, 0.6, 0.9)
+		hold_vbox.add_child(hold_label)
+		var hold_bar_bg := ColorRect.new()
+		hold_bar_bg.custom_minimum_size = Vector2(160, 8)
+		hold_bar_bg.color = Color(0.2, 0.2, 0.2, 0.7)
+		hold_vbox.add_child(hold_bar_bg)
+		_loot_hold_bar_fill = ColorRect.new()
+		_loot_hold_bar_fill.set_anchors_and_offsets_preset(Control.PRESET_LEFT_WIDE)
+		_loot_hold_bar_fill.anchor_right = 0.0
+		_loot_hold_bar_fill.color = Color(1.0, 0.5, 0.4, 0.9)
+		hold_bar_bg.add_child(_loot_hold_bar_fill)
+		vbox.add_child(_loot_hold_container)
 
 		var all_shop_btn = Button.new()
 		all_shop_btn.text = "Deposit All"
 		all_shop_btn.custom_minimum_size = Vector2(140, 32)
-		all_shop_btn.tooltip_text = "Shop bag first, then hero bags (D)"
+		all_shop_btn.tooltip_text = "Shop bag first, then hero bags (%s)" % InputManager.get_glyph("loot_deposit")
 		# Disable only if NO pending item can fit (stacking-aware)
 		var any_space: bool = false
 		for acq in pending:
@@ -2638,6 +2741,7 @@ func _show_loot_panel() -> void:
 	var continue_btn = Button.new()
 	continue_btn.text = "Continue"
 	continue_btn.custom_minimum_size = Vector2(140, 32)
+	continue_btn.focus_mode = Control.FOCUS_ALL
 	continue_btn.pressed.connect(_on_loot_continue)
 	if not pending.is_empty():
 		continue_btn.disabled = true
@@ -2645,6 +2749,8 @@ func _show_loot_panel() -> void:
 	btn_row.add_child(continue_btn)
 
 	_loot_panel.grab_focus()
+	# Register loot panel as a focus zone for controller navigation
+	call_deferred("_register_loot_zones")
 	print("[LootPanel] Showing %d pending acquisitions (visual popup)" % pending.size())
 
 
@@ -2751,12 +2857,20 @@ func _create_loot_item_slot(acq: Dictionary, index: int) -> Control:
 		tip_parts[0] += " x%d" % loot_qty
 	slot.tooltip_text = "\n".join(tip_parts)
 
-	# Click handler — select this slot
+	# Click handler — select this slot (also focusable for D-pad navigation)
 	var click_btn = Button.new()
 	click_btn.flat = true
 	click_btn.anchor_right = 1.0
 	click_btn.anchor_bottom = 1.0
 	click_btn.modulate = Color(1, 1, 1, 0)  # Invisible overlay button
+	click_btn.focus_mode = Control.FOCUS_ALL
+	# Focus style: gold border visible when D-pad selects this slot
+	var focus_style := StyleBoxFlat.new()
+	focus_style.bg_color = Color(1.0, 0.85, 0.3, 0.2)
+	focus_style.border_color = Color(1.0, 0.85, 0.3, 0.9)
+	focus_style.set_border_width_all(2)
+	focus_style.set_corner_radius_all(3)
+	click_btn.add_theme_stylebox_override("focus", focus_style)
 	click_btn.pressed.connect(_on_loot_slot_clicked.bind(index))
 	slot.add_child(click_btn)
 
@@ -2830,22 +2944,31 @@ func _create_bag_slot(entry: Dictionary, slot_size: int = 32, is_swap_target: bo
 		tip += " x%d" % entry_qty
 	slot.tooltip_text = tip
 
-	# Click handler: direct placement when loot item is selected, or swap mode
-	if is_clickable and bag_index >= 0:
+	# Always add focusable button overlay for D-pad navigation
+	if bag_index >= 0:
 		var click_btn = Button.new()
 		click_btn.flat = true
 		click_btn.anchor_right = 1.0
 		click_btn.anchor_bottom = 1.0
 		click_btn.modulate = Color(1, 1, 1, 0)
-		click_btn.pressed.connect(_on_loot_direct_place.bind(hero_id, bag_index, item_id))
-		slot.add_child(click_btn)
-	elif is_swap_target and bag_index >= 0:
-		var click_btn = Button.new()
-		click_btn.flat = true
-		click_btn.anchor_right = 1.0
-		click_btn.anchor_bottom = 1.0
-		click_btn.modulate = Color(1, 1, 1, 0)
-		click_btn.pressed.connect(_on_swap_bag_slot_clicked.bind(hero_id, bag_index, item_id))
+		click_btn.focus_mode = Control.FOCUS_ALL
+		var btn_focus_style := StyleBoxFlat.new()
+		if is_swap_target:
+			btn_focus_style.bg_color = Color(1.0, 0.5, 0.3, 0.2)
+			btn_focus_style.border_color = Color(1.0, 0.5, 0.3, 0.9)
+		elif is_clickable:
+			btn_focus_style.bg_color = Color(0.4, 0.8, 0.4, 0.2)
+			btn_focus_style.border_color = Color(0.4, 0.8, 0.4, 0.9)
+		else:
+			btn_focus_style.bg_color = Color(0.6, 0.55, 0.4, 0.15)
+			btn_focus_style.border_color = Color(0.6, 0.55, 0.4, 0.6)
+		btn_focus_style.set_border_width_all(2)
+		btn_focus_style.set_corner_radius_all(2)
+		click_btn.add_theme_stylebox_override("focus", btn_focus_style)
+		if is_clickable:
+			click_btn.pressed.connect(_on_loot_direct_place.bind(hero_id, bag_index, item_id))
+		elif is_swap_target:
+			click_btn.pressed.connect(_on_swap_bag_slot_clicked.bind(hero_id, bag_index, item_id))
 		slot.add_child(click_btn)
 
 	return slot
@@ -2878,14 +3001,26 @@ func _create_empty_bag_slot(slot_size: int = 32, hero_id: String = "", bag_index
 		style.border_color = Color(0.3, 0.25, 0.18, 0.3)
 	slot.add_theme_stylebox_override("panel", style)
 
-	# Click handler: direct placement into empty slot
-	if is_clickable:
+	# Always add focusable button overlay for D-pad navigation
+	if bag_index >= 0:
 		var click_btn = Button.new()
 		click_btn.flat = true
 		click_btn.anchor_right = 1.0
 		click_btn.anchor_bottom = 1.0
 		click_btn.modulate = Color(1, 1, 1, 0)
-		click_btn.pressed.connect(_on_loot_direct_place.bind(hero_id, bag_index, ""))
+		click_btn.focus_mode = Control.FOCUS_ALL
+		var empty_focus_style := StyleBoxFlat.new()
+		if is_clickable:
+			empty_focus_style.bg_color = Color(0.4, 0.8, 0.4, 0.2)
+			empty_focus_style.border_color = Color(0.4, 0.8, 0.4, 0.9)
+		else:
+			empty_focus_style.bg_color = Color(0.6, 0.55, 0.4, 0.1)
+			empty_focus_style.border_color = Color(0.6, 0.55, 0.4, 0.4)
+		empty_focus_style.set_border_width_all(2)
+		empty_focus_style.set_corner_radius_all(2)
+		click_btn.add_theme_stylebox_override("focus", empty_focus_style)
+		if is_clickable:
+			click_btn.pressed.connect(_on_loot_direct_place.bind(hero_id, bag_index, ""))
 		slot.add_child(click_btn)
 
 	return slot
@@ -2904,8 +3039,10 @@ func _update_routing_bar() -> void:
 		var hint = Label.new()
 		if pending.is_empty():
 			hint.text = ""
+		elif InputManager.active_device == "gamepad":
+			hint.text = "Navigate to an item with D-pad, press A to select"
 		else:
-			hint.text = "Click an item above to assign it  (or press B / 1-4)"
+			hint.text = "Click an item above to assign it  (or press 1-4)"
 			hint.add_theme_font_size_override("font_size", GameContext.fs(13))
 			hint.add_theme_color_override("font_color", Color(0.78, 0.78, 0.68))
 		_loot_routing_bar.add_child(hint)
@@ -2920,7 +3057,10 @@ func _update_routing_bar() -> void:
 
 	# Instruction text instead of hero/shop buttons — click bag slots directly
 	var instruct = Label.new()
-	instruct.text = "Click a bag slot below to place %s  (or B for Shop Bag / 1-4 for Heroes)" % display_name
+	if InputManager.active_device == "gamepad":
+		instruct.text = "Navigate to a bag slot and press A to place %s" % display_name
+	else:
+		instruct.text = "Click a bag slot below to place %s  (or 1-4 for Heroes)" % display_name
 	instruct.add_theme_font_size_override("font_size", GameContext.fs(13))
 	instruct.add_theme_color_override("font_color", Color(0.95, 0.9, 0.7))
 	_loot_routing_bar.add_child(instruct)
@@ -3058,7 +3198,7 @@ func _on_loot_direct_place(owner_id: String, slot_index: int, existing_item_id: 
 	else:
 		var hero = GameContext.get_hero(owner_id)
 		var hero_name: String = hero.get("name", owner_id) if not hero.is_empty() else owner_id
-		warning = "Replace %s in %s's bag with %s?\n(Old item will be DISCARDED)" % [old_name, hero_name, new_name]
+		warning = "Replace %s in %s's bag with %s?\n(Displaced item returns to loot)" % [old_name, hero_name, new_name]
 
 	_show_loot_confirm_overlay(warning, owner_id, slot_index, existing_item_id)
 
@@ -3125,45 +3265,87 @@ func _on_loot_confirm_replace(owner_id: String, slot_index: int, old_item_id: St
 	_execute_loot_direct_place(owner_id, slot_index, old_item_id)
 
 
+## Extract affix data from a bag entry dict for re-queuing to pending.
+func _extract_bag_affix(entry: Dictionary) -> Dictionary:
+	if entry.get("affix_id", "") != "":
+		return {"affix_id": entry.get("affix_id", ""), "affix_stats": entry.get("affix_stats", {}), "affix_prefix": entry.get("affix_prefix", ""), "source_region": entry.get("source_region", "")}
+	return {}
+
+## Build a bag entry dict from a pending acquisition entry.
+func _build_bag_entry_from_acq(acq: Dictionary, place_qty: int) -> Dictionary:
+	var entry: Dictionary = {"item_id": acq.get("item_id", ""), "qty": place_qty, "quality_tier": int(acq.get("quality", 0))}
+	var affix: Dictionary = acq.get("affix_data", {})
+	if affix.get("affix_id", "") != "":
+		entry["affix_id"] = affix.get("affix_id", "")
+		entry["affix_stats"] = affix.get("affix_stats", {})
+		entry["affix_prefix"] = affix.get("affix_prefix", "")
+		entry["source_region"] = affix.get("source_region", "")
+	return entry
+
 ## Execute loot direct placement into a bag slot.
+## Swap: displaced item returns to pending loot. Full stack placed at once.
 func _execute_loot_direct_place(owner_id: String, slot_index: int, old_item_id: String) -> void:
 	if _loot_selected_index < 0:
 		return
 	var acq_index: int = _loot_selected_index
+	var pending = GameContext.get_all_pending_acquisitions()
+	if acq_index >= pending.size():
+		return
+	var acq: Dictionary = pending[acq_index]
+	var new_item_id: String = acq.get("item_id", "")
+	var new_qty: int = int(acq.get("qty", 1))
+	var stack_limit: int = GameContext.get_bag_stack_limit(new_item_id)
+	var place_qty: int = mini(new_qty, stack_limit)
 
 	if old_item_id != "":
-		# Occupied slot — remove old item then place new one
+		# ── Occupied slot — TRUE SWAP: displaced goes to pending, new takes slot ──
 		if owner_id == "__shop__":
 			if slot_index >= 0 and slot_index < GameContext.shopkeeper_bag.size():
 				var displaced: Dictionary = GameContext.shopkeeper_bag[slot_index].duplicate()
-				GameContext.shopkeeper_bag.remove_at(slot_index)
-				var ok = GameContext.resolve_acquisition_at(acq_index, "shop_bag")
-				if ok:
-					var d_quality: int = int(displaced.get("quality_tier", 0))
-					var d_affix: Dictionary = {}
-					if displaced.get("affix_id", "") != "":
-						d_affix = {"affix_id": displaced.get("affix_id", ""), "affix_stats": displaced.get("affix_stats", {}), "affix_prefix": displaced.get("affix_prefix", ""), "source_region": displaced.get("source_region", "")}
-					GameContext.acquire_item_with_recipient(displaced.get("item_id", ""), int(displaced.get("qty", 1)), d_quality, "swap", d_affix)
-					print("[LootPanel] Direct place: shop slot %d, displaced %s" % [slot_index, old_item_id])
+				GameContext.shopkeeper_bag[slot_index] = _build_bag_entry_from_acq(acq, place_qty)
+				# Update or remove pending
+				if new_qty <= place_qty:
+					pending.remove_at(acq_index)
 				else:
-					GameContext.shopkeeper_bag.insert(slot_index, displaced)
-					print("[LootPanel] Direct place failed: couldn't add to shop")
-		else:
-			var success = GameContext.remove_item_from_hero_bag(owner_id, old_item_id, 1, 0)
-			if success:
-				print("[LootPanel] DISCARDED %s from hero=%s slot=%d" % [old_item_id, owner_id, slot_index])
-				var ok = GameContext.resolve_acquisition_at(acq_index, "hero_bag", owner_id)
-				if not ok:
-					print("[LootPanel] Direct place failed: couldn't add to hero=%s" % owner_id)
+					acq["qty"] = new_qty - place_qty
+				# Re-queue displaced item to pending
+				GameContext.acquire_item_with_recipient(displaced.get("item_id", ""), int(displaced.get("qty", 1)), int(displaced.get("quality_tier", 0)), "swap", _extract_bag_affix(displaced))
+				print("[LootPanel] Swap: shop slot %d, placed %dx %s, displaced %s" % [slot_index, place_qty, new_item_id, displaced.get("item_id", "")])
 			else:
-				print("[LootPanel] Direct place failed: couldn't remove old item")
-	else:
-		# Empty slot — direct placement
-		if owner_id == "__shop__":
-			GameContext.resolve_acquisition_at(acq_index, "shop_bag")
+				print("[LootPanel] Swap failed: invalid shop slot %d" % slot_index)
 		else:
-			GameContext.resolve_acquisition_at(acq_index, "hero_bag", owner_id)
-		print("[LootPanel] Direct place into empty slot: owner=%s slot=%d" % [owner_id, slot_index])
+			var bag: Array = GameContext.hero_bags.get(owner_id, [])
+			if slot_index >= 0 and slot_index < bag.size():
+				var displaced: Dictionary = bag[slot_index].duplicate()
+				bag[slot_index] = _build_bag_entry_from_acq(acq, place_qty)
+				# Update or remove pending
+				if new_qty <= place_qty:
+					pending.remove_at(acq_index)
+				else:
+					acq["qty"] = new_qty - place_qty
+				# Re-queue displaced item to pending
+				GameContext.acquire_item_with_recipient(displaced.get("item_id", ""), int(displaced.get("qty", 1)), int(displaced.get("quality_tier", 0)), "swap", _extract_bag_affix(displaced))
+				print("[LootPanel] Swap: hero=%s slot %d, placed %dx %s, displaced %s" % [owner_id, slot_index, place_qty, new_item_id, displaced.get("item_id", "")])
+			else:
+				print("[LootPanel] Swap failed: invalid hero bag slot %d for %s" % [slot_index, owner_id])
+	else:
+		# ── Empty slot — place full stack directly ──
+		if owner_id == "__shop__":
+			var ok = GameContext.add_item_to_shopkeeper_bag(new_item_id, place_qty, int(acq.get("quality", 0)), "combat", acq.get("affix_data", {}))
+			if ok:
+				if new_qty <= place_qty:
+					pending.remove_at(acq_index)
+				else:
+					acq["qty"] = new_qty - place_qty
+				print("[LootPanel] Placed %dx %s into empty shop slot" % [place_qty, new_item_id])
+		else:
+			var ok = GameContext.add_item_to_hero_bag(owner_id, new_item_id, place_qty, int(acq.get("quality", 0)), acq.get("affix_data", {}))
+			if ok:
+				if new_qty <= place_qty:
+					pending.remove_at(acq_index)
+				else:
+					acq["qty"] = new_qty - place_qty
+				print("[LootPanel] Placed %dx %s into empty hero=%s slot" % [place_qty, new_item_id, owner_id])
 
 	UIAudio.play_sfx("loot_assign")
 	_loot_selected_index = -1
@@ -3176,6 +3358,21 @@ func _close_loot_confirm_overlay() -> void:
 	if _loot_confirm_overlay != null and is_instance_valid(_loot_confirm_overlay):
 		_loot_confirm_overlay.queue_free()
 		_loot_confirm_overlay = null
+
+
+func _on_discard_hold_start() -> void:
+	_is_holding_discard = true
+	_discard_hold_time = 0.0
+	if _loot_hold_container != null:
+		_loot_hold_container.visible = true
+	if _loot_hold_bar_fill != null:
+		_loot_hold_bar_fill.anchor_right = 0.0
+
+func _on_discard_hold_cancel() -> void:
+	_is_holding_discard = false
+	_discard_hold_time = 0.0
+	if _loot_hold_bar_fill != null:
+		_loot_hold_bar_fill.anchor_right = 0.0
 
 
 ## v1.2: Discard all remaining pending items (explicit user action).
@@ -3382,7 +3579,13 @@ func _on_loot_continue() -> void:
 		_loot_overlay = null
 		_loot_panel = null
 
-	# Campaign dialog: boss_first_kill (fires after loot, before transition)
+	# Boss victory cutscene (fires after loot, before campaign dialog)
+	if _loot_result != null and _loot_result.is_boss_encounter and _loot_result.is_victory:
+		var victory_player = BossCutsceneManager.try_show(self, "boss_victory")
+		if victory_player != null:
+			await victory_player.cutscene_finished
+
+	# Campaign dialog: boss_first_kill (fires after loot + cutscene, before transition)
 	if _loot_result != null and _loot_result.is_boss_encounter and _loot_result.is_victory:
 		var campaign_overlay = CampaignDialog.try_show(self, "boss_first_kill")
 		if campaign_overlay != null:
@@ -3402,43 +3605,50 @@ func _loot_panel_input(event: InputEvent) -> void:
 		return
 	if not GameContext.has_pending_acquisition():
 		return
-	if event is InputEventKey and event.pressed and not event.echo:
-		var keycode = event.keycode
-		# Auto-select first item if none selected
-		var idx: int = _loot_selected_index if _loot_selected_index >= 0 else 0
-		var pending = GameContext.get_all_pending_acquisitions()
-		if idx >= pending.size():
-			return
-		# B = To Shop Bag
-		if keycode == KEY_B:
-			GameContext.resolve_acquisition_at(idx, "shop_bag")
+	# Auto-select first item if none selected
+	var idx: int = _loot_selected_index if _loot_selected_index >= 0 else 0
+	var pending = GameContext.get_all_pending_acquisitions()
+	if idx >= pending.size():
+		return
+	# Shop Bag
+	if event.is_action_pressed("loot_shop_bag"):
+		GameContext.resolve_acquisition_at(idx, "shop_bag")
+		_loot_selected_index = -1
+		_refresh_loot_panel()
+		get_viewport().set_input_as_handled()
+	# Hero 1..4
+	elif event.is_action_pressed("loot_hero_1"):
+		_loot_route_to_hero(0, idx, pending)
+	elif event.is_action_pressed("loot_hero_2"):
+		_loot_route_to_hero(1, idx, pending)
+	elif event.is_action_pressed("loot_hero_3"):
+		_loot_route_to_hero(2, idx, pending)
+	elif event.is_action_pressed("loot_hero_4"):
+		_loot_route_to_hero(3, idx, pending)
+	# Deposit All
+	elif event.is_action_pressed("loot_deposit") and not _loot_swap_mode:
+		_on_loot_deposit_all()
+		get_viewport().set_input_as_handled()
+	# Cancel swap mode
+	elif event.is_action_pressed("ui_cancel") and _loot_swap_mode:
+		_on_swap_cancel()
+		get_viewport().set_input_as_handled()
+
+
+func _loot_route_to_hero(hero_idx: int, idx: int, pending: Array) -> void:
+	if hero_idx < GameContext.selected_party.size():
+		var hid = GameContext.selected_party[hero_idx]
+		if GameContext.can_add_to_hero_bag(hid, pending[idx].get("item_id", ""), 1):
+			GameContext.resolve_acquisition_at(idx, "hero_bag", hid)
 			_loot_selected_index = -1
 			_refresh_loot_panel()
 			get_viewport().set_input_as_handled()
-		# 1..4 = To Hero by party index
-		elif keycode >= KEY_1 and keycode <= KEY_4:
-			var hero_idx = keycode - KEY_1
-			if hero_idx < GameContext.selected_party.size():
-				var hid = GameContext.selected_party[hero_idx]
-				if GameContext.can_add_to_hero_bag(hid, pending[idx].get("item_id", ""), 1):
-					GameContext.resolve_acquisition_at(idx, "hero_bag", hid)
-					_loot_selected_index = -1
-					_refresh_loot_panel()
-					get_viewport().set_input_as_handled()
-				else:
-					# Enter swap mode via keyboard
-					_loot_swap_mode = true
-					_loot_swap_hero_id = hid
-					_loot_swap_acq_index = idx
-					_refresh_loot_panel()
-					get_viewport().set_input_as_handled()
-		# D = Deposit All
-		elif keycode == KEY_D and not _loot_swap_mode:
-			_on_loot_deposit_all()
-			get_viewport().set_input_as_handled()
-		# Escape = cancel swap mode
-		elif keycode == KEY_ESCAPE and _loot_swap_mode:
-			_on_swap_cancel()
+		else:
+			# Enter swap mode
+			_loot_swap_mode = true
+			_loot_swap_hero_id = hid
+			_loot_swap_acq_index = idx
+			_refresh_loot_panel()
 			get_viewport().set_input_as_handled()
 
 
@@ -3495,7 +3705,7 @@ func _show_flee_dialog(fallen_name: String) -> void:
 
 	# Consequences
 	var consequences = Label.new()
-	consequences.text = "If you flee:\n  - Surviving heroes lose ALL equipment and bag items\n  - Shopkeeper bag items are kept (insurance)\n  - Dungeon progress and unbanked loot are lost\n\nIf you continue:\n  - Fight on with remaining heroes\n  - Total party wipe = permadeath for all"
+	consequences.text = "If you flee:\n  - Equipment above starter gear (tier 1 common) will be lost\n  - Hero bag items will be lost\n  - First 3 shopkeeper bag slots saved (insurance)\n  - Remaining shopkeeper bag items are lost\n  - Dungeon progress and unbanked loot are lost\n  - Gold and XP earned are kept\n\nIf you continue:\n  - Fight on with remaining heroes\n  - Total party wipe = permadeath for all"
 	consequences.add_theme_font_size_override("font_size", GameContext.fs(14))
 	consequences.add_theme_color_override("font_color", Color(0.65, 0.6, 0.55))
 	consequences.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -3510,14 +3720,17 @@ func _show_flee_dialog(fallen_name: String) -> void:
 	var flee_btn = Button.new()
 	flee_btn.text = "Flee"
 	flee_btn.custom_minimum_size = Vector2(140, 36)
+	flee_btn.focus_mode = Control.FOCUS_ALL
 	flee_btn.pressed.connect(_on_flee_confirmed)
 	btn_row.add_child(flee_btn)
 
 	var fight_btn = Button.new()
 	fight_btn.text = "Continue Fighting"
 	fight_btn.custom_minimum_size = Vector2(180, 36)
+	fight_btn.focus_mode = Control.FOCUS_ALL
 	fight_btn.pressed.connect(_on_flee_declined)
 	btn_row.add_child(fight_btn)
+	fight_btn.call_deferred("grab_focus")
 
 	add_child(_flee_dialog)
 	print("[Flee] Dialog shown — %s has fallen" % fallen_name)
@@ -3534,18 +3747,16 @@ func _on_flee_confirmed() -> void:
 	# Cancel mini-dungeon on flee (quest remains active for retry)
 	SideQuestSystem.cancel_mini_dungeon()
 
-	# Strip gear from surviving heroes (shopkeeper bag preserved)
-	GameContext.strip_surviving_heroes_gear()
-
-	# Clear dungeon stash and pending acquisitions (loot lost)
+	# Clear pending acquisitions (unrouted loot lost)
 	GameContext.clear_pending_acquisitions()
-	GameContext.clear_dungeon_stash()
 
-	# Exit dungeon and return to town
-	GameContext.current_dungeon_id = ""
-	GameContext.current_floor = 0
-	GameContext.current_room_index = 0
-	GameContext.set_phase(GameContext.GamePhase.TOWN)
+	# FIX: Persist hero HP so dead heroes are properly recorded on town entry.
+	# Without this, _process_dead_heroes() won't see 0 HP heroes (resurrection bug).
+	if _combat_controller != null:
+		_combat_controller._persist_hero_hp()
+
+	# Flee to town: clears dungeon stash, strips non-starter gear, banks insurance
+	GameContext.flee_to_town()
 
 	_do_combat_transition()
 
@@ -3557,7 +3768,20 @@ func _on_flee_declined() -> void:
 		_flee_dialog.queue_free()
 		_flee_dialog = null
 
-	# Resume combat — don't auto-start, let player click Step/Auto
+	# Restore auto-running (paused when flee dialog was shown)
+	_is_auto_running = true
+
+	# If the controller is awaiting input for a dead unit, force-pass that turn
+	if _combat_controller != null and _combat_controller.is_awaiting_player_input():
+		var input_unit = _combat_controller.get_input_unit()
+		if input_unit != null and not input_unit.is_alive:
+			print("[Flee] Input unit %s is dead — forcing pass" % input_unit.display_name)
+			_combat_controller.submit_pass_action()
+			return
+		# Living unit awaiting input — show action panel
+		_ensure_action_panel_visible()
+	elif _combat_controller != null and not _combat_controller.is_combat_over():
+		_auto_step_combat()
 
 
 # ============================================================================
@@ -3636,8 +3860,10 @@ func _show_victory_panel() -> void:
 	var continue_btn = Button.new()
 	continue_btn.text = "Return to Town"
 	continue_btn.custom_minimum_size = Vector2(200, 40)
+	continue_btn.focus_mode = Control.FOCUS_ALL
 	continue_btn.pressed.connect(_on_victory_continue)
 	btn_row.add_child(continue_btn)
+	continue_btn.call_deferred("grab_focus")
 
 	add_child(_victory_panel)
 	print("[Victory] Campaign complete panel shown!")
@@ -3680,6 +3906,7 @@ func _show_defeat_panel() -> void:
 	var scroll = ScrollContainer.new()
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.follow_focus = true
 	_defeat_panel.add_child(scroll)
 
 	var vbox = VBoxContainer.new()
@@ -3774,8 +4001,10 @@ func _show_defeat_panel() -> void:
 	var continue_btn = Button.new()
 	continue_btn.text = "Return to Town"
 	continue_btn.custom_minimum_size = Vector2(200, 40)
+	continue_btn.focus_mode = Control.FOCUS_ALL
 	continue_btn.pressed.connect(_on_defeat_continue)
 	btn_row.add_child(continue_btn)
+	continue_btn.call_deferred("grab_focus")
 
 	add_child(_defeat_panel)
 	print("[Defeat] Panel shown - lost_heroes=%d saved_items=%d" % [lost_heroes.size(), shop_bag.size()])
@@ -3976,67 +4205,101 @@ func run_smoke_test_ui() -> bool:
 # ============================================================================
 
 func _unhandled_input(event: InputEvent) -> void:
-	# Cancel shopkeeper bag swap on Escape
-	if not _swap_source.is_empty() and event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+	# Cancel shopkeeper bag swap on Escape / B button
+	if not _swap_source.is_empty() and event.is_action_pressed("ui_cancel"):
 		_clear_swap_highlight()
 		get_viewport().set_input_as_handled()
 		return
 
-	# Loot panel keyboard shortcuts (intercept first)
+	# Loot panel shortcuts (intercept first)
 	if _loot_panel != null and is_instance_valid(_loot_panel):
 		_loot_panel_input(event)
-		if event is InputEventKey and get_viewport().is_input_handled():
+		if get_viewport().is_input_handled():
 			return
 
-	if event is InputEventKey and event.pressed:
-		# Alt = Toggle Auto Battle
-		if event.keycode == KEY_ALT and not event.echo:
-			_on_auto_pressed()
+	# Auto battle toggle
+	if event.is_action_pressed("combat_auto"):
+		_on_auto_pressed()
+		get_viewport().set_input_as_handled()
+		return
+
+	# Ability hotkeys: combat actions + pass + cancel
+	if _combat_controller != null and _combat_controller.is_awaiting_player_input():
+		if _target_selection_active:
+			# In target selection: B/Escape cancels
+			if event.is_action_pressed("ui_cancel"):
+				_on_cancel_pressed()
+				get_viewport().set_input_as_handled()
+				return
+			# In target selection: A/Enter confirms focused target
+			if event.is_action_pressed("ui_accept"):
+				var focused: Control = get_viewport().gui_get_focus_owner()
+				if focused != null and focused.has_meta("unit_id"):
+					var uid: String = focused.get_meta("unit_id")
+					if uid in _valid_target_ids:
+						print("[UI] Controller confirm target: %s" % uid)
+						_exit_target_selection_mode()
+						_action_panel.visible = false
+						_combat_controller.submit_player_target(uid)
+						get_viewport().set_input_as_handled()
+						return
+		else:
+			# In action selection: gamepad/keyboard select abilities
+			if event.is_action_pressed("combat_action_1"):
+				if _btn_basic != null and _btn_basic.visible and not _btn_basic.disabled:
+					_on_basic_attack_pressed()
+					get_viewport().set_input_as_handled()
+					return
+			elif event.is_action_pressed("combat_action_2"):
+				if _btn_ability_a != null and _btn_ability_a.visible and not _btn_ability_a.disabled:
+					_on_ability_a_pressed()
+					get_viewport().set_input_as_handled()
+					return
+			elif event.is_action_pressed("combat_action_3"):
+				if _btn_ability_b != null and _btn_ability_b.visible and not _btn_ability_b.disabled:
+					_on_ability_b_pressed()
+					get_viewport().set_input_as_handled()
+					return
+			elif event.is_action_pressed("combat_action_4"):
+				if _btn_equip_0 != null and _btn_equip_0.visible and not _btn_equip_0.disabled:
+					_on_equip_ability_0_pressed()
+					get_viewport().set_input_as_handled()
+					return
+			elif event.is_action_pressed("combat_action_5"):
+				if _btn_equip_1 != null and _btn_equip_1.visible and not _btn_equip_1.disabled:
+					_on_equip_ability_1_pressed()
+					get_viewport().set_input_as_handled()
+					return
+			elif event.is_action_pressed("combat_pass"):
+				if _btn_pass != null and _btn_pass.visible and not _btn_pass.disabled:
+					_on_pass_pressed()
+					get_viewport().set_input_as_handled()
+					return
+
+	# Gamepad inspect: Y button on focused unit portrait → stat overlay
+	if event.is_action_pressed("gp_inspect"):
+		var focused = get_viewport().gui_get_focus_owner()
+		if focused != null and focused.has_meta("unit_id"):
+			var uid: String = focused.get_meta("unit_id")
+			_show_stat_inspection(uid)
 			get_viewport().set_input_as_handled()
 			return
 
-		# Ability hotkeys: 1=Basic, 2=Primary, 3=Secondary, 4=Equip0, 5=Equip1, P=Pass, Esc=Cancel
-		if _combat_controller != null and _combat_controller.is_awaiting_player_input():
-			if _target_selection_active:
-				# In target selection: Escape cancels
-				if event.keycode == KEY_ESCAPE:
-					_on_cancel_pressed()
+	# Gamepad use_item: X button on focused hero bag slot → consumable use
+	if event.is_action_pressed("use_item"):
+		var focused = get_viewport().gui_get_focus_owner()
+		if focused != null and focused.has_meta("bag_item_id") and focused.has_meta("bag_hero_id"):
+			var iid: String = focused.get_meta("bag_item_id")
+			var hid: String = focused.get_meta("bag_hero_id")
+			var tmpl = DataRegistry.get_item_template(iid)
+			if tmpl != null and tmpl.item_type == "consumable":
+				if GameContext.can_hero_use_consumable(hid):
+					_show_combat_consumable_hero_picker(iid, hid)
 					get_viewport().set_input_as_handled()
 					return
-			else:
-				# In action selection: 1-5 select abilities, P passes
-				match event.keycode:
-					KEY_1:
-						if _btn_basic != null and _btn_basic.visible and not _btn_basic.disabled:
-							_on_basic_attack_pressed()
-							get_viewport().set_input_as_handled()
-							return
-					KEY_2:
-						if _btn_ability_a != null and _btn_ability_a.visible and not _btn_ability_a.disabled:
-							_on_ability_a_pressed()
-							get_viewport().set_input_as_handled()
-							return
-					KEY_3:
-						if _btn_ability_b != null and _btn_ability_b.visible and not _btn_ability_b.disabled:
-							_on_ability_b_pressed()
-							get_viewport().set_input_as_handled()
-							return
-					KEY_4:
-						if _btn_equip_0 != null and _btn_equip_0.visible and not _btn_equip_0.disabled:
-							_on_equip_ability_0_pressed()
-							get_viewport().set_input_as_handled()
-							return
-					KEY_5:
-						if _btn_equip_1 != null and _btn_equip_1.visible and not _btn_equip_1.disabled:
-							_on_equip_ability_1_pressed()
-							get_viewport().set_input_as_handled()
-							return
-					KEY_P:
-						if _btn_pass != null and _btn_pass.visible and not _btn_pass.disabled:
-							_on_pass_pressed()
-							get_viewport().set_input_as_handled()
-							return
 
+	# Debug hotkeys (keyboard only)
+	if event is InputEventKey and event.pressed:
 		match event.keycode:
 			KEY_F5, KEY_F6, KEY_F7:
 				# Guard: block dungeon state changes during active combat
@@ -4450,10 +4713,17 @@ func _on_action_performed(action: CombatAction) -> void:
 
 	# Flee trigger: when a player hero dies, offer flee option
 	if action.action_type == CombatAction.ActionType.DEATH:
-		if action.actor_id in GameContext.selected_party and _flee_dialog == null:
-			# Pause auto-stepping
-			_is_auto_running = false
-			_show_flee_dialog(action.actor_name)
+		if action.actor_id.begins_with("hero_"):
+			# Track hero death for camp flee button availability
+			GameContext.set_hero_died_this_run(true)
+			if _flee_dialog == null:
+				# Pause auto-stepping
+				_is_auto_running = false
+				# Show flee tutorial on first hero death
+				var tut = TutorialOverlay.try_show(self, "tutorial_flee")
+				if tut != null:
+					await tut.tutorial_finished
+				_show_flee_dialog(action.actor_name)
 
 
 ## v1.9A: Get display name for an ability from registry.
@@ -4989,16 +5259,19 @@ func _create_action_panel() -> void:
 	_btn_basic = Button.new()
 	_btn_basic.text = "Basic Attack"
 	_btn_basic.custom_minimum_size = Vector2(120, 34)
+	_btn_basic.focus_mode = Control.FOCUS_ALL
 	_btn_basic.pressed.connect(_on_basic_attack_pressed)
 	hbox.add_child(_btn_basic)
 
 	_btn_ability_a = Button.new()
 	_btn_ability_a.custom_minimum_size = Vector2(150, 34)
+	_btn_ability_a.focus_mode = Control.FOCUS_ALL
 	_btn_ability_a.pressed.connect(_on_ability_a_pressed)
 	hbox.add_child(_btn_ability_a)
 
 	_btn_ability_b = Button.new()
 	_btn_ability_b.custom_minimum_size = Vector2(150, 34)
+	_btn_ability_b.focus_mode = Control.FOCUS_ALL
 	_btn_ability_b.pressed.connect(_on_ability_b_pressed)
 	hbox.add_child(_btn_ability_b)
 
@@ -5012,6 +5285,7 @@ func _create_action_panel() -> void:
 	_btn_pass = Button.new()
 	_btn_pass.text = "Pass"
 	_btn_pass.custom_minimum_size = Vector2(80, 34)
+	_btn_pass.focus_mode = Control.FOCUS_ALL
 	_btn_pass.pressed.connect(_on_pass_pressed)
 	hbox.add_child(_btn_pass)
 
@@ -5036,12 +5310,14 @@ func _create_action_panel() -> void:
 
 	_btn_equip_0 = Button.new()
 	_btn_equip_0.custom_minimum_size = Vector2(150, 34)
+	_btn_equip_0.focus_mode = Control.FOCUS_ALL
 	_btn_equip_0.pressed.connect(_on_equip_ability_0_pressed)
 	_btn_equip_0.visible = false
 	_equip_row.add_child(_btn_equip_0)
 
 	_btn_equip_1 = Button.new()
 	_btn_equip_1.custom_minimum_size = Vector2(150, 34)
+	_btn_equip_1.focus_mode = Control.FOCUS_ALL
 	_btn_equip_1.pressed.connect(_on_equip_ability_1_pressed)
 	_btn_equip_1.visible = false
 	_equip_row.add_child(_btn_equip_1)
@@ -5158,9 +5434,19 @@ func _on_player_input_required(unit: CombatUnit, available_actions: Array) -> vo
 	_log("[color=#ffcc66]%s's turn - choose an action[/color]" % unit.display_name)
 	print("[UI] Action panel shown, awaiting player input")
 
-	# Tutorial: first time a hero has an unlocked ability
+	# Grab focus on basic attack for gamepad navigation
+	if _btn_basic != null and _btn_basic.visible and not _btn_basic.disabled:
+		_btn_basic.call_deferred("grab_focus")
+
+	# Register focus zones for controller navigation (action buttons + hero bag)
+	_register_action_zones()
+
+	# Tutorial: first time a hero has an unlocked ability (spotlight action panel)
 	if _btn_ability_a.visible and not _btn_ability_a.disabled:
-		TutorialOverlay.try_show(self, "tutorial_abilities")
+		var ability_tut_targets: Dictionary = {}
+		if _action_panel != null:
+			ability_tut_targets["action_panel"] = _action_panel
+		TutorialOverlay.try_show(self, "tutorial_abilities", ability_tut_targets)
 
 	# v2.0: Apply enhanced hero input highlight
 	_apply_hero_input_highlight(unit.unit_id)
@@ -5651,6 +5937,26 @@ func _enter_target_selection_mode(valid_targets: Array) -> void:
 			# Gray out non-valid targets
 			display.modulate = Color(0.7, 0.7, 0.7)
 
+	# Disable InspectBtn focus so wrapper gets direct D-pad focus
+	for unit_id in _valid_target_ids:
+		var d: Control = _unit_displays.get(unit_id)
+		if d:
+			var ibtn = d.find_child("InspectBtn", true, false)
+			if ibtn:
+				ibtn.focus_mode = Control.FOCUS_NONE
+			# Connect focus-based highlight for D-pad navigation
+			for conn in d.focus_entered.get_connections():
+				if conn.callable.get_method() == "_on_target_focus_entered":
+					d.focus_entered.disconnect(conn.callable)
+			for conn in d.focus_exited.get_connections():
+				if conn.callable.get_method() == "_on_target_focus_exited":
+					d.focus_exited.disconnect(conn.callable)
+			d.focus_entered.connect(_on_target_focus_entered.bind(unit_id))
+			d.focus_exited.connect(_on_target_focus_exited.bind(unit_id))
+
+	# Register target zone for controller D-pad navigation
+	_register_target_zones()
+
 
 ## Handle mouse entering a valid target during target selection.
 func _on_target_mouse_entered(unit_id: String) -> void:
@@ -5670,6 +5976,24 @@ func _on_target_mouse_exited(unit_id: String) -> void:
 	var highlight = _target_highlights.get(unit_id)
 	if highlight:
 		highlight.color = Color(0.2, 0.8, 0.2, 0.15)  # Subtle green again
+
+
+## Handle D-pad focus entering a valid target during target selection.
+func _on_target_focus_entered(unit_id: String) -> void:
+	if not _target_selection_active or unit_id not in _valid_target_ids:
+		return
+	var highlight = _target_highlights.get(unit_id)
+	if highlight:
+		highlight.color = Color(0.4, 1.0, 0.4, 0.4)  # Brighter green on focus
+
+
+## Handle D-pad focus exiting a valid target during target selection.
+func _on_target_focus_exited(unit_id: String) -> void:
+	if not _target_selection_active or unit_id not in _valid_target_ids:
+		return
+	var highlight = _target_highlights.get(unit_id)
+	if highlight:
+		highlight.color = Color(0.2, 0.8, 0.2, 0.15)  # Subtle green
 
 
 ## Exit target selection mode - restore normal display.
@@ -5694,12 +6018,28 @@ func _exit_target_selection_mode() -> void:
 				if connection.callable.get_method() == "_on_target_mouse_exited":
 					portrait.mouse_exited.disconnect(connection.callable)
 
+		# Disconnect focus-based highlight handlers
+		for conn in display.focus_entered.get_connections():
+			if conn.callable.get_method() == "_on_target_focus_entered":
+				display.focus_entered.disconnect(conn.callable)
+		for conn in display.focus_exited.get_connections():
+			if conn.callable.get_method() == "_on_target_focus_exited":
+				display.focus_exited.disconnect(conn.callable)
+
+		# Restore InspectBtn focus
+		var inspect_btn = display.find_child("InspectBtn", true, false)
+		if inspect_btn:
+			inspect_btn.focus_mode = Control.FOCUS_ALL
+
 		# Hide highlight
 		var highlight = display.get_node_or_null("TargetHighlight")
 		if highlight:
 			highlight.visible = false
 
 	_target_highlights.clear()
+
+	# Remove focus_mode from unit displays and clear target zones
+	_clear_target_focus()
 
 	# Defensive re-show: ensure action panel is visible if still awaiting player input
 	_ensure_action_panel_visible()
@@ -5919,6 +6259,7 @@ func _show_stat_inspection(unit_id: String) -> void:
 	var scroll = ScrollContainer.new()
 	scroll.custom_minimum_size = Vector2(340, 300)
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.follow_focus = true
 	panel.add_child(scroll)
 
 	var vbox = VBoxContainer.new()
@@ -6673,6 +7014,10 @@ func _auto_step_combat() -> void:
 	if _scene_transition_pending:
 		print("[UI] Skipping - scene transition pending")
 		return
+	# Pause combat while flee dialog is shown
+	if _flee_dialog != null:
+		print("[UI] Skipping - flee dialog open")
+		return
 
 	# Check if waiting for player input
 	if _combat_controller.is_awaiting_player_input():
@@ -6722,6 +7067,7 @@ func _on_stats_button_pressed(hero_id: String, unit_data: Dictionary) -> void:
 	scroll.set_anchors_preset(Control.PRESET_FULL_RECT)
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.follow_focus = true
 	_stats_window.add_child(scroll)
 
 	_stats_window_vbox = VBoxContainer.new()
@@ -7423,6 +7769,9 @@ func _refresh_hero_bag_display(hero_id: String) -> void:
 
 		var btn = Button.new()
 		btn.custom_minimum_size = Vector2(32, 32)
+		btn.focus_mode = Control.FOCUS_ALL
+		btn.set_meta("bag_item_id", item_id)
+		btn.set_meta("bag_hero_id", hero_id)
 
 		if tmpl != null:
 			var icon_path: String = tmpl.icon_path
@@ -7433,7 +7782,7 @@ func _refresh_hero_bag_display(hero_id: String) -> void:
 					btn.expand_icon = true
 			btn.tooltip_text = "%s%s" % [tmpl.display_name, (" x%d" % qty if qty > 1 else "")]
 			if tmpl.item_type == "consumable":
-				btn.tooltip_text += "\nRight-click to use"
+				btn.tooltip_text += "\nRight-click / %s to use" % InputManager.get_glyph("use_item")
 		else:
 			btn.text = item_id.left(3)
 			btn.tooltip_text = item_id
@@ -7454,3 +7803,163 @@ func _on_hero_bag_slot_input(event: InputEvent, hero_id: String, item_id: String
 		_log("[color=gray]%s already used an item this combat[/color]" % GameContext.get_hero(hero_id).get("name", hero_id))
 		return
 	_show_combat_consumable_hero_picker(item_id, hero_id)
+
+
+# ============================================================================
+# FOCUS ZONES (Controller support)
+# ============================================================================
+
+func _register_action_zones() -> void:
+	InputManager.clear_zones()
+	if _action_panel == null:
+		return
+	var action_controls: Array = InputManager.collect_focusable(_action_panel)
+	var bag_controls: Array = InputManager.collect_focusable(_hero_bag_panel) if _hero_bag_panel != null else []
+	InputManager.register_zone("action_buttons", _action_panel, action_controls, {
+		"down": "hero_bag"
+	})
+	if _hero_bag_panel != null and bag_controls.size() > 0:
+		InputManager.register_zone("hero_bag", _hero_bag_panel, bag_controls, {
+			"up": "action_buttons"
+		})
+	InputManager.set_active_zone("action_buttons")
+
+
+func _register_target_zones() -> void:
+	InputManager.clear_zones()
+	var target_controls: Array = []
+	for unit_id in _valid_target_ids:
+		var display: Control = _unit_displays.get(unit_id)
+		if display and is_instance_valid(display):
+			display.focus_mode = Control.FOCUS_ALL
+			target_controls.append(display)
+	if target_controls.size() > 0:
+		InputManager.register_zone("targets", battlefield, target_controls, {})
+		InputManager.set_active_zone("targets")
+		target_controls[0].call_deferred("grab_focus")
+
+
+func _clear_target_focus() -> void:
+	for unit_id in _unit_displays.keys():
+		var display: Control = _unit_displays[unit_id]
+		if display and is_instance_valid(display):
+			display.focus_mode = Control.FOCUS_NONE
+	InputManager.clear_zones()
+
+
+## Collect all loot panel focusable buttons into a virtual grid and wire focus neighbors
+## so D-pad flows seamlessly across drops, bag slots, and bottom buttons.
+func _wire_loot_focus_grid() -> void:
+	var grid: Array = []  # Array of rows, each row is Array of Controls
+
+	# Drops grid rows
+	if _loot_drops_grid and is_instance_valid(_loot_drops_grid):
+		var drop_btns: Array = InputManager.collect_focusable(_loot_drops_grid)
+		var cols: int = _loot_drops_grid.columns
+		var row: Array = []
+		for btn in drop_btns:
+			row.append(btn)
+			if row.size() >= cols:
+				grid.append(row)
+				row = []
+		if not row.is_empty():
+			grid.append(row)
+
+	# Shop bag grid rows
+	if _loot_shop_grid and is_instance_valid(_loot_shop_grid):
+		var shop_btns: Array = InputManager.collect_focusable(_loot_shop_grid)
+		var cols: int = _loot_shop_grid.columns
+		var row: Array = []
+		for btn in shop_btns:
+			row.append(btn)
+			if row.size() >= cols:
+				grid.append(row)
+				row = []
+		if not row.is_empty():
+			grid.append(row)
+
+	# Hero bag grid rows — each hero's grid is one row
+	for hero_grid in _loot_hero_grids:
+		if hero_grid == null or not is_instance_valid(hero_grid):
+			continue
+		var hero_btns: Array = InputManager.collect_focusable(hero_grid)
+		if not hero_btns.is_empty():
+			grid.append(hero_btns)
+
+	# Bottom button row
+	if _loot_btn_row and is_instance_valid(_loot_btn_row):
+		var btn_ctrls: Array = InputManager.collect_focusable(_loot_btn_row)
+		if not btn_ctrls.is_empty():
+			grid.append(btn_ctrls)
+
+	if grid.size() > 0:
+		InputManager.wire_focus_grid(grid)
+
+
+func _register_loot_zones() -> void:
+	InputManager.clear_zones()
+	if _loot_panel == null:
+		return
+
+	var has_drops: bool = _loot_drops_grid != null and is_instance_valid(_loot_drops_grid)
+	var has_shop: bool = _loot_shop_grid != null and is_instance_valid(_loot_shop_grid)
+	var has_heroes: bool = not _loot_hero_grids.is_empty()
+	var has_buttons: bool = _loot_btn_row != null and is_instance_valid(_loot_btn_row)
+
+	# Register drop items zone
+	if has_drops:
+		var drop_controls: Array = InputManager.collect_focusable(_loot_drops_grid)
+		if drop_controls.size() > 0:
+			var down_zone: String = "loot_shop_bag" if has_shop else ("loot_hero_bags" if has_heroes else "loot_buttons")
+			InputManager.register_zone("loot_drops", _loot_drops_grid, drop_controls, {"down": down_zone})
+
+	# Register shop bag zone
+	if has_shop:
+		var shop_controls: Array = InputManager.collect_focusable(_loot_shop_grid)
+		if shop_controls.size() > 0:
+			var up_zone: String = "loot_drops" if has_drops else ""
+			var down_zone: String = "loot_hero_bags" if has_heroes else ("loot_buttons" if has_buttons else "")
+			InputManager.register_zone("loot_shop_bag", _loot_shop_grid, shop_controls, {"up": up_zone, "down": down_zone})
+
+	# Register hero bag zones (all combined into one zone)
+	if has_heroes:
+		var all_hero_controls: Array = []
+		for hero_grid in _loot_hero_grids:
+			if hero_grid != null and is_instance_valid(hero_grid):
+				all_hero_controls.append_array(InputManager.collect_focusable(hero_grid))
+		if all_hero_controls.size() > 0:
+			var hero_container: Control = _loot_hero_grids[0].get_parent() if _loot_hero_grids.size() > 0 else _loot_panel
+			var up_zone: String = "loot_shop_bag" if has_shop else ("loot_drops" if has_drops else "")
+			var down_zone: String = "loot_buttons" if has_buttons else ""
+			InputManager.register_zone("loot_hero_bags", hero_container, all_hero_controls, {"up": up_zone, "down": down_zone})
+
+	# Register bottom buttons zone
+	if has_buttons:
+		var btn_controls: Array = InputManager.collect_focusable(_loot_btn_row)
+		if btn_controls.size() > 0:
+			var up_zone: String = "loot_hero_bags" if has_heroes else ("loot_shop_bag" if has_shop else ("loot_drops" if has_drops else ""))
+			InputManager.register_zone("loot_buttons", _loot_btn_row, btn_controls, {"up": up_zone})
+
+	# Wire cross-zone D-pad focus so D-pad flows through all slots seamlessly
+	_wire_loot_focus_grid()
+
+	# Set initial focus zone
+	if _loot_selected_index >= 0:
+		# Item selected — focus on first bag slot for placement
+		if InputManager._zones.has("loot_shop_bag"):
+			InputManager.set_active_zone("loot_shop_bag")
+		elif InputManager._zones.has("loot_hero_bags"):
+			InputManager.set_active_zone("loot_hero_bags")
+		elif InputManager._zones.has("loot_buttons"):
+			InputManager.set_active_zone("loot_buttons")
+	elif InputManager._zones.has("loot_drops"):
+		InputManager.set_active_zone("loot_drops")
+	elif InputManager._zones.has("loot_buttons"):
+		InputManager.set_active_zone("loot_buttons")
+
+	var palette: Dictionary = _region_palette
+	InputManager.set_zone_border_color(palette.get("border", Color(0.55, 0.4, 0.25, 0.8)))
+
+
+func _exit_tree() -> void:
+	InputManager.clear_zones()

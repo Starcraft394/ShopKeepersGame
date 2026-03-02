@@ -71,6 +71,8 @@ See `.claude/agents/` for specialized agent prompts:
 | **Sound Director** | Audio assets, BGM, SFX integration |
 | **Icon Mapper** | Icon assignment, ledger, recolour pipeline |
 | **Item Curator** | Item manifest, HTML reference, slot coverage |
+| **Controls Agent** | Input controls, keyboard/mouse/gamepad mapping, focus navigation |
+| **Playtest Agent** | Steam Playtest prep, analytics, telemetry, feedback, GDPR compliance |
 
 ## Skills
 

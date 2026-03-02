@@ -6,7 +6,6 @@
   "facility_type": "inn",
   "max_tier": 4,
   "unlock_region": 1,
-
   "keeper_name": "Mira",
   "keeper_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
   "keeper_description": "Friendly young woman with auburn hair tied back, flour on her apron, warm lantern-lit tavern behind her",
@@ -15,55 +14,91 @@
     "Come in, come in! The fire's warm and the ale is cold.",
     "Heroes come and go, but the best ones stay for the right price."
   ],
-
   "slots_per_tier": {},
-
   "upgrade_costs": {
     "2": {
       "gold": 100,
       "items": [
-        { "item_id": "wood_bundle", "qty": 10 }
+        {
+          "item_id": "wood_bundle",
+          "qty": 10
+        }
       ]
     },
     "3": {
       "gold": 250,
       "items": [
-        { "item_id": "wood_bundle", "qty": 15 },
-        { "item_id": "iron_scrap", "qty": 5 }
+        {
+          "item_id": "cursed_dust",
+          "qty": 15
+        },
+        {
+          "item_id": "glowing_spore",
+          "qty": 5
+        }
       ]
     },
     "4": {
       "gold": 600,
       "items": [
-        { "item_id": "wood_bundle", "qty": 20 },
-        { "item_id": "iron_scrap", "qty": 10 },
-        { "item_id": "wolf_pelt", "qty": 5 }
+        {
+          "item_id": "gw_elder_bark",
+          "qty": 20
+        },
+        {
+          "item_id": "gw_enchanted_fang",
+          "qty": 10
+        },
+        {
+          "item_id": "gw_moonpetal",
+          "qty": 5
+        }
       ]
     }
   },
-
   "regional_upgrade_costs": {
     "2": {
       "2": {
         "gold": 120,
         "items": [
-          { "item_id": "wood_bundle", "qty": 10 },
-          { "item_id": "fungal_fiber", "qty": 5 }
+          {
+            "item_id": "wood_bundle",
+            "qty": 10
+          },
+          {
+            "item_id": "iron_scrap",
+            "qty": 5
+          }
         ]
       },
       "3": {
         "gold": 300,
         "items": [
-          { "item_id": "fungal_fiber", "qty": 12 },
-          { "item_id": "mycelium_thread", "qty": 6 }
+          {
+            "item_id": "fungal_fiber",
+            "qty": 12
+          },
+          {
+            "item_id": "mycelium_thread",
+            "qty": 6
+          }
         ]
       },
       "4": {
         "gold": 720,
         "items": [
-          { "item_id": "fungal_fiber", "qty": 18 },
-          { "item_id": "mycelium_thread", "qty": 10 },
-          { "item_id": "spore_cluster", "qty": 5 }
+          {
+            "item_id": "rare_truffle",
+            "qty": 18
+          },
+          {
+            "item_id": "phoenix_ash",
+            "qty": 10
+          },
+          {
+            "item_id": "ancient_bone",
+            "qty": 5
+          }
         ]
       }
     },
@@ -71,23 +106,44 @@
       "2": {
         "gold": 150,
         "items": [
-          { "item_id": "wood_bundle", "qty": 10 },
-          { "item_id": "driftwood", "qty": 5 }
+          {
+            "item_id": "wood_bundle",
+            "qty": 10
+          },
+          {
+            "item_id": "iron_scrap",
+            "qty": 5
+          }
         ]
       },
       "3": {
         "gold": 375,
         "items": [
-          { "item_id": "driftwood", "qty": 12 },
-          { "item_id": "sea_salt_crystal", "qty": 6 }
+          {
+            "item_id": "driftwood",
+            "qty": 12
+          },
+          {
+            "item_id": "sea_salt_crystal",
+            "qty": 6
+          }
         ]
       },
       "4": {
         "gold": 900,
         "items": [
-          { "item_id": "driftwood", "qty": 18 },
-          { "item_id": "sea_salt_crystal", "qty": 10 },
-          { "item_id": "stormglass_fragment", "qty": 5 }
+          {
+            "item_id": "tidal_pearl",
+            "qty": 18
+          },
+          {
+            "item_id": "stormglass_fragment",
+            "qty": 10
+          },
+          {
+            "item_id": "ss_brine_venom",
+            "qty": 5
+          }
         ]
       }
     },
@@ -95,23 +151,44 @@
       "2": {
         "gold": 200,
         "items": [
-          { "item_id": "wood_bundle", "qty": 10 },
-          { "item_id": "volcanic_glass", "qty": 5 }
+          {
+            "item_id": "wood_bundle",
+            "qty": 10
+          },
+          {
+            "item_id": "iron_scrap",
+            "qty": 5
+          }
         ]
       },
       "3": {
         "gold": 500,
         "items": [
-          { "item_id": "volcanic_glass", "qty": 12 },
-          { "item_id": "obsidian_shard", "qty": 6 }
+          {
+            "item_id": "volcanic_glass",
+            "qty": 12
+          },
+          {
+            "item_id": "obsidian_shard",
+            "qty": 6
+          }
         ]
       },
       "4": {
         "gold": 1200,
         "items": [
-          { "item_id": "volcanic_glass", "qty": 18 },
-          { "item_id": "obsidian_shard", "qty": 10 },
-          { "item_id": "ember_dust", "qty": 5 }
+          {
+            "item_id": "ah_drake_scale",
+            "qty": 18
+          },
+          {
+            "item_id": "ah_scorched_fang",
+            "qty": 10
+          },
+          {
+            "item_id": "magma_core",
+            "qty": 5
+          }
         ]
       }
     },
@@ -119,23 +196,44 @@
       "2": {
         "gold": 250,
         "items": [
-          { "item_id": "wood_bundle", "qty": 10 },
-          { "item_id": "prism_shard", "qty": 5 }
+          {
+            "item_id": "wood_bundle",
+            "qty": 10
+          },
+          {
+            "item_id": "iron_scrap",
+            "qty": 5
+          }
         ]
       },
       "3": {
         "gold": 625,
         "items": [
-          { "item_id": "prism_shard", "qty": 12 },
-          { "item_id": "starfall_core_fragment", "qty": 6 }
+          {
+            "item_id": "prism_shard",
+            "qty": 12
+          },
+          {
+            "item_id": "se_crystal_chitin",
+            "qty": 6
+          }
         ]
       },
       "4": {
         "gold": 1500,
         "items": [
-          { "item_id": "prism_shard", "qty": 18 },
-          { "item_id": "starfall_core_fragment", "qty": 10 },
-          { "item_id": "se_crystal_chitin", "qty": 5 }
+          {
+            "item_id": "astral_fragment",
+            "qty": 18
+          },
+          {
+            "item_id": "starfall_core_fragment",
+            "qty": 10
+          },
+          {
+            "item_id": "starfall_dust",
+            "qty": 5
+          }
         ]
       }
     },
@@ -143,23 +241,44 @@
       "2": {
         "gold": 300,
         "items": [
-          { "item_id": "wood_bundle", "qty": 10 },
-          { "item_id": "spectral_log", "qty": 5 }
+          {
+            "item_id": "wood_bundle",
+            "qty": 10
+          },
+          {
+            "item_id": "iron_scrap",
+            "qty": 5
+          }
         ]
       },
       "3": {
         "gold": 750,
         "items": [
-          { "item_id": "spectral_log", "qty": 12 },
-          { "item_id": "soul_ore", "qty": 6 }
+          {
+            "item_id": "soul_ore",
+            "qty": 12
+          },
+          {
+            "item_id": "nc_grave_dust",
+            "qty": 6
+          }
         ]
       },
       "4": {
         "gold": 1800,
         "items": [
-          { "item_id": "spectral_log", "qty": 18 },
-          { "item_id": "soul_ore", "qty": 10 },
-          { "item_id": "nc_bone_marrow", "qty": 5 }
+          {
+            "item_id": "spectral_log",
+            "qty": 18
+          },
+          {
+            "item_id": "nc_wraith_thread",
+            "qty": 10
+          },
+          {
+            "item_id": "cursed_relic",
+            "qty": 5
+          }
         ]
       }
     },
@@ -167,67 +286,101 @@
       "2": {
         "gold": 400,
         "items": [
-          { "item_id": "wood_bundle", "qty": 10 },
-          { "item_id": "primordial_essence", "qty": 5 }
+          {
+            "item_id": "wood_bundle",
+            "qty": 10
+          },
+          {
+            "item_id": "iron_scrap",
+            "qty": 5
+          }
         ]
       },
       "3": {
         "gold": 1000,
         "items": [
-          { "item_id": "primordial_essence", "qty": 12 },
-          { "item_id": "fractured_soulglass", "qty": 6 }
+          {
+            "item_id": "fr_entropy_residue",
+            "qty": 12
+          },
+          {
+            "item_id": "fr_corruption_ichor",
+            "qty": 6
+          }
         ]
       },
       "4": {
         "gold": 2400,
         "items": [
-          { "item_id": "primordial_essence", "qty": 18 },
-          { "item_id": "fractured_soulglass", "qty": 10 },
-          { "item_id": "void_crystal", "qty": 5 }
+          {
+            "item_id": "primordial_essence",
+            "qty": 18
+          },
+          {
+            "item_id": "fractured_soulglass",
+            "qty": 10
+          },
+          {
+            "item_id": "void_crystal",
+            "qty": 5
+          }
         ]
       }
     }
   },
-
   "services_per_tier": {
-    "1": ["recruit_hero", "manage_party"],
-    "2": ["recruit_rare_hero", "hero_rest"],
-    "3": ["recruit_elite_hero", "hero_training"],
-    "4": ["recruit_legendary_hero", "hero_respec"]
+    "1": [
+      "recruit_hero",
+      "manage_party"
+    ],
+    "2": [
+      "recruit_rare_hero",
+      "hero_rest"
+    ],
+    "3": [
+      "recruit_elite_hero",
+      "hero_training"
+    ],
+    "4": [
+      "recruit_legendary_hero",
+      "hero_respec"
+    ]
   },
-
   "produces_item_types": [],
   "input_resource_types": [],
-
   "allows_hero_assignment": false,
   "max_assigned_heroes": 0,
-
   "unlocks": [],
   "shop_items": [],
-
   "recruit_candidates": [
-    { "class_id": "defender", "cost_gold": 50 },
-    { "class_id": "striker", "cost_gold": 50 },
-    { "class_id": "warden", "cost_gold": 50 }
+    {
+      "class_id": "defender",
+      "cost_gold": 50
+    },
+    {
+      "class_id": "striker",
+      "cost_gold": 50
+    },
+    {
+      "class_id": "warden",
+      "cost_gold": 50
+    }
   ],
-
   "recruit_level_by_tier": {
     "1": 1,
     "2": 5,
     "3": 10,
     "4": 15
   },
-
   "regional_recruit_level_minimum": {
     "1": 1,
-    "2": 3,
-    "3": 6,
-    "4": 10,
-    "5": 15,
-    "6": 20,
-    "7": 25
+    "2": 5,
+    "3": 8,
+    "4": 12,
+    "5": 16,
+    "6": 22,
+    "7": 28
   },
-
   "party_size_by_tier": {
     "1": 4,
     "2": 4,

@@ -1,0 +1,18 @@
+{
+  "id": "tutorial_flee",
+  "steps": [
+    {
+      "speaker": "Thalric",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
+      "title": "A Hero Has Fallen!",
+      "body": "When one of your heroes falls in battle, you have a choice \u2014 flee the dungeon to save your remaining party, or fight on with fewer heroes.\n\nFleeing is not defeat. It's a tactical retreat that keeps your surviving heroes and all their equipment safe."
+    },
+    {
+      "speaker": "Thalric",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
+      "title": "What You Keep, What You Lose",
+      "body": "If you flee:\n  \u2022 All surviving heroes keep their equipment and bags\n  \u2022 The first 3 shopkeeper bag slots are saved (insurance)\n  \u2022 Remaining shopkeeper bag items are lost\n  \u2022 Dungeon progress and unbanked loot are lost\n\nIf all heroes die (total party wipe), they're gone forever \u2014 permadeath. Sometimes retreat is the wisest choice.",
+      "button_text": "I understand"
+    }
+  ]
+}

@@ -11,6 +11,7 @@ const DungeonDataScript := preload("res://Game/Core/DataTypes/DungeonData.gd")
 const EventTableDataScript := preload("res://Game/Core/DataTypes/EventTableData.gd")
 const EventDataScript := preload("res://Game/Core/DataTypes/EventData.gd")
 const CampaignDialogDataScript := preload("res://Game/Core/DataTypes/CampaignDialogData.gd")
+const BossCutsceneDataScript := preload("res://Game/Core/DataTypes/BossCutsceneData.gd")
 
 # ============================================================================
 # SIGNALS
@@ -40,6 +41,8 @@ var _events: Dictionary = {}           # id -> EventData
 var _mixing_recipes: Dictionary = {}   # facility_id -> Array of recipe dicts
 var _regional_affixes: Dictionary = {} # region_id -> { prefix, stat_bonus, description }
 var _campaign_dialogs: Dictionary = {} # region_id -> Array[CampaignDialogData]
+var _boss_cutscenes: Dictionary = {}   # region_id -> Array[BossCutsceneData]
+var _campaign_quest_templates: Array = []  # Array of quest template dicts (ordered)
 var _equipment_by_region_tier: Dictionary = {} # "region_N:tier_M" -> Array of template_ids
 
 var _is_loaded: bool = false
@@ -81,6 +84,8 @@ func _load_all_data() -> void:
 	_load_mixing_recipes()
 	_load_regional_affixes()
 	_load_campaign_dialogs()
+	_load_boss_cutscenes()
+	_load_campaign_quests()
 
 	_is_loaded = true
 
@@ -395,6 +400,92 @@ func _load_campaign_dialogs() -> void:
 	print("[DataRegistry] Campaign dialogs: %d across %d regions" % [total, _campaign_dialogs.size()])
 
 
+func _load_boss_cutscenes() -> void:
+	var folder_path: String = DATA_BASE_PATH + "Cutscenes"
+	var dir = DirAccess.open(folder_path)
+	if dir == null:
+		print("[DataRegistry] Cutscenes folder not found (optional)")
+		return
+	var total: int = 0
+	dir.list_dir_begin()
+	var fname: String = dir.get_next()
+	while fname != "":
+		if not dir.current_is_dir() and fname.begins_with("boss_cutscene_") and fname.ends_with(".json"):
+			var file_path: String = folder_path + "/" + fname
+			var file = FileAccess.open(file_path, FileAccess.READ)
+			if file != null:
+				var json_text: String = file.get_as_text()
+				file.close()
+				var json = JSON.new()
+				var err = json.parse(json_text)
+				if err == OK and json.data is Dictionary:
+					var data: Dictionary = json.data
+					var region_id: String = data.get("region", "")
+					var boss_id: String = data.get("boss_id", "")
+					var boss_name: String = data.get("boss_name", "")
+					var raw_cutscenes = data.get("cutscenes", [])
+					if region_id != "" and raw_cutscenes is Array:
+						if not _boss_cutscenes.has(region_id):
+							_boss_cutscenes[region_id] = []
+						for raw in raw_cutscenes:
+							if raw is Dictionary:
+								var cutscene = BossCutsceneDataScript.from_dict(raw, region_id, boss_id, boss_name)
+								if cutscene.is_valid():
+									_boss_cutscenes[region_id].append(cutscene)
+									total += 1
+		fname = dir.get_next()
+	dir.list_dir_end()
+	print("[DataRegistry] Boss cutscenes: %d across %d regions" % [total, _boss_cutscenes.size()])
+
+
+## Get a boss cutscene for a region and trigger type.
+func get_boss_cutscene(region_id: String, trigger_type: String) -> BossCutsceneData:
+	var cutscenes: Array = _boss_cutscenes.get(region_id, [])
+	for cutscene in cutscenes:
+		if cutscene.trigger_type == trigger_type:
+			return cutscene
+	return null
+
+
+## Get all boss cutscenes for a region.
+func get_boss_cutscenes_for_region(region_id: String) -> Array:
+	return _boss_cutscenes.get(region_id, [])
+
+
+func _load_campaign_quests() -> void:
+	var file_path: String = DATA_BASE_PATH + "Campaign/campaign_quests.json"
+	if not FileAccess.file_exists(file_path):
+		print("[DataRegistry] Campaign quests file not found (optional)")
+		return
+	var file = FileAccess.open(file_path, FileAccess.READ)
+	if file == null:
+		return
+	var json = JSON.new()
+	if json.parse(file.get_as_text()) != OK:
+		push_warning("[DataRegistry] Campaign quests parse error: %s" % json.get_error_message())
+		file.close()
+		return
+	file.close()
+	var data: Dictionary = json.get_data()
+	var quests = data.get("quests", [])
+	if quests is Array:
+		_campaign_quest_templates = quests
+	print("[DataRegistry] Campaign quests: %d templates" % _campaign_quest_templates.size())
+
+
+## Get a campaign quest template by quest_id. Returns empty dict if not found.
+func get_campaign_quest_template(quest_id: String) -> Dictionary:
+	for tmpl in _campaign_quest_templates:
+		if tmpl.get("quest_id", "") == quest_id:
+			return tmpl
+	return {}
+
+
+## Get all campaign quest templates (ordered).
+func get_all_campaign_quest_templates() -> Array:
+	return _campaign_quest_templates
+
+
 ## Get all campaign dialogs for a specific region.
 func get_campaign_dialogs_for_region(region_id: String) -> Array:
 	return _campaign_dialogs.get(region_id, [])
@@ -535,6 +626,10 @@ func _print_summary() -> void:
 	for region_dialogs in _campaign_dialogs.values():
 		total_campaign += region_dialogs.size()
 	print("  Campaign:       %d" % total_campaign)
+	var total_cutscenes: int = 0
+	for region_cutscenes in _boss_cutscenes.values():
+		total_cutscenes += region_cutscenes.size()
+	print("  Boss Cutscenes: %d" % total_cutscenes)
 	print("============================")
 
 

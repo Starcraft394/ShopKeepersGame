@@ -1,0 +1,71 @@
+{
+  "region": "region_6",
+  "boss_id": "nc_ossuary_king",
+  "boss_name": "Ossuary King",
+  "cutscenes": [
+    {
+      "id": "boss_entry_r6",
+      "trigger_type": "boss_entry",
+      "flag_set": "shown_boss_entry_r6",
+      "once_only": true,
+      "bgm": null,
+      "panels": [
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r6.png",
+          "speaker": "",
+          "text": "The Bone Throne",
+          "title_card": true,
+          "fallback_color": [0.04, 0.04, 0.06]
+        },
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r6.png",
+          "speaker": "Narrator",
+          "text": "Cold blue soul-light gutters in skull-shaped sconces, casting long shadows across a throne room built entirely of bone. The Ossuary King assembles himself from the walls \u2014 femur and rib and skull clicking into place with deliberate malice.",
+          "fallback_color": [0.04, 0.04, 0.06]
+        },
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r6.png",
+          "speaker": "Narrator",
+          "text": "He wears a crown of finger-bones and speaks with the voices of the dead he has claimed. There is no bargaining with what was never truly alive. Only the certainty that he will add your bones to his collection if you fail.",
+          "fallback_color": [0.04, 0.04, 0.06]
+        }
+      ]
+    },
+    {
+      "id": "boss_victory_r6",
+      "trigger_type": "boss_victory",
+      "flag_set": "shown_boss_victory_r6",
+      "once_only": true,
+      "bgm": null,
+      "panels": [
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_aftermath_r6.png",
+          "speaker": "Narrator",
+          "text": "The Ossuary King collapses, bones scattering across the floor with a sound like rain on stone. The cold blue light fades, replaced by warm amber seeping through cracks in the ancient walls. The dead can rest again.",
+          "fallback_color": [0.06, 0.05, 0.04]
+        },
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_aftermath_r6.png",
+          "speaker": "Narrator",
+          "text": "Among the settling dust, you feel something \u2014 not a physical object, but a presence. A familiar voice whispers your name. Someone lost to these halls may not be entirely gone. You should speak of this when you return to town.",
+          "fallback_color": [0.06, 0.05, 0.04]
+        }
+      ]
+    },
+    {
+      "id": "boss_defeat_r6",
+      "trigger_type": "boss_defeat",
+      "flag_set": null,
+      "once_only": false,
+      "bgm": null,
+      "panels": [
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r6.png",
+          "speaker": "Narrator",
+          "text": "The Ossuary King extends a skeletal hand. One by one, the heroes' spirits are drawn from their bodies \u2014 new additions to the King's vast collection. Their bones join the throne room walls.",
+          "fallback_color": [0.04, 0.04, 0.06]
+        }
+      ]
+    }
+  ]
+}

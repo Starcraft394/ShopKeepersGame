@@ -7,7 +7,7 @@
   "item_subtype": "monster_part",
   "category": "material",
   "base_stats": {},
-  "base_value": 38,
+  "base_value": 18,
   "buy_value": 0,
   "icon_path": "res://Assets/_ArtPacks/CraftingMaterials/PNG/Transperent/Icon19.png",
   "tags": [
@@ -16,6 +16,6 @@
     "monster_part",
     "final_realm"
   ],
-  "tier": 4,
+  "tier": 2,
   "stack_max": 20
 }

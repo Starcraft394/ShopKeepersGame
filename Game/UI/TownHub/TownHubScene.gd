@@ -103,11 +103,13 @@ var _party_bar_vbox: VBoxContainer = null
 var _nav_facility_buttons: Array[Button] = []
 var _nav_travel_buttons: Array[Button] = []
 var _icon_cache: Dictionary = {}  # icon_path → Texture2D
+var _pending_restore_focus_index: int = -1
 
 # ---- LAYOUT EDITOR (dev tool — remove after finalizing) ----
 var _layout_edit_mode: bool = false
 var _layout_btn: Button = null
 var _layout_print_btn: Button = null
+var _dev_tools_overlay: CanvasLayer = null
 var _layout_data: Dictionary = {}       # facility_id -> { "position": Vector2, "size": Vector2 }
 var _layout_wrappers: Dictionary = {}   # facility_id -> Control node
 var _layout_hud_labels: Dictionary = {} # facility_id -> Label node
@@ -168,11 +170,15 @@ func _ready() -> void:
 	# Show overlays sequentially — each must finish before the next starts,
 	# otherwise multiple dialogs/tutorials stack on screen simultaneously.
 	await _check_campaign_dialogs()
+	await _check_campaign_quest_completion()
+	await _check_campaign_quest_start()
 	await _check_first_launch_guidance()
+	await _check_telemetry_consent()
 	await _check_side_quest_completion()
 	await _check_side_quest_offer()
 	await _check_facilities_overview()
 	_check_region_unlock_notification()
+	_register_focus_zones()
 
 
 ## Show campaign story dialogs triggered by entering town.
@@ -189,6 +195,25 @@ func _check_campaign_dialogs() -> void:
 	overlay = CampaignDialog.try_show(self, "keeper_story")
 	if overlay != null:
 		await overlay.dialog_finished
+
+
+## Check if the active campaign quest is complete and show completion overlay.
+func _check_campaign_quest_completion() -> void:
+	if CampaignQuestSystem.on_town_return():
+		print("[TownHub] Campaign quest objectives met — showing completion")
+		var overlay = CampaignQuestSystem.show_completion_overlay(self)
+		if overlay != null:
+			await overlay.dialog_finished
+		CampaignQuestSystem.complete_quest()
+
+
+## Auto-assign the first available campaign quest if none is active.
+func _check_campaign_quest_start() -> void:
+	if GameContext.active_campaign_quest != null:
+		return
+	var next_id: String = CampaignQuestSystem.get_next_available_quest_id()
+	if next_id != "":
+		CampaignQuestSystem.start_quest(next_id)
 
 
 ## Check if any active side quests are complete and show reward overlay.
@@ -256,6 +281,9 @@ func _embed_town_scene() -> void:
 
 	_town_scene_instance.party_bar_target = _party_bar_vbox
 	_content_area.add_child(_town_scene_instance)
+	_town_scene_instance.facility_panel_opened.connect(_on_facility_zone_opened)
+	_town_scene_instance.facility_panel_closed.connect(_on_facility_zone_closed)
+	_town_scene_instance.facility_panel_refreshed.connect(_on_facility_panel_refreshed)
 
 	print("[TownHub] Embedded TownScene (hidden, popups via CanvasLayer)")
 
@@ -338,6 +366,7 @@ func _build_nav_rail() -> void:
 		var btn = Button.new()
 		btn.text = label_text
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn.focus_mode = Control.FOCUS_ALL
 		btn.modulate = nav_tint
 		btn.pressed.connect(_on_facility_clicked.bind(facility_id))
 		_nav_vbox.add_child(btn)
@@ -347,10 +376,21 @@ func _build_nav_rail() -> void:
 	var btn_quests = Button.new()
 	btn_quests.text = "Quests"
 	btn_quests.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	btn_quests.focus_mode = Control.FOCUS_ALL
 	btn_quests.modulate = Color(0.7, 0.85, 1.0)
 	btn_quests.pressed.connect(_on_quests_pressed)
 	btn_quests.name = "QuestsBtn"
 	_nav_vbox.add_child(btn_quests)
+
+	# Guides button — opens guides overlay
+	var btn_guides = Button.new()
+	btn_guides.text = "Guides"
+	btn_guides.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	btn_guides.focus_mode = Control.FOCUS_ALL
+	btn_guides.modulate = Color(0.85, 0.75, 1.0)
+	btn_guides.pressed.connect(_on_guides_pressed)
+	btn_guides.name = "GuidesBtn"
+	_nav_vbox.add_child(btn_guides)
 
 	# Region navigation section
 	var all_regions: Array = DataRegistry.get_all_regions() if DataRegistry.has_method("get_all_regions") else []
@@ -369,6 +409,7 @@ func _build_nav_rail() -> void:
 			var rbtn = Button.new()
 			var region_color: Color = Color.from_string(region.theme_color, Color.WHITE)
 			rbtn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			rbtn.focus_mode = Control.FOCUS_ALL
 
 			var is_unlocked: bool = GameContext.is_region_unlocked(region.region_id)
 			if not is_unlocked:
@@ -416,6 +457,7 @@ func _build_nav_rail() -> void:
 			var btn = Button.new()
 			btn.text = t_name
 			btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			btn.focus_mode = Control.FOCUS_ALL
 			if tid == town_id:
 				btn.disabled = true
 			btn.pressed.connect(_on_travel_pressed.bind(tid))
@@ -428,6 +470,7 @@ func _build_nav_rail() -> void:
 		var cycle_num: int = GameContext.ng_plus_cycle + 1
 		btn_new_cycle.text = "New Cycle (%d)" % cycle_num
 		btn_new_cycle.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn_new_cycle.focus_mode = Control.FOCUS_ALL
 		btn_new_cycle.modulate = Color(1.0, 0.82, 0.35)
 		btn_new_cycle.pressed.connect(_on_new_cycle_pressed)
 		btn_new_cycle.name = "NewCycle"
@@ -438,6 +481,7 @@ func _build_nav_rail() -> void:
 	var btn_options = Button.new()
 	btn_options.text = "Options"
 	btn_options.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	btn_options.focus_mode = Control.FOCUS_ALL
 	btn_options.modulate = Color(0.8, 0.8, 1.0)
 	btn_options.pressed.connect(_on_options_pressed)
 	btn_options.name = "Options"
@@ -447,6 +491,7 @@ func _build_nav_rail() -> void:
 	var btn_challenge = Button.new()
 	btn_challenge.text = "Challenge: %d" % GameContext.challenge_level
 	btn_challenge.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	btn_challenge.focus_mode = Control.FOCUS_ALL
 	btn_challenge.modulate = Color(1.0, 0.7, 0.3)
 	btn_challenge.pressed.connect(_on_challenge_pressed.bind(btn_challenge))
 	btn_challenge.gui_input.connect(func(event: InputEvent):
@@ -465,61 +510,26 @@ func _build_nav_rail() -> void:
 	var btn_save_exit = Button.new()
 	btn_save_exit.text = "Save & Exit"
 	btn_save_exit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	btn_save_exit.focus_mode = Control.FOCUS_ALL
 	btn_save_exit.modulate = Color(0.6, 1.0, 0.6)
 	btn_save_exit.pressed.connect(_on_save_and_exit)
 	btn_save_exit.name = "SaveExit"
 	_nav_vbox.add_child(btn_save_exit)
 
-	# Dev buttons — visible in debug builds or when Tester Mode is enabled
+	# Dev Tools — single button opens popup with all dev functions
 	if OS.is_debug_build() or GameContext.tester_mode:
-		var dev_label = Label.new()
-		dev_label.text = "— Dev —"
-		dev_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		dev_label.add_theme_font_size_override("font_size", GameContext.fs(13))
-		dev_label.modulate = Color(0.7, 0.7, 0.7)
-		dev_label.name = "DevLabel"
-		_nav_vbox.add_child(dev_label)
+		var btn_dev = Button.new()
+		btn_dev.text = "Dev Tools"
+		btn_dev.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn_dev.focus_mode = Control.FOCUS_ALL
+		btn_dev.modulate = Color(0.7, 0.85, 1.0)
+		btn_dev.pressed.connect(_open_dev_tools_popup)
+		btn_dev.name = "DevToolsBtn"
+		_nav_vbox.add_child(btn_dev)
 
-		var btn_reset = Button.new()
-		btn_reset.text = "Reset Save"
-		btn_reset.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		btn_reset.modulate = Color(1, 0.6, 0.6)
-		btn_reset.pressed.connect(_on_dev_reset_save)
-		btn_reset.name = "DevResetSave"
-		_nav_vbox.add_child(btn_reset)
-
-		var btn_gold = Button.new()
-		btn_gold.text = "+100 Gold"
-		btn_gold.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		btn_gold.modulate = Color(1, 0.9, 0.5)
-		btn_gold.pressed.connect(_on_dev_add_gold)
-		btn_gold.name = "DevAddGold"
-		_nav_vbox.add_child(btn_gold)
-
-		var btn_unlock = Button.new()
-		btn_unlock.text = "Unlock Regions"
-		btn_unlock.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		btn_unlock.modulate = Color(0.6, 0.8, 1.0)
-		btn_unlock.pressed.connect(_on_dev_unlock_regions)
-		btn_unlock.name = "DevUnlockRegions"
-		_nav_vbox.add_child(btn_unlock)
-
-		_layout_btn = Button.new()
-		_layout_btn.text = "Edit Layout: OFF"
-		_layout_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		_layout_btn.modulate = Color(0.8, 1.0, 0.8)
-		_layout_btn.pressed.connect(_on_toggle_layout_edit)
-		_layout_btn.name = "DevEditLayout"
-		_nav_vbox.add_child(_layout_btn)
-
-		_layout_print_btn = Button.new()
-		_layout_print_btn.text = "Print Layout"
-		_layout_print_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		_layout_print_btn.modulate = Color(0.8, 1.0, 0.8)
-		_layout_print_btn.pressed.connect(_on_print_layout)
-		_layout_print_btn.name = "DevPrintLayout"
-		_layout_print_btn.visible = _layout_edit_mode
-		_nav_vbox.add_child(_layout_print_btn)
+	# Grab focus on first facility button for gamepad navigation
+	if _nav_facility_buttons.size() > 0:
+		_nav_facility_buttons[0].call_deferred("grab_focus")
 
 
 ## Show a welcome banner and auto-open Inn when the player has no heroes.
@@ -547,11 +557,111 @@ func _check_first_launch_guidance() -> void:
 		print("[TownHub] First launch — auto-opening Inn for hero recruitment")
 
 
+## Show one-time telemetry consent dialog.
+func _check_telemetry_consent() -> void:
+	if GameContext.has_campaign_flag("shown_telemetry_consent_v1"):
+		return
+	GameContext.set_campaign_flag("shown_telemetry_consent_v1")
+
+	var overlay := CanvasLayer.new()
+	overlay.layer = 11
+
+	var backdrop := ColorRect.new()
+	backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
+	backdrop.color = Color(0.0, 0.0, 0.0, 0.5)
+	backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
+	overlay.add_child(backdrop)
+
+	var center := CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	overlay.add_child(center)
+
+	var panel := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.08, 0.07, 0.10, 0.97)
+	style.border_color = Color(0.75, 0.6, 0.3, 0.8)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(8)
+	style.set_content_margin_all(20)
+	panel.add_theme_stylebox_override("panel", style)
+	panel.custom_minimum_size = Vector2(400, 0)
+	panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	center.add_child(panel)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 12)
+	panel.add_child(vbox)
+
+	var title_lbl := Label.new()
+	title_lbl.text = "Help Us Improve!"
+	title_lbl.add_theme_font_size_override("font_size", GameContext.fs(16))
+	title_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.4, 1))
+	title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title_lbl)
+
+	var sep := HSeparator.new()
+	sep.modulate = Color(0.55, 0.4, 0.25, 0.5)
+	vbox.add_child(sep)
+
+	var body_lbl := Label.new()
+	body_lbl.text = "Would you like to enable play data collection? All data stays on your computer as local files. You can change this anytime in the pause menu."
+	body_lbl.add_theme_font_size_override("font_size", GameContext.fs(13))
+	body_lbl.add_theme_color_override("font_color", Color(0.85, 0.8, 0.7, 1))
+	body_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	vbox.add_child(body_lbl)
+
+	var btn_row := HBoxContainer.new()
+	btn_row.add_theme_constant_override("separation", 12)
+	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_child(btn_row)
+
+	var btn_yes := Button.new()
+	btn_yes.text = "Yes, Enable"
+	btn_yes.custom_minimum_size = Vector2(130, 36)
+	btn_yes.focus_mode = Control.FOCUS_ALL
+	btn_yes.add_theme_font_size_override("font_size", GameContext.fs(14))
+	btn_yes.modulate = Color(0.7, 1.0, 0.7)
+	btn_row.add_child(btn_yes)
+
+	var btn_no := Button.new()
+	btn_no.text = "No Thanks"
+	btn_no.custom_minimum_size = Vector2(130, 36)
+	btn_no.focus_mode = Control.FOCUS_ALL
+	btn_no.add_theme_font_size_override("font_size", GameContext.fs(14))
+	btn_no.modulate = Color(0.7, 0.7, 0.7)
+	btn_row.add_child(btn_no)
+
+	add_child(overlay)
+	btn_yes.call_deferred("grab_focus")
+
+	# Wait for player choice (use Array — lambdas capture primitives by value, not reference)
+	var state: Array = [false]
+	btn_yes.pressed.connect(func():
+		GameContext.telemetry_consent = true
+		GameContext.save_game()
+		state[0] = true
+		print("[TownHub] Telemetry consent: ENABLED")
+	)
+	btn_no.pressed.connect(func():
+		state[0] = true
+		print("[TownHub] Telemetry consent: declined")
+	)
+
+	while not state[0]:
+		await get_tree().process_frame
+
+	overlay.queue_free()
+
+
 ## Show facilities overview tutorial after first dungeon extraction.
 func _check_facilities_overview() -> void:
 	if not GameContext.has_completed_tutorial("tutorial_first_extraction"):
 		return
-	var overlay = TutorialOverlay.try_show(self, "tutorial_facilities_overview")
+	var fov_tut_targets: Dictionary = {}
+	if _nav_vbox != null:
+		fov_tut_targets["nav_rail"] = _nav_vbox
+	var overlay = TutorialOverlay.try_show(self, "tutorial_facilities_overview", fov_tut_targets)
 	if overlay != null:
 		await overlay.tutorial_finished
 
@@ -860,10 +970,10 @@ func _create_building_button(facility_id: String, facility, sf: float) -> VBoxCo
 
 func _on_toggle_layout_edit() -> void:
 	_layout_edit_mode = not _layout_edit_mode
-	if _layout_btn:
+	if _layout_btn and is_instance_valid(_layout_btn):
 		_layout_btn.text = "Edit Layout: ON" if _layout_edit_mode else "Edit Layout: OFF"
 		_layout_btn.modulate = Color(0.4, 1.0, 0.4) if _layout_edit_mode else Color(0.8, 1.0, 0.8)
-	if _layout_print_btn:
+	if _layout_print_btn and is_instance_valid(_layout_print_btn):
 		_layout_print_btn.visible = _layout_edit_mode
 	_build_building_overlay()
 	print("[TownHub] Layout edit mode: %s" % ("ON" if _layout_edit_mode else "OFF"))
@@ -1104,6 +1214,7 @@ func _show_layout_overlay(text: String) -> void:
 	# Scrollable text
 	var scroll = ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.follow_focus = true
 	vbox.add_child(scroll)
 	var rtl = RichTextLabel.new()
 	rtl.text = text
@@ -1177,6 +1288,13 @@ func _on_quests_pressed() -> void:
 		await overlay.quest_log_closed
 
 
+func _on_guides_pressed() -> void:
+	print("[TownHub] Guides pressed — opening guides overlay")
+	var overlay = GuidesOverlay.show(self)
+	if overlay != null:
+		await overlay.guides_closed
+
+
 func _on_new_cycle_pressed() -> void:
 	print("[TownHub] New Cycle pressed — opening NG+ transition")
 	# Tutorial: explain NG+ mechanics on first cycle
@@ -1235,7 +1353,7 @@ func _on_dev_reset_save() -> void:
 	print("[TownHub] DEV: Reset Save pressed")
 	if GameContext.has_method("reset_save_game"):
 		GameContext.reset_save_game()
-	get_tree().call_deferred("change_scene_to_file", "res://Game/Boot/game_boot.tscn")
+	SceneTransition.fade_to("res://Game/Boot/game_boot.tscn")
 
 
 func _on_dev_add_gold() -> void:
@@ -1256,6 +1374,163 @@ func _on_dev_unlock_regions() -> void:
 	print("[TownHub] DEV: All %d regions unlocked" % all_regions.size())
 
 
+func _on_dev_add_base_materials() -> void:
+	var base_mats: Array = [
+		"iron_scrap", "wood_bundle", "herb_sprig", "forest_mushroom",
+		"wild_berries", "raw_meat", "slime_gel", "bone_fragment",
+		"spider_fang", "bat_wing", "spider_silk", "boar_tusk", "wolf_pelt"
+	]
+	for mat_id in base_mats:
+		GameContext.add_run_item(mat_id, 100)
+	GameContext.save_game()
+	print("[TownHub] DEV: +100 of each base material (13 types) added to stash")
+
+
+func _on_dev_clear_stash() -> void:
+	if GameContext.has_method("clear_run_stash"):
+		GameContext.clear_run_stash()
+		GameContext.save_game()
+		print("[TownHub] DEV: Stash cleared")
+
+
+## Open the Dev Tools popup overlay (facility-styled panel).
+func _open_dev_tools_popup() -> void:
+	if _dev_tools_overlay != null:
+		return
+
+	_dev_tools_overlay = CanvasLayer.new()
+	_dev_tools_overlay.layer = 10
+
+	# Backdrop — click to close
+	var backdrop = ColorRect.new()
+	backdrop.color = Color(0, 0, 0, 0.5)
+	backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
+	backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
+	backdrop.gui_input.connect(func(event: InputEvent):
+		if event is InputEventMouseButton and event.pressed:
+			_close_dev_tools_popup()
+	)
+	_dev_tools_overlay.add_child(backdrop)
+
+	# Center container
+	var center = CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_dev_tools_overlay.add_child(center)
+
+	# Panel
+	var panel = PanelContainer.new()
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.12, 0.10, 0.08, 0.97)
+	style.border_color = Color(0.55, 0.4, 0.25, 0.8)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(6)
+	style.set_content_margin_all(16)
+	panel.add_theme_stylebox_override("panel", style)
+	panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	center.add_child(panel)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 8)
+	panel.add_child(vbox)
+
+	# Title bar
+	var title_row = HBoxContainer.new()
+	vbox.add_child(title_row)
+
+	var title_lbl = Label.new()
+	title_lbl.text = "Dev Tools"
+	title_lbl.add_theme_font_size_override("font_size", GameContext.fs(16))
+	title_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.4, 1))
+	title_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	title_row.add_child(title_lbl)
+
+	var close_btn = Button.new()
+	close_btn.text = "X"
+	close_btn.custom_minimum_size = Vector2(28, 28)
+	close_btn.pressed.connect(_close_dev_tools_popup)
+	title_row.add_child(close_btn)
+
+	var sep = HSeparator.new()
+	sep.modulate = Color(0.55, 0.4, 0.25, 0.5)
+	vbox.add_child(sep)
+
+	# Button factory
+	var _make_dev_btn = func(text: String, color: Color, handler: Callable) -> Button:
+		var btn = Button.new()
+		btn.text = text
+		btn.add_theme_font_size_override("font_size", GameContext.fs(14))
+		btn.custom_minimum_size = Vector2(280, 34)
+		btn.modulate = color
+		btn.pressed.connect(func():
+			handler.call()
+			_close_dev_tools_popup()
+		)
+		return btn
+
+	vbox.add_child(_make_dev_btn.call("+100 Gold", Color(1, 0.9, 0.5, 1), _on_dev_add_gold))
+	vbox.add_child(_make_dev_btn.call("+100 Base Materials", Color(0.5, 0.9, 0.5, 1), _on_dev_add_base_materials))
+	vbox.add_child(_make_dev_btn.call("Unlock Regions", Color(0.6, 0.8, 1.0, 1), _on_dev_unlock_regions))
+	vbox.add_child(_make_dev_btn.call("Clear Stash", Color(0.8, 0.8, 0.8, 1), _on_dev_clear_stash))
+	vbox.add_child(_make_dev_btn.call("Reset Save", Color(1, 0.5, 0.5, 1), _on_dev_reset_save))
+
+	# Layout editor buttons (kept separate — toggle doesn't close popup)
+	var sep2 = HSeparator.new()
+	sep2.modulate = Color(0.55, 0.4, 0.25, 0.3)
+	vbox.add_child(sep2)
+
+	_layout_btn = Button.new()
+	_layout_btn.text = "Edit Layout: ON" if _layout_edit_mode else "Edit Layout: OFF"
+	_layout_btn.add_theme_font_size_override("font_size", GameContext.fs(14))
+	_layout_btn.custom_minimum_size = Vector2(280, 34)
+	_layout_btn.modulate = Color(0.4, 1.0, 0.4) if _layout_edit_mode else Color(0.8, 1.0, 0.8)
+	_layout_btn.pressed.connect(func():
+		_on_toggle_layout_edit()
+		# Update button text/color in-place
+		if _layout_btn and is_instance_valid(_layout_btn):
+			_layout_btn.text = "Edit Layout: ON" if _layout_edit_mode else "Edit Layout: OFF"
+			_layout_btn.modulate = Color(0.4, 1.0, 0.4) if _layout_edit_mode else Color(0.8, 1.0, 0.8)
+		if _layout_print_btn and is_instance_valid(_layout_print_btn):
+			_layout_print_btn.visible = _layout_edit_mode
+	)
+	vbox.add_child(_layout_btn)
+
+	_layout_print_btn = Button.new()
+	_layout_print_btn.text = "Print Layout"
+	_layout_print_btn.add_theme_font_size_override("font_size", GameContext.fs(14))
+	_layout_print_btn.custom_minimum_size = Vector2(280, 34)
+	_layout_print_btn.modulate = Color(0.8, 1.0, 0.8)
+	_layout_print_btn.pressed.connect(func():
+		_on_print_layout()
+		_close_dev_tools_popup()
+	)
+	_layout_print_btn.visible = _layout_edit_mode
+	vbox.add_child(_layout_print_btn)
+
+	# Hotkey hint
+	var hint = Label.new()
+	hint.text = "F5=Enter  F6=AdvFloor  Shift+F6=AdvRoom  F7=Exit"
+	hint.add_theme_font_size_override("font_size", GameContext.fs(11))
+	hint.modulate = Color(0.6, 0.6, 0.6, 1)
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(hint)
+
+	add_child(_dev_tools_overlay)
+	UIAudio.register_closeable(_dev_tools_overlay, _close_dev_tools_popup)
+	print("[TownHub] Dev Tools popup opened")
+
+
+## Close the Dev Tools popup overlay.
+func _close_dev_tools_popup() -> void:
+	if _dev_tools_overlay != null and is_instance_valid(_dev_tools_overlay):
+		UIAudio.unregister_closeable(_dev_tools_overlay)
+		_dev_tools_overlay.queue_free()
+		_dev_tools_overlay = null
+		# Clear refs to popup-hosted layout buttons (they're gone now)
+		_layout_btn = null
+		_layout_print_btn = null
+
+
 # ============================================================================
 # ICON LOADING
 # ============================================================================
@@ -1272,3 +1547,155 @@ func _load_icon(path: String) -> Texture2D:
 	if tex != null:
 		_icon_cache[path] = tex
 	return tex
+
+
+# ============================================================================
+# FOCUS ZONES (Controller support)
+# ============================================================================
+
+func _register_focus_zones() -> void:
+	InputManager.clear_zones()
+
+	# Nav Rail: PanelContainer is 3 levels above NavVBox
+	var nav_rail_panel: Control = _nav_vbox.get_parent().get_parent().get_parent()
+	var nav_controls: Array = InputManager.collect_focusable(nav_rail_panel)
+
+	# Party Bar: each hero card is its own zone for reliable D-pad navigation
+	var card_zone_ids: Array = _register_party_card_zones()
+
+	# Nav rail neighbors — down to first party card (if any)
+	var nav_neighbors: Dictionary = {}
+	if not card_zone_ids.is_empty():
+		nav_neighbors["down"] = card_zone_ids[0]
+	InputManager.register_zone("nav_rail", nav_rail_panel, nav_controls, nav_neighbors)
+
+	# Set region border color
+	var palette: Dictionary = RegionTheme.get_palette_for_current_region()
+	InputManager.set_zone_border_color(palette.get("border", Color(0.55, 0.4, 0.25, 0.8)))
+
+	# Activate nav_rail as default zone
+	InputManager.set_active_zone("nav_rail")
+
+
+## Register each hero card in the party bar as its own zone.
+## Returns array of registered zone IDs (e.g. ["party_card_0", "party_card_1", ...]).
+func _register_party_card_zones() -> Array:
+	if _party_bar_vbox == null:
+		return []
+
+	# Find the GridContainer inside party bar (second child after label)
+	var grid: GridContainer = null
+	for child in _party_bar_vbox.get_children():
+		if child is GridContainer:
+			grid = child
+			break
+	if grid == null:
+		return []
+
+	var card_zone_ids: Array = []
+	for i in range(grid.get_child_count()):
+		var card: Control = grid.get_child(i)
+		var controls: Array = InputManager.collect_focusable(card)
+		if controls.is_empty():
+			continue  # Skip empty/locked slots
+		var zone_id: String = "party_card_%d" % card_zone_ids.size()
+		card_zone_ids.append(zone_id)
+		InputManager.register_zone(zone_id, card, controls, {})
+
+	# Set left/right neighbors between cards, up neighbor to nav_rail
+	for i in range(card_zone_ids.size()):
+		var neighbors: Dictionary = {"up": "nav_rail"}
+		if i > 0:
+			neighbors["left"] = card_zone_ids[i - 1]
+		if i < card_zone_ids.size() - 1:
+			neighbors["right"] = card_zone_ids[i + 1]
+		InputManager.update_zone_neighbors(card_zone_ids[i], neighbors)
+
+	return card_zone_ids
+
+
+func _on_facility_zone_opened(_facility_id: String, _panel_node: Control) -> void:
+	_pending_restore_focus_index = -1
+	call_deferred("_reregister_facility_zones")
+
+
+func _on_facility_zone_closed(_facility_id: String) -> void:
+	_pending_restore_focus_index = -1
+	# If compare panel closed, restore focus to source shop item + 1
+	if _facility_id == "shop_compare" and _town_scene_instance and _town_scene_instance._compare_source_focus_index >= 0:
+		_pending_restore_focus_index = _town_scene_instance._compare_source_focus_index + 1
+		_town_scene_instance._compare_source_focus_index = -1
+	call_deferred("_reregister_facility_zones")
+
+
+func _on_facility_panel_refreshed(_facility_id: String, prev_focus_index: int) -> void:
+	_pending_restore_focus_index = prev_focus_index
+	call_deferred("_reregister_facility_zones")
+
+
+## Re-register focus zones for all open facility panels.
+## Each panel gets its own zone with left/right/up/down neighbors for controller navigation.
+func _reregister_facility_zones() -> void:
+	if _town_scene_instance == null:
+		return
+
+	# Consume pending restore index
+	var restore_index: int = _pending_restore_focus_index
+	_pending_restore_focus_index = -1
+
+	# Unregister all existing facility zones
+	for key in InputManager._zones.keys():
+		if key.begins_with("facility"):
+			InputManager.unregister_zone(key)
+
+	var panel_ids: Array = _town_scene_instance._open_panels.keys()
+	if panel_ids.is_empty():
+		# No panels open — restore original nav (down to first party card)
+		var first_card: String = "party_card_0" if InputManager._zones.has("party_card_0") else ""
+		var restore_neighbors: Dictionary = {}
+		if first_card != "":
+			restore_neighbors["down"] = first_card
+		InputManager.update_zone_neighbors("nav_rail", restore_neighbors)
+		InputManager.set_active_zone("nav_rail")
+		return
+
+	var total: int = panel_ids.size()
+
+	# Register each panel as its own zone (linear left/right chain)
+	for i in range(total):
+		var fid: String = panel_ids[i]
+		var info: Dictionary = _town_scene_instance._open_panels[fid]
+		var panel: Control = info.get("panel")
+		if panel == null or not is_instance_valid(panel):
+			continue
+
+		var zone_id: String = "facility_%d" % i
+		var controls: Array = InputManager.collect_focusable(panel)
+
+		# Build neighbors (linear chain: nav_rail ← facility_0 ↔ facility_1 ↔ ...)
+		var neighbors: Dictionary = {}
+		if i == 0:
+			neighbors["left"] = "nav_rail"
+		else:
+			neighbors["left"] = "facility_%d" % (i - 1)
+		if i < total - 1:
+			neighbors["right"] = "facility_%d" % (i + 1)
+
+		InputManager.register_zone(zone_id, panel, controls, neighbors)
+
+	# Nav rail right now points to first facility zone, down to first party card
+	var first_card: String = "party_card_0" if InputManager._zones.has("party_card_0") else ""
+	var nav_fac_neighbors: Dictionary = {"right": "facility_0"}
+	if first_card != "":
+		nav_fac_neighbors["down"] = first_card
+	InputManager.update_zone_neighbors("nav_rail", nav_fac_neighbors)
+	# Activate the most recently opened panel, restoring focus index if available
+	var last_zone: String = "facility_%d" % (total - 1)
+	if restore_index >= 0:
+		InputManager.set_active_zone_at_index(last_zone, restore_index)
+	else:
+		InputManager.set_active_zone(last_zone)
+
+
+func _exit_tree() -> void:
+	InputManager.clear_zones()

@@ -1,0 +1,254 @@
+{
+  "quests": [
+    {
+      "quest_id": "cq_r1_investigate",
+      "region_id": "region_1",
+      "display_name": "Crown's First Assignment",
+      "description": "Sir Cedric has tasked you with investigating the corruption in the Forest Haven. Enter the dungeon, defeat whatever commands the corruption, and report back.",
+      "quest_type": "investigate",
+      "flag_required": "story_r1_arrived",
+      "flag_set_on_complete": "campaign_r1_complete",
+      "reward_gold": 200,
+      "reward_items": [],
+      "next_quest_id": "cq_r2_rescue_npc",
+      "quest_given_dialog_id": "r1_herald_intro",
+      "quest_complete_dialog_id": "r1_post_boss_herald",
+      "objectives": [
+        {
+          "id": "r1_kill_boss",
+          "type": "kill_boss",
+          "target_id": "thorn_ent",
+          "description": "Defeat the Thorn-Ent in the Forest Dungeon",
+          "is_complete": false
+        },
+        {
+          "id": "r1_return",
+          "type": "return_to_town",
+          "description": "Report back to town",
+          "is_complete": false
+        }
+      ]
+    },
+    {
+      "quest_id": "cq_r2_rescue_npc",
+      "region_id": "region_2",
+      "display_name": "The Missing Herbalist",
+      "description": "Verdara, a renowned herbalist, ventured into the Fungalmire to study the spores and hasn't returned. Find her in the depths and clear the source of the corruption.",
+      "quest_type": "rescue_npc",
+      "flag_required": "campaign_r1_complete",
+      "flag_set_on_complete": "campaign_r2_complete",
+      "npc_id": "npc_verdara",
+      "npc_name": "Verdara",
+      "reward_gold": 300,
+      "reward_items": [],
+      "next_quest_id": "cq_r3_retrieve_item",
+      "quest_given_dialog_id": "",
+      "quest_complete_dialog_id": "",
+      "objectives": [
+        {
+          "id": "r2_find_npc",
+          "type": "find_npc",
+          "target_id": "npc_verdara",
+          "event_id": "evt_quest_npc_verdara",
+          "description": "Find Verdara in the Fungalmire",
+          "is_complete": false
+        },
+        {
+          "id": "r2_kill_boss",
+          "type": "kill_boss",
+          "target_id": "fm_spiral_mycelium",
+          "description": "Defeat the Spiral Mycelium",
+          "is_complete": false
+        },
+        {
+          "id": "r2_return",
+          "type": "return_to_town",
+          "description": "Escort Verdara back to town",
+          "is_complete": false
+        }
+      ]
+    },
+    {
+      "quest_id": "cq_r3_retrieve_item",
+      "region_id": "region_3",
+      "display_name": "The Crown Artifact",
+      "description": "An artifact of the Crown was lost when the Sunken Strand fell to corruption. The Tide Sovereign guards whatever remains. Recover the Crown Artifact and bring it back.",
+      "quest_type": "retrieve_item",
+      "flag_required": "campaign_r2_complete",
+      "flag_set_on_complete": "campaign_r3_complete",
+      "reward_gold": 400,
+      "reward_items": [],
+      "next_quest_id": "cq_r4_collect_fragments",
+      "quest_given_dialog_id": "",
+      "quest_complete_dialog_id": "",
+      "objectives": [
+        {
+          "id": "r3_kill_boss",
+          "type": "kill_boss",
+          "target_id": "ss_tide_sovereign",
+          "description": "Defeat the Tide Sovereign",
+          "is_complete": false
+        },
+        {
+          "id": "r3_collect_item",
+          "type": "collect_item",
+          "target_id": "crown_artifact_strand",
+          "required_count": 1,
+          "current_count": 0,
+          "description": "Recover the Crown Artifact",
+          "is_complete": false
+        },
+        {
+          "id": "r3_return",
+          "type": "return_to_town",
+          "description": "Deliver the artifact to town",
+          "is_complete": false
+        }
+      ]
+    },
+    {
+      "quest_id": "cq_r4_collect_fragments",
+      "region_id": "region_4",
+      "display_name": "The Ashen Fragments",
+      "description": "The Crown's scholars believe the corruption is fueled by crystalline fragments scattered throughout the Ashen Horizons. Collect three Grail Fragments from the dungeon's depths and defeat the Cinder Monarch.",
+      "quest_type": "collect_fragments",
+      "flag_required": "campaign_r3_complete",
+      "flag_set_on_complete": "campaign_r4_complete",
+      "reward_gold": 500,
+      "reward_items": [],
+      "next_quest_id": "cq_r5_retrieve_item",
+      "quest_given_dialog_id": "",
+      "quest_complete_dialog_id": "",
+      "objectives": [
+        {
+          "id": "r4_collect_fragments",
+          "type": "collect_item",
+          "target_id": "grail_fragment_ashen",
+          "required_count": 3,
+          "current_count": 0,
+          "description": "Collect Grail Fragments (0/3)",
+          "is_complete": false
+        },
+        {
+          "id": "r4_kill_boss",
+          "type": "kill_boss",
+          "target_id": "ah_cinder_monarch",
+          "description": "Defeat the Cinder Monarch",
+          "is_complete": false
+        },
+        {
+          "id": "r4_return",
+          "type": "return_to_town",
+          "description": "Return the fragments to town",
+          "is_complete": false
+        }
+      ]
+    },
+    {
+      "quest_id": "cq_r5_retrieve_item",
+      "region_id": "region_5",
+      "display_name": "The Crystal Truth",
+      "description": "The Shattered Oracle in the Starfall Expanse holds a Vision Crystal that may reveal the true nature of the corruption. Defeat the Oracle and retrieve the crystal.",
+      "quest_type": "retrieve_item",
+      "flag_required": "campaign_r4_complete",
+      "flag_set_on_complete": "campaign_r5_complete",
+      "reward_gold": 600,
+      "reward_items": [],
+      "next_quest_id": "cq_r6_rescue_npc",
+      "quest_given_dialog_id": "",
+      "quest_complete_dialog_id": "",
+      "objectives": [
+        {
+          "id": "r5_kill_boss",
+          "type": "kill_boss",
+          "target_id": "se_shattered_oracle",
+          "description": "Defeat the Shattered Oracle",
+          "is_complete": false
+        },
+        {
+          "id": "r5_collect_item",
+          "type": "collect_item",
+          "target_id": "vision_crystal",
+          "required_count": 1,
+          "current_count": 0,
+          "description": "Recover the Vision Crystal",
+          "is_complete": false
+        },
+        {
+          "id": "r5_return",
+          "type": "return_to_town",
+          "description": "Bring the crystal back to town",
+          "is_complete": false
+        }
+      ]
+    },
+    {
+      "quest_id": "cq_r6_rescue_npc",
+      "region_id": "region_6",
+      "display_name": "Lira's Echo",
+      "description": "The Vision Crystal revealed a spirit trapped in the Necropolis \u2014 Lira, a Crown scholar who disappeared during the first expeditions. Her knowledge may be the key to reaching the source. Find her echo and defeat the Ossuary King.",
+      "quest_type": "rescue_npc",
+      "flag_required": "campaign_r5_complete",
+      "flag_set_on_complete": "campaign_r6_complete",
+      "npc_id": "npc_lira",
+      "npc_name": "Lira",
+      "reward_gold": 700,
+      "reward_items": [],
+      "next_quest_id": "cq_r7_confront",
+      "quest_given_dialog_id": "",
+      "quest_complete_dialog_id": "",
+      "objectives": [
+        {
+          "id": "r6_find_npc",
+          "type": "find_npc",
+          "target_id": "npc_lira",
+          "event_id": "evt_quest_npc_lira",
+          "description": "Find Lira's spirit in the Necropolis",
+          "is_complete": false
+        },
+        {
+          "id": "r6_kill_boss",
+          "type": "kill_boss",
+          "target_id": "nc_ossuary_king",
+          "description": "Defeat the Ossuary King",
+          "is_complete": false
+        },
+        {
+          "id": "r6_return",
+          "type": "return_to_town",
+          "description": "Return with Lira's knowledge",
+          "is_complete": false
+        }
+      ]
+    },
+    {
+      "quest_id": "cq_r7_confront",
+      "region_id": "region_7",
+      "display_name": "The Final Confrontation",
+      "description": "The path to the Void Threshold is open. The Prime Corruptor \u2014 the source of all corruption \u2014 awaits. This is what everything has been building toward. End it.",
+      "quest_type": "confront",
+      "flag_required": "campaign_r6_complete",
+      "flag_set_on_complete": "campaign_r7_complete",
+      "reward_gold": 1000,
+      "reward_items": [],
+      "next_quest_id": "",
+      "quest_given_dialog_id": "",
+      "quest_complete_dialog_id": "",
+      "objectives": [
+        {
+          "id": "r7_kill_boss",
+          "type": "kill_boss",
+          "target_id": "fr_prime_corruptor",
+          "description": "Defeat the Prime Corruptor",
+          "is_complete": false
+        },
+        {
+          "id": "r7_return",
+          "type": "return_to_town",
+          "description": "Return victorious",
+          "is_complete": false
+        }
+      ]
+    }
+  ]
+}

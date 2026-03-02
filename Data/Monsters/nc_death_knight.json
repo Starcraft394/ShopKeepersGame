@@ -1,32 +1,35 @@
 {
-  "id": "nc_death_knight",
-  "display_name": "Death Knight",
-  "description": "A fallen paladin reforged in dark iron, wielding cursed steel and commanding lesser undead.",
-  "icon_hint": "imposing armored undead knight in black iron plate wielding a glowing purple sword",
-  "family": "necro",
-  "region_id": "region_6",
-  "tier": 2,
-  "ai_tier": 2,
-  "attack_type": "melee",
-  "combat_role": "melee",
-  "base_stats": {
-    "health": 360,
-    "attack": 63,
-    "defense": 27,
-    "speed": 30,
-    "armor_penetration": 10,
-    "life_steal": 10
-  },
-  "ability_ids": [
-    "basic_attack",
-    "mon_devastating_charge"
-  ],
-  "passive_ids": ["mon_piercing_blows", "mon_life_drain"],
-  "loot_table_id": "lt_region6_uncommon",
-  "gold_drop_min": 32,
-  "gold_drop_max": 48,
-  "sprite_path": "",
-  "is_elite": false,
-  "is_boss": false,
-  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/nc_death_knight.png"
+	"id": "nc_death_knight",
+	"display_name": "Death Knight",
+	"description": "A fallen paladin reforged in dark iron, wielding cursed steel and commanding lesser undead.",
+	"icon_hint": "imposing armored undead knight in black iron plate wielding a glowing purple sword",
+	"family": "necro",
+	"region_id": "region_6",
+	"tier": 2,
+	"ai_tier": 2,
+	"attack_type": "melee",
+	"combat_role": "melee",
+	"base_stats": {
+		"health": 468,
+		"attack": 89,
+		"defense": 33,
+		"speed": 30,
+		"armor_penetration": 10,
+		"life_steal": 10
+	},
+	"ability_ids": [
+		"basic_attack",
+		"mon_devastating_charge"
+	],
+	"passive_ids": [
+		"mon_piercing_blows",
+		"mon_life_drain"
+	],
+	"loot_table_id": "lt_region6_uncommon",
+	"gold_drop_min": 32,
+	"gold_drop_max": 48,
+	"sprite_path": "",
+	"is_elite": false,
+	"is_boss": false,
+	"portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/nc_death_knight.png"
 }

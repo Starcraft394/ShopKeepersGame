@@ -1,34 +1,37 @@
 {
-  "id": "se_shattered_oracle",
-  "display_name": "The Shattered Oracle",
-  "description": "A fractured deity of foresight trapped in crystal, lashing out with visions that become reality.",
-  "icon_hint": "massive fractured crystal statue of a deity with glowing eyes and reality-warping cracks",
-  "family": "crystal",
-  "region_id": "region_5",
-  "tier": 3,
-  "ai_tier": 3,
-  "attack_type": "ranged",
-  "combat_role": "mage",
-  "base_stats": {
-    "health": 880,
-    "attack": 68,
-    "defense": 30,
-    "speed": 45,
-    "resist": 15,
-    "evasion": 12,
-    "crit_chance": 10
-  },
-  "ability_ids": [
-    "basic_attack",
-    "mon_meteor",
-    "mon_chain_lightning"
-  ],
-  "passive_ids": ["mon_magic_resist", "mon_undying_rage"],
-  "loot_table_id": "lt_region5_boss",
-  "gold_drop_min": 75,
-  "gold_drop_max": 110,
-  "sprite_path": "",
-  "is_elite": false,
-  "is_boss": true,
-  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/se_shattered_oracle.png"
+	"id": "se_shattered_oracle",
+	"display_name": "The Shattered Oracle",
+	"description": "A fractured deity of foresight trapped in crystal, lashing out with visions that become reality.",
+	"icon_hint": "massive fractured crystal statue of a deity with glowing eyes and reality-warping cracks",
+	"family": "crystal",
+	"region_id": "region_5",
+	"tier": 3,
+	"ai_tier": 3,
+	"attack_type": "ranged",
+	"combat_role": "mage",
+	"base_stats": {
+		"health": 1620,
+		"attack": 123,
+		"defense": 43,
+		"speed": 45,
+		"resist": 15,
+		"evasion": 12,
+		"crit_chance": 10
+	},
+	"ability_ids": [
+		"basic_attack",
+		"mon_meteor",
+		"mon_chain_lightning"
+	],
+	"passive_ids": [
+		"mon_magic_resist",
+		"mon_undying_rage"
+	],
+	"loot_table_id": "lt_region5_boss",
+	"gold_drop_min": 75,
+	"gold_drop_max": 110,
+	"sprite_path": "",
+	"is_elite": false,
+	"is_boss": true,
+	"portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/se_shattered_oracle.png"
 }

@@ -6,50 +6,83 @@
   "facility_type": "production",
   "max_tier": 4,
   "unlock_region": 1,
-
   "keeper_name": "Brom",
   "keeper_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon15.png",
   "keeper_description": "Stout aproned cook with flour-dusted hands and a ruddy face, wooden spoon in hand, steaming pots behind him",
   "keeper_greetings": [
     "Ah, fresh ingredients! Let's see what we can cook up.",
     "The kitchen is warm and ready. What shall we mix today?",
-    "Careful with the portions — a good meal is all about balance."
+    "Careful with the portions \u00e2\u20ac\u201d a good meal is all about balance."
   ],
-
   "slots_per_tier": {
     "1": 2,
     "2": 3,
     "3": 4,
     "4": 5
   },
-
   "upgrade_costs": {
-    "2": { "gold": 45, "items": [] },
-    "3": { "gold": 120, "items": [{ "item_id": "honey", "qty": 3 }] },
-    "4": { "gold": 300, "items": [{ "item_id": "rare_truffle", "qty": 2 }] }
+    "2": {
+      "gold": 45,
+      "items": []
+    },
+    "3": {
+      "gold": 120,
+      "items": [
+        {
+          "item_id": "honey",
+          "qty": 3
+        }
+      ]
+    },
+    "4": {
+      "gold": 300,
+      "items": [
+        {
+          "item_id": "gw_wildroot_heart",
+          "qty": 2
+        }
+      ]
+    }
   },
-
   "regional_upgrade_costs": {
     "2": {
       "2": {
         "gold": 55,
         "items": [
-          { "item_id": "spore_cluster", "qty": 3 },
-          { "item_id": "fungal_fiber", "qty": 2 }
+          {
+            "item_id": "wood_bundle",
+            "qty": 3
+          },
+          {
+            "item_id": "iron_scrap",
+            "qty": 2
+          }
         ]
       },
       "3": {
         "gold": 160,
         "items": [
-          { "item_id": "spore_cluster", "qty": 6 },
-          { "item_id": "fungal_fiber", "qty": 5 }
+          {
+            "item_id": "spore_cluster",
+            "qty": 6
+          },
+          {
+            "item_id": "fungal_fiber",
+            "qty": 5
+          }
         ]
       },
       "4": {
         "gold": 395,
         "items": [
-          { "item_id": "spore_cluster", "qty": 10 },
-          { "item_id": "fungal_fiber", "qty": 8 }
+          {
+            "item_id": "rare_truffle",
+            "qty": 10
+          },
+          {
+            "item_id": "phoenix_ash",
+            "qty": 8
+          }
         ]
       }
     },
@@ -57,25 +90,52 @@
       "2": {
         "gold": 70,
         "items": [
-          { "item_id": "sea_salt_crystal", "qty": 3 },
-          { "item_id": "driftwood", "qty": 2 },
-          { "item_id": "ss_kelp_sinew", "qty": 2 }
+          {
+            "item_id": "wood_bundle",
+            "qty": 3
+          },
+          {
+            "item_id": "iron_scrap",
+            "qty": 2
+          },
+          {
+            "item_id": "herb_sprig",
+            "qty": 2
+          }
         ]
       },
       "3": {
         "gold": 200,
         "items": [
-          { "item_id": "sea_salt_crystal", "qty": 6 },
-          { "item_id": "driftwood", "qty": 5 },
-          { "item_id": "ss_kelp_sinew", "qty": 5 }
+          {
+            "item_id": "sea_salt_crystal",
+            "qty": 6
+          },
+          {
+            "item_id": "driftwood",
+            "qty": 5
+          },
+          {
+            "item_id": "ss_kelp_sinew",
+            "qty": 5
+          }
         ]
       },
       "4": {
         "gold": 495,
         "items": [
-          { "item_id": "sea_salt_crystal", "qty": 12 },
-          { "item_id": "driftwood", "qty": 10 },
-          { "item_id": "ss_kelp_sinew", "qty": 8 }
+          {
+            "item_id": "tidal_pearl",
+            "qty": 12
+          },
+          {
+            "item_id": "stormglass_fragment",
+            "qty": 10
+          },
+          {
+            "item_id": "ss_brine_venom",
+            "qty": 8
+          }
         ]
       }
     },
@@ -83,22 +143,40 @@
       "2": {
         "gold": 90,
         "items": [
-          { "item_id": "ember_dust", "qty": 3 },
-          { "item_id": "ah_sulfite_gland", "qty": 2 }
+          {
+            "item_id": "wood_bundle",
+            "qty": 3
+          },
+          {
+            "item_id": "iron_scrap",
+            "qty": 2
+          }
         ]
       },
       "3": {
         "gold": 265,
         "items": [
-          { "item_id": "ember_dust", "qty": 6 },
-          { "item_id": "ah_sulfite_gland", "qty": 5 }
+          {
+            "item_id": "ember_dust",
+            "qty": 6
+          },
+          {
+            "item_id": "ah_sulfite_gland",
+            "qty": 5
+          }
         ]
       },
       "4": {
         "gold": 660,
         "items": [
-          { "item_id": "ember_dust", "qty": 12 },
-          { "item_id": "ah_sulfite_gland", "qty": 10 }
+          {
+            "item_id": "ah_drake_scale",
+            "qty": 12
+          },
+          {
+            "item_id": "ah_scorched_fang",
+            "qty": 10
+          }
         ]
       }
     },
@@ -106,23 +184,44 @@
       "2": {
         "gold": 115,
         "items": [
-          { "item_id": "wood_bundle", "qty": 4 },
-          { "item_id": "starfall_dust", "qty": 4 },
-          { "item_id": "se_echo_essence", "qty": 3 }
+          {
+            "item_id": "wood_bundle",
+            "qty": 4
+          },
+          {
+            "item_id": "iron_scrap",
+            "qty": 4
+          },
+          {
+            "item_id": "herb_sprig",
+            "qty": 3
+          }
         ]
       },
       "3": {
         "gold": 330,
         "items": [
-          { "item_id": "starfall_dust", "qty": 8 },
-          { "item_id": "se_echo_essence", "qty": 6 }
+          {
+            "item_id": "prism_shard",
+            "qty": 8
+          },
+          {
+            "item_id": "se_echo_essence",
+            "qty": 6
+          }
         ]
       },
       "4": {
         "gold": 825,
         "items": [
-          { "item_id": "starfall_dust", "qty": 16 },
-          { "item_id": "se_echo_essence", "qty": 12 }
+          {
+            "item_id": "starfall_dust",
+            "qty": 16
+          },
+          {
+            "item_id": "astral_fragment",
+            "qty": 12
+          }
         ]
       }
     },
@@ -130,23 +229,44 @@
       "2": {
         "gold": 135,
         "items": [
-          { "item_id": "wood_bundle", "qty": 4 },
-          { "item_id": "deadmans_grass", "qty": 5 },
-          { "item_id": "nc_bone_marrow", "qty": 3 }
+          {
+            "item_id": "wood_bundle",
+            "qty": 4
+          },
+          {
+            "item_id": "iron_scrap",
+            "qty": 5
+          },
+          {
+            "item_id": "herb_sprig",
+            "qty": 3
+          }
         ]
       },
       "3": {
         "gold": 395,
         "items": [
-          { "item_id": "deadmans_grass", "qty": 10 },
-          { "item_id": "nc_bone_marrow", "qty": 7 }
+          {
+            "item_id": "deadmans_grass",
+            "qty": 10
+          },
+          {
+            "item_id": "nc_bone_marrow",
+            "qty": 7
+          }
         ]
       },
       "4": {
         "gold": 990,
         "items": [
-          { "item_id": "deadmans_grass", "qty": 20 },
-          { "item_id": "nc_bone_marrow", "qty": 14 }
+          {
+            "item_id": "nc_wraith_thread",
+            "qty": 20
+          },
+          {
+            "item_id": "spectral_log",
+            "qty": 14
+          }
         ]
       }
     },
@@ -154,45 +274,79 @@
       "2": {
         "gold": 180,
         "items": [
-          { "item_id": "wood_bundle", "qty": 4 },
-          { "item_id": "fr_corruption_ichor", "qty": 4 },
-          { "item_id": "fr_null_fragment", "qty": 3 }
+          {
+            "item_id": "wood_bundle",
+            "qty": 4
+          },
+          {
+            "item_id": "iron_scrap",
+            "qty": 4
+          },
+          {
+            "item_id": "herb_sprig",
+            "qty": 3
+          }
         ]
       },
       "3": {
         "gold": 530,
         "items": [
-          { "item_id": "fr_corruption_ichor", "qty": 10 },
-          { "item_id": "fr_null_fragment", "qty": 7 }
+          {
+            "item_id": "fr_corruption_ichor",
+            "qty": 10
+          },
+          {
+            "item_id": "fr_null_fragment",
+            "qty": 7
+          }
         ]
       },
       "4": {
         "gold": 1320,
         "items": [
-          { "item_id": "fr_corruption_ichor", "qty": 20 },
-          { "item_id": "fr_null_fragment", "qty": 15 }
+          {
+            "item_id": "fr_dimensional_essence",
+            "qty": 20
+          },
+          {
+            "item_id": "fractured_soulglass",
+            "qty": 15
+          }
         ]
       }
     }
   },
-
   "services_per_tier": {
-    "1": ["cook_basic_meal", "prepare_rations"],
-    "2": ["cook_feast", "prepare_travel_food"],
-    "3": ["mix_three_ingredients"],
-    "4": ["master_cuisine"]
+    "1": [
+      "cook_basic_meal",
+      "prepare_rations"
+    ],
+    "2": [
+      "cook_feast",
+      "prepare_travel_food"
+    ],
+    "3": [
+      "mix_three_ingredients"
+    ],
+    "4": [
+      "master_cuisine"
+    ]
   },
-
-  "produces_item_types": ["consumable"],
-  "input_resource_types": ["raw_meat", "wild_berries", "forest_mushroom", "honey", "aged_cheese", "rare_truffle"],
-
+  "produces_item_types": [
+    "consumable"
+  ],
+  "input_resource_types": [
+    "raw_meat",
+    "wild_berries",
+    "forest_mushroom",
+    "honey",
+    "aged_cheese",
+    "rare_truffle"
+  ],
   "allows_hero_assignment": true,
   "max_assigned_heroes": 1,
-
   "unlocks": [],
-
   "mixing_recipe_file": "mixing_chef",
   "crafting_recipes": [],
-
   "shop_items": []
 }

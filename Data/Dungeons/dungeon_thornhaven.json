@@ -48,7 +48,7 @@
     ["boar", "bandit_elite", "wolf", "slime", "goblin", "gr_goblin_hexer", "gr_forest_wisp", "cultist_enforcer", "webspinner"]
   ],
   "tier2_by_floor": [
-    ["tf_logsplitter_brute"],
+    ["tf_logsplitter_brute", "gr_bramble_stalker"],
     ["tf_logsplitter_brute", "gr_bramble_stalker"],
     ["gr_bramble_stalker", "tf_rustwood_construct", "tf_logsplitter_brute"],
     ["gr_bramble_stalker", "tf_logsplitter_brute", "tf_rustwood_construct"]

@@ -6,7 +6,6 @@
   "facility_type": "production",
   "max_tier": 4,
   "unlock_region": 1,
-
   "keeper_name": "Vex",
   "keeper_portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon22.png",
   "keeper_description": "Thin goggled alchemist with wild hair and stained leather gloves, bubbling flasks and coiled tubes behind him",
@@ -15,42 +14,87 @@
     "Every great discovery starts with a little experimentation.",
     "The fumes are mostly harmless. Mostly."
   ],
-
   "slots_per_tier": {
     "1": 2,
     "2": 3,
     "3": 4,
     "4": 5
   },
-
   "upgrade_costs": {
-    "2": { "gold": 50, "items": [] },
-    "3": { "gold": 150, "items": [{ "item_id": "glowing_spore", "qty": 3 }, { "item_id": "wyvern_scale", "qty": 2 }] },
-    "4": { "gold": 400, "items": [{ "item_id": "phoenix_ash", "qty": 2 }, { "item_id": "void_essence", "qty": 1 }] }
+    "2": {
+      "gold": 50,
+      "items": []
+    },
+    "3": {
+      "gold": 150,
+      "items": [
+        {
+          "item_id": "glowing_spore",
+          "qty": 3
+        },
+        {
+          "item_id": "cursed_dust",
+          "qty": 2
+        }
+      ]
+    },
+    "4": {
+      "gold": 400,
+      "items": [
+        {
+          "item_id": "gw_moonpetal",
+          "qty": 2
+        },
+        {
+          "item_id": "gw_enchanted_fang",
+          "qty": 1
+        }
+      ]
+    }
   },
-
   "regional_upgrade_costs": {
     "2": {
       "2": {
         "gold": 60,
         "items": [
-          { "item_id": "spore_cluster", "qty": 3 },
-          { "item_id": "glowing_spore", "qty": 2 }
+          {
+            "item_id": "wood_bundle",
+            "qty": 3
+          },
+          {
+            "item_id": "iron_scrap",
+            "qty": 2
+          }
         ]
       },
       "3": {
         "gold": 200,
         "items": [
-          { "item_id": "spore_cluster", "qty": 6 },
-          { "item_id": "glowing_spore", "qty": 5 }
+          {
+            "item_id": "spore_cluster",
+            "qty": 6
+          },
+          {
+            "item_id": "glowing_spore",
+            "qty": 5
+          }
         ]
       },
       "4": {
         "gold": 530,
         "items": [
-          { "item_id": "spore_cluster", "qty": 12 },
-          { "item_id": "glowing_spore", "qty": 8 },
-          { "item_id": "wyvern_scale", "qty": 3 }
+          {
+            "item_id": "rare_truffle",
+            "qty": 12
+          },
+          {
+            "item_id": "phoenix_ash",
+            "qty": 8
+          },
+          {
+            "item_id": "ancient_bone",
+            "qty": 3
+          }
         ]
       }
     },
@@ -58,22 +102,40 @@
       "2": {
         "gold": 75,
         "items": [
-          { "item_id": "tidal_pearl", "qty": 3 },
-          { "item_id": "ss_brine_venom", "qty": 2 }
+          {
+            "item_id": "wood_bundle",
+            "qty": 3
+          },
+          {
+            "item_id": "iron_scrap",
+            "qty": 2
+          }
         ]
       },
       "3": {
         "gold": 250,
         "items": [
-          { "item_id": "tidal_pearl", "qty": 7 },
-          { "item_id": "ss_brine_venom", "qty": 5 }
+          {
+            "item_id": "driftwood",
+            "qty": 7
+          },
+          {
+            "item_id": "sea_salt_crystal",
+            "qty": 5
+          }
         ]
       },
       "4": {
         "gold": 660,
         "items": [
-          { "item_id": "tidal_pearl", "qty": 14 },
-          { "item_id": "ss_brine_venom", "qty": 10 }
+          {
+            "item_id": "tidal_pearl",
+            "qty": 14
+          },
+          {
+            "item_id": "ss_brine_venom",
+            "qty": 10
+          }
         ]
       }
     },
@@ -81,24 +143,48 @@
       "2": {
         "gold": 100,
         "items": [
-          { "item_id": "volcanic_glass", "qty": 3 },
-          { "item_id": "ember_dust", "qty": 2 }
+          {
+            "item_id": "wood_bundle",
+            "qty": 3
+          },
+          {
+            "item_id": "iron_scrap",
+            "qty": 2
+          }
         ]
       },
       "3": {
         "gold": 330,
         "items": [
-          { "item_id": "volcanic_glass", "qty": 6 },
-          { "item_id": "ember_dust", "qty": 5 },
-          { "item_id": "molten_core", "qty": 5 }
+          {
+            "item_id": "volcanic_glass",
+            "qty": 6
+          },
+          {
+            "item_id": "ember_dust",
+            "qty": 5
+          },
+          {
+            "item_id": "obsidian_shard",
+            "qty": 5
+          }
         ]
       },
       "4": {
         "gold": 880,
         "items": [
-          { "item_id": "volcanic_glass", "qty": 12 },
-          { "item_id": "ember_dust", "qty": 10 },
-          { "item_id": "molten_core", "qty": 8 }
+          {
+            "item_id": "ah_drake_scale",
+            "qty": 12
+          },
+          {
+            "item_id": "ah_scorched_fang",
+            "qty": 10
+          },
+          {
+            "item_id": "molten_core",
+            "qty": 8
+          }
         ]
       }
     },
@@ -106,27 +192,60 @@
       "2": {
         "gold": 125,
         "items": [
-          { "item_id": "wood_bundle", "qty": 4 },
-          { "item_id": "iron_scrap", "qty": 3 },
-          { "item_id": "prism_shard", "qty": 4 },
-          { "item_id": "starfall_dust", "qty": 4 },
-          { "item_id": "temporal_residue", "qty": 3 }
+          {
+            "item_id": "wood_bundle",
+            "qty": 4
+          },
+          {
+            "item_id": "iron_scrap",
+            "qty": 3
+          },
+          {
+            "item_id": "herb_sprig",
+            "qty": 4
+          },
+          {
+            "item_id": "wolf_pelt",
+            "qty": 4
+          },
+          {
+            "item_id": "spider_silk",
+            "qty": 3
+          }
         ]
       },
       "3": {
         "gold": 415,
         "items": [
-          { "item_id": "prism_shard", "qty": 8 },
-          { "item_id": "starfall_dust", "qty": 8 },
-          { "item_id": "temporal_residue", "qty": 6 }
+          {
+            "item_id": "prism_shard",
+            "qty": 8
+          },
+          {
+            "item_id": "se_crystal_chitin",
+            "qty": 8
+          },
+          {
+            "item_id": "se_echo_essence",
+            "qty": 6
+          }
         ]
       },
       "4": {
         "gold": 1100,
         "items": [
-          { "item_id": "prism_shard", "qty": 16 },
-          { "item_id": "starfall_dust", "qty": 14 },
-          { "item_id": "temporal_residue", "qty": 12 }
+          {
+            "item_id": "astral_fragment",
+            "qty": 16
+          },
+          {
+            "item_id": "starfall_dust",
+            "qty": 14
+          },
+          {
+            "item_id": "temporal_residue",
+            "qty": 12
+          }
         ]
       }
     },
@@ -134,27 +253,60 @@
       "2": {
         "gold": 150,
         "items": [
-          { "item_id": "wood_bundle", "qty": 4 },
-          { "item_id": "iron_scrap", "qty": 3 },
-          { "item_id": "soul_ore", "qty": 5 },
-          { "item_id": "nc_grave_dust", "qty": 4 },
-          { "item_id": "deadmans_grass", "qty": 3 }
+          {
+            "item_id": "wood_bundle",
+            "qty": 4
+          },
+          {
+            "item_id": "iron_scrap",
+            "qty": 3
+          },
+          {
+            "item_id": "herb_sprig",
+            "qty": 5
+          },
+          {
+            "item_id": "wolf_pelt",
+            "qty": 4
+          },
+          {
+            "item_id": "spider_silk",
+            "qty": 3
+          }
         ]
       },
       "3": {
         "gold": 495,
         "items": [
-          { "item_id": "soul_ore", "qty": 10 },
-          { "item_id": "nc_grave_dust", "qty": 8 },
-          { "item_id": "deadmans_grass", "qty": 6 }
+          {
+            "item_id": "soul_ore",
+            "qty": 10
+          },
+          {
+            "item_id": "nc_grave_dust",
+            "qty": 8
+          },
+          {
+            "item_id": "deadmans_grass",
+            "qty": 6
+          }
         ]
       },
       "4": {
         "gold": 1320,
         "items": [
-          { "item_id": "soul_ore", "qty": 20 },
-          { "item_id": "nc_grave_dust", "qty": 16 },
-          { "item_id": "deadmans_grass", "qty": 12 }
+          {
+            "item_id": "nc_wraith_thread",
+            "qty": 20
+          },
+          {
+            "item_id": "spectral_log",
+            "qty": 16
+          },
+          {
+            "item_id": "cursed_relic",
+            "qty": 12
+          }
         ]
       }
     },
@@ -162,47 +314,102 @@
       "2": {
         "gold": 200,
         "items": [
-          { "item_id": "wood_bundle", "qty": 4 },
-          { "item_id": "iron_scrap", "qty": 3 },
-          { "item_id": "primordial_essence", "qty": 4 },
-          { "item_id": "fr_entropy_residue", "qty": 4 },
-          { "item_id": "fr_null_fragment", "qty": 3 }
+          {
+            "item_id": "wood_bundle",
+            "qty": 4
+          },
+          {
+            "item_id": "iron_scrap",
+            "qty": 3
+          },
+          {
+            "item_id": "herb_sprig",
+            "qty": 4
+          },
+          {
+            "item_id": "wolf_pelt",
+            "qty": 4
+          },
+          {
+            "item_id": "spider_silk",
+            "qty": 3
+          }
         ]
       },
       "3": {
         "gold": 660,
         "items": [
-          { "item_id": "primordial_essence", "qty": 10 },
-          { "item_id": "fr_entropy_residue", "qty": 8 },
-          { "item_id": "fr_null_fragment", "qty": 6 }
+          {
+            "item_id": "fr_entropy_residue",
+            "qty": 10
+          },
+          {
+            "item_id": "fr_corruption_ichor",
+            "qty": 8
+          },
+          {
+            "item_id": "fr_null_fragment",
+            "qty": 6
+          }
         ]
       },
       "4": {
         "gold": 1760,
         "items": [
-          { "item_id": "primordial_essence", "qty": 20 },
-          { "item_id": "fr_entropy_residue", "qty": 16 },
-          { "item_id": "fr_null_fragment", "qty": 14 }
+          {
+            "item_id": "primordial_essence",
+            "qty": 20
+          },
+          {
+            "item_id": "fr_dimensional_essence",
+            "qty": 16
+          },
+          {
+            "item_id": "fractured_soulglass",
+            "qty": 14
+          }
         ]
       }
     }
   },
-
   "services_per_tier": {
-    "1": ["brew_healing_tonic", "brew_antidote"],
-    "2": ["brew_advanced_potions", "brew_stat_elixirs"],
-    "3": ["mix_three_reagents"],
-    "4": ["master_alchemy"]
+    "1": [
+      "brew_healing_tonic",
+      "brew_antidote"
+    ],
+    "2": [
+      "brew_advanced_potions",
+      "brew_stat_elixirs"
+    ],
+    "3": [
+      "mix_three_reagents"
+    ],
+    "4": [
+      "master_alchemy"
+    ]
   },
-
-  "produces_item_types": ["consumable"],
-  "input_resource_types": ["herb_sprig", "slime_gel", "spider_silk", "spider_fang", "bat_wing", "bone_fragment", "wolf_pelt", "boar_tusk", "cursed_dust", "wyvern_scale", "glowing_spore", "ancient_bone", "phoenix_ash", "void_essence"],
-
+  "produces_item_types": [
+    "consumable"
+  ],
+  "input_resource_types": [
+    "herb_sprig",
+    "slime_gel",
+    "spider_silk",
+    "spider_fang",
+    "bat_wing",
+    "bone_fragment",
+    "wolf_pelt",
+    "boar_tusk",
+    "cursed_dust",
+    "wyvern_scale",
+    "glowing_spore",
+    "ancient_bone",
+    "phoenix_ash",
+    "void_essence"
+  ],
   "allows_hero_assignment": true,
   "max_assigned_heroes": 1,
-
   "unlocks": [],
-
   "mixing_recipe_file": "mixing_alchemist",
   "crafting_recipes": [
     {
@@ -214,8 +421,14 @@
       "is_craft": true,
       "region": "region_1",
       "craft_inputs": [
-        { "item_id": "cursed_dust", "qty": 2 },
-        { "item_id": "boss_trophy_greenwood", "qty": 1 }
+        {
+          "item_id": "cursed_dust",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_greenwood",
+          "qty": 1
+        }
       ]
     },
     {
@@ -227,8 +440,14 @@
       "is_craft": true,
       "region": "region_2",
       "craft_inputs": [
-        { "item_id": "spore_cluster", "qty": 2 },
-        { "item_id": "boss_trophy_fungalmire", "qty": 1 }
+        {
+          "item_id": "spore_cluster",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_fungalmire",
+          "qty": 1
+        }
       ]
     },
     {
@@ -240,8 +459,14 @@
       "is_craft": true,
       "region": "region_3",
       "craft_inputs": [
-        { "item_id": "tidal_pearl", "qty": 2 },
-        { "item_id": "boss_trophy_sunken_strand", "qty": 1 }
+        {
+          "item_id": "tidal_pearl",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_sunken_strand",
+          "qty": 1
+        }
       ]
     },
     {
@@ -253,8 +478,14 @@
       "is_craft": true,
       "region": "region_4",
       "craft_inputs": [
-        { "item_id": "ah_drake_scale", "qty": 2 },
-        { "item_id": "boss_trophy_ashen_horizons", "qty": 1 }
+        {
+          "item_id": "ah_drake_scale",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_ashen_horizons",
+          "qty": 1
+        }
       ]
     },
     {
@@ -266,8 +497,14 @@
       "is_craft": true,
       "region": "region_5",
       "craft_inputs": [
-        { "item_id": "astral_fragment", "qty": 2 },
-        { "item_id": "boss_trophy_starfall_expanse", "qty": 1 }
+        {
+          "item_id": "astral_fragment",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_starfall_expanse",
+          "qty": 1
+        }
       ]
     },
     {
@@ -279,8 +516,14 @@
       "is_craft": true,
       "region": "region_6",
       "craft_inputs": [
-        { "item_id": "nc_wraith_thread", "qty": 2 },
-        { "item_id": "boss_trophy_necropolis", "qty": 1 }
+        {
+          "item_id": "nc_wraith_thread",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_necropolis",
+          "qty": 1
+        }
       ]
     },
     {
@@ -292,11 +535,16 @@
       "is_craft": true,
       "region": "region_7",
       "craft_inputs": [
-        { "item_id": "fr_dimensional_essence", "qty": 2 },
-        { "item_id": "boss_trophy_fractured_realm", "qty": 1 }
+        {
+          "item_id": "fr_dimensional_essence",
+          "qty": 2
+        },
+        {
+          "item_id": "boss_trophy_fractured_realm",
+          "qty": 1
+        }
       ]
     }
   ],
-
   "shop_items": []
 }

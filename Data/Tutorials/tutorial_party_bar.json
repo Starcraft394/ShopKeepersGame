@@ -5,19 +5,22 @@
       "speaker": "Mira",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
       "title": "Your Party Bar",
-      "body": "See those hero cards at the bottom of the screen? That's your Party Bar. It shows every hero in your active party at a glance — their stats, health, and equipment.\n\nYou can manage everything about your party right from there."
+      "body": "See those hero cards at the bottom of the screen? That's your Party Bar. It shows every hero in your active party at a glance — their stats, health, and equipment.\n\nYou can manage everything about your party right from there.",
+      "highlight": "party_bar"
     },
     {
       "speaker": "Mira",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
       "title": "Gear Management",
-      "body": "Click the Gear button on any hero card to equip weapons, armor, and accessories. You can also equip a backpack in the Bag slot to carry more items into the dungeon."
+      "body": "Click the Gear button on any hero card to equip weapons, armor, and accessories. You can also equip a backpack in the Bag slot to carry more items into the dungeon.",
+      "highlight": "party_bar"
     },
     {
       "speaker": "Mira",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
       "title": "Row Formations",
-      "body": "Below the Gear button you'll see three position buttons — F, M, and B — for Front, Middle, and Back rows.\n\nMelee enemies target your Front row first, so put your toughest fighters there. But beware — ranged enemies can target any row and will pick off your weakest hero. Keep everyone healthy, not just your front line."
+      "body": "Below the Gear button you'll see three position buttons — F, M, and B — for Front, Middle, and Back rows.\n\nMelee enemies target your Front row first, so put your toughest fighters there. But beware — ranged enemies can target any row and will pick off your weakest hero. Keep everyone healthy, not just your front line.",
+      "highlight": "party_bar"
     },
     {
       "speaker": "Mira",

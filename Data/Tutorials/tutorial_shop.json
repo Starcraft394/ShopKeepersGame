@@ -5,25 +5,29 @@
       "speaker": "Pemberton",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon12.png",
       "title": "Your Shop",
-      "body": "I'm Pemberton, your shop assistant. You run this place — I handle the shelves and the customers.\n\nThe town's crafters make the goods: the Blacksmith, Huntsman, Enchanter, Alchemist, and Chef. Tell me where to go and I'll pick up what they've got."
+      "body": "I'm Pemberton, your shop assistant. You run this place — I handle the shelves and the customers.\n\nThe town's crafters make the goods: the Blacksmith, Huntsman, Enchanter, Alchemist, and Chef. Tell me where to go and I'll pick up what they've got.",
+      "highlight": "facility_panel"
     },
     {
       "speaker": "Pemberton",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon12.png",
       "title": "Stocking the Shelves",
-      "body": "Tell me which crafters to visit and how many items to grab from each. I'll head out and bring back what I can — but what's available depends on what recipes they've unlocked and the quality of their workshop.\n\nA Tier 1 blacksmith only has Common gear — basic anvils and worn hammers. Upgrade their facilities and they'll have the proper tools to produce Uncommon and Rare work."
+      "body": "Tell me which crafters to visit and how many items to grab from each. I'll head out and bring back what I can — but what's available depends on what recipes they've unlocked and the quality of their workshop.\n\nIf you're after something specific, you might have better luck placing a craft request directly with the crafter. Costs more — they charge a premium for custom jobs — but you'll get exactly what you ask for. My shelves are for browsing; their anvils are for ordering.",
+      "highlight": "facility_panel"
     },
     {
       "speaker": "Pemberton",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon12.png",
       "title": "More Recipes, More Variety",
-      "body": "The more recipes a crafter knows, the wider my selection when I visit. Unlock new recipes at the Blacksmith, Huntsman, or Enchanter, and I'll have more to choose from next time I stock the shelves.\n\nUpgrade the shop itself to give me room for more items on the shelves."
+      "body": "The more recipes a crafter knows, the wider my selection when I visit. Unlock new recipes at the Blacksmith, Huntsman, or Enchanter, and I'll have more to choose from next time I stock the shelves.\n\nUpgrade the shop itself to give me room for more items on the shelves.",
+      "highlight": "facility_panel"
     },
     {
       "speaker": "Pemberton",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon12.png",
       "title": "Restocking",
       "body": "Don't like what I brought back? Send me out again with a Refresh — costs a bit of gold, and I can only make so many trips based on how upgraded the shop is.\n\nOr hit Re-allocate to change which crafters I visit entirely. Either way, I'll bring back a fresh batch.",
+      "highlight": "facility_panel",
       "button_text": "Get to work, Pemberton"
     }
   ]

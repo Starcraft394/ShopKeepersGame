@@ -122,6 +122,10 @@ var seen_abilities: Dictionary = {}
 # Active side quests (max 3 — one per type: kill, resupply, mini_dungeon)
 var active_side_quests: Array = []
 
+# Campaign quest system (linear, one active at a time)
+var active_campaign_quest: CampaignQuestData = null
+var completed_campaign_quests: Array = []  # Array of quest_id strings
+
 # Flag set when exiting dungeon to town — triggers side quest offer check
 var returned_from_dungeon: bool = false
 
@@ -273,8 +277,9 @@ func start_new_game_plus(selected_hero_ids: Array) -> void:
 	var keep_perm_bonus: float = ng_plus_perm_stat_bonus
 	var keep_text_size: int = text_size
 	var keep_auto_loot: bool = auto_loot
-	var keep_alt_bgm: bool = use_alt_bgm
 	var keep_tester: bool = tester_mode
+	var keep_window_scale: int = window_scale
+	var keep_telemetry_consent: bool = telemetry_consent
 
 	# === WORLD RESET (mirrors reset_save_game structure) ===
 	player_gold = 400
@@ -319,6 +324,9 @@ func start_new_game_plus(selected_hero_ids: Array) -> void:
 	active_side_quests = []
 	returned_from_dungeon = false
 	mini_dungeon_state = {}
+	# NG+: Reset active quest but carry completed quest history
+	active_campaign_quest = null
+	# completed_campaign_quests preserved across NG+ cycles
 	shop_purchased_slots = {}
 	shop_slot_allocations = {}
 	inn_restock_counts = {}
@@ -363,8 +371,9 @@ func start_new_game_plus(selected_hero_ids: Array) -> void:
 	_hero_id_counter = keep_hero_id_counter
 	text_size = keep_text_size
 	auto_loot = keep_auto_loot
-	use_alt_bgm = keep_alt_bgm
 	tester_mode = keep_tester
+	window_scale = keep_window_scale
+	telemetry_consent = keep_telemetry_consent
 	run_gold = carry_gold
 
 	# Restore carried heroes — bench all at Thornhaven for the new cycle
@@ -554,12 +563,15 @@ var loot_pref: Dictionary = {}
 
 # Gameplay option: auto-deposit loot to shopkeeper bag → hero bags → stash
 var auto_loot: bool = false
-# Audio preference: use alternate region soundtrack set
-var use_alt_bgm: bool = false
 # Tester mode: enables dev/debug buttons in release builds
 var tester_mode: bool = false
 # Text size: 0=Small, 1=Medium (default), 2=Large
 var text_size: int = 1
+
+# Window scale: 1=960x540, 2=1920x1080, 3=2880x1620, 0=fullscreen
+var window_scale: int = 1
+# Telemetry consent: player opted in to local play data collection
+var telemetry_consent: bool = false
 
 # UI preferences (persisted across sessions)
 var loot_panel_size: Vector2 = Vector2(620, 600)
@@ -568,6 +580,27 @@ var loot_panel_size: Vector2 = Vector2(620, 600)
 ## Returns font size adjusted for text_size setting: Small=-2, Medium=0, Large=+2
 func fs(base: int) -> int:
 	return base + (text_size - 1) * 2
+
+
+const WINDOW_SCALES: Dictionary = {
+	1: Vector2i(960, 540),
+	2: Vector2i(1920, 1080),
+	3: Vector2i(2880, 1620),
+}
+
+## Apply the current window_scale setting to the display.
+func apply_window_scale() -> void:
+	if window_scale == 0:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+	else:
+		if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		var size: Vector2i = WINDOW_SCALES.get(window_scale, Vector2i(960, 540))
+		DisplayServer.window_set_size(size)
+		# Center window on screen
+		var screen_size: Vector2i = DisplayServer.screen_get_size()
+		var pos: Vector2i = (screen_size - size) / 2
+		DisplayServer.window_set_position(pos)
 
 
 ## Get the per-slot stack limit for an item in hero/shopkeeper bags.
@@ -829,6 +862,18 @@ var hero_statuses: Dictionary = {}
 # Reset at start of each combat.
 var _combat_consumables_used: Dictionary = {}  # hero_id -> true
 
+# Tracks whether any hero has died during the current dungeon run.
+# Used to show the camp flee button (flee only available after a hero falls).
+var _hero_died_this_run: bool = false
+
+func set_hero_died_this_run(value: bool) -> void:
+	_hero_died_this_run = value
+	if value:
+		print("[GameContext] Hero died this run — camp flee now available")
+
+func has_hero_died_this_run() -> bool:
+	return _hero_died_this_run
+
 # ============================================================================
 # HERO LEVELING CONSTANTS (per GDD Section 33.3)
 # ============================================================================
@@ -919,7 +964,260 @@ const STASH_CAPACITY_PER_STORAGE_TIER: int = 5
 # PERSISTENCE CONSTANTS
 # ============================================================================
 
-const SAVE_FILE_PATH = "user://savegame.json"
+const SAVE_SLOT_COUNT := 4
+var current_save_slot: int = -1  # -1 = no slot selected (title screen)
+
+## Cached save directory path (computed once on first access).
+var _save_dir_cache: String = ""
+
+
+## Get the base directory for save files.
+## Exported builds: saves/ folder next to the .exe for easy player access.
+## Editor: Godot's user:// directory (AppData).
+func _get_save_dir() -> String:
+	if _save_dir_cache != "":
+		return _save_dir_cache
+	if OS.has_feature("editor"):
+		_save_dir_cache = "user://"
+	else:
+		_save_dir_cache = OS.get_executable_path().get_base_dir().path_join("saves")
+		if not DirAccess.dir_exists_absolute(_save_dir_cache):
+			DirAccess.make_dir_recursive_absolute(_save_dir_cache)
+			print("[GameContext] Created save directory: %s" % _save_dir_cache)
+	print("[GameContext] Save directory: %s" % _save_dir_cache)
+	return _save_dir_cache
+
+
+## Get the legacy single-file save path (migration fallback).
+func _get_legacy_save_path() -> String:
+	return _get_save_dir().path_join("savegame.json")
+
+
+## Get the slots metadata file path.
+func _get_slots_meta_path() -> String:
+	return _get_save_dir().path_join("slots_metadata.json")
+
+
+## Get the save file path for a given slot (or current slot if -1).
+func get_save_path(slot: int = -1) -> String:
+	var s: int = slot if slot >= 0 else current_save_slot
+	if s < 0 or s >= SAVE_SLOT_COUNT:
+		return _get_legacy_save_path()
+	return _get_save_dir().path_join("savegame_slot_%d.json" % s)
+
+
+## Check if a save slot has an existing save file.
+func slot_has_save(slot: int) -> bool:
+	if slot < 0 or slot >= SAVE_SLOT_COUNT:
+		return false
+	return FileAccess.file_exists(get_save_path(slot))
+
+
+## Load metadata for all save slots (lightweight summary for title screen).
+func load_slot_metadata() -> Array:
+	var slots: Array = []
+	if FileAccess.file_exists(_get_slots_meta_path()):
+		var file = FileAccess.open(_get_slots_meta_path(), FileAccess.READ)
+		if file != null:
+			var json = JSON.new()
+			if json.parse(file.get_as_text()) == OK:
+				var data: Dictionary = json.get_data()
+				slots = data.get("slots", [])
+			file.close()
+	# Ensure we always return exactly SAVE_SLOT_COUNT entries
+	while slots.size() < SAVE_SLOT_COUNT:
+		slots.append({"exists": false})
+	return slots
+
+
+## Save metadata for all save slots.
+func save_slot_metadata() -> void:
+	var slots: Array = load_slot_metadata()
+	# Update the current slot's metadata
+	if current_save_slot >= 0 and current_save_slot < SAVE_SLOT_COUNT:
+		slots[current_save_slot] = {
+			"exists": true,
+			"region": current_region,
+			"heroes": owned_heroes.size(),
+			"gold": run_gold,
+			"ng_cycle": ng_plus_cycle,
+			"play_date": Time.get_date_string_from_system(),
+		}
+	var file = FileAccess.open(_get_slots_meta_path(), FileAccess.WRITE)
+	if file != null:
+		file.store_string(JSON.stringify({"slots": slots}, "\t"))
+		file.close()
+
+
+## Select a save slot and load its data.
+func select_slot(slot: int) -> void:
+	current_save_slot = slot
+	print("[GameContext] Selected save slot %d (%s)" % [slot, get_save_path(slot)])
+	load_game()
+
+
+## Start a new game in the given save slot.
+func start_new_game(slot: int) -> void:
+	# Delete old save if it exists
+	var path: String = get_save_path(slot)
+	if FileAccess.file_exists(path):
+		DirAccess.remove_absolute(path)
+	current_save_slot = slot
+	# Reset all state to defaults (same as reset_save_game but targeted)
+	_reset_all_state_to_defaults()
+	auto_discover_base_recipes()
+	save_game()
+	print("[GameContext] New game started in slot %d" % slot)
+
+
+## Delete a specific save slot.
+func delete_slot(slot: int) -> void:
+	var path: String = get_save_path(slot)
+	if FileAccess.file_exists(path):
+		DirAccess.remove_absolute(path)
+	# Update metadata
+	var slots: Array = load_slot_metadata()
+	if slot >= 0 and slot < slots.size():
+		slots[slot] = {"exists": false}
+	var file = FileAccess.open(_get_slots_meta_path(), FileAccess.WRITE)
+	if file != null:
+		file.store_string(JSON.stringify({"slots": slots}, "\t"))
+		file.close()
+	print("[GameContext] Deleted save slot %d" % slot)
+
+
+## Migrate legacy single-file save to slot 0 if needed.
+func migrate_legacy_save() -> void:
+	if FileAccess.file_exists(_get_legacy_save_path()) and not FileAccess.file_exists(get_save_path(0)):
+		# Copy legacy save to slot 0
+		var file = FileAccess.open(_get_legacy_save_path(), FileAccess.READ)
+		if file != null:
+			var content: String = file.get_as_text()
+			file.close()
+			var slot_file = FileAccess.open(get_save_path(0), FileAccess.WRITE)
+			if slot_file != null:
+				slot_file.store_string(content)
+				slot_file.close()
+				# Update metadata for slot 0
+				current_save_slot = 0
+				load_game()
+				save_slot_metadata()
+				current_save_slot = -1  # Reset to no slot (title screen will pick)
+				print("[GameContext] Migrated legacy save to slot 0")
+
+
+## On first exported run, copy existing user:// saves to portable saves/ folder.
+func _migrate_user_saves_to_portable() -> void:
+	if OS.has_feature("editor"):
+		return
+	var portable_dir: String = _get_save_dir()
+	# Already migrated if portable dir has metadata
+	if FileAccess.file_exists(portable_dir.path_join("slots_metadata.json")):
+		return
+	# Nothing to migrate if user:// has no saves
+	if not FileAccess.file_exists("user://slots_metadata.json"):
+		return
+	print("[GameContext] Migrating saves from user:// to %s" % portable_dir)
+	var files_to_copy: Array = ["slots_metadata.json", "savegame.json"]
+	for i in range(SAVE_SLOT_COUNT):
+		files_to_copy.append("savegame_slot_%d.json" % i)
+	for fname in files_to_copy:
+		var src: String = "user://" + fname
+		if FileAccess.file_exists(src):
+			var file = FileAccess.open(src, FileAccess.READ)
+			if file != null:
+				var content: String = file.get_as_text()
+				file.close()
+				var out = FileAccess.open(portable_dir.path_join(fname), FileAccess.WRITE)
+				if out != null:
+					out.store_string(content)
+					out.close()
+					print("[GameContext]   Copied %s" % fname)
+
+
+## Reset all runtime state to defaults (used by start_new_game and reset_save_game).
+func _reset_all_state_to_defaults() -> void:
+	player_gold = 400
+	player_items = {}
+	next_run_bonus_max_hp = 0
+	next_run_trained = false
+	pending_combat_modifier = {}
+	pending_combat_statuses.clear()
+	equipped_weapon_id = ""
+	equipped_weapon_quality = 0
+	equipped_offhand_id = ""
+	equipped_offhand_quality = 0
+	hero_equipment = {}
+	hero_bags = {}
+	_gear_logged_heroes.clear()
+	shopkeeper_bag = []
+	hero_hp = {}
+	hero_statuses = {}
+	_combat_consumables_used = {}
+	dead_heroes = []
+	loot_pref = {}
+	unlocked_groups = {}
+	unlocked_item_ids = {}
+	unlocked_recipes = {}
+	completed_tutorials = {}
+	campaign_flags = {}
+	ng_plus_cycle = 0
+	ng_plus_perm_stat_bonus = 0.0
+	seen_abilities = {}
+	active_side_quests = []
+	returned_from_dungeon = false
+	_side_quest_counter = 0
+	mini_dungeon_state = {}
+	active_campaign_quest = null
+	completed_campaign_quests = []
+	discovered_mixes = {}
+	alchemist_mishap_streak = 0
+	locked_facilities = {}
+	inn_lockout = false
+	unlocked_dungeon_floors = {}
+	selected_start_floors = {}
+	facility_tiers = {}
+	learned_classes = {}
+	town_tiers = {}
+	owned_heroes = []
+	selected_party = []
+	_hero_id_counter = 0
+	housing_upgrades = {}
+	bonus_stash_capacity = 0
+	shop_refresh_counts = {}
+	shop_restock_version = {}
+	shop_purchased_slots = {}
+	shop_slot_allocations = {}
+	inn_restock_counts = {}
+	run_gold = 400
+	run_items = []
+	dungeon_gold = 0
+	dungeon_items = []
+	current_dungeon_id = ""
+	current_floor = 0
+	current_room_index = 0
+	rooms_per_floor = 1
+	current_room_type = "combat"
+	current_room_is_elite = false
+	pending_room_choices = {}
+	pending_selected_choice = {}
+	current_room_payload = {}
+	_last_room_was_event = false
+	_run_id = ""
+	_run_seed = 0
+	_run_active = false
+	_run_counter = 0
+	_current_phase = GamePhase.TOWN
+	_current_region_id = "region_1"
+	_current_town_id = "town_thornhaven"
+	_selected_floor_index = 1
+	_party_hero_ids = []
+	current_region = 1
+	completed_regions = {}
+	_rewarded_dungeon_id = ""
+	_rewarded_floor = -1
+	hero_row_assignments = {}
+	auto_loot = false
 
 # ============================================================================
 # LIFECYCLE
@@ -939,7 +1237,7 @@ func _ready() -> void:
 
 func _initialize_default_state() -> void:
 	# Set initial state per MVP scope
-	_current_phase = GamePhase.TOWN
+	# Phase stays as BOOT (default) until TitleScreen or in-game transition sets it
 	_current_region_id = "region_1"
 	_current_town_id = "town_thornhaven"
 	_selected_floor_index = 1
@@ -949,9 +1247,17 @@ func _initialize_default_state() -> void:
 	_run_active = false
 	current_region = 1
 
+	# Copy user:// saves to portable saves/ folder on first exported run
+	_migrate_user_saves_to_portable()
+	# Migrate legacy single-file save to slot 0 if needed
+	migrate_legacy_save()
+
 	# Load saved game data (floor unlocks, selected floors, etc.)
+	# Note: With the new title screen, load_game() uses the legacy fallback path
+	# when current_save_slot == -1. The title screen will call select_slot() later.
 	load_game()
 	apply_text_size_to_theme()
+	apply_window_scale()
 	# Ensure run_seed is non-zero even before first dungeon entry
 	# (existing saves restore _run_seed via load_game; fresh games need one now for shop RNG)
 	if _run_seed == 0:
@@ -1076,15 +1382,16 @@ func get_total_facility_tiers(town_id: String) -> int:
 			total += int(facility_tiers[key])
 	return total
 
-## Boss floor gate constant: total facility tiers required to enter Floor 4.
-const BOSS_FLOOR_TIER_REQUIREMENT: int = 9
+## Boss floor gate removed — bosses are now gated by difficulty, not facility tiers.
+## Kept constant for reference / potential future use.
+const BOSS_FLOOR_TIER_REQUIREMENT: int = 0
 
-## Check if the player can enter the boss floor (Floor 4) in a given town.
-## Requires 9+ total facility tier upgrades in that region.
+## Check if the player can enter the boss floor.
+## Gate removed — always returns ready=true. Bosses are naturally hard enough.
 ## Returns { "ready": bool, "current": int, "required": int }
 func can_challenge_boss(town_id: String) -> Dictionary:
 	var current: int = get_total_facility_tiers(town_id)
-	return {"ready": current >= BOSS_FLOOR_TIER_REQUIREMENT, "current": current, "required": BOSS_FLOOR_TIER_REQUIREMENT}
+	return {"ready": true, "current": current, "required": 0}
 
 
 ## Strip all equipment and bag items from a hero (used on flee).
@@ -1097,18 +1404,40 @@ func strip_hero_gear(hero_id: String) -> void:
 		print("[Flee] Stripped bag from hero=%s" % hero_id)
 
 
-## Strip gear from all surviving heroes in the selected party (used on flee).
+## Strip non-starter equipment from all surviving heroes (used on flee).
+## Starter gear = tier 1, quality 0 (common) items — these are kept.
 ## Dead heroes are excluded (they'll be removed by permadeath).
-func strip_surviving_heroes_gear() -> void:
+func strip_heroes_except_starter() -> void:
 	var stripped: int = 0
 	for hero_id in selected_party:
-		var hp_data = get_hero_hp(hero_id)
-		var current_hp: int = int(hp_data.get("current", 1))
-		if current_hp > 0:
-			strip_hero_gear(hero_id)
+		var hero: Dictionary = get_hero(hero_id)
+		if hero.is_empty():
+			continue
+		var hp_data: Dictionary = get_hero_hp(hero_id)
+		if int(hp_data.get("current", 1)) <= 0:
+			continue  # Dead heroes handled by permadeath
+
+		var equip: Dictionary = get_hero_equipment(hero_id)
+		for slot in ALL_EQUIP_SLOTS:
+			var slot_data: Dictionary = equip.get(slot, {})
+			var item_id: String = slot_data.get("id", "")
+			if item_id == "":
+				continue  # Empty slot
+			var quality: int = int(slot_data.get("quality", 0))
+			# Starter gear = tier 1, quality 0 — keep these
+			if quality == 0:
+				var tpl = DataRegistry.get_item_template(item_id)
+				if tpl != null and int(tpl.tier) <= 1:
+					continue  # Starter gear — keep
+			# Strip non-starter equipment (lost, not returned to stash)
+			hero_equipment[hero_id][slot] = {"id": "", "quality": 0}
 			stripped += 1
-	print("[Flee] Stripped gear from %d surviving heroes" % stripped)
-	save_game()
+
+		# Clear hero bag (bag items lost on flee)
+		if hero_bags.has(hero_id):
+			hero_bags[hero_id] = []
+
+	print("[Flee] Stripped %d non-starter equipment pieces from surviving heroes" % stripped)
 
 
 func get_current_town_id() -> String:
@@ -1333,6 +1662,15 @@ func spend_run_gold(amount: int) -> bool:
 	run_gold -= amount
 	print("[RunStash] -%d gold => %d remaining" % [amount, run_gold])
 	return true
+
+
+## Calculate gold cost for crafting an item at an equipment facility.
+## Returns base_value * 2 (same as shop buy price). 0 for unknown items.
+func get_craft_gold_cost(item_id: String) -> int:
+	var tpl = DataRegistry.get_item_template(item_id)
+	if tpl == null:
+		return 0
+	return tpl.base_value * 2
 
 
 ## Get run items as Dictionary (template_id -> qty).
@@ -3537,6 +3875,10 @@ func recruit_hero(class_id: String, cost_gold: int, race_id: String = "human", l
 				print("[Inn] starting_equip hero=%s slot=%s item=%s q=%d" % [hero_id, slot, item_id, eq_quality])
 
 	print("[Inn] recruit class=%s race=%s level=%d xp=0 cost=%d equip=%d success=true hero_id=%s" % [class_id, race_id, level, cost_gold, starting_equipment.size(), hero_id])
+	if is_inside_tree():
+		var tm = get_node_or_null("/root/TelemetryManager")
+		if tm != null:
+			tm.log_hero_recruited(class_id, race_id, level)
 	save_game()
 	return hero_id
 
@@ -3857,6 +4199,10 @@ func grant_hero_xp(hero_id: String, xp_amount: int) -> int:
 				print("[XP] hero=%s name=%s gained=%d (mod=%.2f) total_xp=%d old_level=%d new_level=%d levels_gained=%d" % [
 					hero_id, hero_name, modified_xp, xp_modifier, new_xp, old_level, new_level, levels_gained
 				])
+				if is_inside_tree():
+					var tm = get_node_or_null("/root/TelemetryManager")
+					if tm != null:
+						tm.log_hero_levelup(hero.get("class_id", "unknown"), hero.get("race_id", "unknown"), new_level)
 			else:
 				print("[XP] hero=%s gained=%d (mod=%.2f) total_xp=%d level=%d (no level up)" % [
 					hero_id, modified_xp, xp_modifier, new_xp, old_level
@@ -5311,6 +5657,10 @@ func upgrade_facility(town_id: String, facility_id: String) -> bool:
 	var key = "%s:%s" % [town_id, facility_id]
 	facility_tiers[key] = next_tier
 	print("[FacilityTier] Upgraded %s:%s to tier %d" % [town_id, facility_id, next_tier])
+	if is_inside_tree():
+		var tm = get_node_or_null("/root/TelemetryManager")
+		if tm != null:
+			tm.log_facility_upgrade(facility_id, next_tier)
 	save_game()
 	return true
 
@@ -5327,11 +5677,13 @@ func get_unlocked_floor(dungeon_id: String) -> int:
 
 
 ## Unlock a floor for a dungeon. Only updates if floor > current unlocked.
-## Clamps to 1..4 (dungeons have 4 floors max).
+## Clamps to 1..floor_count (R1-R4=4, R5-R6=5, R7=6).
 func unlock_floor(dungeon_id: String, floor_num: int) -> void:
 	if dungeon_id == "":
 		return
-	floor_num = clampi(floor_num, 1, 4)
+	var dungeon = DataRegistry.get_dungeon(dungeon_id) if DataRegistry.has_method("get_dungeon") else null
+	var max_floor: int = dungeon.floor_count if dungeon != null else 6
+	floor_num = clampi(floor_num, 1, max_floor)
 	var current_unlocked = unlocked_dungeon_floors.get(dungeon_id, 1)
 	if floor_num > current_unlocked:
 		unlocked_dungeon_floors[dungeon_id] = floor_num
@@ -5617,9 +5969,10 @@ func save_game() -> void:
 		# Loot routing preferences (v5)
 		"loot_pref": loot_pref,
 		"auto_loot": auto_loot,
-		"use_alt_bgm": use_alt_bgm,
 		"tester_mode": tester_mode,
 		"text_size": text_size,
+		"window_scale": window_scale,
+		"telemetry_consent": telemetry_consent,
 		"loot_panel_size": [loot_panel_size.x, loot_panel_size.y],
 		# Region progression
 		"current_region": current_region,
@@ -5641,21 +5994,27 @@ func save_game() -> void:
 		"seen_abilities": seen_abilities,
 		# Side quests
 		"active_side_quests": _serialize_side_quests(),
-		"side_quest_counter": _side_quest_counter
+		"side_quest_counter": _side_quest_counter,
+		# Campaign quests
+		"active_campaign_quest": active_campaign_quest.to_dict() if active_campaign_quest != null else null,
+		"completed_campaign_quests": completed_campaign_quests.duplicate()
 	}
 
 	print("[Save] run_items serialized count=%d" % run_items.size())
 
-	var file = FileAccess.open(SAVE_FILE_PATH, FileAccess.WRITE)
+	var save_path: String = get_save_path()
+	var file = FileAccess.open(save_path, FileAccess.WRITE)
 	if file == null:
 		var err = FileAccess.get_open_error()
-		push_warning("[GameContext] Failed to open save file for writing: %s (error %d)" % [SAVE_FILE_PATH, err])
+		push_warning("[GameContext] Failed to open save file for writing: %s (error %d)" % [save_path, err])
 		return
 
 	var json_str = JSON.stringify(save_data, "\t")
 	file.store_string(json_str)
 	file.close()
-	print("[GameContext] Game saved to %s" % SAVE_FILE_PATH)
+	print("[GameContext] Game saved to %s" % save_path)
+	# Update slot metadata
+	save_slot_metadata()
 
 
 ## Reset save game (DEV TOOL ONLY).
@@ -5667,152 +6026,17 @@ func reset_save_game() -> void:
 	print("[Dev] PRE-RESET: owned_heroes=%d, player_gold=%d" % [owned_heroes.size(), player_gold])
 
 	# Step 1: Delete save file if it exists
-	if FileAccess.file_exists(SAVE_FILE_PATH):
-		var err = DirAccess.remove_absolute(SAVE_FILE_PATH)
+	var save_path: String = get_save_path()
+	if FileAccess.file_exists(save_path):
+		var err = DirAccess.remove_absolute(save_path)
 		if err == OK:
-			print("[Dev] Deleted %s" % SAVE_FILE_PATH)
+			print("[Dev] Deleted %s" % save_path)
 		else:
 			push_warning("[Dev] Failed to delete save file (error %d)" % err)
 
-	# Step 2: Clear all persistent state
+	# Step 2: Clear all persistent state via shared helper
 	print("[Dev] Reinitializing GameContext defaults")
-
-	# Player inventory
-	player_gold = 400  # Starting gold
-	player_items = {}
-
-	# Training buffs
-	next_run_bonus_max_hp = 0
-	next_run_trained = false
-
-	# Combat modifier
-	pending_combat_modifier = {}
-	pending_combat_statuses.clear()
-
-	# Equipment (legacy global + per-hero)
-	equipped_weapon_id = ""
-	equipped_weapon_quality = 0
-	equipped_offhand_id = ""
-	equipped_offhand_quality = 0
-	hero_equipment = {}
-	hero_bags = {}
-	_gear_logged_heroes.clear()
-
-	# Shopkeeper bag (shared consumables + materials)
-	shopkeeper_bag = []
-
-	# Hero combat state (HP, statuses between combats)
-	hero_hp = {}
-	hero_statuses = {}
-	_combat_consumables_used = {}
-
-	# Dead heroes (Permadeath / Book of the Dead)
-	dead_heroes = []
-
-	# Deprecated but still exists in save format
-	loot_pref = {}
-
-	# Unlock groups and recipes
-	unlocked_groups = {}
-	unlocked_item_ids = {}
-	unlocked_recipes = {}
-
-	# Tutorials
-	completed_tutorials = {}
-
-	# Campaign
-	campaign_flags = {}
-
-	# NG+ state
-	ng_plus_cycle = 0
-	ng_plus_perm_stat_bonus = 0.0
-	seen_abilities = {}
-
-	# Side quests
-	active_side_quests = []
-	returned_from_dungeon = false
-	_side_quest_counter = 0
-	mini_dungeon_state = {}
-
-	# Mixing system
-	discovered_mixes = {}
-	alchemist_mishap_streak = 0
-	locked_facilities = {}
-	inn_lockout = false
-
-	# Dungeon floor unlocks
-	unlocked_dungeon_floors = {}
-	selected_start_floors = {}
-
-	# Facility tiers
-	facility_tiers = {}
-
-	# Learned classes (legacy)
-	learned_classes = {}
-
-	# Town tiers
-	town_tiers = {}
-
-	# Heroes
-	owned_heroes = []
-	selected_party = []
-	_hero_id_counter = 0
-
-	# Stash upgrades
-	housing_upgrades = {}
-	bonus_stash_capacity = 0
-
-	# Shop refresh counts + restock version
-	shop_refresh_counts = {}
-	shop_restock_version = {}
-
-	# Shop purchased slots (empty slots after purchase)
-	shop_purchased_slots = {}
-
-	# Shop slot allocations
-	shop_slot_allocations = {}
-
-	# Inn restock counts per town
-	inn_restock_counts = {}
-
-	# Run stash
-	run_gold = 400  # Starting gold (town council investment)
-	run_items = []
-
-	# Dungeon stash
-	dungeon_gold = 0
-	dungeon_items = []
-
-	# Dungeon progression
-	current_dungeon_id = ""
-	current_floor = 0
-	current_room_index = 0
-	rooms_per_floor = 1
-	current_room_type = "combat"
-	current_room_is_elite = false
-	pending_room_choices = {}
-	pending_selected_choice = {}
-	current_room_payload = {}
-	_last_room_was_event = false
-
-	# Run tracking
-	_run_id = ""
-	_run_seed = 0
-	_run_active = false
-	_run_counter = 0
-
-	# Phase/location (reset to town)
-	_current_phase = GamePhase.TOWN
-	_current_region_id = "region_1"
-	_current_town_id = "town_thornhaven"
-	_selected_floor_index = 1
-	_party_hero_ids = []
-	current_region = 1
-	completed_regions = {}
-
-	# Reward tracking
-	_rewarded_dungeon_id = ""
-	_rewarded_floor = -1
+	_reset_all_state_to_defaults()
 
 	# Auto-discover base T1 recipes for fresh game
 	auto_discover_base_recipes()
@@ -5826,19 +6050,20 @@ func reset_save_game() -> void:
 	print("[Dev] DEFAULT_UNLOCK_GROUPS (always checked via is_group_unlocked): %s" % str(DEFAULT_UNLOCK_GROUPS))
 
 
-## Load game data from user://savegame.json.
+## Load game data from the current save slot file.
 ## If file doesn't exist, uses defaults (no error).
 func load_game() -> void:
-	if not FileAccess.file_exists(SAVE_FILE_PATH):
-		print("[GameContext] No save file found, using defaults")
+	var save_path: String = get_save_path()
+	if not FileAccess.file_exists(save_path):
+		print("[GameContext] No save file found at %s, using defaults" % save_path)
 		_ensure_default_unlocks()
 		auto_discover_base_recipes()
 		return
 
-	var file = FileAccess.open(SAVE_FILE_PATH, FileAccess.READ)
+	var file = FileAccess.open(save_path, FileAccess.READ)
 	if file == null:
 		var err = FileAccess.get_open_error()
-		push_warning("[GameContext] Failed to open save file for reading: %s (error %d)" % [SAVE_FILE_PATH, err])
+		push_warning("[GameContext] Failed to open save file for reading: %s (error %d)" % [save_path, err])
 		return
 
 	var json_str = file.get_as_text()
@@ -5848,7 +6073,7 @@ func load_game() -> void:
 	var parse_result = json.parse(json_str)
 	if parse_result != OK:
 		push_warning("[GameContext] Failed to parse save file: %s (error %d at line %d)" % [
-			SAVE_FILE_PATH, parse_result, json.get_error_line()
+			save_path, parse_result, json.get_error_line()
 		])
 		return
 
@@ -5931,6 +6156,14 @@ func load_game() -> void:
 			active_side_quests = _deserialize_side_quests(save_data.active_side_quests)
 		if save_data.has("side_quest_counter"):
 			_side_quest_counter = int(save_data.side_quest_counter)
+		# Campaign quests
+		var acq_data = save_data.get("active_campaign_quest", null)
+		if acq_data != null and acq_data is Dictionary:
+			active_campaign_quest = CampaignQuestData.from_dict(acq_data)
+		else:
+			active_campaign_quest = null
+		var ccq_data = save_data.get("completed_campaign_quests", [])
+		completed_campaign_quests = ccq_data.duplicate() if ccq_data is Array else []
 		if save_data.has("facility_tiers") and save_data.facility_tiers is Dictionary:
 			facility_tiers = save_data.facility_tiers
 			# Migration: Greenroot/Timberfall → Thornhaven consolidation
@@ -6077,12 +6310,14 @@ func load_game() -> void:
 		# Auto-loot gameplay option
 		if save_data.has("auto_loot"):
 			auto_loot = bool(save_data.auto_loot)
-		if save_data.has("use_alt_bgm"):
-			use_alt_bgm = bool(save_data.use_alt_bgm)
 		if save_data.has("tester_mode"):
 			tester_mode = bool(save_data.tester_mode)
 		if save_data.has("text_size"):
 			text_size = clampi(int(save_data.text_size), 0, 2)
+		if save_data.has("window_scale"):
+			window_scale = clampi(int(save_data.window_scale), 0, 3)
+		if save_data.has("telemetry_consent"):
+			telemetry_consent = bool(save_data.telemetry_consent)
 		if save_data.has("loot_panel_size") and save_data.loot_panel_size is Array and save_data.loot_panel_size.size() == 2:
 			loot_panel_size = Vector2(float(save_data.loot_panel_size[0]), float(save_data.loot_panel_size[1]))
 		# Load region progression
@@ -6101,7 +6336,7 @@ func load_game() -> void:
 		if save_data.has("dead_heroes") and save_data.dead_heroes is Array:
 			dead_heroes = save_data.dead_heroes
 		print("[GameContext] Game loaded from %s (floors=%s groups=%d fac_tiers=%d classes=%d town_tiers=%d heroes=%d party=%d hero_gear=%d shop_refreshes=%d run_gold=%d run_items=%d region=%d dead=%d)" % [
-			SAVE_FILE_PATH, str(unlocked_dungeon_floors), unlocked_groups.size(),
+			save_path, str(unlocked_dungeon_floors), unlocked_groups.size(),
 			facility_tiers.size(), learned_classes.size(), town_tiers.size(), owned_heroes.size(), selected_party.size(), hero_equipment.size(), shop_refresh_counts.size(), run_gold, run_items.size(), current_region, dead_heroes.size()
 		])
 	else:
@@ -6407,6 +6642,9 @@ func enter_dungeon(dungeon_id: String) -> void:
 	# Clear dungeon stash for fresh run
 	clear_dungeon_stash()
 
+	# Reset hero death tracking for flee availability
+	_hero_died_this_run = false
+
 	# Reset room choice state
 	current_room_is_elite = false
 	pending_room_choices = {}
@@ -6468,6 +6706,7 @@ func exit_to_town() -> void:
 	_rewarded_dungeon_id = ""
 	_rewarded_floor = -1
 	_last_room_was_event = false
+	_hero_died_this_run = false
 	returned_from_dungeon = true  # Side quest trigger flag
 	set_phase(GamePhase.TOWN)
 
@@ -6504,6 +6743,9 @@ func flee_to_town() -> void:
 		run_gold, lost_gold, lost_items
 	])
 	clear_dungeon_stash()
+
+	# Strip non-starter equipment from surviving heroes (T1 common kept)
+	strip_heroes_except_starter()
 
 	# Insurance: bank only safe slots before exit clears the rest
 	bank_safe_shopkeeper_slots_only()
@@ -7118,8 +7360,9 @@ func run_smoke_test() -> bool:
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_F11:
-			DisplayServer.window_set_mode(
-				DisplayServer.WINDOW_MODE_FULLSCREEN
-				if DisplayServer.window_get_mode() != DisplayServer.WINDOW_MODE_FULLSCREEN
-				else DisplayServer.WINDOW_MODE_WINDOWED
-			)
+			if DisplayServer.window_get_mode() != DisplayServer.WINDOW_MODE_FULLSCREEN:
+				window_scale = 0
+			else:
+				window_scale = 1
+			apply_window_scale()
+			save_game()

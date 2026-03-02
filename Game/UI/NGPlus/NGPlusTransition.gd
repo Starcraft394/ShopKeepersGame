@@ -87,6 +87,7 @@ class _NGPlusPanel extends CanvasLayer:
 		var scroll := ScrollContainer.new()
 		scroll.set_anchors_preset(Control.PRESET_FULL_RECT)
 		scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+		scroll.follow_focus = true
 		_root.add_child(scroll)
 
 		_center = CenterContainer.new()
@@ -596,7 +597,7 @@ class _NGPlusPanel extends CanvasLayer:
 		GameContext.start_new_game_plus(_selected_hero_ids)
 		transition_complete.emit()
 		# Navigate to town hub
-		get_tree().call_deferred("change_scene_to_file", "res://Game/UI/TownHub/TownHubScene.tscn")
+		SceneTransition.fade_to("res://Game/UI/TownHub/TownHubScene.tscn")
 		queue_free()
 
 	# ------------------------------------------------------------------
@@ -658,7 +659,7 @@ class _NGPlusPanel extends CanvasLayer:
 		return null
 
 	func _unhandled_input(event: InputEvent) -> void:
-		if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+		if event.is_action_pressed("ui_cancel"):
 			_close()
 			get_viewport().set_input_as_handled()
 

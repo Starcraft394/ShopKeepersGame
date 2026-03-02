@@ -3,6 +3,10 @@
 ## Routes through game_boot for phase-based scene transitions.
 extends Control
 
+signal facility_panel_opened(facility_id: String, panel_node: Control)
+signal facility_panel_closed(facility_id: String)
+signal facility_panel_refreshed(facility_id: String, prev_focus_index: int)
+
 const BOOT_SCENE_PATH = "res://Game/Boot/game_boot.tscn"
 
 # ============================================================================
@@ -50,8 +54,11 @@ var _resize_start_panel_pos: Vector2 = Vector2.ZERO
 const RESIZE_MARGIN := 8
 const PANEL_MIN_SIZE := Vector2(360, 300)
 const PANEL_MAX_SIZE := Vector2(1200, 900)
+const STAGGER_OFFSET := Vector2(30, 30)
+const STAGGER_ORIGIN := Vector2(80, 40)
+const MOVE_SPEED := 400.0  # pixels/sec for gamepad panel movement
 # Regional Inn recruit base cost (index 0 unused, 1-7 for regions)
-const RECRUIT_BASE_COST_BY_REGION: Array = [0, 50, 65, 85, 110, 145, 185, 235]
+const RECRUIT_BASE_COST_BY_REGION: Array = [0, 50, 75, 100, 140, 185, 240, 310]
 
 # ============================================================================
 # CRAFTPIX SKIN (optional visual override — default false)
@@ -75,6 +82,7 @@ var _storage_hero_filter: String = "party"  # "party" or town_id like "town_thor
 
 # Manage Gear overlay (used from Inn roster)
 var _manage_gear_overlay: CanvasLayer = null
+var _manage_gear_panel: PanelContainer = null
 var _manage_gear_hero_id: String = ""
 var _manage_gear_filter: String = "party"  # "party" or town_id like "town_thornhaven"
 var _manage_gear_content: VBoxContainer = null
@@ -127,6 +135,13 @@ var _facility_greeting: String = ""
 
 # Remembered panel sizes (persists across open/close within session)
 var _panel_sizes: Dictionary = {}  # facility_id -> Vector2
+
+# Move mode state (gamepad panel repositioning via right thumbstick)
+var _move_mode_panel_id: String = ""  # "" = inactive, otherwise facility_id being moved
+var _move_mode_button: Button = null  # Reference to toggle button for text updates
+
+# Compare panel focus restoration — tracks which shop item opened compare
+var _compare_source_focus_index: int = -1
 
 # Hero party card expand state (persists across refreshes)
 
@@ -190,13 +205,10 @@ func _build_facility_overlay() -> void:
 func _create_facility_panel(facility_id: String) -> Dictionary:
 	var panel = PanelContainer.new()
 	panel.name = "FacilityPanel_%s" % facility_id
-	# Restore remembered size or use default (larger default to reduce scrolling)
-	var remembered_size = _panel_sizes.get(facility_id, Vector2(560, 600))
-	# Clamp to 85% of viewport so panels never extend off-screen
+	# Stagger positioning — position set after insertion into _open_panels
 	var vp_size = get_viewport().get_visible_rect().size
-	remembered_size.x = mini(int(remembered_size.x), int(vp_size.x * 0.85))
-	remembered_size.y = mini(int(remembered_size.y), int(vp_size.y * 0.85))
-	panel.custom_minimum_size = remembered_size
+	var temp_size: Vector2 = Vector2(minf(560, vp_size.x * 0.85), minf(600, vp_size.y * 0.85))
+	panel.custom_minimum_size = temp_size
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 
 	# CanvasLayer breaks theme propagation — apply theme explicitly
@@ -214,9 +226,8 @@ func _create_facility_panel(facility_id: String) -> Dictionary:
 	panel_body_style.set_content_margin_all(4)
 	panel.add_theme_stylebox_override("panel", panel_body_style)
 
-	# Stagger position so panels don't stack exactly
-	var offset_idx = _open_panels.size()
-	panel.position = Vector2(80 + offset_idx * 30, 40 + offset_idx * 30)
+	# Position set in _show_facility_panel() after insertion
+	panel.position = Vector2.ZERO
 
 	# Interior background image (if available for this facility type)
 	var facility_for_bg = DataRegistry.get_facility(facility_id) if DataRegistry.has_method("get_facility") else null
@@ -289,11 +300,31 @@ func _create_facility_panel(facility_id: String) -> Dictionary:
 	gold_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	title_hbox.add_child(gold_label)
 
+	# Gamepad move button (visible only when gamepad active)
+	var move_btn = Button.new()
+	move_btn.name = "MoveBtn"
+	move_btn.text = "Move"
+	move_btn.custom_minimum_size = Vector2(52, 28)
+	move_btn.add_theme_font_size_override("font_size", GameContext.fs(13))
+	move_btn.focus_mode = Control.FOCUS_ALL
+	move_btn.visible = (InputManager.active_device == "gamepad")
+	move_btn.pressed.connect(_on_move_toggle_pressed.bind(facility_id, move_btn))
+	title_hbox.add_child(move_btn)
+
 	var close_btn = Button.new()
 	close_btn.text = "X"
 	close_btn.custom_minimum_size = Vector2(28, 28)
+	close_btn.focus_mode = Control.FOCUS_ALL
 	close_btn.pressed.connect(_on_close_facility_panel.bind(facility_id))
 	title_hbox.add_child(close_btn)
+
+	# Show/hide move button on device change
+	InputManager.input_device_changed.connect(func(device: String):
+		if is_instance_valid(move_btn):
+			move_btn.visible = (device == "gamepad")
+			if device != "gamepad" and _move_mode_panel_id == facility_id:
+				_exit_move_mode()
+	)
 
 	# Unified panel input handles both drag (title bar) and resize (edges)
 	panel.gui_input.connect(_on_panel_gui_input.bind(panel, facility_id))
@@ -310,6 +341,7 @@ func _create_facility_panel(facility_id: String) -> Dictionary:
 	# ScrollContainer for actions content
 	var scroll = ScrollContainer.new()
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.follow_focus = true
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	margin.add_child(scroll)
@@ -333,6 +365,7 @@ func _create_facility_panel(facility_id: String) -> Dictionary:
 		"gold_label": gold_label,
 		"actions_container": actions_container,
 		"accent_overlay": accent_overlay,
+		"move_btn": move_btn,
 	}
 	return info
 
@@ -342,14 +375,103 @@ func _has_open_panels() -> bool:
 
 
 func _close_all_panels() -> void:
+	_exit_move_mode()
 	for fid in _open_panels.keys():
 		_on_close_facility_panel(fid)
 	print("[FacilityOverlay] Closed all panels")
 
 
+func _exit_tree() -> void:
+	_exit_move_mode()
+
+
+## Compute stagger position for the Nth panel (0-indexed).
+func _get_stagger_position(panel_index: int) -> Vector2:
+	return STAGGER_ORIGIN + STAGGER_OFFSET * panel_index
+
+
+# ============================================================================
+# MOVE MODE — Gamepad right-stick panel repositioning
+# ============================================================================
+
+func _process(delta: float) -> void:
+	if _move_mode_panel_id == "":
+		return
+	if not _open_panels.has(_move_mode_panel_id):
+		_exit_move_mode()
+		return
+	var stick_x: float = Input.get_joy_axis(0, JOY_AXIS_RIGHT_X)
+	var stick_y: float = Input.get_joy_axis(0, JOY_AXIS_RIGHT_Y)
+	var stick_vec := Vector2(stick_x, stick_y)
+	if stick_vec.length() < 0.15:
+		return
+	var magnitude: float = (stick_vec.length() - 0.15) / 0.85
+	magnitude = clampf(magnitude, 0.0, 1.0)
+	var move_vec: Vector2 = stick_vec.normalized() * magnitude * MOVE_SPEED * delta
+	var panel: PanelContainer = _open_panels[_move_mode_panel_id].get("panel")
+	if panel == null or not is_instance_valid(panel):
+		_exit_move_mode()
+		return
+	var new_pos: Vector2 = panel.position + move_vec
+	var vp_size: Vector2 = get_viewport().get_visible_rect().size
+	new_pos.x = clampf(new_pos.x, 0, vp_size.x - panel.size.x)
+	new_pos.y = clampf(new_pos.y, 0, vp_size.y - panel.size.y)
+	panel.position = new_pos
+	_sync_accent_overlay(panel, _move_mode_panel_id)
+
+
+## Toggle move mode for a facility panel (gamepad right-stick repositioning).
+func _on_move_toggle_pressed(facility_id: String, btn: Button) -> void:
+	if _move_mode_panel_id == facility_id:
+		_exit_move_mode()
+		return
+	if _move_mode_panel_id != "":
+		_exit_move_mode()
+	_move_mode_panel_id = facility_id
+	_move_mode_button = btn
+	btn.text = "Done"
+	InputManager.panel_move_override = true
+	_set_panel_move_border(facility_id, true)
+	print("[FacilityPanel] Move mode ON: %s" % facility_id)
+
+
+## Exit move mode, restoring normal input and visuals.
+func _exit_move_mode() -> void:
+	if _move_mode_panel_id == "":
+		return
+	var prev_id: String = _move_mode_panel_id
+	if _move_mode_button != null and is_instance_valid(_move_mode_button):
+		_move_mode_button.text = "Move"
+	_set_panel_move_border(prev_id, false)
+	_move_mode_panel_id = ""
+	_move_mode_button = null
+	InputManager.panel_move_override = false
+	print("[FacilityPanel] Move mode OFF: %s" % prev_id)
+
+
+## Set or clear a gold highlight border on a panel during move mode.
+func _set_panel_move_border(facility_id: String, active: bool) -> void:
+	if not _open_panels.has(facility_id):
+		return
+	var panel: PanelContainer = _open_panels[facility_id].get("panel")
+	if panel == null or not is_instance_valid(panel):
+		return
+	var style: StyleBoxFlat = panel.get_theme_stylebox("panel").duplicate() as StyleBoxFlat
+	if active:
+		style.border_color = Color(0.9, 0.8, 0.3, 0.9)
+		style.set_border_width_all(3)
+	else:
+		style.border_color = _region_palette.get("border", Color(0.35, 0.30, 0.22, 0.8))
+		style.set_border_width_all(1)
+	panel.add_theme_stylebox_override("panel", style)
+
+
 func _on_close_facility_panel(facility_id: String) -> void:
 	if not _open_panels.has(facility_id):
 		return
+	# Exit move mode if this panel was being moved
+	if _move_mode_panel_id == facility_id:
+		_exit_move_mode()
 	# Block Inn close during first launch until player has at least 1 party member
 	if facility_id == "inn" and not GameContext.has_completed_tutorial("tutorial_party_bar"):
 		if GameContext.selected_party.size() == 0:
@@ -377,9 +499,15 @@ func _on_close_facility_panel(facility_id: String) -> void:
 	_equip_pending_affix_data = {}
 	_equip_selected_hero_id = ""
 	print("[FacilityOverlay] Closed panel: %s" % facility_id)
+	facility_panel_closed.emit(facility_id)
 	# After Inn close: show Mira's party bar / gear / formation tutorial (once)
 	if was_inn and not GameContext.has_completed_tutorial("tutorial_party_bar"):
-		TutorialOverlay.try_show(self, "tutorial_party_bar")
+		var tut_targets: Dictionary = {}
+		if party_bar_target != null:
+			tut_targets["party_bar"] = party_bar_target
+		else:
+			push_warning("[Tutorial] party_bar_target is null at tutorial_party_bar trigger!")
+		TutorialOverlay.try_show(self, "tutorial_party_bar", tut_targets)
 
 
 ## Show a timed warning when the player tries to close the Inn without a party member.
@@ -574,7 +702,7 @@ func _sync_accent_overlay(panel: PanelContainer, facility_id: String) -> void:
 	accent.queue_redraw()
 
 
-## Auto-fit panel height to content, clamped to viewport limits.
+## Auto-fit panel height to content, clamped to min/max limits.
 func _auto_fit_panel_height(facility_id: String) -> void:
 	if not _open_panels.has(facility_id):
 		return
@@ -583,22 +711,13 @@ func _auto_fit_panel_height(facility_id: String) -> void:
 	var actions = info.get("actions_container") as VBoxContainer
 	if panel == null or actions == null:
 		return
-
-	# Wait one frame for layout to propagate minimum sizes
 	await get_tree().process_frame
 	if not is_instance_valid(panel):
 		return
-
-	# Calculate ideal height: title bar + margins + content
 	var content_min_h: float = actions.get_combined_minimum_size().y
 	var overhead: float = 80.0  # title bar (~40) + margins (8+4+8) + separators + padding
 	var ideal_h: float = content_min_h + overhead
-
-	# Clamp to panel limits and 85% viewport
-	var vp_h: float = get_viewport().get_visible_rect().size.y
-	var max_h: float = minf(vp_h * 0.85, PANEL_MAX_SIZE.y)
-	ideal_h = clampf(ideal_h, PANEL_MIN_SIZE.y, max_h)
-
+	ideal_h = clampf(ideal_h, PANEL_MIN_SIZE.y, PANEL_MAX_SIZE.y)
 	var new_size = Vector2(panel.size.x, ideal_h)
 	panel.custom_minimum_size = new_size
 	panel.size = new_size
@@ -1111,6 +1230,9 @@ func _show_formation_warning() -> bool:
 	continue_btn.add_theme_font_size_override("font_size", GameContext.fs(14))
 	btn_row.add_child(continue_btn)
 
+	# Wire D-pad LEFT/RIGHT between Go Back and Continue
+	InputManager.wire_focus_grid([[back_btn, continue_btn]])
+
 	add_child(overlay)
 
 	# Await user response
@@ -1234,6 +1356,9 @@ func _switch_town(new_town_id: String) -> void:
 	var town_data = DataRegistry.get_town(new_town_id)
 	var target_region: String = town_data.region_id if town_data != null else GameContext.get_current_region_id()
 	GameContext.set_location(target_region, new_town_id)
+
+	# Update BGM to match the new region
+	UIAudio.play_region_bgm(target_region)
 
 	print("[TownUI] SwitchTown -> town_id=%s" % new_town_id)
 
@@ -1411,6 +1536,7 @@ func _show_facility_panel(facility_id: String) -> void:
 		_current_facility = facility
 		_current_facility_type = facility.facility_type if facility != null else ""
 		print("[FacilityUI] Focused existing panel: %s" % facility_id)
+		facility_panel_opened.emit(facility_id, panel)
 		return
 
 	var facility = DataRegistry.get_facility(facility_id) if DataRegistry.has_method("get_facility") else null
@@ -1436,6 +1562,15 @@ func _show_facility_panel(facility_id: String) -> void:
 	var info = _create_facility_panel(facility_id)
 	_open_panels[facility_id] = info
 
+	# Stagger position for new panel
+	var panel_node_pos: PanelContainer = info["panel"]
+	var idx: int = _open_panels.size() - 1
+	panel_node_pos.position = _get_stagger_position(idx)
+	if _panel_sizes.has(facility_id):
+		panel_node_pos.custom_minimum_size = _panel_sizes[facility_id]
+		panel_node_pos.size = _panel_sizes[facility_id]
+	_sync_accent_overlay(panel_node_pos, facility_id)
+
 	# Populate title bar
 	if facility == null:
 		info["title_label"].text = facility_id.capitalize()
@@ -1457,6 +1592,10 @@ func _show_facility_panel(facility_id: String) -> void:
 	_create_facility_actions(facility)
 
 	print("[FacilityUI] Opened panel: %s" % facility_id)
+	facility_panel_opened.emit(facility_id, panel_node)
+
+	# Panels fill full tile slot; ScrollContainer handles overflow
+	_auto_fit_panel_height(facility_id)
 
 
 func _create_facility_actions(facility) -> void:
@@ -1473,16 +1612,20 @@ func _create_facility_actions(facility) -> void:
 	if facility == null:
 		return
 
-	# Show facility-group tutorials on first visit
+	# Show facility-group tutorials on first visit (spotlight the facility panel)
+	var fac_panel_node: Control = _open_panels.get(_current_facility_id, {}).get("panel")
+	var fac_tut_targets: Dictionary = {}
+	if fac_panel_node != null:
+		fac_tut_targets["facility_panel"] = fac_panel_node
 	match facility.facility_type:
 		"equipment":
-			TutorialOverlay.try_show(self, "tutorial_equipment_facilities")
+			TutorialOverlay.try_show(self, "tutorial_equipment_facilities", fac_tut_targets)
 		"training_hall":
-			TutorialOverlay.try_show(self, "tutorial_training_hall")
+			TutorialOverlay.try_show(self, "tutorial_training_hall", fac_tut_targets)
 		"production":
-			TutorialOverlay.try_show(self, "tutorial_production")
+			TutorialOverlay.try_show(self, "tutorial_production", fac_tut_targets)
 		"storage":
-			TutorialOverlay.try_show(self, "tutorial_storage")
+			TutorialOverlay.try_show(self, "tutorial_storage", fac_tut_targets)
 
 	match facility.facility_type:
 		"dungeon":
@@ -1505,8 +1648,7 @@ func _create_facility_actions(facility) -> void:
 			info.modulate = Color(0.78, 0.78, 0.78, 1)
 			_facility_actions_container.add_child(info)
 
-	# Auto-fit panel height to content
-	_auto_fit_panel_height(_current_facility_id)
+	# Panels fill full tile slot; ScrollContainer handles overflow
 
 
 # ============================================================================
@@ -2504,7 +2646,11 @@ func _build_shop_ui() -> void:
 		_facility_actions_container.add_child(no_data)
 		return
 
-	TutorialOverlay.try_show(self, "tutorial_shop")
+	var shop_panel_node: Control = _open_panels.get(_current_facility_id, {}).get("panel")
+	var shop_tut_targets: Dictionary = {}
+	if shop_panel_node != null:
+		shop_tut_targets["facility_panel"] = shop_panel_node
+	TutorialOverlay.try_show(self, "tutorial_shop", shop_tut_targets)
 
 	var facility = _current_facility
 	var town_id = GameContext.get_current_town_id()
@@ -2569,6 +2715,8 @@ func _build_shop_unstocked_view(facility, current_tier: int, town_id: String, sh
 	_facility_actions_container.add_child(hint)
 
 	# Allocation rows (reads from _temp_shop_allocations)
+	var alloc_minus_btns: Array = []
+	var alloc_plus_btns: Array = []
 	for contrib_facility_id in GameContext.SHOP_CONTRIBUTING_FACILITIES:
 		var facility_data = DataRegistry.get_facility(contrib_facility_id)
 		var display_name: String = facility_data.display_name if facility_data != null else contrib_facility_id.capitalize()
@@ -2632,6 +2780,9 @@ func _build_shop_unstocked_view(facility, current_tier: int, town_id: String, sh
 		plus_btn.pressed.connect(_on_temp_slot_plus.bind(contrib_facility_id))
 		alloc_row.add_child(plus_btn)
 
+		alloc_minus_btns.append(minus_btn)
+		alloc_plus_btns.append(plus_btn)
+
 		_facility_actions_container.add_child(alloc_row)
 
 	# Slots summary
@@ -2650,6 +2801,12 @@ func _build_shop_unstocked_view(facility, current_tier: int, town_id: String, sh
 		stock_btn.modulate = Color(1.0, 0.9, 0.5, 1)
 	stock_btn.pressed.connect(_on_stock_shop_pressed)
 	_facility_actions_container.add_child(stock_btn)
+
+	# Wire D-pad focus grid for allocation rows (LEFT/RIGHT between -/+, UP/DOWN between rows)
+	var focus_grid: Array = []
+	for i in range(alloc_minus_btns.size()):
+		focus_grid.append([alloc_minus_btns[i], alloc_plus_btns[i]])
+	InputManager.wire_focus_grid(focus_grid, [stock_btn])
 
 
 ## Stocked state: read-only allocation summary + items + Refresh + Clear & Re-allocate.
@@ -2728,6 +2885,9 @@ func _build_shop_stocked_view(facility, current_tier: int, town_id: String, shop
 	realloc_btn.tooltip_text = "Clear current stock and change facility allocations.\nCosts one refresh."
 	realloc_btn.pressed.connect(_on_clear_and_reallocate_pressed)
 	btn_row.add_child(realloc_btn)
+
+	# Wire D-pad LEFT/RIGHT between Refresh and Re-allocate
+	InputManager.wire_focus_grid([[refresh_btn, realloc_btn]])
 
 	var items_sep = HSeparator.new()
 	_facility_actions_container.add_child(items_sep)
@@ -3330,6 +3490,7 @@ func _show_sell_window() -> void:
 
 	# Scroll container for items
 	var scroll = ScrollContainer.new()
+	scroll.follow_focus = true
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.custom_minimum_size = Vector2(0, 300)
 	vbox.add_child(scroll)
@@ -3656,8 +3817,8 @@ func _create_shop_row(shop_item: Dictionary, shop_id: String = "") -> HBoxContai
 	name_label.mouse_filter = Control.MOUSE_FILTER_STOP
 	row.add_child(name_label)
 
-	# Compare button for equipment items (not bags/consumables/materials)
-	if template != null and template.equip_slot != "" and template.equip_slot != "bag":
+	# Compare button for equipment items (including backpacks)
+	if template != null and template.equip_slot != "":
 		var cmp_btn = Button.new()
 		cmp_btn.text = "Compare"
 		cmp_btn.custom_minimum_size = Vector2(70, 26)
@@ -3764,6 +3925,7 @@ func _on_shop_buy_pressed(item_id: String, price: int, quality_tier: int = 0, sh
 	if not GameContext.can_add_to_stash(item_id):
 		print("[Store] buy item=%s BLOCKED — stash full (%d/%d slots)" % [item_id, GameContext.get_current_stash_count(), GameContext.get_max_stash_capacity()])
 		UIAudio.play_sfx("error_insufficient")
+		ToastNotification.show_toast("Stash full! (%d/%d slots)" % [GameContext.get_current_stash_count(), GameContext.get_max_stash_capacity()])
 		_refresh_facility_panel()
 		return
 
@@ -3771,6 +3933,7 @@ func _on_shop_buy_pressed(item_id: String, price: int, quality_tier: int = 0, sh
 	if had_gold < price:
 		print("[Store] buy item=%s qty=1 cost=%d gold_before=%d gold_after=FAIL (insufficient)" % [item_id, price, had_gold])
 		UIAudio.play_sfx("error_insufficient")
+		ToastNotification.show_toast("Not enough gold! Need %dg" % price)
 		return
 
 	GameContext.spend_run_gold(price)
@@ -3794,6 +3957,12 @@ func _on_shop_buy_pressed(item_id: String, price: int, quality_tier: int = 0, sh
 ## Show a comparison panel for a shop item vs each party hero's equipped item in the same slot.
 ## Uses the same draggable/resizable facility panel pattern as other town panels.
 func _on_shop_compare_pressed(item_id: String, quality_tier: int, affix_data: Dictionary, price: int = 0, shop_id: String = "", slot_key: String = "") -> void:
+	# Capture current shop focus index before opening compare (for +1 restore on close)
+	_compare_source_focus_index = -1
+	var _cmp_active_zone: String = InputManager.get_active_zone_id()
+	if _cmp_active_zone.begins_with("facility"):
+		_compare_source_focus_index = InputManager.get_focused_index_in_zone(_cmp_active_zone)
+
 	# Close any existing compare panel first
 	if _open_panels.has("shop_compare"):
 		_on_close_facility_panel("shop_compare")
@@ -3802,7 +3971,7 @@ func _on_shop_compare_pressed(item_id: String, quality_tier: int, affix_data: Di
 	if template == null:
 		return
 	var equip_slot: String = template.equip_slot
-	if equip_slot == "" or equip_slot == "bag":
+	if equip_slot == "":
 		return
 
 	var region_bonus: float = GameContext.get_completed_region_count() * 0.1
@@ -3834,11 +4003,10 @@ func _on_shop_compare_pressed(item_id: String, quality_tier: int, affix_data: Di
 	# --- Create facility-style panel ---
 	var panel = PanelContainer.new()
 	panel.name = "FacilityPanel_shop_compare"
-	var panel_size: Vector2 = _panel_sizes.get("shop_compare", Vector2(480, 500))
+	# Stagger positioning — position set after insertion into _open_panels
 	var vp_size: Vector2 = get_viewport().get_visible_rect().size
-	panel_size.x = mini(int(panel_size.x), int(vp_size.x * 0.85))
-	panel_size.y = mini(int(panel_size.y), int(vp_size.y * 0.85))
-	panel.custom_minimum_size = panel_size
+	var temp_size: Vector2 = Vector2(minf(480, vp_size.x * 0.85), minf(500, vp_size.y * 0.85))
+	panel.custom_minimum_size = temp_size
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 
 	# Theme
@@ -3856,9 +4024,8 @@ func _on_shop_compare_pressed(item_id: String, quality_tier: int, affix_data: Di
 	panel_body_style.set_content_margin_all(4)
 	panel.add_theme_stylebox_override("panel", panel_body_style)
 
-	# Stagger position
-	var offset_idx: int = _open_panels.size()
-	panel.position = Vector2(80 + offset_idx * 30, 40 + offset_idx * 30)
+	# Position set in _show_facility_panel() after insertion
+	panel.position = Vector2.ZERO
 
 	# Main content VBox
 	var main_vbox = VBoxContainer.new()
@@ -3897,11 +4064,30 @@ func _on_shop_compare_pressed(item_id: String, quality_tier: int, affix_data: Di
 	gold_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	title_hbox.add_child(gold_label)
 
+	# Gamepad move button (visible only when gamepad active)
+	var move_btn = Button.new()
+	move_btn.name = "MoveBtn"
+	move_btn.text = "Move"
+	move_btn.custom_minimum_size = Vector2(52, 28)
+	move_btn.add_theme_font_size_override("font_size", GameContext.fs(13))
+	move_btn.focus_mode = Control.FOCUS_ALL
+	move_btn.visible = (InputManager.active_device == "gamepad")
+	move_btn.pressed.connect(_on_move_toggle_pressed.bind("shop_compare", move_btn))
+	title_hbox.add_child(move_btn)
+
 	var close_btn = Button.new()
 	close_btn.text = "X"
 	close_btn.custom_minimum_size = Vector2(28, 28)
 	close_btn.pressed.connect(_on_close_facility_panel.bind("shop_compare"))
 	title_hbox.add_child(close_btn)
+
+	# Show/hide move button on device change
+	InputManager.input_device_changed.connect(func(device: String):
+		if is_instance_valid(move_btn):
+			move_btn.visible = (device == "gamepad")
+			if device != "gamepad" and _move_mode_panel_id == "shop_compare":
+				_exit_move_mode()
+	)
 
 	# Drag + resize input
 	panel.gui_input.connect(_on_panel_gui_input.bind(panel, "shop_compare"))
@@ -3917,6 +4103,7 @@ func _on_shop_compare_pressed(item_id: String, quality_tier: int, affix_data: Di
 
 	var scroll = ScrollContainer.new()
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.follow_focus = true
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	margin.add_child(scroll)
@@ -3946,6 +4133,7 @@ func _on_shop_compare_pressed(item_id: String, quality_tier: int, affix_data: Di
 	# Per-hero comparison with Buy & Equip buttons
 	var party: Array = GameContext.get_selected_party()
 	var can_afford: bool = GameContext.get_run_gold() >= price
+	var buy_equip_btns: Array = []  # Collect for focus wiring
 	if party.is_empty():
 		var empty_label = Label.new()
 		empty_label.text = "(No heroes in party)"
@@ -3973,14 +4161,6 @@ func _on_shop_compare_pressed(item_id: String, quality_tier: int, affix_data: Di
 			hero_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			hero_row.add_child(hero_label)
 
-			# Check weapon_types compatibility for weapons/offhand
-			var can_equip: bool = true
-			if equip_slot == "weapon":
-				var class_data = DataRegistry.get_class_data(hero.get("class_id", ""))
-				if class_data != null and class_data.weapon_types.size() > 0:
-					if template.item_subtype not in class_data.weapon_types:
-						can_equip = false
-
 			var buy_equip_btn = Button.new()
 			buy_equip_btn.text = "Buy & Equip (%dg)" % price
 			buy_equip_btn.custom_minimum_size = Vector2(140, 26)
@@ -3988,13 +4168,11 @@ func _on_shop_compare_pressed(item_id: String, quality_tier: int, affix_data: Di
 			if not can_afford:
 				buy_equip_btn.disabled = true
 				buy_equip_btn.tooltip_text = "Not enough gold"
-			elif not can_equip:
-				buy_equip_btn.disabled = true
-				buy_equip_btn.tooltip_text = "Cannot equip this weapon type"
 			else:
 				buy_equip_btn.pressed.connect(_on_shop_buy_and_equip.bind(
 					hero_id, equip_slot, item_id, quality_tier, affix_data, price, shop_id, slot_key))
 			hero_row.add_child(buy_equip_btn)
+			buy_equip_btns.append(buy_equip_btn)
 			hero_vbox.add_child(hero_row)
 
 			# Currently equipped item in this slot
@@ -4062,6 +4240,28 @@ func _on_shop_compare_pressed(item_id: String, quality_tier: int, affix_data: Di
 				compare_label.modulate = Color(0.78, 0.78, 0.78)
 			hero_vbox.add_child(compare_label)
 
+			# Bag capacity comparison (for backpack slot)
+			if equip_slot == "bag":
+				var old_bag_cap: int = 0
+				if current_id != "":
+					var old_bag_tpl = DataRegistry.get_item_template(current_id)
+					if old_bag_tpl != null:
+						old_bag_cap = old_bag_tpl.bag_capacity_bonus
+				var new_bag_cap: int = template.bag_capacity_bonus if template != null else 0
+				var bag_delta: int = new_bag_cap - old_bag_cap
+				var bag_label = Label.new()
+				bag_label.add_theme_font_size_override("font_size", GameContext.fs(14))
+				if bag_delta > 0:
+					bag_label.text = "  Bag Slots: +%d → +%d (+%d)" % [old_bag_cap, new_bag_cap, bag_delta]
+					bag_label.modulate = Color(0.5, 1, 0.5)
+				elif bag_delta < 0:
+					bag_label.text = "  Bag Slots: +%d → +%d (%d)" % [old_bag_cap, new_bag_cap, bag_delta]
+					bag_label.modulate = Color(1, 0.5, 0.5)
+				else:
+					bag_label.text = "  Bag Slots: +%d (no change)" % new_bag_cap
+					bag_label.modulate = Color(0.78, 0.78, 0.78)
+				hero_vbox.add_child(bag_label)
+
 			content_vbox.add_child(hero_vbox)
 
 	# Add panel to facility overlay and register
@@ -4074,7 +4274,23 @@ func _on_shop_compare_pressed(item_id: String, quality_tier: int, affix_data: Di
 		"actions_container": content_vbox,
 		"accent_overlay": accent_overlay,
 	}
+	# Stagger position for compare panel
+	var compare_idx: int = _open_panels.size() - 1
+	panel.position = _get_stagger_position(compare_idx)
+	_sync_accent_overlay(panel, "shop_compare")
 	UIAudio.register_closeable(panel, _on_close_facility_panel.bind("shop_compare"))
+
+	# Wire compare panel buttons for D-pad navigation
+	if buy_equip_btns.size() > 0:
+		var grid: Array = [[move_btn, close_btn]]
+		for btn in buy_equip_btns:
+			grid.append([btn])
+		InputManager.wire_focus_grid(grid)
+
+	# Register compare panel as a focus zone and grab focus on first Buy & Equip
+	facility_panel_refreshed.emit("shop_compare", -1)
+	if buy_equip_btns.size() > 0:
+		buy_equip_btns[0].call_deferred("grab_focus")
 
 
 ## Buy a shop item and immediately equip it on a hero. Old item returns to stash automatically.
@@ -4082,6 +4298,7 @@ func _on_shop_buy_and_equip(hero_id: String, slot: String, item_id: String, qual
 	# Check gold
 	if GameContext.get_run_gold() < price:
 		UIAudio.play_sfx("error_insufficient")
+		ToastNotification.show_toast("Not enough gold! Need %dg" % price)
 		return
 
 	# Spend gold and add item to stash
@@ -4103,8 +4320,19 @@ func _on_shop_buy_and_equip(hero_id: String, slot: String, item_id: String, qual
 	else:
 		print("[Shop] Buy & Equip FAILED equip step item=%s hero=%s slot=%s" % [item_id, hero_id, slot])
 
-	# Close compare panel and refresh shop
-	_on_close_facility_panel("shop_compare")
+	# Close compare panel inline (avoid double signal race with _refresh)
+	if _open_panels.has("shop_compare"):
+		var cmp_info: Dictionary = _open_panels["shop_compare"]
+		var cmp_panel = cmp_info.get("panel")
+		if cmp_panel != null and is_instance_valid(cmp_panel):
+			UIAudio.unregister_closeable(cmp_panel)
+			var cmp_accent = cmp_info.get("accent_overlay")
+			if cmp_accent != null and is_instance_valid(cmp_accent):
+				cmp_accent.queue_free()
+			cmp_panel.queue_free()
+		_open_panels.erase("shop_compare")
+
+	# Refresh shop — _compare_source_focus_index is consumed to restore focus +1
 	_refresh_facility_panel()
 
 
@@ -4746,7 +4974,9 @@ func _get_filtered_equipment_recipes(facility, current_tier: int, facility_id: S
 		var replaces: String = recipe.get("replaces", "")
 
 		# Auto-unlock T3/T4 craft recipes for shop pool when facility tier is met
-		if is_craft and upgrade_tier >= 3 and not is_unlocked and not is_tier_locked:
+		# Skip auto-unlock if recipe has unlock_cost (requires manual unlock)
+		var has_unlock_cost: bool = recipe.get("unlock_cost", []).size() > 0
+		if is_craft and upgrade_tier >= 3 and not is_unlocked and not is_tier_locked and not has_unlock_cost:
 			GameContext.unlock_recipe(output_id, facility_id, current_tier, upgrade_tier, replaces)
 			is_unlocked = true
 		var is_superseded: bool = false
@@ -4893,10 +5123,12 @@ func _create_equipment_recipe_row(recipe_data: Dictionary, facility_id: String, 
 		sup_label.add_theme_font_size_override("font_size", GameContext.fs(13))
 		sup_label.modulate = Color(0.65, 0.65, 0.65, 1)
 		container.add_child(sup_label)
-		return container
+		# Still allow direct crafting if recipe has craft_inputs
+		if recipe.get("craft_inputs", []).size() == 0:
+			return container
 
-	# If unlocked, show availability message
-	if is_unlocked:
+	# If unlocked (and not superseded), show availability message
+	if is_unlocked and not is_superseded:
 		var unlocked_label = Label.new()
 		if upgrade_tier >= 2 and affix_prefix != "":
 			unlocked_label.text = "  %s version in General Store" % affix_prefix
@@ -4913,8 +5145,8 @@ func _create_equipment_recipe_row(recipe_data: Dictionary, facility_id: String, 
 			rep_label.add_theme_font_size_override("font_size", GameContext.fs(12))
 			rep_label.modulate = Color(0.7, 0.7, 0.7, 1)
 			container.add_child(rep_label)
-		# T3/T4 craft recipes: fall through to show craft button alongside store listing
-		if not (is_craft and upgrade_tier >= 3):
+		# Fall through to show craft button if recipe has craft_inputs
+		if recipe.get("craft_inputs", []).size() == 0:
 			return container
 
 	# If tier locked, show what tier is needed
@@ -4926,9 +5158,9 @@ func _create_equipment_recipe_row(recipe_data: Dictionary, facility_id: String, 
 		container.add_child(tier_label)
 		return container
 
-	# T3/T4 craft recipes: show craft inputs and a Craft button
-	if is_craft and upgrade_tier >= 3:
-		var craft_inputs: Array = recipe.get("craft_inputs", [])
+	# Show craft inputs and Craft button for unlocked/superseded recipes with craft_inputs
+	var craft_inputs: Array = recipe.get("craft_inputs", [])
+	if craft_inputs.size() > 0 and (is_unlocked or is_superseded):
 		var run_items_dict = GameContext.get_run_items_dict()
 		var can_craft: bool = true
 		var input_parts: Array = []
@@ -4952,6 +5184,20 @@ func _create_equipment_recipe_row(recipe_data: Dictionary, facility_id: String, 
 		inputs_label.add_theme_font_size_override("font_size", GameContext.fs(13))
 		inputs_label.modulate = Color(0.8, 0.8, 0.8, 1) if can_craft else Color(1, 0.5, 0.5, 1)
 		container.add_child(inputs_label)
+
+		# Gold cost (base_value * 2)
+		var craft_gold_cost: int = GameContext.get_craft_gold_cost(output_id)
+		if craft_gold_cost > 0:
+			var current_gold: int = GameContext.get_run_gold()
+			var gold_label = Label.new()
+			gold_label.text = "  Gold: %d / %d" % [current_gold, craft_gold_cost]
+			gold_label.add_theme_font_size_override("font_size", GameContext.fs(13))
+			if current_gold < craft_gold_cost:
+				gold_label.modulate = Color(1, 0.5, 0.5, 1)
+				can_craft = false
+			else:
+				gold_label.modulate = Color(0.8, 0.8, 0.8, 1)
+			container.add_child(gold_label)
 
 		var craft_btn = Button.new()
 		craft_btn.custom_minimum_size = Vector2(120, 28)
@@ -5004,7 +5250,7 @@ func _create_equipment_recipe_row(recipe_data: Dictionary, facility_id: String, 
 	var btn = Button.new()
 	btn.custom_minimum_size = Vector2(120, 28)
 	if can_afford:
-		btn.text = "Upgrade Recipe" if upgrade_tier >= 2 else "Unlock Recipe"
+		btn.text = "Unlock for Shop"
 		btn.disabled = false
 		btn.pressed.connect(_on_equipment_unlock_pressed.bind(output_id, unlock_cost, facility_id, current_tier, upgrade_tier, replaces))
 	else:
@@ -5212,12 +5458,20 @@ func _on_equipment_unlock_pressed(output_id: String, unlock_cost: Array, facilit
 		print("[EquipmentUI] unlocked recipe=%s:t%d facility=%s fac_tier=%d replaces=%s" % [output_id, upgrade_tier, facility_id, facility_tier, replaces])
 	else:
 		UIAudio.play_sfx("error_insufficient")
+		ToastNotification.show_toast("Cannot afford recipe unlock")
 		print("[EquipmentUI] unlock_failed recipe=%s:t%d" % [output_id, upgrade_tier])
 	_refresh_facility_panel()
 
 
 func _on_t4_craft_pressed(output_id: String, craft_inputs: Array, facility_id: String) -> void:
-	# Verify all inputs available
+	# Verify gold cost
+	var craft_gold_cost: int = GameContext.get_craft_gold_cost(output_id)
+	if craft_gold_cost > 0 and GameContext.get_run_gold() < craft_gold_cost:
+		print("[T4Craft] insufficient gold for %s: have=%d need=%d" % [output_id, GameContext.get_run_gold(), craft_gold_cost])
+		_refresh_facility_panel()
+		return
+
+	# Verify all material inputs available
 	var run_items_dict = GameContext.get_run_items_dict()
 	for input_entry in craft_inputs:
 		var item_id = input_entry.get("item_id", "")
@@ -5227,15 +5481,19 @@ func _on_t4_craft_pressed(output_id: String, craft_inputs: Array, facility_id: S
 			_refresh_facility_panel()
 			return
 
-	# Consume inputs
+	# Consume gold
+	if craft_gold_cost > 0:
+		GameContext.spend_run_gold(craft_gold_cost)
+
+	# Consume material inputs
 	for input_entry in craft_inputs:
 		var item_id = input_entry.get("item_id", "")
 		var qty_needed = input_entry.get("qty", 1)
 		GameContext.remove_run_item(item_id, qty_needed)
 
-	# Produce the T4 item as a quality-0 ItemInstance
+	# Produce the item as a quality-0 ItemInstance
 	GameContext._add_item_with_quality(output_id, 0)
-	print("[T4Craft] crafted %s at facility=%s" % [output_id, facility_id])
+	print("[T4Craft] crafted %s at facility=%s gold_spent=%d" % [output_id, facility_id, craft_gold_cost])
 	GameContext.save_game()
 	_refresh_facility_panel()
 
@@ -5251,6 +5509,7 @@ func _on_equipment_facility_upgrade_pressed(facility_id: String, new_tier: int, 
 		print("[EquipmentUI] upgraded facility=%s tier=%d->%d gold_cost=%d" % [facility_id, tier_before, tier_after, gold_cost])
 	else:
 		UIAudio.play_sfx("error_insufficient")
+		ToastNotification.show_toast("Cannot afford facility upgrade")
 		print("[EquipmentUI] upgrade_failed facility=%s tier=%d" % [facility_id, tier_before])
 
 	_refresh_facility_panel()
@@ -6102,6 +6361,8 @@ func _populate_heroes_section() -> void:
 		bags_btn.custom_minimum_size = Vector2(150, 30)
 		bags_btn.pressed.connect(_on_manage_bags_pressed)
 		btn_row.add_child(bags_btn)
+		# Wire D-pad LEFT/RIGHT between Inn and Bags buttons
+		InputManager.wire_focus_grid([[inn_btn, bags_btn]])
 
 	# Hero party cards — always rendered, even when party is empty
 	var bar_target: Control = party_bar_target if party_bar_target != null else heroes_vbox
@@ -6152,14 +6413,15 @@ func _build_hero_party_bar(party: Array, target: Control) -> void:
 	grid.add_theme_constant_override("v_separation", 6)
 	target.add_child(grid)
 
-	# Filled hero slots
+	# Filled hero slots (track actual count in case a card returns null)
+	var filled: int = 0
 	for hero_id in party:
 		var card = _create_party_card(hero_id)
 		if card != null:
 			grid.add_child(card)
+			filled += 1
 
 	# Empty slots: fillable (up to max party) vs locked (decorative padding beyond max)
-	var filled = party.size()
 	var max_party = GameContext.get_max_party_size()
 	for i in range(filled, 6):
 		grid.add_child(_create_empty_party_slot(i < max_party))
@@ -6508,6 +6770,7 @@ func _open_bench_picker_overlay() -> void:
 	center.add_child(panel)
 
 	var scroll = ScrollContainer.new()
+	scroll.follow_focus = true
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	var vp_h: int = int(get_viewport().get_visible_rect().size.y)
@@ -6638,10 +6901,13 @@ func _create_bench_picker_row(hero: Dictionary) -> PanelContainer:
 
 ## Handle adding a hero from the bench picker overlay.
 func _on_bench_picker_add_pressed(hero_id: String) -> void:
+	# Close overlay FIRST to avoid rebuild conflicts with party_changed signal
+	_close_bench_picker_overlay()
 	var result = GameContext.add_to_party(hero_id)
 	if result:
 		print("[PartyBar] Added %s to party from bench picker" % hero_id)
-	_close_bench_picker_overlay()
+	# Explicit refresh in case the signal-driven rebuild had timing issues
+	_populate_heroes_section()
 
 
 ## Close the bench hero picker overlay.
@@ -7728,7 +7994,8 @@ func _open_manage_gear_overlay() -> void:
 	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_manage_gear_overlay.add_child(center)
 
-	var panel = PanelContainer.new()
+	_manage_gear_panel = PanelContainer.new()
+	var panel: PanelContainer = _manage_gear_panel
 	panel.custom_minimum_size = Vector2(480, 0)
 	var style = StyleBoxFlat.new()
 	style.bg_color = _region_palette.get("bg_dark", Color(0.14, 0.12, 0.10, 0.95))
@@ -7741,6 +8008,7 @@ func _open_manage_gear_overlay() -> void:
 	center.add_child(panel)
 
 	var scroll = ScrollContainer.new()
+	scroll.follow_focus = true
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	# Viewport-relative height: 70% of screen, capped at 700px
@@ -7758,8 +8026,11 @@ func _open_manage_gear_overlay() -> void:
 
 	_build_manage_gear_content()
 
-	# Tutorial: first time opening Manage Gear
-	TutorialOverlay.try_show(self, "tutorial_manage_roster")
+	# Tutorial: first time opening Manage Gear (spotlight the panel)
+	var mg_tut_targets: Dictionary = {}
+	if _manage_gear_panel != null:
+		mg_tut_targets["manage_gear_panel"] = _manage_gear_panel
+	TutorialOverlay.try_show(self, "tutorial_manage_roster", mg_tut_targets)
 
 
 func _build_manage_gear_content() -> void:
@@ -8313,6 +8584,7 @@ func _on_party_card_bag_pressed(hero_id: String) -> void:
 	center.add_child(panel)
 
 	var scroll = ScrollContainer.new()
+	scroll.follow_focus = true
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	var vp_h: int = int(get_viewport().get_visible_rect().size.y)
@@ -8507,6 +8779,7 @@ func _show_bag_item_selection(hero_id: String) -> void:
 		vbox.add_child(empty_label)
 	else:
 		var scroll = ScrollContainer.new()
+		scroll.follow_focus = true
 		scroll.custom_minimum_size = Vector2(320, 250)
 		vbox.add_child(scroll)
 		var list_vbox = VBoxContainer.new()
@@ -8851,6 +9124,9 @@ func _on_rename_hero_pressed(hero_id: String) -> void:
 	cancel_btn.text = "Cancel"
 	cancel_btn.custom_minimum_size = Vector2(80, 28)
 	btn_row.add_child(cancel_btn)
+
+	# Wire D-pad LEFT/RIGHT between Confirm and Cancel
+	InputManager.wire_focus_grid([[confirm_btn, cancel_btn]])
 
 	# Wire buttons
 	confirm_btn.pressed.connect(func():
@@ -9363,10 +9639,41 @@ func _build_mixing_table_view(facility, facility_id: String, town_id: String, cu
 		slot_row.add_child(plus2)
 		_add_mix_slot_button(slot_row, "c", ms.get("c", ""), facility_id)
 
-	var eq_label = Label.new()
-	eq_label.text = "  =  ???"
-	eq_label.modulate = Color(0.7, 0.7, 0.7, 0.8)
-	slot_row.add_child(eq_label)
+	# Recipe preview — show output icon with tooltip if ingredients match a discovered recipe
+	var eq_sign = Label.new()
+	eq_sign.text = "  =  "
+	eq_sign.modulate = Color(0.7, 0.7, 0.7, 0.8)
+	slot_row.add_child(eq_sign)
+
+	var slot_a: String = ms.get("a", "")
+	var slot_b: String = ms.get("b", "")
+	var slot_c: String = ms.get("c", "") if has_third_slot else ""
+	var preview_shown: bool = false
+	if slot_a != "" and slot_b != "":
+		var recipe: Dictionary = DataRegistry.lookup_mix(facility_id, slot_a, slot_b, slot_c)
+		if recipe.size() > 0 and GameContext.is_mix_discovered(facility_id, slot_a, slot_b, slot_c):
+			var output_id: String = recipe.get("output_id", "")
+			var output_qty: int = recipe.get("output_qty", 1)
+			var out_tpl = DataRegistry.get_item_template(output_id)
+			if out_tpl != null:
+				var icon_rect = out_tpl.create_icon_rect(36)
+				if icon_rect != null:
+					icon_rect.tooltip_text = _build_item_tooltip(out_tpl, 0)
+					icon_rect.mouse_filter = Control.MOUSE_FILTER_STOP
+					slot_row.add_child(icon_rect)
+					preview_shown = true
+					if output_qty > 1:
+						var qty_lbl = Label.new()
+						qty_lbl.text = "x%d" % output_qty
+						qty_lbl.modulate = Color(0.4, 1.0, 0.6, 0.9)
+						qty_lbl.add_theme_font_size_override("font_size", GameContext.fs(13))
+						slot_row.add_child(qty_lbl)
+				eq_sign.modulate = Color(0.4, 1.0, 0.6, 0.9)
+	if not preview_shown:
+		var unknown_lbl = Label.new()
+		unknown_lbl.text = "???"
+		unknown_lbl.modulate = Color(0.7, 0.7, 0.7, 0.8)
+		slot_row.add_child(unknown_lbl)
 
 	var mix_btn = Button.new()
 	mix_btn.text = "Mix!"
@@ -10858,6 +11165,9 @@ func _build_equip_comparison_ui() -> void:
 	cancel_btn.pressed.connect(_on_equip_cancelled)
 	btn_row.add_child(cancel_btn)
 
+	# Wire D-pad LEFT/RIGHT between Confirm Equip and Cancel
+	InputManager.wire_focus_grid([[confirm_btn, cancel_btn]])
+
 
 func _on_equip_hero_selected(hero_id: String) -> void:
 	_equip_selected_hero_id = hero_id
@@ -11075,6 +11385,8 @@ func _on_unlock_pressed(unlock: Dictionary) -> void:
 	# Get costs and check affordability
 	var costs = unlock.get("costs", [])
 	if not GameContext.can_afford_run_materials(costs):
+		UIAudio.play_sfx("error_insufficient")
+		ToastNotification.show_toast("Not enough materials for unlock")
 		print("[Unlock] group=%s result=fail reason=cannot_afford" % unlock_group)
 		return
 
@@ -11124,6 +11436,17 @@ func _refresh_facility_panel() -> void:
 		_refresh_ui()
 		return
 
+	# Capture focused index BEFORE destroying children
+	var prev_focus_index: int = -1
+	var active_zone: String = InputManager.get_active_zone_id()
+	if active_zone.begins_with("facility"):
+		prev_focus_index = InputManager.get_focused_index_in_zone(active_zone)
+
+	# If compare panel was just closed, restore to source shop item + 1
+	if _compare_source_focus_index >= 0:
+		prev_focus_index = _compare_source_focus_index + 1
+		_compare_source_focus_index = -1
+
 	# Ensure _facility_actions_container points to the right panel
 	var info = _open_panels[_current_facility_id]
 	_facility_actions_container = info.get("actions_container")
@@ -11146,12 +11469,21 @@ func _refresh_facility_panel() -> void:
 	_update_button_states()
 	_populate_stash_list()
 
+	# Notify TownHubScene to re-register zones with focus restoration
+	facility_panel_refreshed.emit(_current_facility_id, prev_focus_index)
+
 
 # ============================================================================
 # DEBUG HOTKEYS - Dungeon flow testing (kept for convenience)
 # ============================================================================
 
 func _unhandled_input(event: InputEvent) -> void:
+	# B button exits move mode (without closing the panel)
+	if _move_mode_panel_id != "" and event is InputEventJoypadButton:
+		if event.pressed and event.button_index == JOY_BUTTON_B:
+			_exit_move_mode()
+			get_viewport().set_input_as_handled()
+			return
 	if event is InputEventKey and event.pressed:
 		# Shift+F6: advance room only (for testing multi-room floors)
 		if event.keycode == KEY_F6 and event.shift_pressed:

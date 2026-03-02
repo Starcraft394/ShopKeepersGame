@@ -85,6 +85,11 @@ class _CampaignPanel extends CanvasLayer:
 	var _current_line_idx: int = 0
 	var _portrait_cache: Dictionary = {}
 
+	# Hold-to-close on last line of last dialog
+	const HOLD_CLOSE_TIME := 1.5
+	var _is_holding_accept: bool = false
+	var _hold_time: float = 0.0
+
 	# UI nodes
 	var _root: Control
 	var _backdrop: ColorRect
@@ -94,7 +99,10 @@ class _CampaignPanel extends CanvasLayer:
 	var _body_label: RichTextLabel
 	var _portrait_rect: TextureRect
 	var _continue_btn: Button
+	var _skip_btn: Button
 	var _indicator_label: Label
+	var _hold_container: Control = null
+	var _hold_bar_fill: ColorRect = null
 
 	func _init(dialogs: Array) -> void:
 		_dialog_queue = dialogs
@@ -107,6 +115,9 @@ class _CampaignPanel extends CanvasLayer:
 	func _ready() -> void:
 		_build_ui()
 		_display_current()
+		# Listen for device changes to swap hold/continue on final page
+		InputManager.input_device_changed.connect(_on_device_changed)
+		UIAudio.register_closeable(self, _close)
 		# Fade in
 		_root.modulate.a = 0.0
 		var tween := create_tween()
@@ -281,25 +292,61 @@ class _CampaignPanel extends CanvasLayer:
 		btn_row.add_child(_indicator_label)
 
 		# Skip button
-		var skip_btn := Button.new()
-		skip_btn.text = "Skip"
-		skip_btn.flat = true
-		skip_btn.add_theme_font_size_override("font_size", GameContext.fs(14))
-		skip_btn.add_theme_color_override("font_color", SKIP_COLOR)
-		skip_btn.add_theme_color_override("font_hover_color", Color(0.7, 0.7, 0.7, 1.0))
-		skip_btn.pressed.connect(_on_skip_pressed)
-		btn_row.add_child(skip_btn)
+		_skip_btn = Button.new()
+		_skip_btn.text = "Skip"
+		_skip_btn.flat = true
+		_skip_btn.add_theme_font_size_override("font_size", GameContext.fs(14))
+		_skip_btn.add_theme_color_override("font_color", SKIP_COLOR)
+		_skip_btn.add_theme_color_override("font_hover_color", Color(0.7, 0.7, 0.7, 1.0))
+		_skip_btn.focus_mode = Control.FOCUS_ALL
+		_skip_btn.pressed.connect(_on_skip_pressed)
+		btn_row.add_child(_skip_btn)
 
 		# Continue button
 		_continue_btn = Button.new()
 		_continue_btn.add_theme_font_size_override("font_size", GameContext.fs(17))
+		_continue_btn.focus_mode = Control.FOCUS_ALL
 		_continue_btn.pressed.connect(_on_continue_pressed)
 		btn_row.add_child(_continue_btn)
+		_continue_btn.call_deferred("grab_focus")
+
+		# Hold-to-close indicator (in button row, hidden until final page)
+		_hold_container = VBoxContainer.new()
+		_hold_container.visible = false
+		_hold_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_hold_container.custom_minimum_size = Vector2(168, 0)
+		_hold_container.alignment = BoxContainer.ALIGNMENT_CENTER
+		btn_row.add_child(_hold_container)
+
+		var hold_label := Label.new()
+		hold_label.text = "Hold to Close"
+		hold_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		hold_label.add_theme_font_size_override("font_size", GameContext.fs(11))
+		hold_label.modulate = Color(0.8, 0.75, 0.6, 0.9)
+		_hold_container.add_child(hold_label)
+
+		var hold_bar_bg := ColorRect.new()
+		hold_bar_bg.custom_minimum_size = Vector2(160, 8)
+		hold_bar_bg.color = Color(0.2, 0.2, 0.2, 0.7)
+		_hold_container.add_child(hold_bar_bg)
+
+		_hold_bar_fill = ColorRect.new()
+		_hold_bar_fill.set_anchors_and_offsets_preset(Control.PRESET_LEFT_WIDE)
+		_hold_bar_fill.anchor_right = 0.0
+		_hold_bar_fill.color = Color(1.0, 0.85, 0.4, 0.9)
+		hold_bar_bg.add_child(_hold_bar_fill)
 
 	func _display_current() -> void:
 		if _current_dialog_idx >= _dialog_queue.size():
 			_close()
 			return
+
+		# Reset hold state on any step change
+		_is_holding_accept = false
+		_hold_time = 0.0
+		if _hold_container != null:
+			_hold_container.visible = false
+
 		var dialog = _dialog_queue[_current_dialog_idx]
 		var line_idx: int = _current_line_idx
 
@@ -327,13 +374,25 @@ class _CampaignPanel extends CanvasLayer:
 		else:
 			_portrait_rect.visible = (portrait_path != "" and dialog.display_type != "event_popup")
 
-		# Button text
+		# Last-page detection
 		var is_last_line: bool = (line_idx >= dialog.lines.size() - 1)
 		var is_last_dialog: bool = (_current_dialog_idx >= _dialog_queue.size() - 1)
-		if is_last_line and is_last_dialog:
-			_continue_btn.text = "Close"
+		var is_final: bool = is_last_line and is_last_dialog
+
+		# Last page: show hold indicator (gamepad) or Continue button (KBM)
+		if is_final:
+			if _skip_btn != null:
+				_skip_btn.visible = false
+			_update_final_page_ui()
 		else:
-			_continue_btn.text = "Continue"
+			_continue_btn.visible = true
+			if _skip_btn != null:
+				_skip_btn.visible = true
+			if _hold_container != null:
+				_hold_container.visible = false
+
+		# Button text (for non-last pages)
+		_continue_btn.text = "Close" if is_final else "Continue"
 
 		# Indicator (lines remaining in this dialog)
 		var total_lines: int = dialog.lines.size()
@@ -342,21 +401,57 @@ class _CampaignPanel extends CanvasLayer:
 		else:
 			_indicator_label.text = ""
 
+	# ---- Device-aware final page UI ----
+
+	func _is_on_final_page() -> bool:
+		if _current_dialog_idx >= _dialog_queue.size():
+			return false
+		var dialog = _dialog_queue[_current_dialog_idx]
+		return (_current_line_idx >= dialog.lines.size() - 1) and (_current_dialog_idx >= _dialog_queue.size() - 1)
+
+	func _update_final_page_ui() -> void:
+		if not _is_on_final_page():
+			return
+		var use_hold: bool = (InputManager.active_device == "gamepad")
+		if use_hold:
+			_continue_btn.visible = false
+			if _hold_container != null:
+				_hold_container.visible = true
+				if _hold_bar_fill != null:
+					_hold_bar_fill.anchor_right = 0.0
+		else:
+			_continue_btn.visible = true
+			_continue_btn.text = "Close"
+			_continue_btn.call_deferred("grab_focus")
+			if _hold_container != null:
+				_hold_container.visible = false
+			_is_holding_accept = false
+			_hold_time = 0.0
+
+	func _on_device_changed(_device_type: String) -> void:
+		_update_final_page_ui()
+
 	func _on_continue_pressed() -> void:
 		var dialog = _dialog_queue[_current_dialog_idx]
+		var is_last_line: bool = (_current_line_idx >= dialog.lines.size() - 1)
+		var is_last_dialog: bool = (_current_dialog_idx >= _dialog_queue.size() - 1)
+		if is_last_line and is_last_dialog:
+			if InputManager.active_device != "gamepad":
+				_close()
+			return
 		if _current_line_idx < dialog.lines.size() - 1:
-			# Advance to next line
 			_current_line_idx += 1
 			_display_current()
 		else:
-			# Mark this dialog as shown and advance to next dialog
 			_mark_dialog_shown(dialog)
 			_current_dialog_idx += 1
 			_current_line_idx = 0
 			_display_current()
 
 	func _on_skip_pressed() -> void:
-		# Mark current dialog as shown, advance to next
+		var is_last_dialog: bool = (_current_dialog_idx >= _dialog_queue.size() - 1)
+		if is_last_dialog and InputManager.active_device == "gamepad":
+			return  # Must use hold-to-close on last dialog (gamepad only)
 		var dialog = _dialog_queue[_current_dialog_idx]
 		_mark_dialog_shown(dialog)
 		_current_dialog_idx += 1
@@ -366,24 +461,88 @@ class _CampaignPanel extends CanvasLayer:
 		else:
 			_display_current()
 
+	func _on_back_line() -> void:
+		if _current_line_idx > 0:
+			_current_line_idx -= 1
+			_display_current()
+		elif _current_dialog_idx > 0:
+			_current_dialog_idx -= 1
+			var prev_dialog = _dialog_queue[_current_dialog_idx]
+			_current_line_idx = prev_dialog.lines.size() - 1
+			_display_current()
+
 	func _mark_dialog_shown(dialog) -> void:
 		GameContext.set_campaign_flag("shown_" + dialog.id)
 		if dialog.flag_set != "":
 			GameContext.set_campaign_flag(dialog.flag_set)
 
 	func _close() -> void:
+		_is_holding_accept = false
+		UIAudio.unregister_closeable(self)
+		if InputManager.input_device_changed.is_connected(_on_device_changed):
+			InputManager.input_device_changed.disconnect(_on_device_changed)
+		# Mark all remaining dialogs as shown before closing
+		for i in range(_current_dialog_idx, _dialog_queue.size()):
+			_mark_dialog_shown(_dialog_queue[i])
 		GameContext.save_game()
 		dialog_finished.emit()
 		queue_free()
 
-	func _unhandled_input(event: InputEvent) -> void:
-		if event is InputEventKey and event.pressed:
-			if event.keycode == KEY_ENTER or event.keycode == KEY_SPACE:
+	func _process(delta: float) -> void:
+		if not _is_holding_accept:
+			return
+		_hold_time += delta
+		var ratio: float = clampf(_hold_time / HOLD_CLOSE_TIME, 0.0, 1.0)
+		if _hold_bar_fill != null:
+			_hold_bar_fill.anchor_right = ratio
+		if _hold_time >= HOLD_CLOSE_TIME:
+			_is_holding_accept = false
+			_hold_time = 0.0
+			if _hold_container != null:
+				_hold_container.visible = false
+			_close()
+
+	func _input(event: InputEvent) -> void:
+		var dialog = _dialog_queue[_current_dialog_idx] if _current_dialog_idx < _dialog_queue.size() else null
+		if dialog == null:
+			return
+		var is_last_line: bool = (_current_line_idx >= dialog.lines.size() - 1)
+		var is_last_dialog: bool = (_current_dialog_idx >= _dialog_queue.size() - 1)
+		var is_final: bool = is_last_line and is_last_dialog
+
+		if event.is_action_pressed("ui_accept"):
+			if is_final:
+				if InputManager.active_device == "gamepad":
+					# Start hold-to-close (gamepad only)
+					_is_holding_accept = true
+					_hold_time = 0.0
+					if _hold_container != null:
+						_hold_container.visible = true
+						if _hold_bar_fill != null:
+							_hold_bar_fill.anchor_right = 0.0
+				else:
+					# KBM: instant close on final page
+					_close()
+			else:
 				_on_continue_pressed()
-				get_viewport().set_input_as_handled()
-			elif event.keycode == KEY_ESCAPE:
-				_on_skip_pressed()
-				get_viewport().set_input_as_handled()
+			get_viewport().set_input_as_handled()
+		elif event.is_action_released("ui_accept"):
+			if _is_holding_accept:
+				_is_holding_accept = false
+				_hold_time = 0.0
+				if _hold_bar_fill != null:
+					_hold_bar_fill.anchor_right = 0.0
+				# Keep container visible on final page as instruction
+				var d = _dialog_queue[_current_dialog_idx] if _current_dialog_idx < _dialog_queue.size() else null
+				var still_final: bool = false
+				if d != null:
+					still_final = (_current_line_idx >= d.lines.size() - 1) and (_current_dialog_idx >= _dialog_queue.size() - 1)
+				if not still_final and _hold_container != null:
+					_hold_container.visible = false
+			get_viewport().set_input_as_handled()
+		elif event.is_action_pressed("ui_cancel"):
+			_on_back_line()
+			get_viewport().set_input_as_handled()
 
 	static func _create_panel_style() -> StyleBoxFlat:
 		var style := StyleBoxFlat.new()

@@ -1,32 +1,32 @@
 {
-  "id": "fr_void_mite",
-  "display_name": "Void Mite",
-  "description": "A swarming parasite from beyond the veil that feeds on magical energy.",
-  "icon_hint": "small insect-like creature of dark void-stuff with starfield pattern on its shell",
-  "family": "void",
-  "region_id": "region_7",
-  "tier": 1,
-  "ai_tier": 1,
-  "attack_type": "melee",
-  "combat_role": "melee",
-  "base_stats": {
-    "health": 240,
-    "attack": 44,
-    "defense": 18,
-    "speed": 48,
-    "evasion": 15,
-    "resist": 5
-  },
-  "ability_ids": [
-    "basic_attack",
-    "mon_rending_strike"
-  ],
-  "passive_ids": [],
-  "loot_table_id": "lt_region7_common",
-  "gold_drop_min": 16,
-  "gold_drop_max": 28,
-  "sprite_path": "",
-  "is_elite": false,
-  "is_boss": false,
-  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fr_void_mite.png"
+	"id": "fr_void_mite",
+	"display_name": "Void Mite",
+	"description": "A swarming parasite from beyond the veil that feeds on magical energy.",
+	"icon_hint": "small insect-like creature of dark void-stuff with starfield pattern on its shell",
+	"family": "void",
+	"region_id": "region_7",
+	"tier": 1,
+	"ai_tier": 1,
+	"attack_type": "melee",
+	"combat_role": "melee",
+	"base_stats": {
+		"health": 360,
+		"attack": 71,
+		"defense": 24,
+		"speed": 48,
+		"evasion": 15,
+		"resist": 5
+	},
+	"ability_ids": [
+		"basic_attack",
+		"mon_rending_strike"
+	],
+	"passive_ids": [],
+	"loot_table_id": "lt_region7_common",
+	"gold_drop_min": 16,
+	"gold_drop_max": 28,
+	"sprite_path": "",
+	"is_elite": false,
+	"is_boss": false,
+	"portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fr_void_mite.png"
 }

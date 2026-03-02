@@ -1,0 +1,71 @@
+{
+  "region": "region_1",
+  "boss_id": "thorn_ent",
+  "boss_name": "Thorn-Ent",
+  "cutscenes": [
+    {
+      "id": "boss_entry_r1",
+      "trigger_type": "boss_entry",
+      "flag_set": "shown_boss_entry_r1",
+      "once_only": true,
+      "bgm": null,
+      "panels": [
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r1.png",
+          "speaker": "",
+          "text": "The Corrupted Grove",
+          "title_card": true,
+          "fallback_color": [0.04, 0.06, 0.03]
+        },
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r1.png",
+          "speaker": "Narrator",
+          "text": "The ancient trees part reluctantly, revealing a clearing choked with amber veins of corruption. At its heart, the Thorn-Ent stirs \u2014 a towering fusion of wood and malice, its bark split by pulsing golden rot.",
+          "fallback_color": [0.04, 0.06, 0.03]
+        },
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r1.png",
+          "speaker": "Narrator",
+          "text": "Its roots have drunk deep from whatever taints this land. The corruption here is old \u2014 older than the settlements, older than the Crown's maps. It must be purged.",
+          "fallback_color": [0.04, 0.06, 0.03]
+        }
+      ]
+    },
+    {
+      "id": "boss_victory_r1",
+      "trigger_type": "boss_victory",
+      "flag_set": "shown_boss_victory_r1",
+      "once_only": true,
+      "bgm": null,
+      "panels": [
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_aftermath_r1.png",
+          "speaker": "Narrator",
+          "text": "The Thorn-Ent crumbles, its corrupted bark splitting apart like shattered pottery. Where it fell, green light breaks through the canopy for the first time in years.",
+          "fallback_color": [0.06, 0.08, 0.04]
+        },
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_aftermath_r1.png",
+          "speaker": "Narrator",
+          "text": "Among the remains, a crystalline shard pulses with fading energy. Whatever force animated the Ent \u2014 it came from somewhere deeper. This was merely a symptom.",
+          "fallback_color": [0.06, 0.08, 0.04]
+        }
+      ]
+    },
+    {
+      "id": "boss_defeat_r1",
+      "trigger_type": "boss_defeat",
+      "flag_set": null,
+      "once_only": false,
+      "bgm": null,
+      "panels": [
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r1.png",
+          "speaker": "Narrator",
+          "text": "The Thorn-Ent's roots surge forward, dragging the fallen heroes beneath the corrupted soil. The forest reclaims its own. The corruption endures.",
+          "fallback_color": [0.04, 0.06, 0.03]
+        }
+      ]
+    }
+  ]
+}

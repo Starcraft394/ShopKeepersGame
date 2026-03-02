@@ -38,15 +38,15 @@
       "gold": 175,
       "items": [
         {
-          "item_id": "wolf_pelt",
+          "item_id": "cursed_dust",
           "qty": 8
         },
         {
-          "item_id": "wood_bundle",
+          "item_id": "glowing_spore",
           "qty": 6
         },
         {
-          "item_id": "spider_silk",
+          "item_id": "honey",
           "qty": 4
         }
       ]
@@ -55,15 +55,15 @@
       "gold": 450,
       "items": [
         {
-          "item_id": "wolf_pelt",
+          "item_id": "gw_elder_bark",
           "qty": 16
         },
         {
-          "item_id": "wood_bundle",
+          "item_id": "gw_enchanted_fang",
           "qty": 10
         },
         {
-          "item_id": "spider_silk",
+          "item_id": "gw_moonpetal",
           "qty": 8
         }
       ]
@@ -83,11 +83,11 @@
             "qty": 2
           },
           {
-            "item_id": "fungal_fiber",
+            "item_id": "iron_scrap",
             "qty": 3
           },
           {
-            "item_id": "mycelium_thread",
+            "item_id": "herb_sprig",
             "qty": 2
           }
         ]
@@ -109,11 +109,11 @@
         "gold": 595,
         "items": [
           {
-            "item_id": "fungal_fiber",
+            "item_id": "rare_truffle",
             "qty": 12
           },
           {
-            "item_id": "mycelium_thread",
+            "item_id": "phoenix_ash",
             "qty": 10
           }
         ]
@@ -132,11 +132,11 @@
             "qty": 2
           },
           {
-            "item_id": "ss_kelp_sinew",
+            "item_id": "iron_scrap",
             "qty": 3
           },
           {
-            "item_id": "ss_crustacean_shell",
+            "item_id": "herb_sprig",
             "qty": 2
           }
         ]
@@ -158,11 +158,11 @@
         "gold": 745,
         "items": [
           {
-            "item_id": "ss_kelp_sinew",
+            "item_id": "tidal_pearl",
             "qty": 14
           },
           {
-            "item_id": "ss_crustacean_shell",
+            "item_id": "stormglass_fragment",
             "qty": 10
           }
         ]
@@ -181,11 +181,11 @@
             "qty": 2
           },
           {
-            "item_id": "ah_drake_scale",
+            "item_id": "iron_scrap",
             "qty": 3
           },
           {
-            "item_id": "ah_scorched_fang",
+            "item_id": "herb_sprig",
             "qty": 2
           }
         ]
@@ -194,11 +194,11 @@
         "gold": 385,
         "items": [
           {
-            "item_id": "ah_drake_scale",
+            "item_id": "volcanic_glass",
             "qty": 6
           },
           {
-            "item_id": "ah_scorched_fang",
+            "item_id": "obsidian_shard",
             "qty": 5
           }
         ]
@@ -230,11 +230,11 @@
             "qty": 3
           },
           {
-            "item_id": "se_void_silk",
+            "item_id": "iron_scrap",
             "qty": 5
           },
           {
-            "item_id": "se_crystal_chitin",
+            "item_id": "herb_sprig",
             "qty": 4
           }
         ]
@@ -260,15 +260,15 @@
         "gold": 1240,
         "items": [
           {
-            "item_id": "se_void_silk",
+            "item_id": "astral_fragment",
             "qty": 20
           },
           {
-            "item_id": "se_crystal_chitin",
+            "item_id": "starfall_dust",
             "qty": 15
           },
           {
-            "item_id": "se_echo_essence",
+            "item_id": "starfall_core_fragment",
             "qty": 10
           }
         ]
@@ -287,11 +287,11 @@
             "qty": 3
           },
           {
-            "item_id": "nc_wraith_thread",
+            "item_id": "iron_scrap",
             "qty": 5
           },
           {
-            "item_id": "nc_bone_marrow",
+            "item_id": "herb_sprig",
             "qty": 4
           }
         ]
@@ -300,7 +300,7 @@
         "gold": 580,
         "items": [
           {
-            "item_id": "nc_wraith_thread",
+            "item_id": "soul_ore",
             "qty": 10
           },
           {
@@ -321,11 +321,11 @@
             "qty": 20
           },
           {
-            "item_id": "nc_bone_marrow",
+            "item_id": "spectral_log",
             "qty": 15
           },
           {
-            "item_id": "nc_grave_dust",
+            "item_id": "cursed_relic",
             "qty": 10
           }
         ]
@@ -344,15 +344,15 @@
             "qty": 3
           },
           {
-            "item_id": "fr_rift_membrane",
+            "item_id": "iron_scrap",
             "qty": 4
           },
           {
-            "item_id": "fr_corruption_ichor",
+            "item_id": "herb_sprig",
             "qty": 4
           },
           {
-            "item_id": "fr_null_fragment",
+            "item_id": "spider_silk",
             "qty": 3
           }
         ]
@@ -378,15 +378,15 @@
         "gold": 1980,
         "items": [
           {
-            "item_id": "fr_rift_membrane",
+            "item_id": "fr_dimensional_essence",
             "qty": 22
           },
           {
-            "item_id": "fr_corruption_ichor",
+            "item_id": "fractured_soulglass",
             "qty": 16
           },
           {
-            "item_id": "fr_null_fragment",
+            "item_id": "primordial_essence",
             "qty": 12
           }
         ]
@@ -442,6 +442,12 @@
           "item_id": "wood_bundle",
           "qty": 2
         }
+      ],
+      "craft_inputs": [
+        {
+          "item_id": "wood_bundle",
+          "qty": 2
+        }
       ]
     },
     {
@@ -451,6 +457,12 @@
       "upgrade_tier": 1,
       "equipment_type": "armor",
       "unlock_cost": [
+        {
+          "item_id": "wolf_pelt",
+          "qty": 2
+        }
+      ],
+      "craft_inputs": [
         {
           "item_id": "wolf_pelt",
           "qty": 2
@@ -468,6 +480,12 @@
           "item_id": "wolf_pelt",
           "qty": 1
         }
+      ],
+      "craft_inputs": [
+        {
+          "item_id": "wolf_pelt",
+          "qty": 1
+        }
       ]
     },
     {
@@ -481,6 +499,12 @@
           "item_id": "wolf_pelt",
           "qty": 1
         }
+      ],
+      "craft_inputs": [
+        {
+          "item_id": "wolf_pelt",
+          "qty": 1
+        }
       ]
     },
     {
@@ -490,6 +514,16 @@
       "upgrade_tier": 1,
       "equipment_type": "backpack",
       "unlock_cost": [
+        {
+          "item_id": "wolf_pelt",
+          "qty": 1
+        },
+        {
+          "item_id": "spider_silk",
+          "qty": 1
+        }
+      ],
+      "craft_inputs": [
         {
           "item_id": "wolf_pelt",
           "qty": 1
@@ -778,6 +812,16 @@
       "equipment_type": "backpack",
       "is_craft": true,
       "region": "region_1",
+      "unlock_cost": [
+        {
+          "item_id": "spider_silk",
+          "qty": 3
+        },
+        {
+          "item_id": "cursed_dust",
+          "qty": 2
+        }
+      ],
       "craft_inputs": [
         {
           "item_id": "small_backpack",

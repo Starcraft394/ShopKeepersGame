@@ -1,0 +1,32 @@
+{
+  "id": "vision_crystal",
+  "display_name": "Vision Crystal",
+  "description": "One of the Shattered Oracle's eyes, still warm with fading sight. Within it, you glimpse images of a throne of bone, a king who should not be, and a presence watching from the void.",
+  "icon_hint": "glowing purple crystal eye orb",
+  "item_type": "quest",
+  "item_subtype": "quest_item",
+  "category": "quest",
+  "slot": "",
+  "tier": 5,
+  "min_quality": 0,
+  "max_quality": 0,
+  "base_stats": {},
+  "use_effect": "",
+  "use_value": 0,
+  "allowed_affixes": [],
+  "min_affixes": 0,
+  "max_affixes": 0,
+  "max_sockets": 0,
+  "allowed_socket_types": [],
+  "can_refine": false,
+  "max_refinement": 0,
+  "base_value": 0,
+  "buy_value": 0,
+  "stack_max": 1,
+  "icon_path": "",
+  "tags": [
+    "region_5",
+    "quest",
+    "quest_item"
+  ]
+}

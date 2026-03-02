@@ -21,7 +21,13 @@ DataRegistry="*res://Game/Core/DataRegistry.gd"
 GameContext="*res://Game/Core/GameContext.gd"
 SeededRng="*res://Game/Core/SeededRNG.gd"
 UIAudio="*res://Game/Core/UIAudio.gd"
+InputManager="*res://Game/Core/InputManager.gd"
 BackgroundManager="*res://Game/Core/BackgroundManager.gd"
+ToastNotification="*res://Game/Core/ToastNotification.gd"
+TelemetryManager="*res://Game/Core/TelemetryManager.gd"
+SceneTransition="*res://Game/Core/SceneTransition.gd"
+PlaytestCapture="*res://DevTools/PlaytestCapture.gd"
+AutoPlayBot="*res://DevTools/AutoPlayBot.gd"
 
 [display]
 

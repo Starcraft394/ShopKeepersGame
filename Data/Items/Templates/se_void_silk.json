@@ -7,7 +7,7 @@
   "item_subtype": "monster_part",
   "category": "material",
   "base_stats": {},
-  "base_value": 26,
+  "base_value": 22,
   "buy_value": 0,
   "icon_path": "res://Assets/_ArtPacks/CraftingMaterials/PNG/Transperent/Icon38.png",
   "tags": [
@@ -16,6 +16,6 @@
     "monster_part",
     "starfall_expanse"
   ],
-  "tier": 3,
+  "tier": 2,
   "stack_max": 20
 }

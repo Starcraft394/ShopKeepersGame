@@ -71,6 +71,26 @@ func _initialize() -> void:
 	else:
 		print("[TestRunner] Using existing GameContext (autoload)")
 
+	# Check if InputManager already exists
+	var input_manager = root.get_node_or_null("InputManager")
+	if input_manager == null:
+		var input_manager_script = load("res://Game/Core/InputManager.gd")
+		if input_manager_script != null:
+			input_manager = input_manager_script.new()
+			input_manager.name = "InputManager"
+			root.add_child(input_manager)
+			print("[TestRunner] Created new InputManager")
+		else:
+			print("[TestRunner] WARNING: Failed to load InputManager.gd")
+	else:
+		print("[TestRunner] Using existing InputManager (autoload)")
+
+	# Force InputManager registration (may not have _ready() yet in headless)
+	if input_manager != null and input_manager.has_method("_register_actions"):
+		input_manager._register_actions()
+		if input_manager.has_method("_add_gamepad_to_builtin_actions"):
+			input_manager._add_gamepad_to_builtin_actions()
+
 	print("[TestRunner] All autoloads ready")
 	print("")
 

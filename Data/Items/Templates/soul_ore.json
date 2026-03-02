@@ -7,7 +7,7 @@
   "item_subtype": "mineral",
   "category": "material",
   "base_stats": {},
-  "base_value": 28,
+  "base_value": 22,
   "buy_value": 0,
   "icon_path": "res://Assets/_ArtPacks/Items_Recolored/soul_ore.png",
   "tags": [
@@ -16,6 +16,6 @@
     "mineral",
     "necropolis"
   ],
-  "tier": 3,
+  "tier": 2,
   "stack_max": 20
 }

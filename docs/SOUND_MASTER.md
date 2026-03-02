@@ -26,30 +26,34 @@
 
 | Component | Status | Details |
 |-----------|--------|---------|
-| UIAudio.gd autoload | Active | `Game/Core/UIAudio.gd` (434 lines) — button clicks, BGM, pause menu jukebox |
+| UIAudio.gd autoload | Active | `Game/Core/UIAudio.gd` — button clicks, BGM, SFX pool, pause menu |
 | Audio Buses | Minimal | Only "Master" bus (no BGM/SFX separation) |
 | Button click SFX | Working | Kenney `click3.ogg` auto-wired to all BaseButton nodes |
 | Hover SFX | Loaded, unused | `rollover1.ogg` loaded but not connected |
-| BGM playback | Working | 7 MP3 tracks, region-mapped, manual looping via `finished` signal |
-| Jukebox | Working | Pause menu track selection with per-region display names |
+| BGM playback | Working | 7 region + 9 scene tracks, region-mapped, manual looping via `finished` signal |
+| BGM system | Single | One soundtrack set (REGION_BGM + SCENE_BGM), no alt/toggle |
+| SFX pool | Working | 4 pooled AudioStreamPlayers for overlapping sounds |
+| SFX registry | Working | 75 SFX slots registered and integrated across all categories |
 | Volume controls | Working | BGM and SFX sliders (0-100%), linear-to-dB conversion |
-| Combat SFX | **MISSING** | No attack, ability, status, or death sounds |
-| Event SFX | **MISSING** | No event trigger, choice, or outcome sounds |
-| Inventory SFX | **MISSING** | No equip, pickup, consume, or buy/sell sounds |
-| Ambience | **MISSING** | No ambient loops for any scene |
-| Stingers | **MISSING** | No victory, defeat, level-up, or extraction stingers |
+| Combat SFX | Integrated | 33 combat slots (melee, ranged, magic, status, impact) |
+| Town/Shop SFX | Integrated | 12 slots (gold, recruit, facility, buy/sell) |
+| Inventory SFX | Integrated | 8 slots (equip by type, unequip, consume) |
+| Event SFX | Integrated | 5 slots (trigger, choice, outcomes) |
+| Loot SFX | Integrated | 3 slots (appear, assign, discard) |
+| Stingers | Integrated | 6 slots (3 BGM stingers + 3 SFX stingers) |
+| Ambience | **PLANNED** | No ambient loops for any scene yet |
 
-### 1.2 Current BGM Tracks (TO BE REPLACED)
+### 1.2 Current BGM Tracks
 
-| Region | Current File | Display Name | Action |
+| Region | Current File | Display Name | Status |
 |--------|-------------|--------------|--------|
-| R1 Forest Haven | `Deep smooth.mp3` | Forest Haven Theme | REPLACE |
-| R2 Fungalmire | `hmmmmm mayybeee.mp3` | Fungalmire Theme | REPLACE |
-| R3 Sunken Strand | `Broken Memories.mp3` | Sunken Strand Theme | REPLACE |
-| R4 Ashen Horizons | `AHHHH SHIT.mp3` | Ashen Horizons Theme | REPLACE |
-| R5 Starfall Expanse | `Galaxy Party.mp3` | Starfall Expanse Theme | REPLACE |
-| R6 Necropolis | `The Xperience.mp3` | Necropolis Theme | REPLACE |
-| R7 Final Realm | `Fuck if i know.mp3` | Final Realm Theme | REPLACE |
+| R1 Forest Haven | `Region/bgm_region_1_forest_haven.mp3` | Forest Haven Theme | INTEGRATED |
+| R2 Fungalmire | `Region/bgm_region_2_fungalmire.mp3` | Fungalmire Theme | INTEGRATED |
+| R3 Sunken Strand | `Region/bgm_region_3_sunken_strand.mp3` | Sunken Strand Theme | INTEGRATED |
+| R4 Ashen Horizons | `Region/bgm_region_4_ashen_horizons.mp3` | Ashen Horizons Theme | INTEGRATED |
+| R5 Starfall Expanse | `Region/bgm_region_5_starfall_expanse.mp3` | Starfall Expanse Theme | INTEGRATED |
+| R6 Necropolis | `Region/bgm_region_6_necropolis.mp3` | Necropolis Theme | INTEGRATED |
+| R7 Final Realm | `Region/bgm_region_7_final_realm.mp3` | Final Realm Theme | INTEGRATED |
 
 ### 1.3 Current UI SFX (Kenney Pack — KEEP)
 

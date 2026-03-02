@@ -5,11 +5,15 @@
   "min_drops": 1,
   "max_drops": 3,
   "entries": [
-    { "item_id": "cursed_dust", "weight": 25, "min_qty": 1, "max_qty": 2 },
+    { "item_id": "cursed_dust", "weight": 24, "min_qty": 1, "max_qty": 2 },
     { "item_id": "glowing_spore", "weight": 22, "min_qty": 1, "max_qty": 2 },
-    { "item_id": "honey", "weight": 15, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "aged_cheese", "weight": 10, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "strong_healing_tonic", "weight": 10, "min_qty": 1, "max_qty": 1 },
-    { "item_id": "", "weight": 18, "min_qty": 0, "max_qty": 0 }
+    { "item_id": "honey", "weight": 13, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "aged_cheese", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "gw_elder_bark", "weight": 5, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "gw_enchanted_fang", "weight": 5, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "gw_moonpetal", "weight": 5, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "gw_wildroot_heart", "weight": 5, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "strong_healing_tonic", "weight": 8, "min_qty": 1, "max_qty": 1 },
+    { "item_id": "", "weight": 5, "min_qty": 0, "max_qty": 0 }
   ]
 }

@@ -7,7 +7,7 @@
   "item_subtype": "legendary",
   "category": "material",
   "base_stats": {},
-  "base_value": 120,
+  "base_value": 40,
   "buy_value": 0,
   "icon_path": "res://Assets/_ArtPacks/Items_Recolored/void_crystal.png",
   "tags": [
@@ -16,6 +16,6 @@
     "legendary",
     "final_realm"
   ],
-  "tier": 4,
+  "tier": 3,
   "stack_max": 20
 }

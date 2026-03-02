@@ -1,0 +1,56 @@
+{
+  "id": "evt_quest_npc_lira",
+  "title": "A Flicker in the Bones",
+  "description": "The cold blue soul-light flickers as you pass through a bone-lined alcove. A translucent figure materializes \u2014 a woman in scholar's robes, her form wavering like a candle in wind. 'You can see me? Then you carry something of the living world strong enough to pierce this half-death. I am Lira. I was... a scholar of the Crown.'",
+  "kind": "choice",
+  "tags": ["quest", "rescue_npc", "undead"],
+  "choices": [
+    {
+      "id": "speak_with_lira",
+      "label": "Listen to her story",
+      "description": "Take time to hear what Lira has learned about the Necropolis and its King.",
+      "outcomes": [
+        {
+          "weight": 70,
+          "text": "Lira's voice strengthens as you listen. 'The Ossuary King is not the source \u2014 he is a puppet. Something deeper pulls the strings. I mapped the connection before I... fell. Take my notes. They show how to reach the Void Threshold beyond the final region.'",
+          "effects": [
+            { "type": "quest_npc_found", "npc_id": "npc_lira" },
+            { "type": "heal_party", "amount": 20 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "As Lira speaks, the Ossuary King's presence presses in. The soul-light dims and Lira's form wavers. 'He knows I'm speaking to you. Hurry \u2014 take what knowledge I can give. The King's weakness is his crown: shatter it and his hold on the dead breaks.'",
+          "effects": [
+            { "type": "quest_npc_found", "npc_id": "npc_lira" },
+            { "type": "add_gold_range", "min": 30, "max": 50 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "anchor_spirit",
+      "label": "Use a crystal to anchor her",
+      "description": "Attempt to use a fragment of crystal to stabilize Lira's spirit.",
+      "outcomes": [
+        {
+          "weight": 60,
+          "text": "The crystal pulses as it touches Lira's hand. Her form solidifies, color returning to her cheeks in memory if not in truth. 'Remarkable. I can feel the living world again. I'll guide your steps \u2014 there are secrets in these halls the King doesn't want found.'",
+          "effects": [
+            { "type": "quest_npc_found", "npc_id": "npc_lira" },
+            { "type": "heal_party", "amount": 10 },
+            { "type": "add_gold_range", "min": 15, "max": 25 }
+          ]
+        },
+        {
+          "weight": 40,
+          "text": "The crystal cracks under the strain of anchoring a spirit in the Necropolis. Lira's form stabilizes briefly. 'It won't hold long, but it's enough. I'll share what I know while I can.'",
+          "effects": [
+            { "type": "quest_npc_found", "npc_id": "npc_lira" },
+            { "type": "damage_hero", "amount": 6 }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -71,10 +71,12 @@ func _ready() -> void:
 	backdrop.grow_vertical = Control.GROW_DIRECTION_BOTH
 	add_child(backdrop)
 
-	# Connect buttons
+	# Connect buttons + enable focus
 	for i in range(choice_buttons.size()):
 		choice_buttons[i].pressed.connect(_on_choice_pressed.bind(i))
+		choice_buttons[i].focus_mode = Control.FOCUS_ALL
 	return_button.pressed.connect(_on_return_pressed)
+	return_button.focus_mode = Control.FOCUS_ALL
 
 	# SFX: Event room entered
 	UIAudio.play_sfx("event_trigger")
@@ -82,8 +84,8 @@ func _ready() -> void:
 	# Load and display event
 	_load_and_display_event()
 
-	# Tutorial on first event room (non-blocking overlay)
-	TutorialOverlay.try_show(self, "tutorial_first_event")
+	# Tutorial on first event room (spotlight choice buttons)
+	TutorialOverlay.try_show(self, "tutorial_first_event", {"event_choices": choices_container})
 
 
 	var payload = GameContext.current_room_payload
@@ -190,6 +192,12 @@ func _display_event() -> void:
 	choices_header.visible = true
 	outcome_label.text = ""
 	return_button.visible = false
+
+	# Grab focus on first visible choice for gamepad navigation
+	for btn in choice_buttons:
+		if btn.visible and not btn.disabled:
+			btn.call_deferred("grab_focus")
+			break
 	hotkey_hint.text = "Press 1-%d to choose" % mini(choices.size(), 4)
 
 
@@ -283,6 +291,12 @@ func _on_choice_pressed(choice_index: int) -> void:
 	var effects: Array = outcome.get("effects", [])
 	_apply_effects(effects)
 
+	# Log event encounter to telemetry
+	var outcome_index: int = choice.get("outcomes", []).find(outcome)
+	var tm = get_node_or_null("/root/TelemetryManager")
+	if tm != null:
+		tm.log_event_encounter(_current_event.id, choice_index, outcome_index)
+
 	# Build outcome display
 	_build_outcome_text(effects)
 
@@ -291,10 +305,11 @@ func _on_choice_pressed(choice_index: int) -> void:
 	return_button.visible = true
 	if _trigger_combat_after:
 		return_button.text = "Prepare for Battle!"
-		hotkey_hint.text = "Press R or Enter to fight"
+		hotkey_hint.text = "Press %s to fight" % InputManager.get_glyph("ui_accept")
 	else:
 		return_button.text = "Return to Camp"
-		hotkey_hint.text = "Press R or Enter to continue"
+		hotkey_hint.text = "Press %s to continue" % InputManager.get_glyph("ui_accept")
+	return_button.call_deferred("grab_focus")
 
 
 ## Legacy risk handling (for v1 events not yet migrated to outcomes).
@@ -436,6 +451,12 @@ func _apply_effects(effects: Array) -> void:
 					GameContext.set_pending_combat_modifier(modifier)
 					var mod_label = modifier.get("label", modifier.get("id", "unknown"))
 					_outcome_text += "[Next Combat: %s]\n" % mod_label
+
+			"quest_npc_found":
+				var npc_id: String = effect.get("npc_id", "")
+				if npc_id != "":
+					CampaignQuestSystem.on_npc_found(npc_id)
+					print("[RoomEvent] Quest NPC found: %s" % npc_id)
 
 			"nothing":
 				pass  # Outcome text handles flavor via the outcome's "text" field
@@ -616,7 +637,7 @@ func _return_to_camp() -> void:
 		print("[RoomEvent] Returning to camp")
 		GameContext.set_phase(GameContext.GamePhase.DUNGEON_CAMP)
 
-	get_tree().change_scene_to_file(BOOT_SCENE_PATH)
+	SceneTransition.fade_to(BOOT_SCENE_PATH)
 
 
 # ============================================================================
@@ -624,24 +645,25 @@ func _return_to_camp() -> void:
 # ============================================================================
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed:
-		if not _choice_made:
-			# Choice hotkeys
-			match event.keycode:
-				KEY_1:
-					if choice_buttons[0].visible and not choice_buttons[0].disabled:
-						_on_choice_pressed(0)
-				KEY_2:
-					if choice_buttons[1].visible and not choice_buttons[1].disabled:
-						_on_choice_pressed(1)
-				KEY_3:
-					if choice_buttons[2].visible and not choice_buttons[2].disabled:
-						_on_choice_pressed(2)
-				KEY_4:
-					if choice_buttons[3].visible and not choice_buttons[3].disabled:
-						_on_choice_pressed(3)
-		else:
-			# Return hotkeys
-			match event.keycode:
-				KEY_R, KEY_ENTER, KEY_SPACE:
-					_return_to_camp()
+	if not _choice_made:
+		# Choice hotkeys
+		if event.is_action_pressed("choice_1"):
+			if choice_buttons[0].visible and not choice_buttons[0].disabled:
+				_on_choice_pressed(0)
+		elif event.is_action_pressed("choice_2"):
+			if choice_buttons[1].visible and not choice_buttons[1].disabled:
+				_on_choice_pressed(1)
+		elif event.is_action_pressed("choice_3"):
+			if choice_buttons[2].visible and not choice_buttons[2].disabled:
+				_on_choice_pressed(2)
+		elif event.is_action_pressed("choice_4"):
+			if choice_buttons[3].visible and not choice_buttons[3].disabled:
+				_on_choice_pressed(3)
+	else:
+		# Return hotkeys
+		if event.is_action_pressed("ui_accept"):
+			_return_to_camp()
+
+
+func _exit_tree() -> void:
+	InputManager.clear_zones()

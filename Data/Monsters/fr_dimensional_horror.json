@@ -1,33 +1,36 @@
 {
-  "id": "fr_dimensional_horror",
-  "display_name": "Dimensional Horror",
-  "description": "A nightmarish entity existing across multiple planes, striking from impossible directions.",
-  "icon_hint": "multi-limbed horror phasing through multiple overlapping dimensional layers simultaneously",
-  "family": "void",
-  "region_id": "region_7",
-  "tier": 2,
-  "ai_tier": 2,
-  "attack_type": "melee",
-  "combat_role": "melee",
-  "base_stats": {
-    "health": 500,
-    "attack": 66,
-    "defense": 30,
-    "speed": 48,
-    "armor_penetration": 12,
-    "resist": 12
-  },
-  "ability_ids": [
-    "basic_attack",
-    "mon_ground_slam",
-    "mon_berserker_rage"
-  ],
-  "passive_ids": ["mon_piercing_blows", "mon_magic_resist"],
-  "loot_table_id": "lt_region7_elite",
-  "gold_drop_min": 50,
-  "gold_drop_max": 80,
-  "sprite_path": "",
-  "is_elite": true,
-  "is_boss": false,
-  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fr_dimensional_horror.png"
+	"id": "fr_dimensional_horror",
+	"display_name": "Dimensional Horror",
+	"description": "A nightmarish entity existing across multiple planes, striking from impossible directions.",
+	"icon_hint": "multi-limbed horror phasing through multiple overlapping dimensional layers simultaneously",
+	"family": "void",
+	"region_id": "region_7",
+	"tier": 2,
+	"ai_tier": 2,
+	"attack_type": "melee",
+	"combat_role": "melee",
+	"base_stats": {
+		"health": 750,
+		"attack": 106,
+		"defense": 39,
+		"speed": 48,
+		"armor_penetration": 12,
+		"resist": 12
+	},
+	"ability_ids": [
+		"basic_attack",
+		"mon_ground_slam",
+		"mon_berserker_rage"
+	],
+	"passive_ids": [
+		"mon_piercing_blows",
+		"mon_magic_resist"
+	],
+	"loot_table_id": "lt_region7_elite",
+	"gold_drop_min": 50,
+	"gold_drop_max": 80,
+	"sprite_path": "",
+	"is_elite": true,
+	"is_boss": false,
+	"portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fr_dimensional_horror.png"
 }

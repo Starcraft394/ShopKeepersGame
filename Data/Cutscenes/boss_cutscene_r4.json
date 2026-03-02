@@ -1,0 +1,71 @@
+{
+  "region": "region_4",
+  "boss_id": "ah_cinder_monarch",
+  "boss_name": "Cinder Monarch",
+  "cutscenes": [
+    {
+      "id": "boss_entry_r4",
+      "trigger_type": "boss_entry",
+      "flag_set": "shown_boss_entry_r4",
+      "once_only": true,
+      "bgm": null,
+      "panels": [
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r4.png",
+          "speaker": "",
+          "text": "The Magma Throne",
+          "title_card": true,
+          "fallback_color": [0.08, 0.04, 0.02]
+        },
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r4.png",
+          "speaker": "Narrator",
+          "text": "Rivers of molten rock carve channels through the obsidian floor. At the chamber's heart, the Cinder Monarch rises from its throne of cooling magma \u2014 a creature of living flame wrapped in a shell of volcanic glass.",
+          "fallback_color": [0.08, 0.04, 0.02]
+        },
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r4.png",
+          "speaker": "Narrator",
+          "text": "The heat is suffocating. Every breath burns. Within the Monarch's chest, you glimpse fragments of something crystalline \u2014 shards of the same corruption you've seen before, but here they glow white-hot with stolen power.",
+          "fallback_color": [0.08, 0.04, 0.02]
+        }
+      ]
+    },
+    {
+      "id": "boss_victory_r4",
+      "trigger_type": "boss_victory",
+      "flag_set": "shown_boss_victory_r4",
+      "once_only": true,
+      "bgm": null,
+      "panels": [
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_aftermath_r4.png",
+          "speaker": "Narrator",
+          "text": "The Cinder Monarch cracks like cooling glass, its inner fire guttering and dying. The lava rivers slow to a crawl, their surface darkening. For the first time, the chamber knows something approaching silence.",
+          "fallback_color": [0.06, 0.04, 0.03]
+        },
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_aftermath_r4.png",
+          "speaker": "Narrator",
+          "text": "Three crystalline fragments tumble from the Monarch's remains, their glow fading but not extinguished. They hum with residual energy \u2014 fragments of something larger, something that was broken long ago. Or perhaps something that was broken deliberately.",
+          "fallback_color": [0.06, 0.04, 0.03]
+        }
+      ]
+    },
+    {
+      "id": "boss_defeat_r4",
+      "trigger_type": "boss_defeat",
+      "flag_set": null,
+      "once_only": false,
+      "bgm": null,
+      "panels": [
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r4.png",
+          "speaker": "Narrator",
+          "text": "The Cinder Monarch's flames consume everything. The heroes are reduced to ash and memory, their equipment melting into the obsidian floor. The volcano has no mercy for the unprepared.",
+          "fallback_color": [0.08, 0.04, 0.02]
+        }
+      ]
+    }
+  ]
+}

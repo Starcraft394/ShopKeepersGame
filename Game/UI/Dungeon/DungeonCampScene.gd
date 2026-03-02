@@ -63,6 +63,9 @@ var _swap_highlight_btn: Button = null  # Currently highlighted slot for swap
 # Region theming
 var _region_palette: Dictionary = {}
 
+# Flee confirmation overlay
+var _flee_confirm_overlay: CanvasLayer = null
+
 # Hero info overlay (CanvasLayer, not Window — per Godot 4 best practices)
 var _hero_info_overlay: CanvasLayer = null
 
@@ -93,8 +96,14 @@ func _ready() -> void:
 	choice_b_button.pressed.connect(_on_choice_b_pressed)
 	choice_c_button.pressed.connect(_on_choice_c_pressed)
 	extract_button.pressed.connect(_on_extract_pressed)
-	# Flee from camp removed — flee only available mid-combat when a hero dies
-	flee_button.visible = false
+	flee_button.pressed.connect(_on_flee_pressed)
+	# Enable focus for gamepad navigation
+	choice_a_button.focus_mode = Control.FOCUS_ALL
+	choice_b_button.focus_mode = Control.FOCUS_ALL
+	choice_c_button.focus_mode = Control.FOCUS_ALL
+	extract_button.focus_mode = Control.FOCUS_ALL
+	flee_button.focus_mode = Control.FOCUS_ALL
+	flee_button.visible = GameContext.has_hero_died_this_run()
 	# Hide room type legend (not needed)
 	var legend_label = get_node_or_null("MainVBox/MapSection/LegendLabel")
 	if legend_label:
@@ -114,16 +123,57 @@ func _ready() -> void:
 	# Show overlays sequentially — tutorial first, then campaign story
 	call_deferred("_show_camp_overlays")
 
+	# Register focus zones for controller navigation
+	call_deferred("_register_focus_zones")
+
 
 ## Show tutorial then campaign overlays sequentially so they don't stack.
 func _show_camp_overlays() -> void:
-	var tut_overlay = TutorialOverlay.try_show(self, "tutorial_first_camp")
+	var camp_tut_targets: Dictionary = {"camp_choices": choice_a_button.get_parent()}
+	var tut_overlay = TutorialOverlay.try_show(self, "tutorial_first_camp", camp_tut_targets)
 	if tut_overlay != null:
 		await tut_overlay.tutorial_finished
 	var floor_num: int = GameContext.get_current_floor()
 	var campaign_overlay = CampaignDialog.try_show(self, "dungeon_camp_story", "", floor_num)
 	if campaign_overlay != null:
 		await campaign_overlay.dialog_finished
+
+
+# ============================================================================
+# FOCUS ZONES (Controller support)
+# ============================================================================
+
+func _register_focus_zones() -> void:
+	InputManager.clear_zones()
+
+	# Camp Choices: room A/B/C + extract + flee buttons
+	var button_section: Control = choice_a_button.get_parent()
+	var choice_controls: Array = InputManager.collect_focusable(button_section)
+	InputManager.register_zone("camp_choices", button_section, choice_controls, {
+		"down": "hero_rows"
+	})
+
+	# Hero Rows: info buttons + bag slot buttons
+	var hero_controls: Array = InputManager.collect_focusable(hero_rows)
+	InputManager.register_zone("hero_rows", hero_rows, hero_controls, {
+		"up": "camp_choices",
+		"right": "shopkeeper_bag"
+	})
+
+	# Shopkeeper Bag: bag slot buttons
+	var shop_controls: Array = InputManager.collect_focusable(shopkeeper_bag)
+	InputManager.register_zone("shopkeeper_bag", shopkeeper_bag, shop_controls, {
+		"left": "hero_rows",
+		"up": "camp_choices"
+	})
+
+	var palette: Dictionary = RegionTheme.get_palette_for_current_region()
+	InputManager.set_zone_border_color(palette.get("border", Color(0.55, 0.4, 0.25, 0.8)))
+	InputManager.set_active_zone("camp_choices")
+
+
+func _exit_tree() -> void:
+	InputManager.clear_zones()
 
 
 # ============================================================================
@@ -302,6 +352,7 @@ func _update_display() -> void:
 		extract_button.visible = true
 		extract_button.disabled = false
 		hotkey_hint.text = "E=Extract"
+		extract_button.call_deferred("grab_focus")
 	elif _is_descend_mode:
 		# First floor gate: first-ever floor completion forces extract only
 		var force_extract_only: bool = not GameContext.has_completed_first_floor()
@@ -317,6 +368,7 @@ func _update_display() -> void:
 			extract_button.visible = true
 			extract_button.disabled = false
 			hotkey_hint.text = "E=Return to Town"
+			extract_button.call_deferred("grab_focus")
 		else:
 			# End of floor, not final floor -> show Descend button (use A for descend)
 			choice_a_button.visible = true
@@ -331,6 +383,7 @@ func _update_display() -> void:
 			choice_a_label.visible = true
 			choice_a_label.text = "Floor %d complete!" % floor_num
 			hotkey_hint.text = "A=Descend | E=Extract"
+			choice_a_button.call_deferred("grab_focus")
 
 			# Boss gate: if next floor is the final floor, check facility tier total
 			var next_floor_is_boss: bool = (floor_num + 1 >= floor_count)
@@ -410,6 +463,9 @@ func _update_display() -> void:
 		# Extract only available at end of floor (descend mode), so hide here
 		extract_button.visible = false
 
+		# Grab focus on first visible choice for gamepad navigation
+		choice_a_button.call_deferred("grab_focus")
+
 	# Populate hero rows (new layout: Name | Info | Bag)
 	_populate_hero_rows()
 
@@ -467,15 +523,89 @@ func _on_choice_c_pressed() -> void:
 
 
 func _on_extract_pressed() -> void:
-	# Tutorial on first extraction
-	var overlay = TutorialOverlay.try_show(self, "tutorial_first_extraction")
+	# Tutorial on first extraction (spotlight extract button)
+	var overlay = TutorialOverlay.try_show(self, "tutorial_first_extraction", {"extract_btn": extract_button})
 	if overlay != null:
 		await overlay.tutorial_finished
 	_do_extract()
 
 
 func _on_flee_pressed() -> void:
-	_do_flee()
+	if _flee_confirm_overlay != null:
+		return
+	_flee_confirm_overlay = CanvasLayer.new()
+	_flee_confirm_overlay.layer = 10
+
+	var backdrop = ColorRect.new()
+	backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
+	backdrop.color = Color(0, 0, 0, 0.6)
+	backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
+	_flee_confirm_overlay.add_child(backdrop)
+
+	var center = CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_flee_confirm_overlay.add_child(center)
+
+	var panel = PanelContainer.new()
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.12, 0.08, 0.05, 0.95)
+	style.border_color = Color(0.9, 0.5, 0.3, 0.8)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(8)
+	style.set_content_margin_all(24)
+	panel.add_theme_stylebox_override("panel", style)
+	panel.custom_minimum_size = Vector2(420, 0)
+	center.add_child(panel)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 12)
+	panel.add_child(vbox)
+
+	var title_lbl = Label.new()
+	title_lbl.text = "Flee the Dungeon?"
+	title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title_lbl.add_theme_font_size_override("font_size", GameContext.fs(20))
+	title_lbl.add_theme_color_override("font_color", Color(1.0, 0.5, 0.3))
+	vbox.add_child(title_lbl)
+
+	var desc_lbl = Label.new()
+	desc_lbl.text = "If you flee:\n  - Equipment above starter gear (tier 1 common) will be lost\n  - Hero bag items will be lost\n  - First 3 shopkeeper bag slots saved (insurance)\n  - Remaining shopkeeper bag items are lost\n  - Dungeon progress and unbanked loot are lost\n  - Gold and XP earned are kept"
+	desc_lbl.add_theme_font_size_override("font_size", GameContext.fs(14))
+	desc_lbl.add_theme_color_override("font_color", Color(0.7, 0.65, 0.55))
+	desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	vbox.add_child(desc_lbl)
+
+	var btn_row = HBoxContainer.new()
+	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	btn_row.add_theme_constant_override("separation", 20)
+	vbox.add_child(btn_row)
+
+	var confirm_btn = Button.new()
+	confirm_btn.text = "Flee"
+	confirm_btn.custom_minimum_size = Vector2(120, 36)
+	confirm_btn.focus_mode = Control.FOCUS_ALL
+	confirm_btn.pressed.connect(func():
+		_close_flee_confirm()
+		_do_flee()
+	)
+	btn_row.add_child(confirm_btn)
+
+	var cancel_btn = Button.new()
+	cancel_btn.text = "Stay"
+	cancel_btn.custom_minimum_size = Vector2(120, 36)
+	cancel_btn.focus_mode = Control.FOCUS_ALL
+	cancel_btn.pressed.connect(_close_flee_confirm)
+	btn_row.add_child(cancel_btn)
+	cancel_btn.call_deferred("grab_focus")
+
+	add_child(_flee_confirm_overlay)
+
+
+func _close_flee_confirm() -> void:
+	if _flee_confirm_overlay != null:
+		_flee_confirm_overlay.queue_free()
+		_flee_confirm_overlay = null
+	InputManager.set_active_zone("camp_choices")
 
 
 # ============================================================================
@@ -483,31 +613,52 @@ func _on_flee_pressed() -> void:
 # ============================================================================
 
 func _unhandled_input(event: InputEvent) -> void:
-	# Cancel swap on Escape
-	if not _swap_source.is_empty() and event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+	# Cancel swap on Escape / B button
+	if not _swap_source.is_empty() and event.is_action_pressed("ui_cancel"):
 		_clear_swap_highlight()
 		get_viewport().set_input_as_handled()
 		return
 
-	if event is InputEventKey and event.pressed:
-		match event.keycode:
-			KEY_A:
-				if choice_a_button.visible and not choice_a_button.disabled:
-					_on_choice_a_pressed()
-			KEY_B:
-				if choice_b_button_container.visible and not choice_b_button.disabled:
-					if not _is_descend_mode:
-						_on_choice_b_pressed()
-			KEY_C:
-				if choice_c_button_container.visible and not choice_c_button.disabled:
-					if not _is_descend_mode:
-						_on_choice_c_pressed()
-			KEY_E:
-				if _can_extract:
-					_do_extract()
-				else:
-					print("[Camp] Extract blocked - must complete floor first")
-			# Flee from camp removed — only available mid-combat on hero death
+	if event.is_action_pressed("choice_1"):
+		if choice_a_button.visible and not choice_a_button.disabled:
+			_on_choice_a_pressed()
+			get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("choice_2"):
+		if choice_b_button_container.visible and not choice_b_button.disabled:
+			if not _is_descend_mode:
+				_on_choice_b_pressed()
+				get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("choice_3"):
+		if choice_c_button_container.visible and not choice_c_button.disabled:
+			if not _is_descend_mode:
+				_on_choice_c_pressed()
+				get_viewport().set_input_as_handled()
+
+	# Bag interactions — use consumable (R / X) and swap (S / Y) on focused slot
+	if event.is_action_pressed("use_item"):
+		var focused = get_viewport().gui_get_focus_owner()
+		if focused != null and focused.has_meta("bag_item_id") and focused.has_meta("bag_hero_id"):
+			var item_id: String = focused.get_meta("bag_item_id")
+			var hero_id: String = focused.get_meta("bag_hero_id")
+			var template = DataRegistry.get_item_template(item_id)
+			if template != null and template.category == "consumable":
+				_show_hero_picker_for_consumable(item_id, hero_id, "hero_bag")
+				get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("swap_item"):
+		var focused = get_viewport().gui_get_focus_owner()
+		if focused != null and focused.has_meta("swap_type"):
+			var slot_type: String = focused.get_meta("swap_type")
+			var hero_id: String = focused.get_meta("swap_hero_id") if focused.has_meta("swap_hero_id") else ""
+			var swap_idx: int = focused.get_meta("swap_index") if focused.has_meta("swap_index") else -1
+			if swap_idx >= 0:
+				_on_bag_slot_swap_click(slot_type, hero_id, swap_idx, focused)
+				get_viewport().set_input_as_handled()
+
+	if event.is_action_pressed("camp_extract"):
+		if _can_extract:
+			_do_extract()
+		else:
+			print("[Camp] Extract blocked - must complete floor first")
 
 
 # ============================================================================
@@ -545,7 +696,7 @@ func _select_choice(choice: Dictionary) -> void:
 		GameContext.get_current_room_type(),
 		str(GameContext.is_current_room_elite())
 	])
-	get_tree().change_scene_to_file(BOOT_SCENE_PATH)
+	SceneTransition.fade_to(BOOT_SCENE_PATH)
 
 
 func _do_descend() -> void:
@@ -582,7 +733,7 @@ func _do_descend() -> void:
 	print("[DungeonCamp] Descending to floor=%d/%d (room 1 = normal combat)" % [
 		GameContext.get_current_floor(), floor_count
 	])
-	get_tree().change_scene_to_file(BOOT_SCENE_PATH)
+	SceneTransition.fade_to(BOOT_SCENE_PATH)
 
 
 func _route_to_room() -> void:
@@ -619,7 +770,7 @@ func _do_extract() -> void:
 
 	# Exit to town
 	GameContext.exit_to_town()
-	get_tree().change_scene_to_file(BOOT_SCENE_PATH)
+	SceneTransition.fade_to(BOOT_SCENE_PATH)
 
 
 func _do_flee() -> void:
@@ -632,7 +783,7 @@ func _do_flee() -> void:
 
 	# Flee (this clears dungeon stash and exits)
 	GameContext.flee_to_town()
-	get_tree().change_scene_to_file(BOOT_SCENE_PATH)
+	SceneTransition.fade_to(BOOT_SCENE_PATH)
 
 
 # ============================================================================
@@ -852,6 +1003,7 @@ func _create_hero_row(hero_id: String, party_idx: int = 0, party_size: int = 1) 
 	for slot_idx in range(bag_size):
 		var slot_btn = Button.new()
 		slot_btn.custom_minimum_size = Vector2(32, 32)
+		slot_btn.focus_mode = Control.FOCUS_ALL
 
 		if slot_idx < bag.size():
 			var entry = bag[slot_idx]
@@ -897,18 +1049,25 @@ func _create_hero_row(hero_id: String, party_idx: int = 0, party_size: int = 1) 
 			# Consumable: left-click opens hero picker; others: right-click
 			if template != null and template.category == "consumable":
 				tooltip_lines.append("")
-				tooltip_lines.append("Click to use")
+				tooltip_lines.append("Click / %s to use" % InputManager.get_glyph("use_item"))
 				slot_btn.tooltip_text = "\n".join(tooltip_lines)
 				slot_btn.pressed.connect(_on_consumable_slot_pressed.bind(item_id, hero_id))
 			else:
 				tooltip_lines.append("")
-				tooltip_lines.append("Right-click to use")
+				tooltip_lines.append("Right-click to use | %s to swap" % InputManager.get_glyph("swap_item"))
 				slot_btn.tooltip_text = "\n".join(tooltip_lines)
 
 			# Connect right-click for non-consumable use and shift+click for swap
 			slot_btn.gui_input.connect(_on_bag_slot_input.bind(hero_id, item_id, slot_idx))
 			# Wire swap via shift+click
 			slot_btn.gui_input.connect(_on_hero_bag_slot_gui_input.bind(hero_id, slot_idx, slot_btn))
+
+			# Gamepad metadata for use_item / swap_item actions
+			slot_btn.set_meta("bag_item_id", item_id)
+			slot_btn.set_meta("bag_hero_id", hero_id)
+			slot_btn.set_meta("swap_type", "hero_bag")
+			slot_btn.set_meta("swap_hero_id", hero_id)
+			slot_btn.set_meta("swap_index", slot_idx)
 
 			# Drag-and-drop forwarding for cross-bag transfers
 			slot_btn.set_drag_forwarding(
@@ -1074,6 +1233,7 @@ func _show_hero_picker_for_consumable(item_id: String, source_hero_id: String, s
 
 	# Hero buttons
 	var party: Array = GameContext.get_selected_party()
+	var first_hero_btn: Button = null
 	for hero_id in party:
 		var hero: Dictionary = GameContext.get_hero(hero_id)
 		if hero.is_empty():
@@ -1088,15 +1248,23 @@ func _show_hero_picker_for_consumable(item_id: String, source_hero_id: String, s
 		var btn = Button.new()
 		btn.text = "%s  (%d/%d HP)" % [hero_name, current_hp, max_hp]
 		btn.custom_minimum_size = Vector2(0, 32)
+		btn.focus_mode = Control.FOCUS_ALL
 		btn.pressed.connect(_on_consumable_hero_chosen.bind(item_id, hero_id, source_hero_id, source))
 		vbox.add_child(btn)
+		if first_hero_btn == null:
+			first_hero_btn = btn
 
 	# Cancel button
 	vbox.add_child(HSeparator.new())
 	var cancel_btn = Button.new()
 	cancel_btn.text = "Cancel"
+	cancel_btn.focus_mode = Control.FOCUS_ALL
 	cancel_btn.pressed.connect(_close_consumable_picker)
 	vbox.add_child(cancel_btn)
+	if first_hero_btn != null:
+		first_hero_btn.call_deferred("grab_focus")
+	else:
+		cancel_btn.call_deferred("grab_focus")
 
 
 ## Handle hero selection from the consumable picker.
@@ -1155,6 +1323,7 @@ func _close_consumable_picker() -> void:
 		UIAudio.unregister_closeable(_consumable_picker_overlay)
 		_consumable_picker_overlay.queue_free()
 		_consumable_picker_overlay = null
+	InputManager.set_active_zone("hero_rows")
 
 
 ## Handle backdrop click to dismiss the consumable picker.
@@ -1245,6 +1414,7 @@ func _on_hero_info_pressed(hero_id: String) -> void:
 	scroll.custom_minimum_size = Vector2(300, 400)
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.follow_focus = true
 	panel.add_child(scroll)
 
 	var vbox = VBoxContainer.new()
@@ -1391,6 +1561,7 @@ func _close_hero_info_overlay() -> void:
 		UIAudio.unregister_closeable(_hero_info_overlay)
 		_hero_info_overlay.queue_free()
 		_hero_info_overlay = null
+	InputManager.set_active_zone("hero_rows")
 
 
 ## Helper: Add a stat line to the hero info window with optional tooltip
@@ -1593,6 +1764,7 @@ func _populate_shopkeeper_bag() -> void:
 		for i in range(cap):
 			var empty_btn = Button.new()
 			empty_btn.custom_minimum_size = Vector2(60, 32)
+			empty_btn.focus_mode = Control.FOCUS_ALL
 			empty_btn.text = ""
 			var is_safe: bool = i < safe_count
 			if is_safe:
@@ -1622,6 +1794,7 @@ func _populate_shopkeeper_bag() -> void:
 			# Empty slot beyond bag contents
 			var empty_btn = Button.new()
 			empty_btn.custom_minimum_size = Vector2(60, 32)
+			empty_btn.focus_mode = Control.FOCUS_ALL
 			empty_btn.text = ""
 			if is_safe:
 				empty_btn.tooltip_text = "Safe Slot (empty)"
@@ -1657,6 +1830,13 @@ func _populate_shopkeeper_bag() -> void:
 
 		var slot_btn = Button.new()
 		slot_btn.custom_minimum_size = Vector2(60, 32)
+		slot_btn.focus_mode = Control.FOCUS_ALL
+		# Gamepad metadata for use_item / swap_item actions
+		slot_btn.set_meta("bag_item_id", item_id)
+		slot_btn.set_meta("bag_hero_id", "")
+		slot_btn.set_meta("swap_type", "shopkeeper")
+		slot_btn.set_meta("swap_hero_id", "")
+		slot_btn.set_meta("swap_index", i)
 
 		# Item icon (Button.icon property)
 		var has_icon = false
@@ -1729,10 +1909,10 @@ func _populate_shopkeeper_bag() -> void:
 
 		# Check if equippable or consumable (original click behavior)
 		if template != null and template.equip_slot in ["weapon", "offhand"]:
-			slot_btn.tooltip_text += "\n\nClick to equip | Shift+Click to swap"
+			slot_btn.tooltip_text += "\n\nClick to equip | Shift / %s to swap" % InputManager.get_glyph("swap_item")
 			slot_btn.pressed.connect(_on_shopkeeper_item_pressed.bind(item_id, template.equip_slot))
 		elif template != null and template.category == "consumable":
-			slot_btn.tooltip_text += "\n\nClick to use | Shift+Click to swap"
+			slot_btn.tooltip_text += "\n\nClick / %s to use | Shift / %s to swap" % [InputManager.get_glyph("use_item"), InputManager.get_glyph("swap_item")]
 			slot_btn.pressed.connect(_on_consumable_slot_pressed.bind(item_id, ""))
 		else:
 			# Non-equippable, non-consumable: wire up swap click directly

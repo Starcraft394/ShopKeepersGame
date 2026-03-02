@@ -1,32 +1,34 @@
 {
-  "id": "se_shard_sprite",
-  "display_name": "Shard Sprite",
-  "description": "A tiny elemental of fractured crystal that zips through the air trailing prismatic sparks.",
-  "icon_hint": "tiny crystalline fairy trailing rainbow sparks with jagged translucent wings",
-  "family": "crystal",
-  "region_id": "region_5",
-  "tier": 1,
-  "ai_tier": 1,
-  "attack_type": "ranged",
-  "combat_role": "mage",
-  "base_stats": {
-    "health": 157,
-    "attack": 35,
-    "defense": 14,
-    "speed": 35,
-    "evasion": 12,
-    "resist": 5
-  },
-  "ability_ids": [
-    "basic_attack",
-    "mon_arcane_bolt"
-  ],
-  "passive_ids": ["mon_evasive"],
-  "loot_table_id": "lt_region5_common",
-  "gold_drop_min": 12,
-  "gold_drop_max": 24,
-  "sprite_path": "",
-  "is_elite": false,
-  "is_boss": false,
-  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/se_shard_sprite.png"
+	"id": "se_shard_sprite",
+	"display_name": "Shard Sprite",
+	"description": "A tiny elemental of fractured crystal that zips through the air trailing prismatic sparks.",
+	"icon_hint": "tiny crystalline fairy trailing rainbow sparks with jagged translucent wings",
+	"family": "crystal",
+	"region_id": "region_5",
+	"tier": 1,
+	"ai_tier": 1,
+	"attack_type": "ranged",
+	"combat_role": "mage",
+	"base_stats": {
+		"health": 181,
+		"attack": 42,
+		"defense": 16,
+		"speed": 35,
+		"evasion": 12,
+		"resist": 5
+	},
+	"ability_ids": [
+		"basic_attack",
+		"mon_arcane_bolt"
+	],
+	"passive_ids": [
+		"mon_evasive"
+	],
+	"loot_table_id": "lt_region5_common",
+	"gold_drop_min": 12,
+	"gold_drop_max": 24,
+	"sprite_path": "",
+	"is_elite": false,
+	"is_boss": false,
+	"portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/se_shard_sprite.png"
 }

@@ -1,0 +1,56 @@
+{
+  "id": "evt_quest_npc_verdara",
+  "title": "A Voice in the Spores",
+  "description": "Through the bioluminescent haze, you hear a voice \u2014 weak but clear. A woman wrapped in tattered robes sits within a cocoon of fungal webbing, her skin pale but her eyes sharp. 'You... you're from the settlements? I am Verdara. The spores... they tried to absorb me into their network. I've been fighting it.'",
+  "kind": "choice",
+  "tags": ["quest", "rescue_npc", "fungal"],
+  "choices": [
+    {
+      "id": "free_verdara",
+      "label": "Cut her free",
+      "description": "Use your blade to carefully sever the fungal webbing and free Verdara.",
+      "outcomes": [
+        {
+          "weight": 70,
+          "text": "You cut through the webbing with careful strokes. Verdara stumbles free, shaking spore dust from her robes. 'Thank you. I've learned much about these creatures \u2014 their weakness is fire. I'll follow at a safe distance until you clear the way out.'",
+          "effects": [
+            { "type": "quest_npc_found", "npc_id": "npc_verdara" },
+            { "type": "heal_party", "amount": 15 }
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "As you cut, the webbing releases a burst of defensive spores. Your party coughs and stumbles, but Verdara is freed. 'I'm sorry \u2014 the Mycelium protects its prizes. I'll explain more once we're safe.'",
+          "effects": [
+            { "type": "quest_npc_found", "npc_id": "npc_verdara" },
+            { "type": "damage_party", "amount": 8 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "burn_webbing",
+      "label": "Burn the webbing",
+      "description": "Use a torch to burn through the fungal cocoon. Faster but riskier.",
+      "outcomes": [
+        {
+          "weight": 60,
+          "text": "The fungal webbing catches fire instantly, shriveling away from Verdara. She leaps free as the flames consume the cocoon. 'Fire! Of course. The spores hate it. You're smarter than you look, Shopkeeper.'",
+          "effects": [
+            { "type": "quest_npc_found", "npc_id": "npc_verdara" },
+            { "type": "add_gold_range", "min": 20, "max": 35 }
+          ]
+        },
+        {
+          "weight": 40,
+          "text": "The fire spreads faster than expected. Verdara escapes, singed but alive. The burning spores release a thick cloud that chokes the corridor. 'That was... enthusiastic. But effective.'",
+          "effects": [
+            { "type": "quest_npc_found", "npc_id": "npc_verdara" },
+            { "type": "damage_party", "amount": 5 },
+            { "type": "apply_status", "status_id": "poisoned", "duration": 2, "target": "random_hero" }
+          ]
+        }
+      ]
+    }
+  ]
+}

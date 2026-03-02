@@ -17,6 +17,8 @@ const DEBUG_FORCE_TOWN_HUB := true
 # ============================================================================
 
 ## Scene paths for phase-based routing
+const TITLE_SCREEN_PATH: String = "res://Game/UI/TitleScreen/TitleScreen.tscn"
+const INTRO_CUTSCENE_PATH: String = "res://Game/UI/Cutscene/IntroCutscene.tscn"
 const TOWN_SCENE_PATH: String = "res://Game/UI/Town/TownScene.tscn"
 const COMBAT_SCENE_PATH: String = "res://Game/UI/Combat/CombatScene.tscn"
 const DUNGEON_CAMP_SCENE_PATH: String = "res://Game/UI/Dungeon/DungeonCampScene.tscn"
@@ -287,6 +289,31 @@ func _validate_game_context() -> bool:
 # ============================================================================
 
 func _transition_to_next_scene() -> void:
+	# Check if this is an in-game transition (phase set by calling scene)
+	var context = get_node_or_null("/root/GameContext")
+	var phase_val: int = 0  # Default: BOOT
+	if context != null:
+		phase_val = context.get_phase()
+
+	# BOOT phase = cold start or fresh save load → go to TitleScreen
+	# Any other phase = in-game transition → use phase-based routing
+	if phase_val == 0:  # GamePhase.BOOT == 0
+		if ResourceLoader.exists(TITLE_SCREEN_PATH):
+			print("[BOOT] Cold start (phase=BOOT) -> Title Screen")
+			await get_tree().create_timer(0.1).timeout
+			var error = get_tree().change_scene_to_file(TITLE_SCREEN_PATH)
+			if error != OK:
+				print("[BOOT][ERROR] Failed to load TitleScreen: error code %d" % error)
+				_transition_to_next_scene_legacy()
+			return
+		print("[BOOT][WARN] TitleScreen not found — using legacy routing")
+		_transition_to_next_scene_legacy()
+	else:
+		print("[BOOT] In-game transition (phase=%d) -> phase-based routing" % phase_val)
+		_transition_to_next_scene_legacy()
+
+
+func _transition_to_next_scene_legacy() -> void:
 	var routing_info = _determine_route()
 	var target_scene = routing_info["scene"]
 	var phase = routing_info["phase"]

@@ -5,7 +5,8 @@
       "speaker": "Pemberton",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon12.png",
       "title": "Banking Your Loot",
-      "body": "Good thinking — extraction moves everything from your dungeon stash to your permanent town storage. Gold gets banked, items get stored, and nothing can be lost.\n\nIf you'd stayed and fallen, all of that would have been left in the dungeon."
+      "body": "Good thinking — extraction moves everything from your dungeon stash to your permanent town storage. Gold gets banked, items get stored, and nothing can be lost.\n\nIf you'd stayed and fallen, all of that would have been left in the dungeon.",
+      "highlight": "extract_btn"
     },
     {
       "speaker": "Pemberton",

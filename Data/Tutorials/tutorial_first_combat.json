@@ -5,13 +5,15 @@
       "speaker": "Thalric",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
       "title": "Brace Yourself!",
-      "body": "Oof — that stings! Monsters are fast. Combat is turn-based and the fastest units act first, based on their Speed stat. Most creatures have higher Speed than your heroes, so expect to take a hit before you can swing back.\n\nKeep an eye on the turn order — it tells you who's coming next."
+      "body": "Oof — that stings! Monsters are fast. Combat is turn-based and the fastest units act first, based on their Speed stat. Most creatures have higher Speed than your heroes, so expect to take a hit before you can swing back.\n\nKeep an eye on the turn order — it tells you who's coming next.",
+      "highlight": "turn_order"
     },
     {
       "speaker": "Thalric",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
       "title": "Your Heroes' Abilities",
-      "body": "Each hero has two abilities — a primary attack they use often, and a special skill on a longer cooldown. When both are recharging, they fall back to a basic attack.\n\nPick an action each turn: Basic Attack, Ability A, or Ability B. Or hit Auto to let them fight on their own."
+      "body": "Each hero has two abilities — a primary attack they use often, and a special skill on a longer cooldown. When both are recharging, they fall back to a basic attack.\n\nPick an action each turn: Basic Attack, Ability A, or Ability B. Or hit Auto to let them fight on their own.",
+      "highlight": "action_panel"
     },
     {
       "speaker": "Thalric",

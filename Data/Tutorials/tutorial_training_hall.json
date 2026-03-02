@@ -6,6 +6,7 @@
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
       "title": "New Classes",
       "body": "Class books are available here at the Training Hall — more unlock as you open new regions. Assign a book to one of your heroes to teach them a new fighting style.\n\nUpgrade the hall and your heroes train harder — better equipment means a sharper edge on every lesson. Higher tiers grant bonus experience across all your heroes. A sharp mind wins more fights than a sharp sword.",
+      "highlight": "facility_panel",
       "button_text": "Show me the books"
     }
   ]

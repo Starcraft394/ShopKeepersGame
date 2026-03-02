@@ -1,0 +1,83 @@
+{
+  "region": "region_7",
+  "boss_id": "fr_prime_corruptor",
+  "boss_name": "Prime Corruptor",
+  "cutscenes": [
+    {
+      "id": "boss_entry_r7",
+      "trigger_type": "boss_entry",
+      "flag_set": "shown_boss_entry_r7",
+      "once_only": true,
+      "bgm": null,
+      "panels": [
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r7.png",
+          "speaker": "",
+          "text": "The Heart of the Void",
+          "title_card": true,
+          "fallback_color": [0.03, 0.02, 0.06]
+        },
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r7.png",
+          "speaker": "Narrator",
+          "text": "Reality unravels at the seams. The ground beneath your feet is not ground but the edge of nothing \u2014 a precipice overlooking an abyss that stares back. The Prime Corruptor manifests from the void itself, a shape that hurts to perceive.",
+          "fallback_color": [0.03, 0.02, 0.06]
+        },
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r7.png",
+          "speaker": "Prime Corruptor",
+          "text": "You carry fragments of my will in your pockets and call them artifacts. You burn my children in their groves and call it valor. I am the corruption you fight, Shopkeeper. I am what lies beneath every region you have 'saved.'",
+          "fallback_color": [0.03, 0.02, 0.06]
+        },
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r7.png",
+          "speaker": "Prime Corruptor",
+          "text": "This ends as it was always going to end. Not with your victory. With understanding.",
+          "fallback_color": [0.03, 0.02, 0.06]
+        }
+      ]
+    },
+    {
+      "id": "boss_victory_r7",
+      "trigger_type": "boss_victory",
+      "flag_set": "shown_boss_victory_r7",
+      "once_only": true,
+      "bgm": null,
+      "panels": [
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_aftermath_r7.png",
+          "speaker": "Narrator",
+          "text": "The Prime Corruptor does not scream as it dies. It sighs \u2014 a sound like a door closing on a room you can never enter again. The void tears seal themselves, light returning in hesitant threads.",
+          "fallback_color": [0.04, 0.03, 0.05]
+        },
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_aftermath_r7.png",
+          "speaker": "Narrator",
+          "text": "Through the closing rifts, you glimpse fragments of every region you have fought through \u2014 the forest, the mire, the shore, the peaks, the expanse, the necropolis. All connected. All part of one pattern, now broken.",
+          "fallback_color": [0.04, 0.03, 0.05]
+        },
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_aftermath_r7.png",
+          "speaker": "Narrator",
+          "text": "The Grail pulses once, warm and bright, and the last of the void retreats. The land breathes again. The Shopkeeper's journey is not over \u2014 but this chapter is. What comes next depends on what you've built, and what you're willing to risk.",
+          "fallback_color": [0.04, 0.03, 0.05]
+        }
+      ]
+    },
+    {
+      "id": "boss_defeat_r7",
+      "trigger_type": "boss_defeat",
+      "flag_set": null,
+      "once_only": false,
+      "bgm": null,
+      "panels": [
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r7.png",
+          "speaker": "Prime Corruptor",
+          "text": "Rest now. The void is patient. It will be here when you return. It will always be here.",
+          "fallback_color": [0.03, 0.02, 0.06]
+        }
+      ]
+    }
+  ]
+}

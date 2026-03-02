@@ -1,0 +1,43 @@
+{
+  "id": "intro_cutscene",
+  "bgm": "intro_cutscene",
+  "panels": [
+    {
+      "background": "res://Assets/Backgrounds/Cutscene/intro_panel_1.png",
+      "speaker": "Narrator",
+      "text": "The Kingdom of Aethermoor has stood for a thousand years — its borders stretching from the Shimmering Coast to the Thornwall Mountains, its people prosperous under the Crown's steady hand.\n\nBut in the east, something stirs. A corruption — slow, patient, and hungry — has begun to seep from the ancient forests.",
+      "fallback_color": [0.05, 0.06, 0.10]
+    },
+    {
+      "background": "res://Assets/Backgrounds/Cutscene/intro_panel_2.png",
+      "speaker": "Narrator",
+      "text": "Twisted roots split the earth. Blighted beasts prowl where deer once grazed. Villages on the frontier send desperate pleas — their walls crack, their fields wither, and the things that emerge from the treeline wear shapes that should not exist.\n\nThe Crown's armies are stretched thin. Warriors alone cannot hold back what has no body to slay.",
+      "fallback_color": [0.08, 0.04, 0.04]
+    },
+    {
+      "background": "res://Assets/Backgrounds/Cutscene/intro_panel_3.png",
+      "speaker": "Royal Herald",
+      "text": "\"By order of His Majesty, you are hereby appointed Crown Supplier to the frontier settlements. You will establish supply lines, provision the realm's defenders, and ensure our heroes want for nothing.\"\n\n— Decree delivered by Sir Cedric Ashmore, Herald of the Crown",
+      "fallback_color": [0.08, 0.07, 0.04]
+    },
+    {
+      "background": "res://Assets/Backgrounds/Cutscene/intro_panel_4.png",
+      "speaker": "Narrator",
+      "text": "You are not a warrior. You carry no blade, cast no spell, wear no armor. You are a Shopkeeper — and that is precisely what the frontier needs.\n\nHeroes are brave, but bravery without supplies is just a slower way to die. Someone must forge the swords they swing, brew the potions they drink, and mend the armor they wear. That someone is you.",
+      "fallback_color": [0.06, 0.05, 0.03]
+    },
+    {
+      "background": "res://Assets/Backgrounds/Cutscene/intro_panel_5.png",
+      "speaker": "Narrator",
+      "text": "The road east ends at Thornhaven — a small frontier town perched at the edge of the Forest Haven. Its people are few but resilient. An innkeeper named Mira runs the Wanderer's Rest, and she's been expecting you.\n\nThe corruption is close. You can smell it on the wind — damp earth and something sweet, like rotting fruit. But the lanterns of Thornhaven still burn.",
+      "fallback_color": [0.04, 0.06, 0.05]
+    },
+    {
+      "background": "res://Assets/Backgrounds/Cutscene/intro_panel_6.png",
+      "speaker": "",
+      "text": "Shops & Shadows",
+      "title_card": true,
+      "fallback_color": [0.02, 0.02, 0.04]
+    }
+  ]
+}

@@ -12,6 +12,7 @@
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
       "title": "Choose Your Path",
       "body": "You'll see two options for the next room. Choice A is always a standard combat encounter. Choice B might be a story event with interesting rewards — or an elite fight that's tougher but drops better loot.\n\nWeigh the risk against your party's health before choosing.",
+      "highlight": "camp_choices",
       "button_text": "Got it!"
     }
   ]

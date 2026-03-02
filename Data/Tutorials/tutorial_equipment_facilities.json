@@ -5,19 +5,22 @@
       "speaker": "Garrick",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon3.png",
       "title": "The Forge",
-      "body": "I don't sell gear directly — I unlock recipes. Bring me materials from the dungeon and I'll add new items to the Shop's inventory.\n\nThe more recipes you unlock, the better gear available for purchase."
+      "body": "My main work is unlocking recipes. Bring me materials from the dungeon and I'll add new items to the Shop's inventory — the more recipes you unlock, the better gear Pemberton can stock.\n\nBut if you need something specific and don't want to leave it to chance, I also take craft requests. Bring the materials and pay double the item's value in gold, and I'll hammer it out for you on the spot.",
+      "highlight": "facility_panel"
     },
     {
       "speaker": "Garrick",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon3.png",
       "title": "Tiers and Specialties",
-      "body": "Upgrade my facility with gold and materials to unlock higher-tier recipes. Better tools on the anvil means finer work — a Tier 1 forge hammers out basics, but a Tier 4 forge has the precision to craft masterwork gear.\n\nThe Huntsman handles bows, leather, and backpacks. The Enchanter handles staves, focuses, and rings. Each of us has our specialty — check in after every run to see what's new."
+      "body": "Upgrade my facility with gold and materials to unlock higher-tier recipes. Better tools on the anvil means finer work — a Tier 1 forge hammers out basics, but a Tier 4 forge has the precision to craft masterwork gear.\n\nThe Huntsman handles bows, leather, and backpacks. The Enchanter handles staves, focuses, and rings. Each of us has our specialty — check in after every run to see what's new.",
+      "highlight": "facility_panel"
     },
     {
       "speaker": "Garrick",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon3.png",
       "title": "Quality Matters",
-      "body": "Higher facility tiers also improve the quality of items sold in the Shop. At Tier 1 everything's Common, but upgrade to Tier 2 and you'll start seeing Uncommon and Rare gear on the shelves.\n\nReach Tier 4 and there's even a chance of Epic equipment. Better tools make better heroes.",
+      "body": "Higher facility tiers also improve the quality of items sold in the Shop. At Tier 1 everything's Common, but upgrade to Tier 2 and you'll start seeing Uncommon and Rare gear on the shelves.\n\nReach Tier 4 and there's even a chance of Epic equipment. Quality applies to craft requests too — a better forge means finer custom work. Better tools make better heroes.",
+      "highlight": "facility_panel",
       "button_text": "Let's see what you've got"
     }
   ]

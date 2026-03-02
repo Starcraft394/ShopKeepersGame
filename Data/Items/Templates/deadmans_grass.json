@@ -7,7 +7,7 @@
   "item_subtype": "herb",
   "category": "material",
   "base_stats": {},
-  "base_value": 26,
+  "base_value": 22,
   "buy_value": 0,
   "icon_path": "res://Assets/_ArtPacks/Items_Recolored/deadmans_grass.png",
   "tags": [
@@ -17,6 +17,6 @@
     "alchemy",
     "necropolis"
   ],
-  "tier": 3,
+  "tier": 2,
   "stack_max": 20
 }

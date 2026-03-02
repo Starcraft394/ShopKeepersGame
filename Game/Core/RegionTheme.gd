@@ -34,6 +34,6 @@ static func _derive_palette(theme: Color, accent: Color) -> Dictionary:
 		"bg_medium": Color(theme.r * 0.6 + 0.03, theme.g * 0.6 + 0.03, theme.b * 0.6 + 0.04, 0.9),
 		"title_bar": Color(theme.r * 0.75 + 0.05, theme.g * 0.75 + 0.05, theme.b * 0.75 + 0.06, 0.9),
 		"accent": Color(accent.r, accent.g, accent.b, 0.5),
-		"border": Color(accent.r * 0.7, accent.g * 0.7, accent.b * 0.7, 0.6),
+		"border": Color(minf(accent.r * 1.2, 1.0), minf(accent.g * 1.1, 1.0), accent.b * 0.5, 0.9),
 		"theme": theme,
 	}

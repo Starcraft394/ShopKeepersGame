@@ -1,0 +1,71 @@
+{
+  "region": "region_3",
+  "boss_id": "ss_tide_sovereign",
+  "boss_name": "Tide Sovereign",
+  "cutscenes": [
+    {
+      "id": "boss_entry_r3",
+      "trigger_type": "boss_entry",
+      "flag_set": "shown_boss_entry_r3",
+      "once_only": true,
+      "bgm": null,
+      "panels": [
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r3.png",
+          "speaker": "",
+          "text": "The Drowned Court",
+          "title_card": true,
+          "fallback_color": [0.03, 0.05, 0.08]
+        },
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r3.png",
+          "speaker": "Narrator",
+          "text": "The ruins descend into water, and the water rises to meet them. Half-submerged columns frame a throne of coral and barnacle, where the Tide Sovereign sits in regal stillness \u2014 a figure of salt and sorrow given terrible form.",
+          "fallback_color": [0.03, 0.05, 0.08]
+        },
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r3.png",
+          "speaker": "Narrator",
+          "text": "The tidal pools around the court glow with an unnatural light. Something stirs beneath the surface \u2014 something vast. The Sovereign raises a hand, and the water obeys.",
+          "fallback_color": [0.03, 0.05, 0.08]
+        }
+      ]
+    },
+    {
+      "id": "boss_victory_r3",
+      "trigger_type": "boss_victory",
+      "flag_set": "shown_boss_victory_r3",
+      "once_only": true,
+      "bgm": null,
+      "panels": [
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_aftermath_r3.png",
+          "speaker": "Narrator",
+          "text": "The Tide Sovereign dissolves into sea foam, its crown of coral shattering against the ancient stones. The waters recede, revealing floors that have not seen air in decades.",
+          "fallback_color": [0.04, 0.06, 0.07]
+        },
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_aftermath_r3.png",
+          "speaker": "Narrator",
+          "text": "Among the debris, a strand of woven metal catches the light \u2014 too fine for mortal craft, too purposeful for chance. An artifact of the Crown, lost when these shores first fell. Someone will want this returned.",
+          "fallback_color": [0.04, 0.06, 0.07]
+        }
+      ]
+    },
+    {
+      "id": "boss_defeat_r3",
+      "trigger_type": "boss_defeat",
+      "flag_set": null,
+      "once_only": false,
+      "bgm": null,
+      "panels": [
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r3.png",
+          "speaker": "Narrator",
+          "text": "The tide rises without mercy. The Drowned Court claims new subjects, their armor weighing them down into the dark water. The Sovereign sits unmoved upon its throne.",
+          "fallback_color": [0.03, 0.05, 0.08]
+        }
+      ]
+    }
+  ]
+}

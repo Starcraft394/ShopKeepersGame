@@ -3,7 +3,7 @@ REM Godot Headless Validation Script (Batch)
 REM Runs Godot in headless mode to validate project files and run tests
 REM
 REM Godot Discovery Order:
-REM   1. DevTools\Godot_v4.5.1-stable_win64_console.exe (preferred)
+REM   1. DevTools\Godot_v4.6.1-stable_mono_win64_console.exe (preferred)
 REM   2. GODOT_EXE environment variable (full path)
 REM   3. Exit with code 2 if not found
 
@@ -29,8 +29,8 @@ REM ============================================================================
 REM GODOT EXECUTABLE DISCOVERY
 REM ============================================================================
 set "GODOT_FOUND="
-set "GODOT_CONSOLE_EXE=%SCRIPT_DIR%\Godot_v4.5.1-stable_win64_console.exe"
-set "GODOT_GUI_EXE=%SCRIPT_DIR%\Godot_v4.5.1-stable_win64.exe"
+set "GODOT_CONSOLE_EXE=%SCRIPT_DIR%\Godot_v4.6.1-stable_mono_win64_console.exe"
+set "GODOT_GUI_EXE=%SCRIPT_DIR%\Godot_v4.6.1-stable_mono_win64.exe"
 
 REM Option 1: DevTools-local console exe (preferred)
 if exist "%GODOT_CONSOLE_EXE%" (

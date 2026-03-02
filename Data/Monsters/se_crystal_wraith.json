@@ -1,32 +1,34 @@
 {
-  "id": "se_crystal_wraith",
-  "display_name": "Crystal Wraith",
-  "description": "A spectral figure encased in floating crystal shards that orbit like a deadly constellation.",
-  "icon_hint": "ghostly robed figure surrounded by orbiting sharp crystal shards in constellation pattern",
-  "family": "crystal",
-  "region_id": "region_5",
-  "tier": 2,
-  "ai_tier": 2,
-  "attack_type": "ranged",
-  "combat_role": "mage",
-  "base_stats": {
-    "health": 266,
-    "attack": 48,
-    "defense": 26,
-    "speed": 28,
-    "evasion": 15,
-    "resist": 10
-  },
-  "ability_ids": [
-    "basic_attack",
-    "mon_chain_lightning"
-  ],
-  "passive_ids": ["mon_spectral_form"],
-  "loot_table_id": "lt_region5_uncommon",
-  "gold_drop_min": 24,
-  "gold_drop_max": 40,
-  "sprite_path": "",
-  "is_elite": false,
-  "is_boss": false,
-  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/se_crystal_wraith.png"
+	"id": "se_crystal_wraith",
+	"display_name": "Crystal Wraith",
+	"description": "A spectral figure encased in floating crystal shards that orbit like a deadly constellation.",
+	"icon_hint": "ghostly robed figure surrounded by orbiting sharp crystal shards in constellation pattern",
+	"family": "crystal",
+	"region_id": "region_5",
+	"tier": 2,
+	"ai_tier": 2,
+	"attack_type": "ranged",
+	"combat_role": "mage",
+	"base_stats": {
+		"health": 306,
+		"attack": 58,
+		"defense": 29,
+		"speed": 28,
+		"evasion": 15,
+		"resist": 10
+	},
+	"ability_ids": [
+		"basic_attack",
+		"mon_chain_lightning"
+	],
+	"passive_ids": [
+		"mon_spectral_form"
+	],
+	"loot_table_id": "lt_region5_uncommon",
+	"gold_drop_min": 24,
+	"gold_drop_max": 40,
+	"sprite_path": "",
+	"is_elite": false,
+	"is_boss": false,
+	"portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/se_crystal_wraith.png"
 }

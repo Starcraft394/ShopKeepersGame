@@ -1,33 +1,35 @@
 {
-  "id": "se_glass_viper",
-  "display_name": "Glass Viper",
-  "description": "A nearly invisible serpent with a crystalline body that shatters on impact, embedding razor shards.",
-  "icon_hint": "nearly transparent crystalline snake with prismatic light refracting through its glass-like body",
-  "family": "crystal",
-  "region_id": "region_5",
-  "tier": 1,
-  "ai_tier": 2,
-  "attack_type": "melee",
-  "combat_role": "melee",
-  "base_stats": {
-    "health": 174,
-    "attack": 43,
-    "defense": 14,
-    "speed": 33,
-    "crit_chance": 12,
-    "evasion": 8
-  },
-  "ability_ids": [
-    "basic_attack",
-    "mon_rending_strike",
-    "mon_mark_prey"
-  ],
-  "passive_ids": ["mon_venomous"],
-  "loot_table_id": "lt_region5_common",
-  "gold_drop_min": 14,
-  "gold_drop_max": 26,
-  "sprite_path": "",
-  "is_elite": false,
-  "is_boss": false,
-  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/se_glass_viper.png"
+	"id": "se_glass_viper",
+	"display_name": "Glass Viper",
+	"description": "A nearly invisible serpent with a crystalline body that shatters on impact, embedding razor shards.",
+	"icon_hint": "nearly transparent crystalline snake with prismatic light refracting through its glass-like body",
+	"family": "crystal",
+	"region_id": "region_5",
+	"tier": 1,
+	"ai_tier": 2,
+	"attack_type": "melee",
+	"combat_role": "melee",
+	"base_stats": {
+		"health": 201,
+		"attack": 52,
+		"defense": 16,
+		"speed": 33,
+		"crit_chance": 12,
+		"evasion": 8
+	},
+	"ability_ids": [
+		"basic_attack",
+		"mon_rending_strike",
+		"mon_mark_prey"
+	],
+	"passive_ids": [
+		"mon_venomous"
+	],
+	"loot_table_id": "lt_region5_common",
+	"gold_drop_min": 14,
+	"gold_drop_max": 26,
+	"sprite_path": "",
+	"is_elite": false,
+	"is_boss": false,
+	"portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/se_glass_viper.png"
 }

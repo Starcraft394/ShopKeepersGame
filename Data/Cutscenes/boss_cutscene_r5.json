@@ -1,0 +1,71 @@
+{
+  "region": "region_5",
+  "boss_id": "se_shattered_oracle",
+  "boss_name": "Shattered Oracle",
+  "cutscenes": [
+    {
+      "id": "boss_entry_r5",
+      "trigger_type": "boss_entry",
+      "flag_set": "shown_boss_entry_r5",
+      "once_only": true,
+      "bgm": null,
+      "panels": [
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r5.png",
+          "speaker": "",
+          "text": "The Fractured Lens",
+          "title_card": true,
+          "fallback_color": [0.05, 0.04, 0.08]
+        },
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r5.png",
+          "speaker": "Narrator",
+          "text": "Reality splinters here. The chamber exists in multiple states simultaneously \u2014 walls that are also sky, floors that are also ceilings. At the nexus of this impossibility, the Shattered Oracle coalesces from broken light and prophecy.",
+          "fallback_color": [0.05, 0.04, 0.08]
+        },
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r5.png",
+          "speaker": "Shattered Oracle",
+          "text": "You arrive as foreseen. All paths converge here. I have seen your victory. I have seen your defeat. Both are... inevitable.",
+          "fallback_color": [0.05, 0.04, 0.08]
+        }
+      ]
+    },
+    {
+      "id": "boss_victory_r5",
+      "trigger_type": "boss_victory",
+      "flag_set": "shown_boss_victory_r5",
+      "once_only": true,
+      "bgm": null,
+      "panels": [
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_aftermath_r5.png",
+          "speaker": "Narrator",
+          "text": "The Oracle's fragments realign, the impossible geometry settling into something that merely aches to look at rather than wounds. The prismatic distortion fades, revealing a crystal chamber of startling beauty.",
+          "fallback_color": [0.04, 0.04, 0.07]
+        },
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_aftermath_r5.png",
+          "speaker": "Narrator",
+          "text": "A vision crystal lies among the shards \u2014 one of the Oracle's eyes, still warm with fading sight. Within it, you glimpse images: a throne of bone, a king who should not be, and behind it all... a presence watching. Waiting.",
+          "fallback_color": [0.04, 0.04, 0.07]
+        }
+      ]
+    },
+    {
+      "id": "boss_defeat_r5",
+      "trigger_type": "boss_defeat",
+      "flag_set": null,
+      "once_only": false,
+      "bgm": null,
+      "panels": [
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r5.png",
+          "speaker": "Shattered Oracle",
+          "text": "This outcome was also foreseen. Your fragments scatter across the possible. Perhaps in another timeline, you persist.",
+          "fallback_color": [0.05, 0.04, 0.08]
+        }
+      ]
+    }
+  ]
+}

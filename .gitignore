@@ -2,6 +2,9 @@
 .godot/
 /android/
 
+# Godot Mono (C# support) — auto-generated, not used in this GDScript project
+DevTools/GodotSharp/
+
 # Godot binaries (local dev tools only)
 *.exe
 
@@ -9,6 +12,14 @@
 nul
 tests_full_output.txt
 DevTools/*.log
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Downloads / staging sources (originals kept locally, not in repo)
+Assets/_Downloads/
+Assets/Backgrounds/_staging/sources/
 
 # Secrets
 .env

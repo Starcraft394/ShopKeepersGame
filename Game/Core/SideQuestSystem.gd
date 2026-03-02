@@ -647,14 +647,17 @@ class _QuestOfferPanel extends CanvasLayer:
 		var accept_btn := Button.new()
 		accept_btn.text = "Accept Quest"
 		accept_btn.add_theme_font_size_override("font_size", GameContext.fs(14))
+		accept_btn.focus_mode = Control.FOCUS_ALL
 		accept_btn.pressed.connect(_on_accept)
 		btn_row.add_child(accept_btn)
 
 		var decline_btn := Button.new()
 		decline_btn.text = "Decline"
 		decline_btn.add_theme_font_size_override("font_size", GameContext.fs(14))
+		decline_btn.focus_mode = Control.FOCUS_ALL
 		decline_btn.pressed.connect(_on_decline)
 		btn_row.add_child(decline_btn)
+		accept_btn.call_deferred("grab_focus")
 
 	func _on_accept() -> void:
 		GameContext.add_side_quest(_quest)
@@ -765,8 +768,10 @@ class _QuestCompletePanel extends CanvasLayer:
 		var collect_btn := Button.new()
 		collect_btn.text = "Collect Reward"
 		collect_btn.add_theme_font_size_override("font_size", GameContext.fs(14))
+		collect_btn.focus_mode = Control.FOCUS_ALL
 		collect_btn.pressed.connect(_on_collect)
 		vbox.add_child(collect_btn)
+		collect_btn.call_deferred("grab_focus")
 
 	func _on_collect() -> void:
 		SideQuestSystem.complete_quest(_quest.quest_id)
@@ -844,35 +849,57 @@ class _QuestLogPanel extends CanvasLayer:
 		title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		vbox.add_child(title)
 
-		# === MAIN STORY SECTION ===
+		# === CAMPAIGN QUEST SECTION ===
 		var story_header := Label.new()
-		story_header.text = "--- Main Story ---"
+		story_header.text = "--- Campaign Quest ---"
 		story_header.add_theme_color_override("font_color", SECTION_COLOR)
 		story_header.add_theme_font_size_override("font_size", GameContext.fs(15))
 		story_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		vbox.add_child(story_header)
 
-		var story_info: Dictionary = SideQuestSystem.get_main_story_objective()
+		var cq_info: Dictionary = CampaignQuestSystem.get_quest_log_info()
+		if not cq_info.is_empty():
+			var cq_name := Label.new()
+			cq_name.text = cq_info.get("display_name", "")
+			cq_name.add_theme_color_override("font_color", HEADER_COLOR)
+			cq_name.add_theme_font_size_override("font_size", GameContext.fs(14))
+			vbox.add_child(cq_name)
 
-		var region_label := Label.new()
-		region_label.text = story_info.get("region", "")
-		region_label.add_theme_color_override("font_color", HEADER_COLOR)
-		region_label.add_theme_font_size_override("font_size", GameContext.fs(14))
-		vbox.add_child(region_label)
+			var cq_desc := Label.new()
+			cq_desc.text = cq_info.get("description", "")
+			cq_desc.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8))
+			cq_desc.add_theme_font_size_override("font_size", GameContext.fs(12))
+			cq_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			vbox.add_child(cq_desc)
 
-		var objective_label := Label.new()
-		objective_label.text = story_info.get("objective", "")
-		objective_label.add_theme_color_override("font_color", Color.WHITE)
-		objective_label.add_theme_font_size_override("font_size", GameContext.fs(13))
-		objective_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		vbox.add_child(objective_label)
+			var cq_progress := Label.new()
+			cq_progress.text = cq_info.get("progress_text", "")
+			cq_progress.add_theme_color_override("font_color", Color.WHITE)
+			cq_progress.add_theme_font_size_override("font_size", GameContext.fs(13))
+			cq_progress.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			vbox.add_child(cq_progress)
+		else:
+			# Fallback: basic story info from flags
+			var story_info: Dictionary = SideQuestSystem.get_main_story_objective()
+			var region_label := Label.new()
+			region_label.text = story_info.get("region", "")
+			region_label.add_theme_color_override("font_color", HEADER_COLOR)
+			region_label.add_theme_font_size_override("font_size", GameContext.fs(14))
+			vbox.add_child(region_label)
 
-		var context_label := Label.new()
-		context_label.text = story_info.get("context", "")
-		context_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
-		context_label.add_theme_font_size_override("font_size", GameContext.fs(11))
-		context_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		vbox.add_child(context_label)
+			var objective_label := Label.new()
+			objective_label.text = story_info.get("objective", "")
+			objective_label.add_theme_color_override("font_color", Color.WHITE)
+			objective_label.add_theme_font_size_override("font_size", GameContext.fs(13))
+			objective_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			vbox.add_child(objective_label)
+
+			var context_label := Label.new()
+			context_label.text = story_info.get("context", "")
+			context_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+			context_label.add_theme_font_size_override("font_size", GameContext.fs(11))
+			context_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			vbox.add_child(context_label)
 
 		# === SIDE QUESTS SECTION ===
 		var side_header := Label.new()
@@ -899,8 +926,10 @@ class _QuestLogPanel extends CanvasLayer:
 		var close_btn := Button.new()
 		close_btn.text = "Close"
 		close_btn.add_theme_font_size_override("font_size", GameContext.fs(14))
+		close_btn.focus_mode = Control.FOCUS_ALL
 		close_btn.pressed.connect(_on_close)
 		vbox.add_child(close_btn)
+		close_btn.call_deferred("grab_focus")
 
 	func _add_quest_entry(parent: VBoxContainer, quest: SideQuestData) -> void:
 		var entry := VBoxContainer.new()
@@ -929,6 +958,7 @@ class _QuestLogPanel extends CanvasLayer:
 			var enter_btn := Button.new()
 			enter_btn.text = "Enter Mini-Dungeon"
 			enter_btn.add_theme_font_size_override("font_size", GameContext.fs(12))
+			enter_btn.focus_mode = Control.FOCUS_ALL
 			var quest_id: String = quest.quest_id
 			enter_btn.pressed.connect(func(): _on_enter_mini_dungeon(quest_id))
 			entry.add_child(enter_btn)

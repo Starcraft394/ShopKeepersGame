@@ -1,35 +1,38 @@
 {
-  "id": "fr_void_sovereign",
-  "display_name": "The Void Sovereign",
-  "description": "The final guardian of the abyss, whose mere presence erodes existence.",
-  "icon_hint": "massive regal void being with crown of collapsed stars and robes of flowing darkness",
-  "family": "void",
-  "region_id": "region_7",
-  "tier": 3,
-  "ai_tier": 3,
-  "attack_type": "ranged",
-  "combat_role": "mage",
-  "base_stats": {
-    "health": 1400,
-    "attack": 90,
-    "defense": 42,
-    "speed": 55,
-    "resist": 20,
-    "armor_penetration": 15,
-    "life_steal": 12,
-    "crit_chance": 10
-  },
-  "ability_ids": [
-    "basic_attack",
-    "mon_meteor",
-    "mon_life_siphon"
-  ],
-  "passive_ids": ["mon_magic_resist", "mon_undying_rage"],
-  "loot_table_id": "lt_region7_boss",
-  "gold_drop_min": 100,
-  "gold_drop_max": 155,
-  "sprite_path": "",
-  "is_elite": false,
-  "is_boss": true,
-  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fr_void_sovereign.png"
+	"id": "fr_void_sovereign",
+	"display_name": "The Void Sovereign",
+	"description": "The final guardian of the abyss, whose mere presence erodes existence.",
+	"icon_hint": "massive regal void being with crown of collapsed stars and robes of flowing darkness",
+	"family": "void",
+	"region_id": "region_7",
+	"tier": 3,
+	"ai_tier": 3,
+	"attack_type": "ranged",
+	"combat_role": "mage",
+	"base_stats": {
+		"health": 4200,
+		"attack": 260,
+		"defense": 82,
+		"speed": 55,
+		"resist": 20,
+		"armor_penetration": 15,
+		"life_steal": 12,
+		"crit_chance": 10
+	},
+	"ability_ids": [
+		"basic_attack",
+		"mon_meteor",
+		"mon_life_siphon"
+	],
+	"passive_ids": [
+		"mon_magic_resist",
+		"mon_undying_rage"
+	],
+	"loot_table_id": "lt_region7_boss",
+	"gold_drop_min": 100,
+	"gold_drop_max": 155,
+	"sprite_path": "",
+	"is_elite": false,
+	"is_boss": true,
+	"portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fr_void_sovereign.png"
 }

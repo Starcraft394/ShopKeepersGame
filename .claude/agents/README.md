@@ -15,6 +15,7 @@ Repo Auditor → Implementer → UI Refiner (optional) → Data Curator (optiona
                                                     → Balancer (optional)
                                                     → Heroes Agent (optional)
                                                     → Gameplay Guide (optional)
+                                                    → Playtest Agent (optional)
 ```
 
 1. **Repo Auditor** decides WHAT to build next
@@ -45,6 +46,8 @@ Repo Auditor → Implementer → UI Refiner (optional) → Data Curator (optiona
 | Icon Mapper | `icon-mapper.md` | Icon assignment, ledger generation, recolour pipeline |
 | Monster Curator | `monster-curator.md` | Monster manifest, roles, abilities, AI tiers, stat distributions |
 | Heroes Agent | `heroes-agent.md` | Hero reference, class kits, race balance, build paths, stat synergies |
+| Controls Agent | `controls-agent.md` | Input controls, keyboard/mouse/gamepad mapping, focus navigation, conventions |
+| Playtest Agent | `playtest-agent.md` | Steam Playtest prep, analytics, telemetry, feedback, GDPR compliance |
 
 ## Usage
 
@@ -63,6 +66,10 @@ Or reference the agent by saying:
 - "Use the Sound Director agent to map SFX to combat actions"
 - "Use the Gameplay Guide agent to update the game guide"
 - "Use the Heroes Agent to audit class balance and build paths"
+- "Use the Controls Agent to audit gamepad support for [scene]"
+- "Use the Controls Agent to check button mappings"
+- "Use the Playtest Agent to prepare for Steam Playtest"
+- "Use the Playtest Agent to design analytics tracking"
 
 ## Keyword → Agent Lookup
 
@@ -87,8 +94,12 @@ When you mention a topic, these keywords auto-map to the relevant agent(s):
 | `tier`, `economy`, `stat curve` | Balancer |
 | `guide`, `tutorial`, `how to play`, `help text`, `tooltip`, `onboarding` | Gameplay Guide |
 | `new player`, `walkthrough`, `game flow`, `first time` | Gameplay Guide + Story Architect |
+| `controls`, `controller`, `gamepad`, `keyboard`, `input`, `keybind`, `mapping` | Controls Agent |
+| `focus`, `navigation`, `d-pad`, `joystick`, `xbox`, `playstation` | Controls Agent |
 | `sound`, `audio`, `music`, `bgm`, `sfx`, `volume`, `track`, `ambience` | Sound Director |
 | `combat sounds`, `music pack`, `jukebox`, `sound effect` | Sound Director |
+| `playtest`, `steam`, `release`, `analytics`, `telemetry`, `feedback` | Playtest Agent |
+| `gdpr`, `privacy`, `consent`, `survey`, `store page`, `godotsteam` | Playtest Agent |
 
 Multiple agents may trigger for a single request — they work in parallel on their respective duties.
 

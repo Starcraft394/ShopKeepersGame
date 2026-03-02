@@ -272,12 +272,26 @@ def resolve_pack_ref(icon_path, item_id=""):
 # Item data helpers
 # ============================================================
 
-def get_region(tags):
-    """Extract region key from tags list."""
+## Region-1 prefixes that indicate Greenwood-themed items (keep as region_1).
+## All other region_1 items are generic T1-T2 gear displayed under "Base Items".
+R1_THEMED_PREFIXES = ("gw_", "boss_trophy_greenwood")
+
+
+def get_region(tags, item_id=""):
+    """Extract region key from tags list.
+
+    For region_1: only items with Greenwood-themed prefixes stay in region_1.
+    Generic items (iron_sword, bandage, etc.) are displayed as base items
+    even though their JSON tag is region_1 (needed for recruit equipment pools).
+    """
     for tag in tags:
         m = re.match(r"^region_(\d+)$", tag)
         if m:
-            return f"region_{m.group(1)}"
+            region = f"region_{m.group(1)}"
+            # Region 1 special case: generic items → base for display
+            if region == "region_1" and not item_id.startswith(R1_THEMED_PREFIXES):
+                return "base"
+            return region
     return "base"
 
 
@@ -350,7 +364,7 @@ def main():
 
         item_id = data.get("id", fname.replace(".json", ""))
         tags = data.get("tags", [])
-        region = get_region(tags)
+        region = get_region(tags, item_id)
         item_type = data.get("item_type", "")
         # Books have item_type "consumable" but "book" in tags
         if "book" in tags:

@@ -1,0 +1,71 @@
+{
+  "region": "region_2",
+  "boss_id": "fm_spiral_mycelium",
+  "boss_name": "Spiral Mycelium",
+  "cutscenes": [
+    {
+      "id": "boss_entry_r2",
+      "trigger_type": "boss_entry",
+      "flag_set": "shown_boss_entry_r2",
+      "once_only": true,
+      "bgm": null,
+      "panels": [
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r2.png",
+          "speaker": "",
+          "text": "The Spore Throne",
+          "title_card": true,
+          "fallback_color": [0.05, 0.04, 0.07]
+        },
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r2.png",
+          "speaker": "Narrator",
+          "text": "Bioluminescent light pulses through the cavern in waves, each pulse revealing more of the horror ahead. The Spiral Mycelium \u2014 a vast fungal intelligence \u2014 has woven itself into every surface, its fruiting bodies swaying in a rhythm that has no wind.",
+          "fallback_color": [0.05, 0.04, 0.07]
+        },
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r2.png",
+          "speaker": "Narrator",
+          "text": "The air is thick with spores. Each breath brings whispers \u2014 fragments of thoughts not your own. The Mycelium knows you are here. It has been waiting.",
+          "fallback_color": [0.05, 0.04, 0.07]
+        }
+      ]
+    },
+    {
+      "id": "boss_victory_r2",
+      "trigger_type": "boss_victory",
+      "flag_set": "shown_boss_victory_r2",
+      "once_only": true,
+      "bgm": null,
+      "panels": [
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_aftermath_r2.png",
+          "speaker": "Narrator",
+          "text": "The Spiral Mycelium convulses, its network of tendrils blackening and curling inward. The spore-light flickers and dies, replaced by clean sunlight filtering through cracks in the cavern ceiling.",
+          "fallback_color": [0.06, 0.07, 0.04]
+        },
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_aftermath_r2.png",
+          "speaker": "Narrator",
+          "text": "For the first time in months, the air tastes of earth and moss rather than spore-dreams. But beneath the dying fungus, you glimpse something \u2014 a thread of purple energy retreating deeper underground. The infection here was fed from elsewhere.",
+          "fallback_color": [0.06, 0.07, 0.04]
+        }
+      ]
+    },
+    {
+      "id": "boss_defeat_r2",
+      "trigger_type": "boss_defeat",
+      "flag_set": null,
+      "once_only": false,
+      "bgm": null,
+      "panels": [
+        {
+          "background": "res://Assets/Backgrounds/Cutscene/boss_arena_r2.png",
+          "speaker": "Narrator",
+          "text": "The spores close in like a living fog. One by one, the heroes fall silent, their thoughts dissolving into the Mycelium's vast, alien awareness. The fungus feeds.",
+          "fallback_color": [0.05, 0.04, 0.07]
+        }
+      ]
+    }
+  ]
+}

@@ -2,7 +2,7 @@
 # Runs Godot in headless mode to validate project files and run tests
 #
 # Godot Discovery Order:
-#   1. DevTools/Godot_v4.5.1-stable_win64_console.exe (preferred)
+#   1. DevTools/Godot_v4.6.1-stable_mono_win64_console.exe (preferred)
 #   2. GODOT_EXE environment variable (full path)
 #   3. Exit with code 2 if not found
 
@@ -28,8 +28,8 @@ Write-Host ""
 # GODOT EXECUTABLE DISCOVERY
 # ============================================================================
 $GodotExe = $null
-$GodotConsoleExe = Join-Path $ScriptDir "Godot_v4.5.1-stable_win64_console.exe"
-$GodotGuiExe = Join-Path $ScriptDir "Godot_v4.5.1-stable_win64.exe"
+$GodotConsoleExe = Join-Path $ScriptDir "Godot_v4.6.1-stable_mono_win64_console.exe"
+$GodotGuiExe = Join-Path $ScriptDir "Godot_v4.6.1-stable_mono_win64.exe"
 
 # Option 1: DevTools-local console exe (preferred)
 if (Test-Path $GodotConsoleExe) {

@@ -2,7 +2,7 @@
 ## Lightweight autoload that adds click/hover sounds to all Button nodes,
 ## manages background music playback with region-specific tracks,
 ## provides SFX playback via a pooled player system,
-## and provides a global pause/options menu with jukebox.
+## and provides a global pause/options menu.
 ## Uses SceneTree.node_added to attach sounds automatically.
 extends Node
 
@@ -22,7 +22,6 @@ var _bgm_player: AudioStreamPlayer = null
 var _bgm_tracks: Dictionary = {}  # key -> AudioStream
 var _bgm_track_keys: Array[String] = []  # ordered list of track keys
 var _current_track_key: String = ""  # currently playing track key
-var _use_alt_bgm: bool = false  # toggle between original and alt region soundtracks
 
 # Closeable Stack — LIFO overlay close system for ESC key
 var _closeable_stack: Array = []  # [{node: Node, close: Callable}]
@@ -50,17 +49,6 @@ const REGION_BGM: Dictionary = {
 	"region_7": "Region/bgm_region_7_final_realm.mp3",
 }
 
-# Alternate region-to-track mapping (toggled via ESC menu)
-const ALT_REGION_BGM: Dictionary = {
-	"region_1": "AHHHH SHIT.mp3",
-	"region_2": "Broken Memories.mp3",
-	"region_3": "Deep smooth.mp3",
-	"region_4": "Fuck if i know.mp3",
-	"region_5": "Galaxy Party.mp3",
-	"region_6": "hmmmmm mayybeee.mp3",
-	"region_7": "The Xperience.mp3",
-}
-
 # Scene BGM keys (not region-specific)
 const SCENE_BGM: Dictionary = {
 	"town": "Region/bgm_town.wav",
@@ -70,6 +58,8 @@ const SCENE_BGM: Dictionary = {
 	"combat_boss": "Combat/bgm_combat_boss.wav",
 	"stinger_victory": "Stingers/stinger_victory.wav",
 	"stinger_defeat": "Stingers/stinger_defeat.wav",
+	"title_screen": "Cutscene/bgm_title_screen.mp3",
+	"intro_cutscene": "Cutscene/bgm_intro_cutscene.mp3",
 }
 
 # Display names for jukebox (thematic per region)
@@ -86,17 +76,8 @@ const BGM_DISPLAY_NAMES: Dictionary = {
 	"Region/bgm_dungeon_camp.wav": "Dungeon Camp Theme",
 	"Combat/bgm_combat_normal.wav": "Combat Theme",
 	"Combat/bgm_combat_boss.wav": "Boss Battle Theme",
-}
-
-# Display names for alt tracks
-const ALT_BGM_DISPLAY_NAMES: Dictionary = {
-	"AHHHH SHIT.mp3": "Alt: Greenwood Theme",
-	"Broken Memories.mp3": "Alt: Fungalmire Theme",
-	"Deep smooth.mp3": "Alt: Sunken Strand Theme",
-	"Fuck if i know.mp3": "Alt: Ashen Horizons Theme",
-	"Galaxy Party.mp3": "Alt: Starfall Expanse Theme",
-	"hmmmmm mayybeee.mp3": "Alt: Necropolis Theme",
-	"The Xperience.mp3": "Alt: Fractured Realm Theme",
+	"Cutscene/bgm_title_screen.mp3": "Deceitful Castle (Title)",
+	"Cutscene/bgm_intro_cutscene.mp3": "Ancient Ruins (Intro)",
 }
 
 # SFX Registry: slot_name -> file path relative to SFX_DIR
@@ -213,16 +194,17 @@ func _ready() -> void:
 	add_child(_bgm_player)
 
 	_load_bgm_tracks()
-	# Restore BGM set preference from save
-	_use_alt_bgm = GameContext.use_alt_bgm
-	# Play region-appropriate track on startup
+	# Play region-appropriate track on startup (skip if no save slot selected — title screen)
 	if _bgm_tracks.size() > 0:
-		var region_id: String = ""
-		if Engine.has_singleton("GameContext"):
-			region_id = GameContext.get_current_region_id()
-		if region_id == "":
-			region_id = "region_1"
-		play_region_bgm(region_id)
+		if GameContext.current_save_slot < 0:
+			print("[UIAudio] Skipping auto-play — no save slot selected (title screen)")
+		else:
+			var region_id: String = ""
+			if Engine.has_singleton("GameContext"):
+				region_id = GameContext.get_current_region_id()
+			if region_id == "":
+				region_id = "region_1"
+			play_region_bgm(region_id)
 
 
 func _load_audio(path: String) -> AudioStream:
@@ -284,7 +266,7 @@ func _prune_stale_closeables() -> void:
 # ============================================================================
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+	if event.is_action_pressed("ui_cancel"):
 		# Prune stale entries (nodes freed without unregister)
 		_prune_stale_closeables()
 		if _closeable_stack.size() > 0:
@@ -310,10 +292,6 @@ func _load_bgm_tracks() -> void:
 		var track_key: String = REGION_BGM[region_key]
 		if track_key not in _bgm_track_keys:
 			_bgm_track_keys.append(track_key)
-	for region_key in ALT_REGION_BGM:
-		var alt_key: String = ALT_REGION_BGM[region_key]
-		if alt_key not in _bgm_track_keys:
-			_bgm_track_keys.append(alt_key)
 	for scene_key in SCENE_BGM:
 		var track_key: String = SCENE_BGM[scene_key]
 		if track_key not in _bgm_track_keys:
@@ -326,22 +304,12 @@ func _load_bgm_tracks() -> void:
 			print("[UIAudio] Loaded BGM: %s" % track_key)
 
 	print("[UIAudio] Loaded %d BGM tracks" % _bgm_tracks.size())
-	# Diagnostic: check for missing alt region tracks
-	for region_key in ALT_REGION_BGM:
-		var alt_key: String = ALT_REGION_BGM[region_key]
-		if not _bgm_tracks.has(alt_key):
-			push_warning("[UIAudio] Alt BGM missing for %s: %s" % [region_key, alt_key])
-
-
-## Returns the active region BGM dict based on the toggle state.
-func get_active_region_bgm() -> Dictionary:
-	return ALT_REGION_BGM if _use_alt_bgm else REGION_BGM
 
 
 ## Play the BGM track assigned to a region. Loops the track.
 ## If the same track is already playing, does nothing.
 func play_region_bgm(region_id: String) -> void:
-	var active_bgm: Dictionary = get_active_region_bgm()
+	var active_bgm: Dictionary = REGION_BGM
 	var track_key: String = active_bgm.get(region_id, "")
 	if track_key == "":
 		# Fallback to region_1 track
@@ -386,44 +354,14 @@ func _on_bgm_finished() -> void:
 		_bgm_player.play()
 
 
-## Get display name for any track key (checks both original and alt dicts).
+## Get display name for a track key.
 func _get_display_name(track_key: String) -> String:
-	if ALT_BGM_DISPLAY_NAMES.has(track_key):
-		return ALT_BGM_DISPLAY_NAMES[track_key]
 	return BGM_DISPLAY_NAMES.get(track_key, track_key)
 
 
 ## Get the display name of the currently playing track.
 func get_current_track_display_name() -> String:
 	return _get_display_name(_current_track_key)
-
-
-## Toggle between original and alt region soundtracks.
-## Swaps the currently playing region track to its counterpart in the other set.
-func toggle_bgm_set() -> void:
-	_use_alt_bgm = not _use_alt_bgm
-	GameContext.use_alt_bgm = _use_alt_bgm
-	GameContext.save_game()
-	# Find which region the current track belongs to in the OLD set and swap
-	var active_bgm: Dictionary = get_active_region_bgm()
-	var other_bgm: Dictionary = REGION_BGM if _use_alt_bgm else ALT_REGION_BGM
-	var old_track_key: String = _current_track_key
-	var swapped: bool = false
-	for region_key in other_bgm:
-		if other_bgm[region_key] == _current_track_key:
-			var new_key: String = active_bgm.get(region_key, "")
-			if new_key != "" and _bgm_tracks.has(new_key):
-				_play_track(new_key)
-				swapped = true
-			break
-	# Fallback: if current track wasn't a region track (scene BGM), play current region's track
-	if not swapped:
-		var region_id: String = GameContext.get_current_region_id()
-		if region_id != "":
-			var new_key: String = active_bgm.get(region_id, "")
-			if new_key != "" and _bgm_tracks.has(new_key):
-				_play_track(new_key)
-	print("[UIAudio] BGM set toggled to %s" % ("Alt" if _use_alt_bgm else "Original"))
 
 
 ## Set BGM volume (0.0 = silent, 1.0 = full volume).
@@ -569,6 +507,7 @@ func _open_pause_menu() -> void:
 	_bgm_slider.value = get_bgm_volume()
 	_bgm_slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_bgm_slider.custom_minimum_size.x = 200
+	_bgm_slider.focus_mode = Control.FOCUS_ALL
 	_bgm_slider.value_changed.connect(_on_bgm_slider_changed)
 	bgm_row.add_child(_bgm_slider)
 
@@ -596,6 +535,7 @@ func _open_pause_menu() -> void:
 	_sfx_slider.value = get_sfx_volume()
 	_sfx_slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_sfx_slider.custom_minimum_size.x = 200
+	_sfx_slider.focus_mode = Control.FOCUS_ALL
 	_sfx_slider.value_changed.connect(_on_sfx_slider_changed)
 	sfx_row.add_child(_sfx_slider)
 
@@ -604,38 +544,6 @@ func _open_pause_menu() -> void:
 	_sfx_value_label.add_theme_font_size_override("font_size", GameContext.fs(14))
 	_sfx_value_label.custom_minimum_size.x = 40
 	sfx_row.add_child(_sfx_value_label)
-
-	# --- Soundtrack Toggle ---
-	var st_row = HBoxContainer.new()
-	st_row.add_theme_constant_override("separation", 8)
-	st_row.alignment = BoxContainer.ALIGNMENT_BEGIN
-	vbox.add_child(st_row)
-
-	var st_label = Label.new()
-	st_label.text = "Soundtrack:"
-	st_label.add_theme_font_size_override("font_size", GameContext.fs(15))
-	st_label.add_theme_color_override("font_color", Color(0.8, 0.75, 0.6))
-	st_row.add_child(st_label)
-
-	var st_btn = Button.new()
-	st_btn.text = "Alt" if _use_alt_bgm else "Original"
-	st_btn.custom_minimum_size = Vector2(100, 28)
-	st_btn.add_theme_font_size_override("font_size", GameContext.fs(14))
-	st_btn.tooltip_text = "Toggle between Original and Alt region soundtracks"
-	st_btn.pressed.connect(func():
-		toggle_bgm_set()
-		var was_paused = get_tree().paused
-		_close_pause_menu()
-		get_tree().paused = was_paused
-		_open_pause_menu()
-	)
-	st_row.add_child(st_btn)
-
-	var st_track = Label.new()
-	st_track.text = get_current_track_display_name()
-	st_track.add_theme_font_size_override("font_size", GameContext.fs(12))
-	st_track.add_theme_color_override("font_color", Color(0.6, 0.6, 0.5))
-	st_row.add_child(st_track)
 
 	# --- Display ---
 	var display_sep = HSeparator.new()
@@ -656,6 +564,7 @@ func _open_pause_menu() -> void:
 		var btn = Button.new()
 		btn.text = size_names[i]
 		btn.custom_minimum_size = Vector2(40, 28)
+		btn.focus_mode = Control.FOCUS_ALL
 		btn.add_theme_font_size_override("font_size", GameContext.fs(14))
 		if i == GameContext.text_size:
 			btn.disabled = true
@@ -674,6 +583,76 @@ func _open_pause_menu() -> void:
 			)
 		ts_row.add_child(btn)
 
+	# --- Window Size ---
+	var ws_row = HBoxContainer.new()
+	ws_row.add_theme_constant_override("separation", 8)
+	vbox.add_child(ws_row)
+
+	var ws_label = Label.new()
+	ws_label.text = "Window:"
+	ws_label.add_theme_font_size_override("font_size", GameContext.fs(15))
+	ws_label.add_theme_color_override("font_color", Color(0.8, 0.75, 0.6))
+	ws_row.add_child(ws_label)
+
+	var scale_names: Array = ["1x", "2x", "3x", "Full"]
+	var scale_values: Array = [1, 2, 3, 0]
+	for i in 4:
+		var ws_btn = Button.new()
+		ws_btn.text = scale_names[i]
+		ws_btn.custom_minimum_size = Vector2(44, 28)
+		ws_btn.focus_mode = Control.FOCUS_ALL
+		ws_btn.add_theme_font_size_override("font_size", GameContext.fs(13))
+		if scale_values[i] == GameContext.window_scale:
+			ws_btn.disabled = true
+			ws_btn.modulate = Color(0.5, 1.0, 0.8, 1)
+		else:
+			var scale_val: int = scale_values[i]
+			ws_btn.pressed.connect(func():
+				GameContext.window_scale = scale_val
+				GameContext.apply_window_scale()
+				GameContext.save_game()
+				print("[Options] Window scale -> %s" % scale_names[scale_values.find(scale_val)])
+				var was_paused = get_tree().paused
+				_close_pause_menu()
+				get_tree().paused = was_paused
+				_open_pause_menu()
+			)
+		ws_row.add_child(ws_btn)
+
+	# --- Telemetry Toggle ---
+	var telem_row = HBoxContainer.new()
+	telem_row.add_theme_constant_override("separation", 8)
+	vbox.add_child(telem_row)
+	var telem_lbl = Label.new()
+	telem_lbl.text = "Telemetry:"
+	telem_lbl.add_theme_font_size_override("font_size", GameContext.fs(13))
+	telem_lbl.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
+	telem_row.add_child(telem_lbl)
+	var telem_names: Array = ["On", "Off"]
+	var telem_values: Array = [true, false]
+	for ti in 2:
+		var t_btn = Button.new()
+		t_btn.text = telem_names[ti]
+		t_btn.custom_minimum_size = Vector2(44, 28)
+		t_btn.focus_mode = Control.FOCUS_ALL
+		t_btn.add_theme_font_size_override("font_size", GameContext.fs(13))
+		if telem_values[ti] == GameContext.telemetry_consent:
+			t_btn.disabled = true
+			t_btn.modulate = Color(0.5, 1.0, 0.8, 1)
+		else:
+			t_btn.modulate = Color(0.7, 0.7, 0.7, 1)
+			var t_val: bool = telem_values[ti]
+			t_btn.pressed.connect(func():
+				GameContext.telemetry_consent = t_val
+				GameContext.save_game()
+				print("[Options] Telemetry %s" % ("ON" if t_val else "OFF"))
+				var was_paused = get_tree().paused
+				_close_pause_menu()
+				get_tree().paused = was_paused
+				_open_pause_menu()
+			)
+		telem_row.add_child(t_btn)
+
 	var display_sep2 = HSeparator.new()
 	vbox.add_child(display_sep2)
 
@@ -685,6 +664,7 @@ func _open_pause_menu() -> void:
 	vbox.add_child(gameplay_label)
 
 	var auto_loot_check = CheckButton.new()
+	auto_loot_check.focus_mode = Control.FOCUS_ALL
 	auto_loot_check.text = "Auto-Loot"
 	auto_loot_check.tooltip_text = "Automatically deposit combat loot into Shopkeeper Bag, then Hero Bags.\nDisable to manually route each item."
 	auto_loot_check.button_pressed = GameContext.auto_loot
@@ -696,6 +676,7 @@ func _open_pause_menu() -> void:
 	vbox.add_child(auto_loot_check)
 
 	var tester_check = CheckButton.new()
+	tester_check.focus_mode = Control.FOCUS_ALL
 	tester_check.text = "Tester Mode"
 	tester_check.tooltip_text = "Show dev/debug buttons (e.g. +100 Gold) in town screens."
 	tester_check.button_pressed = GameContext.tester_mode
@@ -713,19 +694,62 @@ func _open_pause_menu() -> void:
 	var btn_resume = Button.new()
 	btn_resume.text = "Resume"
 	btn_resume.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	btn_resume.focus_mode = Control.FOCUS_ALL
 	btn_resume.pressed.connect(_close_pause_menu)
 	vbox.add_child(btn_resume)
 
 	var btn_save_quit = Button.new()
-	btn_save_quit.text = "Save & Quit"
+	btn_save_quit.text = "Save & Exit"
 	btn_save_quit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	btn_save_quit.focus_mode = Control.FOCUS_ALL
 	btn_save_quit.modulate = Color(0.6, 1.0, 0.6)
 	btn_save_quit.pressed.connect(_on_pause_save_quit)
 	vbox.add_child(btn_save_quit)
 
+	# --- Feedback Links ---
+	var feedback_row = HBoxContainer.new()
+	feedback_row.add_theme_constant_override("separation", 8)
+	feedback_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_child(feedback_row)
+
+	var btn_bug = Button.new()
+	btn_bug.text = "Report Bug"
+	btn_bug.custom_minimum_size = Vector2(104, 30)
+	btn_bug.focus_mode = Control.FOCUS_ALL
+	btn_bug.add_theme_font_size_override("font_size", GameContext.fs(12))
+	btn_bug.modulate = Color(1.0, 0.8, 0.6)
+	btn_bug.pressed.connect(func():
+		OS.shell_open("https://github.com/Starcraft394/ShopKeepersGame/issues/new/choose")
+	)
+	feedback_row.add_child(btn_bug)
+
+	var btn_community = Button.new()
+	btn_community.text = "Community"
+	btn_community.custom_minimum_size = Vector2(104, 30)
+	btn_community.focus_mode = Control.FOCUS_ALL
+	btn_community.add_theme_font_size_override("font_size", GameContext.fs(12))
+	btn_community.modulate = Color(0.7, 0.8, 1.0)
+	btn_community.pressed.connect(func():
+		OS.shell_open("https://github.com/Starcraft394/ShopKeepersGame/discussions")
+	)
+	feedback_row.add_child(btn_community)
+
+	var btn_credits = Button.new()
+	btn_credits.text = "Credits"
+	btn_credits.custom_minimum_size = Vector2(78, 30)
+	btn_credits.focus_mode = Control.FOCUS_ALL
+	btn_credits.add_theme_font_size_override("font_size", GameContext.fs(12))
+	btn_credits.modulate = Color(0.8, 0.75, 0.9)
+	btn_credits.pressed.connect(func():
+		CreditsOverlay.show(get_tree().root)
+	)
+	feedback_row.add_child(btn_credits)
+
+	btn_resume.call_deferred("grab_focus")
+
 	# Hint
 	var hint = Label.new()
-	hint.text = "Press ESC to resume"
+	hint.text = "Press %s to resume" % InputManager.get_glyph("ui_cancel")
 	hint.add_theme_font_size_override("font_size", GameContext.fs(12))
 	hint.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -758,17 +782,7 @@ func _on_sfx_slider_changed(value: float) -> void:
 		_sfx_value_label.text = "%d%%" % roundi(value * 100)
 
 
-## Handle jukebox track selection from pause menu.
-func _on_jukebox_track_pressed(track_key: String) -> void:
-	_play_track(track_key)
-	# Rebuild the pause menu to update button states
-	var was_paused = get_tree().paused
-	_close_pause_menu()
-	get_tree().paused = was_paused
-	_open_pause_menu()
-
-
 func _on_pause_save_quit() -> void:
 	_close_pause_menu()
 	GameContext.save_game()
-	get_tree().quit()
+	SceneTransition.fade_to("res://Game/UI/TitleScreen/TitleScreen.tscn")

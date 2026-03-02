@@ -6,6 +6,7 @@
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
       "title": "Your Roster",
       "body": "Here's your full roster — every hero you've recruited, whether they're in your active party or benched at an inn. Add heroes to your party, swap them out, or dismiss ones you no longer need.\n\nUse Manage Gear to equip weapons, armor, and bags. Preparation saves lives.",
+      "highlight": "manage_gear_panel",
       "button_text": "Got it!"
     }
   ]

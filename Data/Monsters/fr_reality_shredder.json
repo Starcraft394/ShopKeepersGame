@@ -1,32 +1,35 @@
 {
-  "id": "fr_reality_shredder",
-  "display_name": "Reality Shredder",
-  "description": "A mantis-like predator whose claws cut through dimensional barriers as easily as flesh.",
-  "icon_hint": "large mantis-like void creature with scythe arms that leave tears in the air",
-  "family": "void",
-  "region_id": "region_7",
-  "tier": 2,
-  "ai_tier": 2,
-  "attack_type": "melee",
-  "combat_role": "melee",
-  "base_stats": {
-    "health": 384,
-    "attack": 64,
-    "defense": 26,
-    "speed": 49,
-    "armor_penetration": 12,
-    "crit_chance": 10
-  },
-  "ability_ids": [
-    "basic_attack",
-    "mon_rending_strike"
-  ],
-  "passive_ids": ["mon_piercing_blows", "mon_venomous"],
-  "loot_table_id": "lt_region7_uncommon",
-  "gold_drop_min": 32,
-  "gold_drop_max": 52,
-  "sprite_path": "",
-  "is_elite": false,
-  "is_boss": false,
-  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fr_reality_shredder.png"
+	"id": "fr_reality_shredder",
+	"display_name": "Reality Shredder",
+	"description": "A mantis-like predator whose claws cut through dimensional barriers as easily as flesh.",
+	"icon_hint": "large mantis-like void creature with scythe arms that leave tears in the air",
+	"family": "void",
+	"region_id": "region_7",
+	"tier": 2,
+	"ai_tier": 2,
+	"attack_type": "melee",
+	"combat_role": "melee",
+	"base_stats": {
+		"health": 576,
+		"attack": 103,
+		"defense": 34,
+		"speed": 49,
+		"armor_penetration": 12,
+		"crit_chance": 10
+	},
+	"ability_ids": [
+		"basic_attack",
+		"mon_rending_strike"
+	],
+	"passive_ids": [
+		"mon_piercing_blows",
+		"mon_venomous"
+	],
+	"loot_table_id": "lt_region7_uncommon",
+	"gold_drop_min": 32,
+	"gold_drop_max": 52,
+	"sprite_path": "",
+	"is_elite": false,
+	"is_boss": false,
+	"portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fr_reality_shredder.png"
 }

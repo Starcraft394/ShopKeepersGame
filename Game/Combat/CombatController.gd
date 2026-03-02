@@ -1067,9 +1067,14 @@ func step_one_turn() -> Array:
 		if _check_combat_end():
 			return _pending_actions
 
-	# Get next unit
+	# Get next unit (skip dead units)
 	var unit = _turn_queue.get_next_unit()
+	while unit != null and not unit.is_alive:
+		push_warning("[Combat] Skipping dead unit in step_one_turn: %s" % unit.display_name)
+		_turn_queue.advance()
+		unit = _turn_queue.get_next_unit()
 	if unit == null:
+		_check_combat_end()
 		return _pending_actions
 
 	# Initialize action count for this unit if not already set
@@ -1589,6 +1594,12 @@ func _process_unit_turn_step(unit: CombatUnit) -> void:
 	# v2.1 Fix: Guard against null unit to prevent crash
 	if unit == null:
 		push_warning("[Combat] _process_unit_turn_step called with null unit, skipping turn")
+		return
+
+	# Guard: skip dead units (killed by DOT/thorns between turns)
+	if not unit.is_alive:
+		push_warning("[Combat] _process_unit_turn_step called with dead unit: %s, consuming action" % unit.display_name)
+		_consume_action(unit)
 		return
 
 	_current_turn += 1
@@ -2800,11 +2811,14 @@ func _check_combat_end() -> bool:
 		if _encounter_is_boss:
 			var region_id: String = GameContext.get_current_region_id()
 			GameContext.mark_region_completed(region_id)
+			# Campaign quest: track boss kill
+			CampaignQuestSystem.on_boss_killed(_encounter_boss_id, region_id)
 			# Campaign victory: R7 boss defeated = campaign complete
 			if region_id == "region_7":
 				_result.is_campaign_victory = true
 		# Health Persistence v1: Save surviving heroes' HP
 		_persist_hero_hp()
+		_result.total_rounds = _current_round
 		combat_ended.emit(_result)
 		return true
 
@@ -2814,6 +2828,7 @@ func _check_combat_end() -> bool:
 		_result.set_outcome_from_combat(_player_units, _enemy_units)
 		# Health Persistence v1: Save surviving heroes' HP (even on defeat, for dead heroes)
 		_persist_hero_hp()
+		_result.total_rounds = _current_round
 		combat_ended.emit(_result)
 		return true
 
@@ -2822,8 +2837,31 @@ func _check_combat_end() -> bool:
 
 ## Health Persistence v1: Save all player unit HP to GameContext.
 ## Uses source_id (actual hero_id like "hero_warrior_1") for consistent key.
+## Flushes remaining HOT ticks as instant healing before persisting.
 func _persist_hero_hp() -> void:
 	for unit in _player_units:
+		if not unit.is_alive:
+			var dead_hero_id = unit.source_id if unit.source_id != "" else unit.unit_id
+			GameContext.set_hero_hp(dead_hero_id, 0, unit.max_health)
+			print("[HP] persist_dead hero=%s hp=0/%d" % [dead_hero_id, unit.max_health])
+			continue
+		# Flush remaining HOT ticks as instant healing so no potion value is wasted
+		var hot_total: int = 0
+		for status in unit.active_statuses:
+			var status_data = DataRegistry.get_status_effect(status["id"])
+			if status_data and status_data.tags is Array and "healing" in status_data.tags:
+				var hpt: int = status.get("heal_per_tick", 0)
+				if hpt == 0:
+					var stacks: int = status.get("stacks", 1)
+					hpt = status_data.base_value + status_data.value_per_stack * (stacks - 1)
+				var remaining_rounds: int = status.get("remaining_rounds", 0)
+				hot_total += hpt * remaining_rounds
+		if hot_total > 0 and unit.current_health < unit.max_health:
+			var hp_before: int = unit.current_health
+			unit.current_health = mini(unit.current_health + hot_total, unit.max_health)
+			print("[HP] flush_hot hero=%s healed=%d hp=%d/%d" % [
+				unit.source_id, unit.current_health - hp_before, unit.current_health, unit.max_health])
+
 		if GameContext.has_method("set_hero_hp"):
 			# Use source_id (actual hero_id) not unit_id (combat index)
 			var hero_id = unit.source_id if unit.source_id != "" else unit.unit_id
@@ -3284,12 +3322,9 @@ func run_smoke_test() -> bool:
 # ============================================================================
 
 ## Calculate number of actions based on unit speed.
-## More conservative formula to prevent action spam:
-## Speed 0-9: 1 action, 10-19: 2 actions, 20+: 3 actions (cap)
+## 40+ SPD = 2 actions (cap). Prevents late-game action spam.
 func _calculate_actions_for_speed(speed: int) -> int:
-	if speed >= 80:
-		return 3
-	elif speed >= 40:
+	if speed >= 40:
 		return 2
 	else:
 		return 1
@@ -3674,6 +3709,11 @@ func is_awaiting_player_input() -> bool:
 	return _awaiting_player_input
 
 
+## Get the unit currently awaiting player input (may be null).
+func get_input_unit() -> CombatUnit:
+	return _input_unit
+
+
 ## Continue combat flow after player action: auto-execute enemies, then prompt next player.
 ## Uses async delays between enemy actions for visual clarity.
 func _continue_to_next_turn() -> void:
@@ -3696,9 +3736,12 @@ func _continue_to_next_turn() -> void:
 					if not is_first_enemy_action:
 						await get_tree().create_timer(ENEMY_ACTION_DELAY).timeout
 					is_first_enemy_action = false
-					# v2.1 Fix: Re-check unit validity after await (may have been freed)
-					if _current_multi_action_unit == null:
-						push_warning("[Combat] _current_multi_action_unit became null after delay, breaking loop")
+					# v2.1 Fix: Re-check unit validity after await (may have been freed or died)
+					if _current_multi_action_unit == null or not _current_multi_action_unit.is_alive:
+						push_warning("[Combat] _current_multi_action_unit invalid after delay, checking combat end")
+						_current_multi_action_unit = null
+						if _check_combat_end():
+							return
 						break
 					_process_unit_turn_step(_current_multi_action_unit)
 					if _check_combat_end():
@@ -3722,7 +3765,27 @@ func _continue_to_next_turn() -> void:
 		# Get next unit
 		var unit = _turn_queue.get_next_unit()
 		if unit == null:
+			push_warning("[Combat] get_next_unit() returned null in _continue_to_next_turn")
+			if not _check_combat_end():
+				# Combat isn't over but no units available — start new round
+				_current_round += 1
+				_tick_all_buffs()
+				_tick_all_statuses()
+				_turn_queue.start_new_round()
+				_apply_round_start_passives()
+				_process_round_start_tag_effects()
+				_process_round_start_deaths()
+				_unit_remaining_actions.clear()
+				round_ended.emit(_current_round)
+				if not _check_combat_end():
+					combat_continue_ready.emit()
 			return
+
+		# Skip dead units (can happen if killed by DOT/tag effects between turns)
+		if not unit.is_alive:
+			push_warning("[Combat] Skipping dead unit in _continue_to_next_turn: %s" % unit.display_name)
+			_turn_queue.advance()
+			continue
 
 		# Initialize action count
 		if not _unit_remaining_actions.has(unit.unit_id):
@@ -3745,6 +3808,13 @@ func _continue_to_next_turn() -> void:
 			if not is_first_enemy_action:
 				await get_tree().create_timer(ENEMY_ACTION_DELAY).timeout
 			is_first_enemy_action = false
+			# Re-validate unit after await
+			if not unit.is_alive:
+				push_warning("[Combat] Enemy unit died during delay: %s" % unit.display_name)
+				_turn_queue.advance()
+				if _check_combat_end():
+					return
+				continue
 			_process_unit_turn_step(unit)
 			if _check_combat_end():
 				return

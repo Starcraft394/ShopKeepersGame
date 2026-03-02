@@ -5,7 +5,8 @@
       "speaker": "Thalric",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
       "title": "Hero Abilities",
-      "body": "Your heroes have more than just a basic attack. Each class comes with special abilities that activate on cooldown — you'll see them light up in the combat panel.\n\nAbilities are more powerful than basic attacks but can't be used every turn. Watch the cooldown counter to time them right."
+      "body": "Your heroes have more than just a basic attack. Each class comes with special abilities that activate on cooldown — you'll see them light up in the combat panel.\n\nAbilities are more powerful than basic attacks but can't be used every turn. Watch the cooldown counter to time them right.",
+      "highlight": "action_panel"
     },
     {
       "speaker": "Thalric",
