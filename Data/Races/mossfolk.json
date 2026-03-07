@@ -16,6 +16,10 @@
     "nature",
     "regenerative"
   ],
+  "sprites": {
+    "m": "res://Assets/Sprites/Heroes/mossfolk_m",
+    "f": "res://Assets/Sprites/Heroes/mossfolk_f"
+  },
   "portraits": [
     "res://Assets/_ArtPacks/Avatars_Mossfolk_PNG/Icon1.png",
     "res://Assets/_ArtPacks/Avatars_Mossfolk_PNG/Icon2.png",

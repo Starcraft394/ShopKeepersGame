@@ -1,7 +1,7 @@
 {
   "id": "druid",
   "display_name": "Druid",
-  "description": "A nature guardian who channels the power of plants and fungi to heal allies and control the battlefield.",
+  "description": "A nature guardian attuned to the bioluminescent depths of Sproutrest, weaving fungal spores and cave-blooms into restorative magic. The cavern itself breathes at their command.",
   "icon_hint": "gnarled wooden staff crowned with blooming flowers and curling moss",
   "archetype": "healer",
   "unlock_region": 2,
@@ -21,5 +21,13 @@
   "ability_b_id": "spore_cloud",
   "passive_a_id": "verdant_growth",
   "passive_b_id": "fungal_symbiosis",
-  "weapon_types": ["staff", "focus"]
+  "weapon_types": ["staff", "focus"],
+  "card_prompt": "Pixel art, SNES style. A decorative card frame background for a fantasy druid healer class in a bioluminescent fungal cavern. Organic mycelium-thread border with tiny glowing blue mushroom caps at corners. Dark cavern wall center with floating bioluminescent spore particles and faint flower silhouettes. Small blooming flower with moss at bottom. Color palette: deep cavern blue, bioluminescent teal, soft purple. No characters, no text.",
+  "card_palette": {
+    "border_primary": "#1a3a4a",
+    "border_accent": "#4ecdc4",
+    "bg_primary": "#1a3a4a",
+    "bg_secondary": "#0d1f2a",
+    "text_tint": "#9b59b6"
+  }
 }

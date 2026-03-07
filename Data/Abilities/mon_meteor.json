@@ -1,7 +1,7 @@
 {
   "id": "mon_meteor",
   "display_name": "Meteor",
-  "description": "Calls down a blazing meteor that scorches all enemies.",
+  "description": "Deals 10 + 60% ATK fire damage. Inflicts Burning (2 stacks, 3 turns). Hits all enemies. Cooldown: 5 turns.",
   "icon_hint": "massive flaming rock descending from dark sky trailing fire and smoke",
   "ability_type": "monster",
   "source_class_id": "",

@@ -17,6 +17,10 @@
     "stubborn",
     "resist_poison"
   ],
+  "sprites": {
+    "m": "res://Assets/Sprites/Heroes/dwarf_m",
+    "f": "res://Assets/Sprites/Heroes/dwarf_f"
+  },
   "portraits": [
     "res://Assets/_ArtPacks/Avatars_Dwarf/PNG/Transperent/Icon5.png",
     "res://Assets/_ArtPacks/Avatars_Dwarf/PNG/Transperent/Icon7.png",

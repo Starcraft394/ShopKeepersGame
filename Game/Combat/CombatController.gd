@@ -26,6 +26,10 @@ signal player_input_required(unit: CombatUnit, available_actions: Array)  # Play
 signal target_selection_required(unit: CombatUnit, valid_targets: Array, action_type: String, ability: AbilityData)  # Player Actions v1
 signal multi_action_update(unit: CombatUnit, actions_remaining: int, actions_total: int)  # Player Actions v1
 signal combat_continue_ready()  # Player Actions v1: Emitted when ready for next step (auto-flow)
+signal move_selection_required(unit: CombatUnit, reachable_tiles: Array)  # Grid Combat v1: Movement tile selection
+signal unit_moved(unit: CombatUnit, from_pos: Vector2i, to_pos: Vector2i)  # Grid Combat v1: Movement executed
+signal placement_phase_started(player_units: Array)  # Phase 8: Hero placement before combat
+signal placement_confirmed()  # Phase 8: Player confirmed hero positions
 
 # ============================================================================
 # HERO CLASS MAPPING (Legacy fallback for hardcoded hero_ids)
@@ -48,6 +52,9 @@ var _turn_queue: TurnQueue = null
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _result: CombatResult = null
 var _targeting_policy: TargetingPolicy = null
+
+# Grid Combat v1: Unified 8x4 grid (parallel system, runs alongside legacy formation)
+var _grid_manager: GridManager = null
 
 var _is_combat_active: bool = false
 var _current_round: int = 0
@@ -82,6 +89,10 @@ var _selected_ability: AbilityData = null
 var _unit_remaining_actions: Dictionary = {}  # { unit_id: int }
 var _current_multi_action_unit: CombatUnit = null
 
+# Phase 8: Hero Placement Phase
+var _placement_phase_active: bool = false
+var _placement_modifier: Dictionary = {}  # Saved for deferred confirm
+
 # ============================================================================
 # INITIALIZATION
 # ============================================================================
@@ -92,7 +103,8 @@ func _ready() -> void:
 
 ## Initialize combat without running the loop (for step-based UI).
 ## Optional modifier dict can contain: player_spd_bonus, enemy_spd_bonus, player_start_damage, bonus_gold
-func initialize_combat(hero_ids: Array, enemy_ids: Array, rng: RandomNumberGenerator = null, modifier: Dictionary = {}) -> void:
+## skip_placement: if false, pauses after grid setup for hero placement phase (Phase 8).
+func initialize_combat(hero_ids: Array, enemy_ids: Array, rng: RandomNumberGenerator = null, modifier: Dictionary = {}, skip_placement: bool = true) -> void:
 	print("\n" + "=".repeat(50))
 	print("        COMBAT INITIALIZED")
 	print("=".repeat(50) + "\n")
@@ -101,6 +113,7 @@ func initialize_combat(hero_ids: Array, enemy_ids: Array, rng: RandomNumberGener
 	_current_round = 1
 	_current_turn = 0
 	_pending_actions.clear()
+	_placement_phase_active = false
 
 	# Set up RNG
 	_rng = rng if rng != null else RandomNumberGenerator.new()
@@ -113,16 +126,16 @@ func initialize_combat(hero_ids: Array, enemy_ids: Array, rng: RandomNumberGener
 	# Create units
 	_create_units(hero_ids, enemy_ids)
 
-	# Assign grid positions (M3)
+	# Assign grid positions (M3 legacy)
 	FormationAssigner.assign_default_formation(_player_units, _enemy_units)
 
-	# Apply hero row assignments (3-Row Formation v1)
-	# Override row for player units based on saved assignments
-	for unit in _player_units:
-		var hero_id = unit.source_id
-		var assigned_row = GameContext.get_hero_row(hero_id)
-		unit.grid_y = assigned_row
-	print("[CombatController] Formation assigned (3-row: Front/Middle/Back)")
+	# Grid Combat v1: Initialize unified 8x4 grid
+	_grid_manager = GridManager.new()
+	_grid_manager.assign_spawn_formation(_player_units, _enemy_units)
+	_restore_saved_placements()
+	_targeting_policy.set_grid_manager(_grid_manager)
+	print("[CombatController] Grid Combat: unified %dx%d grid initialized (%d units placed)" % [
+		GridManager.GRID_WIDTH, GridManager.GRID_HEIGHT, _grid_manager.get_all_units().size()])
 
 	# Apply passive stat bonuses (M4)
 	_apply_all_passives()
@@ -134,8 +147,6 @@ func initialize_combat(hero_ids: Array, enemy_ids: Array, rng: RandomNumberGener
 	_apply_equipment_bonuses()
 
 	# HP Clamp v1: Ensure current_health does not exceed max_health after all bonuses
-	# This fixes a bug where persisted HP from previous combat (with bonuses applied)
-	# would be restored, then bonuses applied again, causing current > max.
 	_clamp_player_hp()
 
 	# T4 combat_start tag effects (e.g., speed buffs) BEFORE speed modifiers
@@ -143,6 +154,14 @@ func initialize_combat(hero_ids: Array, enemy_ids: Array, rng: RandomNumberGener
 
 	# Apply combat modifier speed bonuses BEFORE TurnQueue is built
 	_apply_combat_modifier_speeds(modifier)
+
+	# Phase 8: If placement phase requested, pause here for hero repositioning
+	if not skip_placement:
+		_placement_phase_active = true
+		_placement_modifier = modifier
+		print("[CombatController] Placement phase started — waiting for player to confirm positions")
+		placement_phase_started.emit(_player_units)
+		return  # Do NOT build TurnQueue or emit combat_started yet
 
 	# Initialize result tracking
 	_result = CombatResult.new()
@@ -158,6 +177,11 @@ func initialize_combat(hero_ids: Array, enemy_ids: Array, rng: RandomNumberGener
 	var pending_statuses = GameContext.consume_pending_combat_statuses()
 	if not pending_statuses.is_empty():
 		_apply_pending_event_statuses(pending_statuses)
+
+	# Save hero grid positions (seeds placement memory for first combat)
+	for unit in _player_units:
+		if unit.source_id != "":
+			GameContext.set_hero_grid_placement(unit.source_id, Vector2i(unit.grid_x, unit.grid_y))
 
 	combat_started.emit(_player_units, _enemy_units)
 
@@ -1226,6 +1250,7 @@ func _unit_to_snapshot(unit: CombatUnit) -> Dictionary:
 		"pos": {"x": unit.grid_x, "y": unit.grid_y},
 		"team_pos_key": "%s:%d,%d" % [team_str, unit.grid_x, unit.grid_y],
 		"portrait_path": _get_unit_portrait(unit),
+		"sprite_folder": _get_unit_sprite_folder(unit),
 		"shield_hp": unit.shield_hp,
 		"shield_remaining_rounds": unit.shield_remaining_rounds,
 		"reflect_percent": unit.reflect_percent,
@@ -1241,6 +1266,31 @@ func _get_unit_portrait(unit: CombatUnit) -> String:
 	else:
 		var monster = DataRegistry.get_monster(unit.source_id)
 		return monster.portrait_path if monster != null else ""
+
+
+## Get sprite folder path for a combat unit (class-first, race/gender fallback).
+func _get_unit_sprite_folder(unit: CombatUnit) -> String:
+	if unit.team == CombatUnit.Team.PLAYER:
+		# Try class sprites first
+		var class_data = DataRegistry.get_class_data(unit.class_id)
+		if class_data != null and not class_data.sprites.is_empty():
+			return class_data.sprites.get("default", "")
+		# Fall back to race/gender sprites
+		var hero = GameContext.get_hero(unit.source_id)
+		if hero.is_empty():
+			return ""
+		var gender: String = hero.get("gender", "m")
+		var race = DataRegistry.get_race(unit.race_id)
+		if race == null or race.sprites.is_empty():
+			return ""
+		return race.sprites.get(gender, "")
+	else:
+		return ""  # Monster sprites: future expansion
+
+
+## Get the GridManager for grid combat queries (Grid Combat v1).
+func get_grid_manager() -> GridManager:
+	return _grid_manager
 
 
 ## Get current turn info for UI.
@@ -1428,6 +1478,7 @@ func get_unit_intent_preview(unit_id: String) -> Dictionary:
 		"ability_name": "",
 		"ability_desc": "",
 		"target_name": "",
+		"target_id": "",
 		"target_rule": "",
 		"is_player": unit.team == CombatUnit.Team.PLAYER,
 		"ready_abilities": [],
@@ -1485,6 +1536,12 @@ func get_unit_intent_preview(unit_id: String) -> Dictionary:
 			result["ready_abilities"].append({"name": "Weapon Attack", "desc": ""})
 		if result["ready_abilities"].is_empty():
 			result["ready_abilities"].append({"name": "Basic Attack", "desc": ""})
+		# Still pick a likely target for display, even though action is unpredictable
+		var enemies = TargetingPolicy.get_enemies_for_team(_all_units, unit.team)
+		var target = _targeting_policy.select_target(unit, enemies)
+		if target != null:
+			result["target_name"] = target.display_name
+			result["target_id"] = target.unit_id
 		return result
 
 	# Deterministic enemies (ai_tier 0, 1, 3): predict exact action
@@ -1498,6 +1555,7 @@ func get_unit_intent_preview(unit_id: String) -> Dictionary:
 		var target = _pick_target_for_ability(unit, ability)
 		if target != null:
 			result["target_name"] = target.display_name
+			result["target_id"] = target.unit_id
 		result["target_rule"] = ability.target_rule
 	else:
 		result["action_type"] = choice["type"]
@@ -1506,6 +1564,7 @@ func get_unit_intent_preview(unit_id: String) -> Dictionary:
 		var target = _targeting_policy.select_target(unit, enemies)
 		if target != null:
 			result["target_name"] = target.display_name
+			result["target_id"] = target.unit_id
 
 	return result
 
@@ -1612,6 +1671,11 @@ func _process_unit_turn_step(unit: CombatUnit) -> void:
 
 	turn_started.emit(unit)
 
+	# Grid Combat v1: Reset movement flag at start of first action each turn
+	var is_first_action = (remaining == total_actions)
+	if is_first_action:
+		unit.has_moved_this_turn = false
+
 	# Process turn start - check if stunned (legacy StatusRuntime)
 	var can_act = unit.statuses.process_turn_start()
 
@@ -1638,6 +1702,8 @@ func _process_unit_turn_step(unit: CombatUnit) -> void:
 		print("[Combat] player_input_required emitted, awaiting_player_input=%s" % str(_awaiting_player_input))
 		# Do NOT continue - wait for player input via submit_player_action/target
 	else:
+		# Grid Combat v1: Enemy AI movement (free, before action)
+		_try_enemy_movement(unit)
 		# Enemy AI - auto-use consumable and execute
 		_try_auto_use_consumable(unit)
 		_execute_unit_action_step(unit)
@@ -1749,6 +1815,72 @@ func _execute_unit_action(unit: CombatUnit) -> void:
 		_check_tag_effects(unit, "on_kill")
 
 
+## Grid Combat v1: Enemy AI free movement before action.
+## Melee enemies move toward closest target if out of range.
+## Ranged enemies stay in place (already in range of all tiles).
+func _try_enemy_movement(unit: CombatUnit) -> void:
+	if _grid_manager == null or unit.has_moved_this_turn:
+		return
+	if not unit.is_alive:
+		return
+
+	# Only melee enemies need to move — ranged can hit any tile
+	if unit.attack_type == "ranged" or unit.attack_type == "mage":
+		return
+
+	# Find closest living player unit
+	var unit_pos = Vector2i(unit.grid_x, unit.grid_y)
+	var closest_target: CombatUnit = null
+	var closest_dist: int = 999
+
+	for player_unit in _player_units:
+		if not player_unit.is_alive:
+			continue
+		var target_pos = Vector2i(player_unit.grid_x, player_unit.grid_y)
+		var dist = GridManager.manhattan_distance(unit_pos, target_pos)
+		if dist < closest_dist:
+			closest_dist = dist
+			closest_target = player_unit
+
+	if closest_target == null:
+		return
+
+	# If already adjacent (dist 1), no need to move
+	if closest_dist <= 1:
+		return
+
+	# Find the reachable tile closest to the target
+	var reachable = _grid_manager.get_reachable_tiles(unit_pos, unit.movement_range, unit.team)
+	if reachable.is_empty():
+		return
+
+	var target_pos = Vector2i(closest_target.grid_x, closest_target.grid_y)
+	var best_tile: Vector2i = unit_pos
+	var best_dist: int = closest_dist
+
+	for tile in reachable:
+		var d = GridManager.manhattan_distance(tile, target_pos)
+		if d < best_dist:
+			best_dist = d
+			best_tile = tile
+
+	# Only move if it actually gets closer
+	if best_tile != unit_pos and best_dist < closest_dist:
+		var from_pos = unit_pos
+		if _grid_manager.move_unit(unit, best_tile):
+			unit.has_moved_this_turn = true
+			var action = CombatAction.create_move(unit, from_pos, best_tile)
+			action.round_number = _current_round
+			action.turn_number = _current_turn
+			_pending_actions.append(action)
+			_result.add_action(action)
+			action_performed.emit(action)
+			unit_moved.emit(unit, from_pos, best_tile)
+			print("[AI] %s moves from (%d,%d) to (%d,%d) [toward %s]" % [
+				unit.display_name, from_pos.x, from_pos.y, best_tile.x, best_tile.y,
+				closest_target.display_name])
+
+
 func _execute_unit_action_step(unit: CombatUnit) -> void:
 	# M4: Determine ability to use (priority: Active A > Active B > Weapon > Basic)
 	var ability_choice = _get_ability_to_use(unit)
@@ -1858,6 +1990,11 @@ func _pick_target_for_ability(caster: CombatUnit, ability: AbilityData) -> Comba
 		# Enemy targeting: opposite team
 		candidates = _enemy_units if caster.team == CombatUnit.Team.PLAYER else _player_units
 		candidates = candidates.filter(func(u): return u.is_alive)
+		# Grid Combat v1: Filter by attack range (melee = adjacent only)
+		if _grid_manager != null:
+			var in_range = candidates.filter(func(u): return _is_target_in_range(caster, u))
+			if not in_range.is_empty():
+				candidates = in_range
 
 	# If no candidates, log and return null
 	if candidates.is_empty():
@@ -1866,9 +2003,12 @@ func _pick_target_for_ability(caster: CombatUnit, ability: AbilityData) -> Comba
 		return null
 
 	# Taunt enforcement: if targeting enemies and any candidate is taunting, force target
+	# Grid Combat v1: Melee casters can only be taunted if target is in range
 	if target_team == "enemy":
 		for c in candidates:
 			if c.has_status_v1("taunting"):
+				if _grid_manager != null and not _is_target_in_range(caster, c):
+					continue  # Taunt ignored — out of melee range
 				print("[Target] ability=%s caster=%s picked=%s team=%s rule=%s reason=taunt_forced" % [
 					ability.ability_id, caster.display_name, c.display_name, target_team, target_rule])
 				return c
@@ -3345,7 +3485,19 @@ func _consume_action(unit: CombatUnit) -> void:
 
 ## Get available actions for a player unit.
 func _get_available_actions(unit: CombatUnit) -> Array:
-	var actions = [{"type": "basic", "name": "Basic Attack", "enabled": true, "cooldown": 0}]
+	# Grid Combat v1: Free movement action (1 per turn, doesn't cost an action)
+	var actions: Array = []
+	if _grid_manager != null and not unit.has_moved_this_turn:
+		var reachable = _grid_manager.get_reachable_tiles(
+			Vector2i(unit.grid_x, unit.grid_y), unit.movement_range, unit.team)
+		actions.append({
+			"type": "move",
+			"name": "Move",
+			"enabled": reachable.size() > 0,
+			"cooldown": 0
+		})
+
+	actions.append({"type": "basic", "name": "Basic Attack", "enabled": true, "cooldown": 0})
 
 	if unit.ability_a_id != "" and GameContext.is_ability_slot_unlocked("ability_a", unit.hero_level):
 		var ability = DataRegistry.get_ability(unit.ability_a_id)
@@ -3396,6 +3548,15 @@ func submit_player_action(action_type: String) -> void:
 
 	_selected_action_type = action_type
 
+	# Grid Combat v1: Movement action — emit reachable tiles instead of targets
+	if action_type == "move":
+		if _grid_manager != null:
+			var reachable = _grid_manager.get_reachable_tiles(
+				Vector2i(_input_unit.grid_x, _input_unit.grid_y),
+				_input_unit.movement_range, _input_unit.team)
+			move_selection_required.emit(_input_unit, reachable)
+		return
+
 	# Get ability if needed
 	if action_type == "ability_a":
 		_selected_ability = DataRegistry.get_ability(_input_unit.ability_a_id)
@@ -3424,8 +3585,13 @@ func _get_valid_targets(unit: CombatUnit, action_type: String, ability: AbilityD
 			"single_enemy":
 				var enemies = _enemy_units if unit.team == CombatUnit.Team.PLAYER else _player_units
 				for e in enemies:
-					if e.is_alive:
+					if e.is_alive and _is_target_in_range(unit, e):
 						targets.append({"unit_id": e.unit_id, "name": e.display_name, "is_ally": false})
+				# Grid Combat v1: Fallback — if no enemies in range, allow all alive
+				if targets.is_empty():
+					for e in enemies:
+						if e.is_alive:
+							targets.append({"unit_id": e.unit_id, "name": e.display_name, "is_ally": false})
 			"single_ally", "lowest_hp_ally":
 				var allies = _player_units if unit.team == CombatUnit.Team.PLAYER else _enemy_units
 				for a in allies:
@@ -3440,16 +3606,41 @@ func _get_valid_targets(unit: CombatUnit, action_type: String, ability: AbilityD
 				# Default to enemies for damage abilities
 				var enemies = _enemy_units if unit.team == CombatUnit.Team.PLAYER else _player_units
 				for e in enemies:
-					if e.is_alive:
+					if e.is_alive and _is_target_in_range(unit, e):
 						targets.append({"unit_id": e.unit_id, "name": e.display_name, "is_ally": false})
+				# Grid Combat v1: Fallback
+				if targets.is_empty():
+					for e in enemies:
+						if e.is_alive:
+							targets.append({"unit_id": e.unit_id, "name": e.display_name, "is_ally": false})
 	else:
 		# Basic attack - target enemies
 		var enemies = _enemy_units if unit.team == CombatUnit.Team.PLAYER else _player_units
 		for e in enemies:
-			if e.is_alive:
+			if e.is_alive and _is_target_in_range(unit, e):
 				targets.append({"unit_id": e.unit_id, "name": e.display_name, "is_ally": false})
+		# Grid Combat v1: Fallback — if no enemies in range, allow all alive
+		if targets.is_empty():
+			for e in enemies:
+				if e.is_alive:
+					targets.append({"unit_id": e.unit_id, "name": e.display_name, "is_ally": false})
 
 	return targets
+
+
+## Grid Combat v1: Check if target is in attack range.
+## With grid_manager: melee = adjacent (dist 1), ranged = any tile.
+## Without grid_manager: always in range (legacy).
+func _is_target_in_range(attacker: CombatUnit, target: CombatUnit) -> bool:
+	if _grid_manager == null:
+		return true
+	var range_cat = TargetingPolicy.get_attacker_range(attacker)
+	if range_cat == TargetingPolicy.RangeCategory.RANGED:
+		return true
+	# Melee: adjacent only (Manhattan dist 1)
+	var attacker_pos = Vector2i(attacker.grid_x, attacker.grid_y)
+	var target_pos = Vector2i(target.grid_x, target.grid_y)
+	return GridManager.manhattan_distance(attacker_pos, target_pos) <= 1
 
 
 ## Called by UI when player clicks a target.
@@ -3704,9 +3895,179 @@ func submit_pass_action() -> void:
 		_continue_to_next_turn()
 
 
+## Grid Combat v1: Called by UI when player selects a movement destination tile.
+## Movement is FREE — doesn't consume an action. After moving, re-emit player_input_required.
+func submit_player_move(destination: Vector2i) -> void:
+	if not _awaiting_player_input or _input_unit == null:
+		return
+	if _grid_manager == null:
+		return
+
+	var unit = _input_unit
+	var from_pos = Vector2i(unit.grid_x, unit.grid_y)
+
+	if _grid_manager.move_unit(unit, destination):
+		unit.has_moved_this_turn = true
+
+		# Log the movement
+		var action = CombatAction.create_move(unit, from_pos, destination)
+		action.round_number = _current_round
+		action.turn_number = _current_turn
+		_pending_actions.append(action)
+		_result.add_action(action)
+		action_performed.emit(action)
+		unit_moved.emit(unit, from_pos, destination)
+		print("[Combat] %s moves from (%d,%d) to (%d,%d)" % [
+			unit.display_name, from_pos.x, from_pos.y, destination.x, destination.y])
+
+		# Re-emit player_input_required with updated actions (Move removed)
+		var available = _get_available_actions(unit)
+		player_input_required.emit(unit, available)
+	else:
+		push_warning("[Combat] Movement to (%d,%d) failed for %s" % [
+			destination.x, destination.y, unit.display_name])
+
+
 ## Check if combat is waiting for player input.
 func is_awaiting_player_input() -> bool:
 	return _awaiting_player_input
+
+
+# ============================================================================
+# PLACEMENT PHASE (Phase 8)
+# ============================================================================
+
+## Check if the placement phase is active.
+func is_placement_phase() -> bool:
+	return _placement_phase_active
+
+
+## Confirm hero placement and start combat proper.
+## Builds TurnQueue, applies remaining modifiers, emits combat_started.
+func confirm_placement() -> void:
+	if not _placement_phase_active:
+		return
+	_placement_phase_active = false
+	print("[CombatController] Placement confirmed — starting combat")
+
+	# Save hero grid positions for placement memory
+	for unit in _player_units:
+		if unit.source_id != "":
+			GameContext.set_hero_grid_placement(unit.source_id, Vector2i(unit.grid_x, unit.grid_y))
+
+	# Initialize result tracking
+	_result = CombatResult.new()
+
+	# Initialize turn queue (uses unit.speed for ordering)
+	_turn_queue = TurnQueue.new()
+	_turn_queue.initialize(_all_units)
+
+	# Apply combat modifier damage/gold AFTER units are set up
+	_apply_combat_modifier_effects(_placement_modifier)
+
+	# Apply pending event statuses (queued from dungeon events)
+	var pending_statuses = GameContext.consume_pending_combat_statuses()
+	if not pending_statuses.is_empty():
+		_apply_pending_event_statuses(pending_statuses)
+
+	placement_confirmed.emit()
+	combat_started.emit(_player_units, _enemy_units)
+
+
+## Move a hero during the placement phase (restricted to left half: cols 0-3).
+## If destination is occupied by an ally, swaps their positions.
+func submit_placement_move(unit_id: String, destination: Vector2i) -> bool:
+	if not _placement_phase_active:
+		return false
+	if _grid_manager == null:
+		return false
+
+	# Only allow placement in left half of the grid (cols 0-3)
+	if destination.x > 3:
+		push_warning("[Combat] Placement rejected: col %d not in player half" % destination.x)
+		return false
+	if not _grid_manager.is_in_bounds(destination):
+		return false
+
+	# Find the unit
+	var unit: CombatUnit = null
+	for u in _player_units:
+		if u.unit_id == unit_id:
+			unit = u
+			break
+	if unit == null:
+		return false
+
+	# Check if destination is occupied
+	var occupant = _grid_manager.get_unit_at(destination)
+	if occupant != null:
+		if occupant.team == CombatUnit.Team.PLAYER and occupant != unit:
+			# Swap with ally
+			var success = _grid_manager.swap_units(unit, occupant)
+			if success:
+				print("[Combat] Placement swap: %s <-> %s" % [unit.display_name, occupant.display_name])
+			return success
+		elif occupant == unit:
+			return false  # Already there
+		else:
+			return false  # Enemy tile (shouldn't happen in player zone)
+
+	# Move to empty tile
+	return _grid_manager.move_unit(unit, destination)
+
+
+## Restore saved hero grid positions from GameContext (Placement Memory).
+## Only restores valid positions (in bounds, cols 0-3, no conflicts).
+func _restore_saved_placements() -> void:
+	if _grid_manager == null:
+		return
+
+	# Build desired positions from saved data
+	var desired: Dictionary = {}
+	var target_positions: Dictionary = {}
+	for unit in _player_units:
+		var saved = GameContext.get_hero_grid_placement(unit.source_id)
+		if saved == null:
+			continue
+		var pos = Vector2i(int(saved["x"]), int(saved["y"]))
+		if not _grid_manager.is_in_bounds(pos) or pos.x > 3:
+			continue
+		var key = "%d,%d" % [pos.x, pos.y]
+		if target_positions.has(key):
+			# Conflict: two heroes saved to same tile — skip both
+			desired.erase(target_positions[key])
+			continue
+		desired[unit.source_id] = pos
+		target_positions[key] = unit.source_id
+
+	if desired.is_empty():
+		return
+
+	# Remove all player units from grid, then re-place with saved positions
+	for unit in _player_units:
+		_grid_manager.remove_unit(unit)
+
+	var placed_units: Array = []
+	for unit in _player_units:
+		if desired.has(unit.source_id):
+			if _grid_manager.place_unit(unit, desired[unit.source_id]):
+				placed_units.append(unit)
+
+	# Remaining heroes get first available player-zone tile
+	for unit in _player_units:
+		if unit in placed_units:
+			continue
+		var placed = false
+		for col in range(4):
+			for row in range(GridManager.GRID_HEIGHT):
+				if _grid_manager.is_tile_empty(Vector2i(col, row)):
+					_grid_manager.place_unit(unit, Vector2i(col, row))
+					placed = true
+					break
+			if placed:
+				break
+
+	print("[CombatController] Placement memory: restored %d/%d hero positions" % [placed_units.size(), _player_units.size()])
 
 
 ## Get the unit currently awaiting player input (may be null).

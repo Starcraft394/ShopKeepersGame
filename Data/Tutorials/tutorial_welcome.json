@@ -16,8 +16,8 @@
     {
       "speaker": "Mira",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
-      "title": "Upgrading the Inn",
-      "body": "As your venture grows, you can upgrade the Inn to attract better recruits. At Tier 2, the Inn draws heroes of all races from across the realm — but classes remain native to this region.\n\nHigher-tier recruits also arrive with starting equipment. For now, recruit your first heroes and add at least one to your party. I'll have more advice once you're ready to head out.",
+      "title": "The Inn & Resting Heroes",
+      "body": "Each region has its own Inn — heroes not in your active party rest at the Inn where they were recruited. While your party is off fighting, resting heroes earn 25% of the experience your party gains. They won't fall behind completely.\n\nUpgrade the Inn to increase bench capacity and attract more experienced recruits with better starting gear. For now, let's get your first party together.",
       "button_text": "Time to recruit!"
     }
   ]

@@ -19,7 +19,8 @@ enum ActionType {
 	SKIP,           # Stunned or otherwise unable to act
 	DOOM_TRIGGER,   # Doom damage occurs
 	DEATH,
-	BUFF            # Buff/debuff application
+	BUFF,           # Buff/debuff application
+	MOVE            # Grid Combat v1: Free movement action
 }
 
 # ============================================================================
@@ -165,6 +166,16 @@ static func create_buff(actor: CombatUnit, target: CombatUnit, ability_id: Strin
 	action.ability_id = ability_id
 	action.message = "%s uses %s on %s: %s" % [
 		actor.display_name, ability_name, target.display_name, buff_desc]
+	return action
+
+
+static func create_move(actor: CombatUnit, from_pos: Vector2i, to_pos: Vector2i) -> CombatAction:
+	var action = CombatAction.new()
+	action.action_type = ActionType.MOVE
+	action.actor_id = actor.unit_id
+	action.actor_name = actor.display_name
+	action.message = "%s moves from (%d,%d) to (%d,%d)" % [
+		actor.display_name, from_pos.x, from_pos.y, to_pos.x, to_pos.y]
 	return action
 
 

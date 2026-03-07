@@ -213,13 +213,7 @@ func _open_slot_picker(mode: String) -> void:
 
 	# Panel
 	var panel = PanelContainer.new()
-	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.07, 0.10, 0.97)
-	style.border_color = Color(0.75, 0.6, 0.3, 0.8)
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(20)
-	panel.add_theme_stylebox_override("panel", style)
+	panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_modal(Color.WHITE))
 	panel.custom_minimum_size = Vector2(420, 0)
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	center.add_child(panel)
@@ -233,7 +227,7 @@ func _open_slot_picker(mode: String) -> void:
 	var title_lbl = Label.new()
 	title_lbl.text = title_text
 	title_lbl.add_theme_font_size_override("font_size", GameContext.fs(16))
-	title_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.4, 1))
+	title_lbl.add_theme_color_override("font_color", Color(0.7, 0.55, 0.2, 1))
 	title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(title_lbl)
 
@@ -270,10 +264,10 @@ func _open_slot_picker(mode: String) -> void:
 			info_lbl.text = "Slot %d: Region %d — %d Heroes — %dg%s" % [i + 1, region_num, hero_count, gold, ng_text]
 			if date_str != "":
 				info_lbl.text += "\n" + date_str
-			info_lbl.add_theme_color_override("font_color", Color(0.85, 0.82, 0.75, 1))
+			info_lbl.add_theme_color_override("font_color", Color(0.35, 0.3, 0.25, 1))
 		else:
 			info_lbl.text = "Slot %d: Empty" % (i + 1)
-			info_lbl.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5, 1))
+			info_lbl.add_theme_color_override("font_color", Color(0.35, 0.35, 0.35, 1))
 		row.add_child(info_lbl)
 
 		# Action button

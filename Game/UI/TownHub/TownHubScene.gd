@@ -102,6 +102,8 @@ var _building_overlay: Control = null
 var _party_bar_vbox: VBoxContainer = null
 var _nav_facility_buttons: Array[Button] = []
 var _nav_travel_buttons: Array[Button] = []
+var _nav_facility_buttons_map: Dictionary = {}   # facility_id -> Button
+var _building_badge_labels: Dictionary = {}       # facility_id -> Button
 var _icon_cache: Dictionary = {}  # icon_path → Texture2D
 var _pending_restore_focus_index: int = -1
 
@@ -336,6 +338,7 @@ func _constrain_background() -> void:
 func _build_nav_rail() -> void:
 	# Clear ALL dynamic children (keep NavHeader panel which contains NavHeaderLabel)
 	_nav_facility_buttons.clear()
+	_nav_facility_buttons_map.clear()
 	_nav_travel_buttons.clear()
 	var nav_header_panel = _nav_header_label.get_parent() if is_instance_valid(_nav_header_label) else null
 	for child in _nav_vbox.get_children():
@@ -371,6 +374,7 @@ func _build_nav_rail() -> void:
 		btn.pressed.connect(_on_facility_clicked.bind(facility_id))
 		_nav_vbox.add_child(btn)
 		_nav_facility_buttons.append(btn)
+		_nav_facility_buttons_map[facility_id] = btn
 
 	# Quests button — opens quest log overlay
 	var btn_quests = Button.new()
@@ -578,13 +582,7 @@ func _check_telemetry_consent() -> void:
 	overlay.add_child(center)
 
 	var panel := PanelContainer.new()
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.08, 0.07, 0.10, 0.97)
-	style.border_color = Color(0.75, 0.6, 0.3, 0.8)
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(20)
-	panel.add_theme_stylebox_override("panel", style)
+	panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_modal(Color.WHITE))
 	panel.custom_minimum_size = Vector2(400, 0)
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	center.add_child(panel)
@@ -596,7 +594,7 @@ func _check_telemetry_consent() -> void:
 	var title_lbl := Label.new()
 	title_lbl.text = "Help Us Improve!"
 	title_lbl.add_theme_font_size_override("font_size", GameContext.fs(16))
-	title_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.4, 1))
+	title_lbl.add_theme_color_override("font_color", Color(0.6, 0.4, 0.15, 1))
 	title_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(title_lbl)
 
@@ -607,7 +605,7 @@ func _check_telemetry_consent() -> void:
 	var body_lbl := Label.new()
 	body_lbl.text = "Would you like to enable play data collection? All data stays on your computer as local files. You can change this anytime in the pause menu."
 	body_lbl.add_theme_font_size_override("font_size", GameContext.fs(13))
-	body_lbl.add_theme_color_override("font_color", Color(0.85, 0.8, 0.7, 1))
+	body_lbl.add_theme_color_override("font_color", Color(0.2, 0.18, 0.15, 1))
 	body_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	vbox.add_child(body_lbl)
 
@@ -739,6 +737,7 @@ func _build_building_overlay() -> void:
 	_layout_wrappers.clear()
 	_layout_hud_labels.clear()
 	_layout_dragging_id = ""
+	_building_badge_labels.clear()
 
 	var town_id = GameContext.get_current_town_id()
 	var town = DataRegistry.get_town(town_id) if DataRegistry.has_method("get_town") else null
@@ -763,6 +762,7 @@ func _build_building_overlay() -> void:
 		_place_building_buttons(town)
 
 	print("[TownHub] Building overlay built: %d buildings (edit=%s)" % [town.facility_ids.size(), _layout_edit_mode])
+	_refresh_upgrade_badges()
 
 
 func _create_town_header(town) -> void:
@@ -771,16 +771,7 @@ func _create_town_header(town) -> void:
 
 	var header_panel = PanelContainer.new()
 	header_panel.name = "TownHeader"
-	var header_style = StyleBoxFlat.new()
-	header_style.bg_color = palette.get("title_bar", Color(0.18, 0.22, 0.3, 0.85))
-	header_style.content_margin_left = 16 * sf
-	header_style.content_margin_top = 4 * sf
-	header_style.content_margin_right = 16 * sf
-	header_style.content_margin_bottom = 4 * sf
-	header_style.set_corner_radius_all(int(6 * sf))
-	header_style.border_color = palette.get("border", Color(0.4, 0.5, 0.4, 0.6))
-	header_style.set_border_width_all(1)
-	header_panel.add_theme_stylebox_override("panel", header_style)
+	header_panel.add_theme_stylebox_override("panel", RPGPackStyles.banner_header(palette.get("ui_tint", Color.WHITE)))
 
 	# Anchor to top-center of overlay
 	header_panel.set_anchors_preset(Control.PRESET_CENTER_TOP)
@@ -948,6 +939,32 @@ func _create_building_button(facility_id: String, facility, sf: float) -> VBoxCo
 	btn.mouse_exited.connect(func(): btn.modulate = Color(1.0, 1.0, 1.0))
 	sprite_wrapper.add_child(btn)
 
+	# Upgrade badge "!" — styled button, navigates to upgrade view
+	var badge_btn = Button.new()
+	badge_btn.text = "!"
+	var badge_sz: float = 28.0 * sf
+	badge_btn.custom_minimum_size = Vector2(badge_sz, badge_sz)
+	badge_btn.add_theme_font_size_override("font_size", GameContext.fs(int(18 * sf)))
+	badge_btn.add_theme_color_override("font_color", Color(1.0, 0.9, 0.1, 1.0))
+	var badge_style = StyleBoxFlat.new()
+	badge_style.bg_color = Color(0.15, 0.12, 0.08, 0.9)
+	badge_style.border_color = Color(1.0, 0.85, 0.2, 0.9)
+	badge_style.set_border_width_all(2)
+	badge_style.set_corner_radius_all(6)
+	badge_style.set_content_margin_all(2)
+	badge_btn.add_theme_stylebox_override("normal", badge_style)
+	var badge_hover = badge_style.duplicate()
+	badge_hover.border_color = Color(1.0, 1.0, 0.5, 1.0)
+	badge_hover.bg_color = Color(0.2, 0.17, 0.1, 0.95)
+	badge_btn.add_theme_stylebox_override("hover", badge_hover)
+	badge_btn.add_theme_stylebox_override("focus", badge_hover)
+	badge_btn.position = Vector2((bld - badge_sz) / 2.0, bld - 20.0 * sf)
+	badge_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	badge_btn.visible = false
+	badge_btn.pressed.connect(_on_upgrade_badge_clicked.bind(facility_id))
+	sprite_wrapper.add_child(badge_btn)
+	_building_badge_labels[facility_id] = badge_btn
+
 	container.add_child(sprite_wrapper)
 
 	# Label below with shadow for readability on backgrounds
@@ -962,6 +979,58 @@ func _create_building_button(facility_id: String, facility, sf: float) -> VBoxCo
 	container.add_child(label)
 
 	return container
+
+
+# ============================================================================
+# UPGRADE BADGE — "!" indicator + tooltip for upgradeable facilities
+# ============================================================================
+
+func _build_upgrade_tooltip(facility_id: String) -> String:
+	var town_id: String = GameContext.get_current_town_id()
+	var current_tier: int = GameContext.get_facility_tier(town_id, facility_id)
+	var max_tier: int = GameContext.get_facility_max_tier(facility_id)
+	if current_tier >= max_tier:
+		return ""
+	var next_tier: int = current_tier + 1
+	var cost: Dictionary = GameContext.get_facility_upgrade_cost(facility_id, next_tier)
+	var facility = DataRegistry.get_facility(facility_id) if DataRegistry.has_method("get_facility") else null
+	var fac_name: String = facility.display_name if facility else facility_id
+	var lines: Array = []
+	lines.append("Upgrade Available: %s T%d → T%d" % [fac_name, current_tier, next_tier])
+	var gold_cost: int = cost.get("gold", 0)
+	if gold_cost > 0:
+		lines.append("Gold: %d/%d" % [GameContext.run_gold, gold_cost])
+	var run_items_dict: Dictionary = GameContext.get_run_items_dict()
+	var items_needed: Array = cost.get("items", [])
+	for entry in items_needed:
+		var item_id: String = entry.get("item_id", "")
+		var qty_needed: int = entry.get("qty", 1)
+		var qty_have: int = run_items_dict.get(item_id, 0)
+		var tpl = DataRegistry.get_item_template(item_id)
+		var item_name: String = tpl.display_name if tpl else item_id
+		lines.append("%s: %d/%d" % [item_name, qty_have, qty_needed])
+	return "\n".join(lines)
+
+
+func _refresh_upgrade_badges() -> void:
+	var town_id: String = GameContext.get_current_town_id()
+	# Nav rail buttons — append/remove " !" suffix + tooltip
+	for facility_id in _nav_facility_buttons_map:
+		var btn: Button = _nav_facility_buttons_map[facility_id]
+		if not is_instance_valid(btn):
+			continue
+		var base_text: String = btn.text.trim_suffix(" !")
+		var can_up: bool = GameContext.can_upgrade_facility(town_id, facility_id)
+		btn.text = base_text + " !" if can_up else base_text
+		btn.tooltip_text = _build_upgrade_tooltip(facility_id) if can_up else ""
+	# Building overlay badges
+	for facility_id in _building_badge_labels:
+		var badge: Button = _building_badge_labels[facility_id]
+		if not is_instance_valid(badge):
+			continue
+		var can_up: bool = GameContext.can_upgrade_facility(town_id, facility_id)
+		badge.visible = can_up
+		badge.tooltip_text = _build_upgrade_tooltip(facility_id) if can_up else ""
 
 
 # ============================================================================
@@ -1241,6 +1310,11 @@ func _on_facility_clicked(facility_id: String) -> void:
 		_town_scene_instance.show_facility_by_id(facility_id)
 
 
+func _on_upgrade_badge_clicked(facility_id: String) -> void:
+	if _town_scene_instance and _town_scene_instance.has_method("show_facility_upgrade"):
+		_town_scene_instance.show_facility_upgrade(facility_id)
+
+
 func _on_travel_pressed(town_id: String) -> void:
 	if _town_scene_instance and _town_scene_instance.has_method("switch_town"):
 		_town_scene_instance.switch_town(town_id)
@@ -1272,6 +1346,7 @@ func _on_viewport_resized() -> void:
 func _on_location_changed(_region_id: String, _town_id: String) -> void:
 	print("[TownHub] Location changed — rebuilding nav rail + building overlay")
 	_build_nav_rail()
+	_register_focus_zones()
 
 	# Update background for new town and re-constrain to playable area
 	BackgroundManager.apply_background(self, "town", "%s_T1" % _town_id)
@@ -1346,7 +1421,7 @@ func _update_challenge_tooltip(btn: Button) -> void:
 func _on_save_and_exit() -> void:
 	print("[TownHub] Save & Exit pressed")
 	GameContext.save_game()
-	get_tree().quit()
+	get_tree().call_deferred("change_scene_to_file", "res://Game/Boot/game_boot.tscn")
 
 
 func _on_dev_reset_save() -> void:
@@ -1369,8 +1444,9 @@ func _on_dev_unlock_regions() -> void:
 		if not GameContext.completed_regions.has(region.region_id):
 			GameContext.completed_regions[region.region_id] = true
 	GameContext.save_game()
-	# Rebuild nav rail to enable region buttons
+	# Rebuild nav rail to enable region buttons + re-register focus zones
 	_build_nav_rail()
+	_register_focus_zones()
 	print("[TownHub] DEV: All %d regions unlocked" % all_regions.size())
 
 
@@ -1420,13 +1496,7 @@ func _open_dev_tools_popup() -> void:
 
 	# Panel
 	var panel = PanelContainer.new()
-	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.12, 0.10, 0.08, 0.97)
-	style.border_color = Color(0.55, 0.4, 0.25, 0.8)
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(6)
-	style.set_content_margin_all(16)
-	panel.add_theme_stylebox_override("panel", style)
+	panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_modal(Color.WHITE))
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	center.add_child(panel)
 
@@ -1441,7 +1511,7 @@ func _open_dev_tools_popup() -> void:
 	var title_lbl = Label.new()
 	title_lbl.text = "Dev Tools"
 	title_lbl.add_theme_font_size_override("font_size", GameContext.fs(16))
-	title_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.4, 1))
+	title_lbl.add_theme_color_override("font_color", Color(0.6, 0.4, 0.15, 1))
 	title_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title_row.add_child(title_lbl)
 
@@ -1626,6 +1696,7 @@ func _on_facility_zone_closed(_facility_id: String) -> void:
 		_pending_restore_focus_index = _town_scene_instance._compare_source_focus_index + 1
 		_town_scene_instance._compare_source_focus_index = -1
 	call_deferred("_reregister_facility_zones")
+	call_deferred("_refresh_upgrade_badges")
 
 
 func _on_facility_panel_refreshed(_facility_id: String, prev_focus_index: int) -> void:

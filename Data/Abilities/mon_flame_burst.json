@@ -1,7 +1,7 @@
 {
   "id": "mon_flame_burst",
   "display_name": "Flame Burst",
-  "description": "Launches a burst of searing flames that burns the target.",
+  "description": "Deals 6 + 60% ATK fire damage. Inflicts Burning (2 stacks, 3 turns). Targets: Lowest HP. Cooldown: 3 turns.",
   "icon_hint": "erupting fireball with orange-red flame tendrils",
   "ability_type": "monster",
   "source_class_id": "",

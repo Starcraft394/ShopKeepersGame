@@ -1,7 +1,7 @@
 {
   "id": "mon_life_siphon",
   "display_name": "Life Siphon",
-  "description": "Drains life force from the target, healing the caster.",
+  "description": "Deals 8 + 80% ATK dark damage. Heals self for 8 HP. Targets: Lowest HP. Cooldown: 4 turns.",
   "icon_hint": "swirling green-black energy stream flowing from victim to caster",
   "ability_type": "monster",
   "source_class_id": "",

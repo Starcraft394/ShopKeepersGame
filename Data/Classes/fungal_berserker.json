@@ -1,7 +1,7 @@
 {
   "id": "fungal_berserker",
   "display_name": "Fungal Berserker",
-  "description": "A rage-fueled warrior enhanced by symbiotic fungi, trading defense for overwhelming offensive power.",
+  "description": "A rage-fueled warrior bonded with the parasitic fungi of Sproutrest, trading sanity for overwhelming symbiotic power. Purple mycelia pulse through their veins like living armor.",
   "icon_hint": "spiked fist wreathed in purple mushroom caps and toxic green spores",
   "archetype": "dps",
   "unlock_region": 2,
@@ -21,5 +21,13 @@
   "ability_b_id": "spore_burst",
   "passive_a_id": "mushroom_rage",
   "passive_b_id": "toxic_blood",
-  "weapon_types": ["axe", "mace"]
+  "weapon_types": ["axe", "mace"],
+  "card_prompt": "Pixel art, SNES style. A decorative card frame background for a fantasy fungal berserker rage warrior class. Jagged torn mushroom-cap border with toxic green dripping pustules at corners. Dark purple-black organic mass center with pulsing toxic green veins and purple mushroom growths. Spiked fungal fist silhouette at bottom. Color palette: dark purple, toxic neon green, organic brown. No characters, no text.",
+  "card_palette": {
+    "border_primary": "#2d1b4e",
+    "border_accent": "#39ff14",
+    "bg_primary": "#2d1b4e",
+    "bg_secondary": "#150d26",
+    "text_tint": "#39ff14"
+  }
 }

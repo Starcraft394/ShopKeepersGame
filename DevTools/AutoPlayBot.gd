@@ -31,7 +31,7 @@ const WATCHDOG_TIMEOUT_SEC := 60.0
 
 ## Action delay: seconds between visible actions (facility upgrades, shop buys, etc.)
 ## Set > 0 to slow down for visual observation.
-const ACTION_DELAY_SEC := 0.0
+const ACTION_DELAY_SEC := 0.3
 
 ## Floor mastery: consecutive clean runs (no hero deaths) needed to advance start floor
 const FLOOR_MASTERY_THRESHOLD := 3
@@ -1390,6 +1390,12 @@ func _handle_combat() -> void:
 	_combat_last_signal_ms = Time.get_ticks_msec()
 	_stall_recovery_fails = 0
 
+	# Phase 8: Auto-confirm placement phase (keep default formation)
+	if controller.has_method("is_placement_phase") and controller.is_placement_phase():
+		_log("Placement phase — auto-confirming default formation")
+		await _action_delay()
+		controller.confirm_placement()
+
 	# Connect signals (check not already connected)
 	if not controller.player_input_required.is_connected(_on_player_input_required):
 		controller.player_input_required.connect(_on_player_input_required)
@@ -1516,8 +1522,8 @@ func _pick_ability_for_role(role: String, available_actions: Array, lowest_ally_
 		if not action.get("enabled", false):
 			continue
 		var atype: String = action.get("type", "")
-		if atype == "pass":
-			continue  # Never select pass — always act
+		if atype == "pass" or atype == "move":
+			continue  # Never select pass or move — bot doesn't handle tile selection
 		if atype == "basic":
 			damage.append(atype)
 			continue

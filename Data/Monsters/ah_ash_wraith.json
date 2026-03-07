@@ -9,6 +9,7 @@
   "ai_tier": 2,
   "attack_type": "ranged",
   "combat_role": "mage",
+  "movement_range": 1,
   "base_stats": {
     "health": 195,
     "attack": 49,
@@ -21,7 +22,9 @@
     "basic_attack",
     "mon_flame_burst"
   ],
-  "passive_ids": ["mon_spectral_form"],
+  "passive_ids": [
+    "mon_spectral_form"
+  ],
   "loot_table_id": "lt_region4_uncommon",
   "gold_drop_min": 19,
   "gold_drop_max": 32,

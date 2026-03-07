@@ -1,7 +1,7 @@
 {
   "id": "mon_berserker_rage",
   "display_name": "Berserker Rage",
-  "description": "Enters a frenzied state, greatly increasing attack power.",
+  "description": "Self-buff: +6 Attack for 3 turns. Self-cast. Cooldown: 5 turns.",
   "icon_hint": "red-eyed snarling beast head with pulsing crimson aura",
   "ability_type": "monster",
   "source_class_id": "",

@@ -9,6 +9,7 @@
   "ai_tier": 2,
   "attack_type": "ranged",
   "combat_role": "mage",
+  "movement_range": 2,
   "base_stats": {
     "health": 160,
     "attack": 30,
@@ -22,7 +23,10 @@
     "mon_arcane_bolt",
     "mon_chain_lightning"
   ],
-  "passive_ids": ["mon_thorny_hide", "mon_magic_resist"],
+  "passive_ids": [
+    "mon_thorny_hide",
+    "mon_magic_resist"
+  ],
   "loot_table_id": "lt_region2_elite",
   "gold_drop_min": 18,
   "gold_drop_max": 35,

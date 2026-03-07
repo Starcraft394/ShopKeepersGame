@@ -18,15 +18,8 @@
     {
       "speaker": "Mira",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
-      "title": "Row Formations",
-      "body": "Below the Gear button you'll see three position buttons — F, M, and B — for Front, Middle, and Back rows.\n\nMelee enemies target your Front row first, so put your toughest fighters there. But beware — ranged enemies can target any row and will pick off your weakest hero. Keep everyone healthy, not just your front line.",
-      "highlight": "party_bar"
-    },
-    {
-      "speaker": "Mira",
-      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon8.png",
       "title": "Before You Go",
-      "body": "Beyond the basics like Attack and Defense, look out for Evasion (dodge chance), Crit (bonus damage), Resist (reduces magic damage), Thorns (hurts melee attackers), Armor Penetration (ignores defense), and Life Steal (heals on hit). Fill hero bags with consumables before heading out.\n\nVisit the Shop for healing potions, weapons, and armor. What's available depends on your facility tiers and unlocked recipes, so invest in upgrades when you can. Good luck out there, Shopkeeper!",
+      "body": "Hover over any stat in the hero info panel to see a full breakdown — base, racial bonus, and gear. Beyond Attack and Defense, keep an eye on Speed (determines turn order and multi-actions) and Crit (bonus damage chance).\n\nFill hero bags with consumables before heading out, and visit the Shop to stock up on potions and gear. Good luck out there, Shopkeeper!",
       "button_text": "Let's get started!"
     }
   ]

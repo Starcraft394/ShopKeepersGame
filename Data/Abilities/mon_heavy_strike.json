@@ -1,7 +1,7 @@
 {
   "id": "mon_heavy_strike",
   "display_name": "Heavy Strike",
-  "description": "A powerful overhead blow that deals extra physical damage.",
+  "description": "Deals 6 + 80% ATK physical damage to one enemy. Targets: Lowest HP. Cooldown: 3 turns.",
   "icon_hint": "heavy iron fist crashing down with impact shockwave",
   "ability_type": "monster",
   "source_class_id": "",

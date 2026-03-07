@@ -9,6 +9,7 @@
   "ai_tier": 1,
   "attack_type": "melee",
   "combat_role": "melee",
+  "movement_range": 2,
   "base_stats": {
     "health": 92,
     "attack": 30,
@@ -20,7 +21,9 @@
     "basic_attack",
     "mon_heavy_strike"
   ],
-  "passive_ids": ["mon_venomous"],
+  "passive_ids": [
+    "mon_venomous"
+  ],
   "loot_table_id": "lt_region3_common",
   "gold_drop_min": 9,
   "gold_drop_max": 17,

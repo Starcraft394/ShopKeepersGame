@@ -1,7 +1,7 @@
 {
   "id": "dark_channeler",
   "display_name": "Dark Channeler",
-  "description": "A shadow priest who drains life from enemies to heal allies, walking the line between life and death.",
+  "description": "A shadow priest who walks Duskhollow's boundary between life and death, draining the living to restore the wounded. Their dark tome whispers with the voices of the almost-departed.",
   "icon_hint": "dark purple tome radiating shadow tendrils entwined with faint healing light",
   "archetype": "healer",
   "unlock_region": 6,
@@ -21,5 +21,13 @@
   "ability_b_id": "shadow_mend",
   "passive_a_id": "dark_pact",
   "passive_b_id": "soul_siphon",
-  "weapon_types": ["staff", "focus"]
+  "weapon_types": ["staff", "focus"],
+  "card_prompt": "Pixel art, SNES style. A decorative card frame background for a fantasy dark channeler shadow healer class in a necrotic crypt. Bone-fragment border wrapped in shadow tendrils with faint green healing wisps at corners. Dark grey-green crypt stone center with shadow threads and soft green healing light pulses. Small dark tome with healing glow at bottom. Color palette: dark crypt green, shadow purple, faint healing green. No characters, no text.",
+  "card_palette": {
+    "border_primary": "#1a2e1a",
+    "border_accent": "#6c3483",
+    "bg_primary": "#1a2e1a",
+    "bg_secondary": "#0d170d",
+    "text_tint": "#abebc6"
+  }
 }

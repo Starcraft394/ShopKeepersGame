@@ -9,6 +9,7 @@
   "ai_tier": 2,
   "attack_type": "melee",
   "combat_role": "melee",
+  "movement_range": 3,
   "base_stats": {
     "health": 175,
     "attack": 28,
@@ -22,7 +23,9 @@
     "mon_heavy_strike",
     "mon_ground_slam"
   ],
-  "passive_ids": ["mon_armored_shell"],
+  "passive_ids": [
+    "mon_armored_shell"
+  ],
   "loot_table_id": "lt_region2_elite",
   "gold_drop_min": 22,
   "gold_drop_max": 42,

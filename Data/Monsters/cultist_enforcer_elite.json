@@ -9,6 +9,7 @@
   "ai_tier": 2,
   "attack_type": "melee",
   "combat_role": "melee",
+  "movement_range": 3,
   "base_stats": {
     "health": 120,
     "attack": 22,
@@ -22,7 +23,9 @@
     "mon_rending_strike",
     "mon_berserker_rage"
   ],
-  "passive_ids": ["mon_piercing_blows"],
+  "passive_ids": [
+    "mon_piercing_blows"
+  ],
   "loot_table_id": "lt_cultist_parts",
   "gold_drop_min": 17,
   "gold_drop_max": 32,

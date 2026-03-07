@@ -1,34 +1,35 @@
 {
-	"id": "fr_void_weaver",
-	"display_name": "Void Weaver",
-	"description": "A spider-like entity that flings strands of compressed nothingness, its webs dissolving whatever they strike from across the battlefield.",
-	"icon_hint": "large spider-like void creature spinning webs of visible darkness between anchor points",
-	"family": "void",
-	"region_id": "region_7",
-	"tier": 2,
-	"ai_tier": 2,
-	"attack_type": "ranged",
-	"combat_role": "ranged",
-	"base_stats": {
-		"health": 567,
-		"attack": 93,
-		"defense": 39,
-		"speed": 46,
-		"resist": 12,
-		"evasion": 10
-	},
-	"ability_ids": [
-		"basic_attack",
-		"mon_aimed_shot"
-	],
-	"passive_ids": [
-		"mon_magic_resist"
-	],
-	"loot_table_id": "lt_region7_uncommon",
-	"gold_drop_min": 30,
-	"gold_drop_max": 48,
-	"sprite_path": "",
-	"is_elite": false,
-	"is_boss": false,
-	"portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fr_void_weaver.png"
+  "id": "fr_void_weaver",
+  "display_name": "Void Weaver",
+  "description": "A spider-like entity that flings strands of compressed nothingness, its webs dissolving whatever they strike from across the battlefield.",
+  "icon_hint": "large spider-like void creature spinning webs of visible darkness between anchor points",
+  "family": "void",
+  "region_id": "region_7",
+  "tier": 2,
+  "ai_tier": 2,
+  "attack_type": "ranged",
+  "combat_role": "ranged",
+  "movement_range": 1,
+  "base_stats": {
+    "health": 567,
+    "attack": 93,
+    "defense": 39,
+    "speed": 46,
+    "resist": 12,
+    "evasion": 10
+  },
+  "ability_ids": [
+    "basic_attack",
+    "mon_aimed_shot"
+  ],
+  "passive_ids": [
+    "mon_magic_resist"
+  ],
+  "loot_table_id": "lt_region7_uncommon",
+  "gold_drop_min": 30,
+  "gold_drop_max": 48,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fr_void_weaver.png"
 }

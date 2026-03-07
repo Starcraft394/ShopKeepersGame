@@ -8,11 +8,15 @@
 
 config_version=5
 
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
 [application]
 
 config/name="ShopKeepersGame"
 run/main_scene="uid://cs62ali3tbiyn"
-config/features=PackedStringArray("4.5", "GL Compatibility")
+config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [autoload]
@@ -28,11 +32,16 @@ TelemetryManager="*res://Game/Core/TelemetryManager.gd"
 SceneTransition="*res://Game/Core/SceneTransition.gd"
 PlaytestCapture="*res://DevTools/PlaytestCapture.gd"
 AutoPlayBot="*res://DevTools/AutoPlayBot.gd"
+RPGPackStyles="*res://Game/Core/RPGPackStyles.gd"
 
 [display]
 
 window/size/viewport_width=960
 window/size/viewport_height=540
+
+[dotnet]
+
+project/assembly_name="ShopKeepersGame"
 
 [rendering]
 

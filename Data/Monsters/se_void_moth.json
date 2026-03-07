@@ -1,32 +1,33 @@
 {
-	"id": "se_void_moth",
-	"display_name": "Void Moth",
-	"description": "A massive insect with wings of compressed starlight that drains magic from the air.",
-	"icon_hint": "large moth with galaxy-patterned wings of deep purple and scattered starlight points",
-	"family": "crystal",
-	"region_id": "region_5",
-	"tier": 2,
-	"ai_tier": 2,
-	"attack_type": "ranged",
-	"combat_role": "mage",
-	"base_stats": {
-		"health": 283,
-		"attack": 64,
-		"defense": 27,
-		"speed": 33,
-		"evasion": 12,
-		"resist": 5
-	},
-	"ability_ids": [
-		"basic_attack",
-		"mon_flame_burst"
-	],
-	"passive_ids": [],
-	"loot_table_id": "lt_region5_uncommon",
-	"gold_drop_min": 22,
-	"gold_drop_max": 36,
-	"sprite_path": "",
-	"is_elite": false,
-	"is_boss": false,
-	"portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/se_void_moth.png"
+  "id": "se_void_moth",
+  "display_name": "Void Moth",
+  "description": "A massive insect with wings of compressed starlight that drains magic from the air.",
+  "icon_hint": "large moth with galaxy-patterned wings of deep purple and scattered starlight points",
+  "family": "crystal",
+  "region_id": "region_5",
+  "tier": 2,
+  "ai_tier": 2,
+  "attack_type": "ranged",
+  "combat_role": "mage",
+  "movement_range": 1,
+  "base_stats": {
+    "health": 283,
+    "attack": 64,
+    "defense": 27,
+    "speed": 33,
+    "evasion": 12,
+    "resist": 5
+  },
+  "ability_ids": [
+    "basic_attack",
+    "mon_flame_burst"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region5_uncommon",
+  "gold_drop_min": 22,
+  "gold_drop_max": 36,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/se_void_moth.png"
 }

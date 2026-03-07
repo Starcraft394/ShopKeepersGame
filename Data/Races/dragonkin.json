@@ -17,6 +17,10 @@
     "fire",
     "immune_fire"
   ],
+  "sprites": {
+    "m": "res://Assets/Sprites/Heroes/dragonkin_m",
+    "f": "res://Assets/Sprites/Heroes/dragonkin_f"
+  },
   "portraits": [
     "res://Assets/_ArtPacks/Avatars_Demon/PNG/Transperent/Icon5.png",
     "res://Assets/_ArtPacks/Avatars_Demon/PNG/Transperent/Icon1.png",

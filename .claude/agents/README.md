@@ -16,6 +16,7 @@ Repo Auditor → Implementer → UI Refiner (optional) → Data Curator (optiona
                                                     → Heroes Agent (optional)
                                                     → Gameplay Guide (optional)
                                                     → Playtest Agent (optional)
+                                                    → Animations Agent (optional)
 ```
 
 1. **Repo Auditor** decides WHAT to build next
@@ -48,6 +49,7 @@ Repo Auditor → Implementer → UI Refiner (optional) → Data Curator (optiona
 | Heroes Agent | `heroes-agent.md` | Hero reference, class kits, race balance, build paths, stat synergies |
 | Controls Agent | `controls-agent.md` | Input controls, keyboard/mouse/gamepad mapping, focus navigation, conventions |
 | Playtest Agent | `playtest-agent.md` | Steam Playtest prep, analytics, telemetry, feedback, GDPR compliance |
+| Animations Agent | `animations-agent.md` | Sprite generation, animation integration, frame-by-frame pixel art, PixelLab pipeline |
 
 ## Usage
 
@@ -70,6 +72,8 @@ Or reference the agent by saying:
 - "Use the Controls Agent to check button mappings"
 - "Use the Playtest Agent to prepare for Steam Playtest"
 - "Use the Playtest Agent to design analytics tracking"
+- "Use the Animations Agent to generate hero race sprites"
+- "Use the Animations Agent to audit animation coverage"
 
 ## Keyword → Agent Lookup
 
@@ -100,6 +104,8 @@ When you mention a topic, these keywords auto-map to the relevant agent(s):
 | `combat sounds`, `music pack`, `jukebox`, `sound effect` | Sound Director |
 | `playtest`, `steam`, `release`, `analytics`, `telemetry`, `feedback` | Playtest Agent |
 | `gdpr`, `privacy`, `consent`, `survey`, `store page`, `godotsteam` | Playtest Agent |
+| `animation`, `sprite sheet`, `animated sprite`, `walk cycle`, `frame animation` | Animations Agent |
+| `pixellab sprite`, `sprite generation`, `character animation`, `combat animation` | Animations Agent + Art Director |
 
 Multiple agents may trigger for a single request — they work in parallel on their respective duties.
 

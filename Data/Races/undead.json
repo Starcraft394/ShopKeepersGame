@@ -16,6 +16,10 @@
     "undead",
     "dark"
   ],
+  "sprites": {
+    "m": "res://Assets/Sprites/Heroes/undead_m",
+    "f": "res://Assets/Sprites/Heroes/undead_f"
+  },
   "portraits": [
     "res://Assets/_ArtPacks/Avatars_Undead/PNG/Transperent/Icon2.png",
     "res://Assets/_ArtPacks/Avatars_Undead/PNG/Transperent/Icon3.png",

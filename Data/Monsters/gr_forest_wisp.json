@@ -9,6 +9,7 @@
   "ai_tier": 1,
   "attack_type": "ranged",
   "combat_role": "mage",
+  "movement_range": 1,
   "base_stats": {
     "health": 46,
     "attack": 14,
@@ -21,7 +22,9 @@
     "basic_attack",
     "mon_arcane_bolt"
   ],
-  "passive_ids": ["mon_spectral_form"],
+  "passive_ids": [
+    "mon_spectral_form"
+  ],
   "loot_table_id": "lt_region1_common",
   "gold_drop_min": 5,
   "gold_drop_max": 12,

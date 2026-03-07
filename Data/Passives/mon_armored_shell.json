@@ -1,7 +1,7 @@
 {
   "id": "mon_armored_shell",
   "display_name": "Armored Shell",
-  "description": "A thick natural shell provides extra defense.",
+  "description": "+4 Defense at combat start.",
   "icon_hint": "layered stone shell with metallic sheen",
   "passive_type": "stat_bonus",
   "trigger": "combat_start",

@@ -1,0 +1,175 @@
+{
+  "settings": {
+    "width": 32,
+    "height": 32,
+    "upscale_factor": 2,
+    "outline": "selective outline",
+    "shading": "medium shading",
+    "detail": "highly detailed",
+    "view": "side",
+    "direction": "south",
+    "no_background": true,
+    "text_guidance_scale": 5.0,
+    "style_strength": 50.0,
+    "coverage_percentage": 85.0,
+    "negative_description": "No background, no text, no UI, no photorealism, no anime, no modern clothes, no weapons, no shield, clean silhouette"
+  },
+  "styles": {
+    "snes": {
+      "label": "SNES RPG (FF6 / Chrono Trigger)",
+      "prefix": "Pixel art, SNES 16-bit RPG style. Chunky readable pixels, large head proportions (40% height), colorful vibrant palette."
+    },
+    "gba": {
+      "label": "GBA RPG (Fire Emblem / Golden Sun)",
+      "prefix": "Pixel art, GBA-era RPG style. Slightly more proportional body, finer detail, defined features, rich but controlled palette."
+    },
+    "modern": {
+      "label": "Modern Pixel Art (Celeste / Dead Cells)",
+      "prefix": "Modern pixel art style. Clean lines, smooth shading, detailed character design, contemporary indie game aesthetic."
+    },
+    "chibi": {
+      "label": "Chibi/SD (Super Deformed)",
+      "prefix": "Pixel art, chibi super-deformed style. Very large head (50% height), tiny cute body, expressive features, vibrant colors."
+    }
+  },
+  "style_anchor": {
+    "description": "A heroic fantasy adventurer character sprite, 3/4 front-facing view. Simple brown tunic and leather boots. Warm skin tones. Clean readable silhouette at 32x32 pixels. Neutral standing pose.",
+    "note": "Generated first, used as style_image for all subsequent characters to ensure visual consistency"
+  },
+  "characters": [
+    {
+      "char_id": "human_m",
+      "race_id": "human",
+      "gender": "m",
+      "description": "A male human adventurer character sprite, 3/4 front-facing. Medium build, short brown hair, warm peach skin. Simple brown tunic and leather boots. Confident neutral stance. Clean readable silhouette.",
+      "color_hints": "peach skin, brown hair, brown tunic, dark leather boots"
+    },
+    {
+      "char_id": "human_f",
+      "race_id": "human",
+      "gender": "f",
+      "description": "A female human adventurer character sprite, 3/4 front-facing. Medium build, shoulder-length auburn hair, warm peach skin. Simple brown tunic and leather boots. Confident neutral stance. Clean readable silhouette.",
+      "color_hints": "peach skin, auburn hair, brown tunic, dark leather boots"
+    },
+    {
+      "char_id": "elf_m",
+      "race_id": "elf",
+      "gender": "m",
+      "description": "A male elf adventurer character sprite, 3/4 front-facing. Slender build, long pale blonde hair, pointed ears clearly visible, fair skin with slight greenish tint. Simple green tunic with silver trim and soft leather boots. Graceful neutral stance.",
+      "color_hints": "fair skin, pale blonde hair, green tunic, silver trim, pointed ears"
+    },
+    {
+      "char_id": "elf_f",
+      "race_id": "elf",
+      "gender": "f",
+      "description": "A female elf adventurer character sprite, 3/4 front-facing. Slender build, long silver-white hair flowing past shoulders, pointed ears clearly visible, fair skin with slight greenish tint. Simple green tunic with silver trim. Graceful neutral stance.",
+      "color_hints": "fair skin, silver-white hair, green tunic, silver trim, pointed ears"
+    },
+    {
+      "char_id": "dwarf_m",
+      "race_id": "dwarf",
+      "gender": "m",
+      "description": "A male dwarf adventurer character sprite, 3/4 front-facing. Short stocky build (75% normal height), large bushy red-brown beard, broad shoulders, ruddy skin. Simple iron-grey tunic with brown leather belt and sturdy boots. Stalwart neutral stance.",
+      "color_hints": "ruddy skin, red-brown beard, iron-grey tunic, brown belt, short stocky"
+    },
+    {
+      "char_id": "dwarf_f",
+      "race_id": "dwarf",
+      "gender": "f",
+      "description": "A female dwarf adventurer character sprite, 3/4 front-facing. Short stocky build (75% normal height), long braided copper hair, broad build, ruddy skin. Simple iron-grey tunic with brown leather belt and sturdy boots. Stalwart neutral stance.",
+      "color_hints": "ruddy skin, copper hair braided, iron-grey tunic, brown belt, short stocky"
+    },
+    {
+      "char_id": "mossfolk_m",
+      "race_id": "mossfolk",
+      "gender": "m",
+      "description": "A male mossfolk plant-being character sprite, 3/4 front-facing. Humanoid with green mossy skin textured like bark. Small mushroom growths on shoulders and head. Vine-like hair in dark green. Glowing amber eyes. Simple woven leaf-fiber tunic. Non-human silhouette.",
+      "color_hints": "green mossy skin, dark green vine hair, leaf tunic, amber eyes, mushroom growths"
+    },
+    {
+      "char_id": "mossfolk_f",
+      "race_id": "mossfolk",
+      "gender": "f",
+      "description": "A female mossfolk plant-being character sprite, full body from head to feet visible, 3/4 front-facing. Humanoid with green mossy skin textured like bark. Small mushroom growths and flower buds on shoulders and head. Vine-like hair in dark green with small blossoms. Glowing amber eyes. Simple woven leaf-fiber tunic. Non-human silhouette.",
+      "color_hints": "green mossy bark skin, dark green vine hair, leaf tunic, amber eyes, mushroom growths, flower buds"
+    },
+    {
+      "char_id": "tidelings_m",
+      "race_id": "tidelings",
+      "gender": "m",
+      "description": "A male tideling amphibious humanoid character sprite, 3/4 front-facing. Blue-teal scaled skin with fin-like ears. Short dark blue-green hair that looks wet. Deep blue eyes. Simple dark teal tunic with coral-white trim and sandals. Fluid relaxed stance.",
+      "color_hints": "blue-teal scaled skin, dark blue-green hair, teal tunic, coral-white trim, fin ears"
+    },
+    {
+      "char_id": "tidelings_f",
+      "race_id": "tidelings",
+      "gender": "f",
+      "description": "A female tideling amphibious humanoid character sprite, 3/4 front-facing. Light teal scaled skin with delicate fin-like ears. Long flowing sea-green hair with a slight wave. Deep blue eyes. Simple dark teal tunic with coral-white trim. Fluid relaxed stance.",
+      "color_hints": "light teal scaled skin, sea-green flowing hair, teal tunic, coral trim, fin ears"
+    },
+    {
+      "char_id": "dragonkin_m",
+      "race_id": "dragonkin",
+      "gender": "m",
+      "description": "A male dragonkin character sprite, full body from head to feet visible, 3/4 front-facing. Draconic dragon head with red scales, pronounced brow ridges, small dark horns curving back, strong jaw, slit-pupil orange eyes. Humanoid bipedal body standing upright, wearing simple dark red-brown tunic with ember-orange trim and boots. Powerful neutral stance.",
+      "color_hints": "red-scaled skin, dark horns, orange eyes, dark red tunic, ember trim"
+    },
+    {
+      "char_id": "dragonkin_f",
+      "race_id": "dragonkin",
+      "gender": "f",
+      "description": "A female dragonkin character sprite, full body from head to feet visible, 3/4 front-facing. Draconic dragon head with dark red-orange scales, sleek horns curving back, slit-pupil amber eyes, smooth scaled head with elegant ridges. Humanoid bipedal body standing upright, wearing simple dark red-brown tunic with ember-orange trim and boots. Poised neutral stance.",
+      "color_hints": "dark red-orange scaled skin, sleek horns, amber eyes, dark red tunic"
+    },
+    {
+      "char_id": "crystalborn_m",
+      "race_id": "crystalborn",
+      "gender": "m",
+      "description": "A male crystalborn crystalline humanoid character sprite, 3/4 front-facing. Pale blue-white crystalline skin that catches light. Faceted crystal formations on shoulders and crown of head. Soft prismatic internal glow. Glowing white-blue eyes. Simple pale lavender tunic.",
+      "color_hints": "pale blue-white crystalline skin, crystal crown, lavender tunic, prismatic glow"
+    },
+    {
+      "char_id": "crystalborn_f",
+      "race_id": "crystalborn",
+      "gender": "f",
+      "description": "A female crystalborn crystalline humanoid character sprite, full body from head to feet visible, 3/4 front-facing. Translucent pale pink-white crystalline skin with internal shimmer. Delicate crystal formations framing face like a crown. Soft prismatic glow. Glowing pink-white eyes. Humanoid bipedal body, simple pale lavender tunic and boots. Standing neutral pose.",
+      "color_hints": "pale pink-white crystalline skin, crystal crown, lavender tunic, pink glow"
+    },
+    {
+      "char_id": "undead_m",
+      "race_id": "undead",
+      "gender": "m",
+      "description": "A male undead risen humanoid character sprite, 3/4 front-facing. Pale grey-green skin drawn tight over bones. Sunken dark-ringed eyes with faint green-blue soul glow. Tattered dark grey-brown tunic. Thin frame with visible bone structure. Standing upright despite decayed appearance.",
+      "color_hints": "pale grey-green skin, sunken glowing eyes, tattered grey-brown tunic, gaunt"
+    },
+    {
+      "char_id": "undead_f",
+      "race_id": "undead",
+      "gender": "f",
+      "description": "A female undead risen humanoid character sprite, 3/4 front-facing. Pale grey-blue skin with ghostly translucence. Long wispy white-grey hair. Sunken eyes with faint blue soul glow. Tattered dark grey tunic. Thin frame. Standing upright with spectral grace.",
+      "color_hints": "pale grey-blue skin, wispy white-grey hair, blue soul glow, tattered grey tunic"
+    },
+    {
+      "char_id": "voidwalkers_m",
+      "race_id": "voidwalkers",
+      "gender": "m",
+      "description": "A male voidwalker dimensional being character sprite, 3/4 front-facing. Dark purple-black skin with edges that seem to phase or blur slightly. Glowing purple eyes. Short dark hair that fades into void particles at tips. Simple dark purple-black tunic with faint violet energy trim.",
+      "color_hints": "dark purple-black skin, phasing edges, purple glowing eyes, dark violet tunic"
+    },
+    {
+      "char_id": "voidwalkers_f",
+      "race_id": "voidwalkers",
+      "gender": "f",
+      "description": "A female voidwalker dimensional being character sprite, 3/4 front-facing. Dark purple-grey skin with edges that phase into void particles. Glowing violet eyes. Long dark hair that dissolves into purple void wisps at ends. Simple dark purple-black tunic with faint violet energy trim.",
+      "color_hints": "dark purple-grey skin, void wisp hair, violet glowing eyes, dark violet tunic"
+    }
+  ],
+  "animations": {
+    "idle": {"action": "standing idle, breathing gently", "n_frames": 4},
+    "attack": {"action": "swinging arm forward in a melee attack", "n_frames": 5},
+    "cast": {"action": "raising both hands to cast a spell with magical energy", "n_frames": 5},
+    "hit": {"action": "flinching backward after being hit", "n_frames": 3},
+    "death": {"action": "collapsing to the ground defeated", "n_frames": 5},
+    "walk": {"action": "walking forward", "n_frames": 6}
+  }
+}

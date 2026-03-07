@@ -1,7 +1,7 @@
 {
   "id": "mon_mend_ally",
   "display_name": "Mend Ally",
-  "description": "Channels healing energy to restore the most wounded ally.",
+  "description": "Heals one ally for 12 HP. Targets: Lowest HP%. Cooldown: 4 turns.",
   "icon_hint": "gentle green healing glow surrounding a wounded creature",
   "ability_type": "monster",
   "source_class_id": "",

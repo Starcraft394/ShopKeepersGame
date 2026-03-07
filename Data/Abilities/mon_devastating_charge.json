@@ -1,7 +1,7 @@
 {
   "id": "mon_devastating_charge",
   "display_name": "Devastating Charge",
-  "description": "Charges forward with unstoppable force, dealing massive damage and stunning the target.",
+  "description": "Deals 12 + 100% ATK physical damage. Inflicts Stun (1 turn). Targets: Lowest HP. Cooldown: 5 turns.",
   "icon_hint": "armored beast charging with lowered horns trailing dust cloud",
   "ability_type": "monster",
   "source_class_id": "",

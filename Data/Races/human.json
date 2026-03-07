@@ -16,6 +16,10 @@
     "adaptable",
     "balanced"
   ],
+  "sprites": {
+    "m": "res://Assets/Sprites/Heroes/human_m",
+    "f": "res://Assets/Sprites/Heroes/human_f"
+  },
   "portraits": [
     "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon28.png",
     "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon14.png",

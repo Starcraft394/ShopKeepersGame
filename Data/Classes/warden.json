@@ -1,7 +1,7 @@
 {
   "id": "warden",
   "display_name": "Warden",
-  "description": "A forest guardian with organic, grounded healing. Supports allies through nature magic and protective wards.",
+  "description": "A forest guardian blessed by the ancient oaks of Thornhaven, who channels the living pulse of the woodland to mend allies. Roots and vines answer their call.",
   "icon_hint": "oak staff entwined with green healing vines and soft golden glow",
   "archetype": "warden",
   "unlock_region": 1,
@@ -21,5 +21,14 @@
   "ability_b_id": "barkskin_blessing",
   "passive_a_id": "living_bond",
   "passive_b_id": "verdant_renewal",
-  "weapon_types": ["staff", "sword", "focus"]
+  "weapon_types": ["staff", "sword", "focus"],
+  "sprites": {"default": "res://Assets/Sprites/Classes/warden"},
+  "card_prompt": "Pixel art, SNES style. A decorative card frame background for a fantasy warden nature healer class. Gnarled vine-wrapped bark border with small green leaves at corners. Warm heartwood grain center with soft golden-green healing glow. Small glowing oak leaf cluster at bottom. Color palette: warm bark brown, verdant green, golden glow. No characters, no text.",
+  "card_palette": {
+    "border_primary": "#5a3e1b",
+    "border_accent": "#3d7a3e",
+    "bg_primary": "#3d7a3e",
+    "bg_secondary": "#1a3a1a",
+    "text_tint": "#e8d98e"
+  }
 }

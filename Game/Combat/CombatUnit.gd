@@ -130,11 +130,15 @@ var ability_b_cooldown: int = 0
 var ability_a_max_cooldown: int = 0
 var ability_b_max_cooldown: int = 0
 
-# Position (M3 Grid System)
-# NOTE: Player and Enemy each have their OWN 4x2 grid.
-# player(0,0) and enemy(0,0) are on separate grids - no conflict.
+# Position (M3 Grid System → Grid Combat v1: unified 8x4 grid)
+# NOTE: In legacy mode, player and enemy have separate 4x3 grids.
+# In grid combat mode, both teams share a single 8x4 grid.
 var grid_x: int = -1  # -1 = unassigned
 var grid_y: int = -1  # -1 = unassigned
+
+# Movement (Grid Combat v1)
+var movement_range: int = 2        # Tiles per free move (Manhattan distance)
+var has_moved_this_turn: bool = false
 
 # ============================================================================
 # GRID POSITION (M3, M3.1)
@@ -177,6 +181,17 @@ func is_back_row() -> bool:
 ## Check if position is assigned.
 func has_position() -> bool:
 	return grid_x >= 0 and grid_y >= 0
+
+
+## Get grid position as Vector2i (Grid Combat v1).
+func get_grid_pos() -> Vector2i:
+	return Vector2i(grid_x, grid_y)
+
+
+## Set grid position from Vector2i (Grid Combat v1).
+func set_grid_pos(pos: Vector2i) -> void:
+	grid_x = pos.x
+	grid_y = pos.y
 
 
 # ============================================================================

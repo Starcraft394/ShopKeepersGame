@@ -1,34 +1,35 @@
 {
-	"id": "nc_plague_revenant",
-	"display_name": "Plague Revenant",
-	"description": "A disease-riddled undead that hurls globules of concentrated plague, weakening armor and sapping strength from afar.",
-	"icon_hint": "bloated undead figure with sickly green miasma cloud and weeping sores",
-	"family": "necro",
-	"region_id": "region_6",
-	"tier": 2,
-	"ai_tier": 2,
-	"attack_type": "ranged",
-	"combat_role": "ranged",
-	"base_stats": {
-		"health": 449,
-		"attack": 70,
-		"defense": 32,
-		"speed": 33,
-		"life_steal": 10,
-		"resist": 8
-	},
-	"ability_ids": [
-		"basic_attack",
-		"mon_poison_shot"
-	],
-	"passive_ids": [
-		"mon_life_drain"
-	],
-	"loot_table_id": "lt_region6_uncommon",
-	"gold_drop_min": 26,
-	"gold_drop_max": 42,
-	"sprite_path": "",
-	"is_elite": false,
-	"is_boss": false,
-	"portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/nc_plague_revenant.png"
+  "id": "nc_plague_revenant",
+  "display_name": "Plague Revenant",
+  "description": "A disease-riddled undead that hurls globules of concentrated plague, weakening armor and sapping strength from afar.",
+  "icon_hint": "bloated undead figure with sickly green miasma cloud and weeping sores",
+  "family": "necro",
+  "region_id": "region_6",
+  "tier": 2,
+  "ai_tier": 2,
+  "attack_type": "ranged",
+  "combat_role": "ranged",
+  "movement_range": 1,
+  "base_stats": {
+    "health": 449,
+    "attack": 70,
+    "defense": 32,
+    "speed": 33,
+    "life_steal": 10,
+    "resist": 8
+  },
+  "ability_ids": [
+    "basic_attack",
+    "mon_poison_shot"
+  ],
+  "passive_ids": [
+    "mon_life_drain"
+  ],
+  "loot_table_id": "lt_region6_uncommon",
+  "gold_drop_min": 26,
+  "gold_drop_max": 42,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/nc_plague_revenant.png"
 }

@@ -358,6 +358,7 @@ func start_new_game_plus(selected_hero_ids: Array) -> void:
 	_rewarded_dungeon_id = ""
 	_rewarded_floor = -1
 	hero_row_assignments = {}
+	hero_grid_placements = {}
 	dead_heroes = []
 
 	# === RESTORE CARRY-OVER DATA ===
@@ -826,6 +827,25 @@ func get_hero_row(hero_id: String) -> int:
 func set_hero_row(hero_id: String, row: int) -> void:
 	hero_row_assignments[hero_id] = clampi(row, 0, 2)
 
+
+# ============================================================================
+# HERO GRID PLACEMENTS (Placement Memory — Grid Combat v1)
+# ============================================================================
+# Tracks last confirmed grid position for each hero across combats.
+# Key: hero_id (String), Value: {"x": int, "y": int}
+var hero_grid_placements: Dictionary = {}
+
+
+## Get hero's last saved grid position. Returns null if no saved position.
+func get_hero_grid_placement(hero_id: String):
+	return hero_grid_placements.get(hero_id)
+
+
+## Save a hero's grid position after placement confirmation.
+func set_hero_grid_placement(hero_id: String, pos: Vector2i) -> void:
+	hero_grid_placements[hero_id] = {"x": pos.x, "y": pos.y}
+
+
 # Counter for generating unique hero IDs
 var _hero_id_counter: int = 0
 
@@ -873,6 +893,95 @@ func set_hero_died_this_run(value: bool) -> void:
 
 func has_hero_died_this_run() -> bool:
 	return _hero_died_this_run
+
+# ============================================================================
+# TRAINING SLOTS — Heroes placed in training earn XP during dungeon runs
+# ============================================================================
+
+## town_id → Array of hero_ids in training at that town's Training Hall
+var training_slots: Dictionary = {}
+
+const TRAINING_SLOTS_BY_TIER: Dictionary = {1: 2, 2: 3, 3: 3, 4: 4}
+const TRAINING_XP_RATE_BY_TIER: Dictionary = {1: 0.50, 2: 0.50, 3: 0.60, 4: 0.75}
+
+## Get number of training slots available at a town based on Training Hall tier.
+func get_training_slot_count(town_id: String) -> int:
+	var tier: int = get_facility_tier(town_id, "training_hall")
+	if tier <= 0:
+		return 0
+	return TRAINING_SLOTS_BY_TIER.get(tier, 2)
+
+## Get array of hero_ids currently in training at a specific town.
+func get_training_heroes(town_id: String) -> Array:
+	return training_slots.get(town_id, [])
+
+## Assign a hero to a training slot at a specific town.
+func assign_hero_to_training(hero_id: String, town_id: String) -> bool:
+	if hero_id == "" or town_id == "":
+		return false
+	# Must not be in party
+	if is_in_party(hero_id):
+		print("[Training] Cannot train party member: %s" % hero_id)
+		return false
+	# Must not already be training somewhere
+	if is_hero_in_training(hero_id):
+		print("[Training] Hero already in training: %s" % hero_id)
+		return false
+	# Check slot capacity
+	var current: Array = training_slots.get(town_id, [])
+	var max_slots: int = get_training_slot_count(town_id)
+	if current.size() >= max_slots:
+		print("[Training] No slots available at %s (%d/%d)" % [town_id, current.size(), max_slots])
+		return false
+	# Assign
+	if not training_slots.has(town_id):
+		training_slots[town_id] = []
+	training_slots[town_id].append(hero_id)
+	print("[Training] Assigned hero=%s to training at %s (%d/%d)" % [hero_id, town_id, training_slots[town_id].size(), max_slots])
+	save_game()
+	return true
+
+## Remove a hero from training (any town).
+func remove_hero_from_training(hero_id: String) -> void:
+	for town_id in training_slots.keys():
+		var heroes: Array = training_slots[town_id]
+		if hero_id in heroes:
+			heroes.erase(hero_id)
+			training_slots[town_id] = heroes
+			print("[Training] Removed hero=%s from training at %s" % [hero_id, town_id])
+			save_game()
+			return
+
+## Check if a hero is currently in training at any town.
+func is_hero_in_training(hero_id: String) -> bool:
+	for town_id in training_slots.keys():
+		if hero_id in training_slots[town_id]:
+			return true
+	return false
+
+## Get the training XP rate for a specific town based on Training Hall tier.
+func get_training_xp_rate(town_id: String) -> float:
+	var tier: int = get_facility_tier(town_id, "training_hall")
+	if tier <= 0:
+		return 0.0
+	return TRAINING_XP_RATE_BY_TIER.get(tier, 0.50)
+
+## Grant XP to heroes in training slots. Each town grants XP at its tier's rate.
+func grant_training_heroes_xp(xp_amount: int) -> Dictionary:
+	var result: Dictionary = {}
+	if xp_amount <= 0:
+		return result
+	for town_id in training_slots.keys():
+		var rate: float = get_training_xp_rate(town_id)
+		if rate <= 0.0:
+			continue
+		var training_xp: int = int(ceil(xp_amount * rate))
+		for hero_id in training_slots[town_id]:
+			var levels: int = grant_hero_xp(hero_id, training_xp)
+			if levels > 0:
+				print("[XP] training hero=%s at %s gained %d%% XP (%d base), leveled up %d times" % [hero_id, town_id, int(rate * 100), training_xp, levels])
+			result[hero_id] = levels
+	return result
 
 # ============================================================================
 # HERO LEVELING CONSTANTS (per GDD Section 33.3)
@@ -1165,6 +1274,7 @@ func _reset_all_state_to_defaults() -> void:
 	ng_plus_perm_stat_bonus = 0.0
 	seen_abilities = {}
 	active_side_quests = []
+	training_slots = {}
 	returned_from_dungeon = false
 	_side_quest_counter = 0
 	mini_dungeon_state = {}
@@ -1217,6 +1327,7 @@ func _reset_all_state_to_defaults() -> void:
 	_rewarded_dungeon_id = ""
 	_rewarded_floor = -1
 	hero_row_assignments = {}
+	hero_grid_placements = {}
 	auto_loot = false
 
 # ============================================================================
@@ -3849,9 +3960,10 @@ func recruit_hero(class_id: String, cost_gold: int, race_id: String = "human", l
 		"hero_id": hero_id,
 		"class_id": class_id,
 		"race_id": race_id,
+		"gender": _pick_gender(),
 		"name": "Hero #%d" % _hero_id_counter,
 		"level": level,
-		"xp": 0,
+		"xp": XP_THRESHOLDS[mini(level - 1, XP_THRESHOLDS.size() - 1)] if level > 1 else 0,
 		"portrait_path": _pick_race_portrait(race_id),
 		"home_town_id": _current_town_id
 	}
@@ -3881,6 +3993,11 @@ func recruit_hero(class_id: String, cost_gold: int, race_id: String = "human", l
 			tm.log_hero_recruited(class_id, race_id, level)
 	save_game()
 	return hero_id
+
+
+## Pick a random gender for a new hero (50/50).
+func _pick_gender() -> String:
+	return "m" if randi() % 2 == 0 else "f"
 
 
 ## Pick a random portrait from a race's portrait pool.
@@ -3927,6 +4044,9 @@ func add_to_party(hero_id: String) -> bool:
 		print("[Inn] add_to_party failed hero=%s reason=party_full" % hero_id)
 		return false
 
+	# Remove from training if they were training
+	if is_hero_in_training(hero_id):
+		remove_hero_from_training(hero_id)
 	selected_party.append(hero_id)
 	print("[Inn] add_to_party hero=%s party=%s" % [hero_id, str(selected_party)])
 	party_changed.emit(selected_party)
@@ -4053,9 +4173,10 @@ func recruit_new_hero(archetype_id: String, race_id: String = "human", level: in
 		"hero_id": hero_id,
 		"class_id": archetype_id,
 		"race_id": race_id,
+		"gender": _pick_gender(),
 		"name": "Hero #%d" % _hero_id_counter,
 		"level": level,
-		"xp": 0,
+		"xp": XP_THRESHOLDS[mini(level - 1, XP_THRESHOLDS.size() - 1)] if level > 1 else 0,
 		"portrait_path": _pick_race_portrait(race_id)
 	}
 
@@ -4209,7 +4330,7 @@ func grant_hero_xp(hero_id: String, xp_amount: int) -> int:
 				])
 
 			save_game()
-			return levels_gained
+			return maxi(levels_gained, 0)
 
 	print("[XP] hero=%s not found" % hero_id)
 	return 0
@@ -4246,6 +4367,42 @@ func grant_party_xp(xp_amount: int, source: String = "unknown") -> Dictionary:
 			hero_id, hero_name, xp_amount, total_xp, level
 		])
 
+	# Also grant 25% XP to resting (non-party, non-training) heroes
+	var resting_result: Dictionary = grant_resting_heroes_xp(xp_amount)
+	for rid in resting_result:
+		result["resting_" + rid] = resting_result[rid]
+
+	# Also grant training XP to heroes in training slots (50-75% based on tier)
+	var training_result: Dictionary = grant_training_heroes_xp(xp_amount)
+	for tid in training_result:
+		result["training_" + tid] = training_result[tid]
+
+	return result
+
+## Grant 25% XP to heroes resting at inns (not in party, not in training).
+func grant_resting_heroes_xp(xp_amount: int) -> Dictionary:
+	var result: Dictionary = {}
+	if xp_amount <= 0:
+		return result
+	var resting_xp: int = int(ceil(xp_amount * 0.25))
+	for hero in owned_heroes:
+		var hero_id: String = hero.get("hero_id", "")
+		if hero_id == "":
+			continue
+		# Skip heroes in the active party
+		if is_in_party(hero_id):
+			continue
+		# Skip heroes in training (they get higher XP separately)
+		if is_hero_in_training(hero_id):
+			continue
+		# Must have a home_town_id (benched at an inn)
+		var home_town: String = hero.get("home_town_id", "")
+		if home_town == "":
+			continue
+		var levels: int = grant_hero_xp(hero_id, resting_xp)
+		if levels > 0:
+			print("[XP] resting hero=%s gained 25%% XP (%d base), leveled up %d times" % [hero_id, resting_xp, levels])
+		result[hero_id] = levels
 	return result
 
 ## Get hero's current stats (class base + growth * (level-1) + race modifiers).
@@ -5949,6 +6106,7 @@ func save_game() -> void:
 		"selected_party": selected_party,
 		"hero_id_counter": _hero_id_counter,
 		"hero_row_assignments": hero_row_assignments,
+		"hero_grid_placements": hero_grid_placements,
 		"housing_upgrades": housing_upgrades,
 		"bonus_stash_capacity": bonus_stash_capacity,
 		"shop_refresh_counts": shop_refresh_counts,
@@ -5992,6 +6150,8 @@ func save_game() -> void:
 		"ng_plus_cycle": ng_plus_cycle,
 		"ng_plus_perm_stat_bonus": ng_plus_perm_stat_bonus,
 		"seen_abilities": seen_abilities,
+		# Training slots
+		"training_slots": training_slots,
 		# Side quests
 		"active_side_quests": _serialize_side_quests(),
 		"side_quest_counter": _side_quest_counter,
@@ -6156,6 +6316,9 @@ func load_game() -> void:
 			active_side_quests = _deserialize_side_quests(save_data.active_side_quests)
 		if save_data.has("side_quest_counter"):
 			_side_quest_counter = int(save_data.side_quest_counter)
+		# Training slots
+		var ts_data = save_data.get("training_slots", {})
+		training_slots = ts_data if ts_data is Dictionary else {}
 		# Campaign quests
 		var acq_data = save_data.get("active_campaign_quest", null)
 		if acq_data != null and acq_data is Dictionary:
@@ -6242,8 +6405,22 @@ func load_game() -> void:
 				if not hero.has("xp"):
 					hero["xp"] = 0
 					print("[Migration] hero %s: added xp=0" % hero.get("hero_id", "?"))
+			# Migration: fix heroes with xp below their level threshold (recruited at level>1 with xp=0)
+			for hero in owned_heroes:
+				var hlvl: int = int(hero.get("level", 1))
+				var hxp: int = int(hero.get("xp", 0))
+				if hlvl > 1:
+					var min_xp: int = XP_THRESHOLDS[mini(hlvl - 1, XP_THRESHOLDS.size() - 1)]
+					if hxp < min_xp:
+						hero["xp"] = min_xp
+						print("[Migration] hero %s: xp %d -> %d (level %d minimum)" % [hero.get("hero_id", "?"), hxp, min_xp, hlvl])
+			# Migration: add gender to heroes that don't have it (default: "m")
+			for hero in owned_heroes:
+				if not hero.has("gender"):
+					hero["gender"] = "m"
+					print("[Migration] hero %s: added gender=m" % hero.get("hero_id", "?"))
 			# Migration: strip unknown keys from hero dicts (e.g., stale "gold" field)
-			var _HERO_ALLOWED_KEYS = ["hero_id", "class_id", "race_id", "name", "level", "xp", "portrait_path", "home_town_id"]
+			var _HERO_ALLOWED_KEYS = ["hero_id", "class_id", "race_id", "gender", "name", "level", "xp", "portrait_path", "home_town_id"]
 			for hero in owned_heroes:
 				var keys_to_remove: Array = []
 				for key in hero.keys():
@@ -6265,6 +6442,8 @@ func load_game() -> void:
 		# Missing = empty dict; get_hero_row() returns 1 (Middle) for any missing hero
 		if save_data.has("hero_row_assignments") and save_data.hero_row_assignments is Dictionary:
 			hero_row_assignments = save_data.hero_row_assignments
+		if save_data.has("hero_grid_placements") and save_data.hero_grid_placements is Dictionary:
+			hero_grid_placements = save_data.hero_grid_placements
 		# Load stash upgrades (legacy name "housing_upgrades" kept for compat)
 		if save_data.has("housing_upgrades") and save_data.housing_upgrades is Dictionary:
 			housing_upgrades = save_data.housing_upgrades

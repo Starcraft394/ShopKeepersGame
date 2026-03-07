@@ -1,7 +1,7 @@
 {
   "id": "mon_rain_of_arrows",
   "display_name": "Rain of Arrows",
-  "description": "Unleashes a devastating rain of projectiles that shreds all enemies.",
+  "description": "Deals 8 + 60% ATK physical damage. Inflicts Bleeding (2 stacks, 3 turns). Hits all enemies. Cooldown: 5 turns.",
   "icon_hint": "dark sky filled with hundreds of descending arrows with red trailing light",
   "ability_type": "monster",
   "source_class_id": "",

@@ -9,6 +9,7 @@
   "ai_tier": 1,
   "attack_type": "melee",
   "combat_role": "ranged",
+  "movement_range": 1,
   "base_stats": {
     "health": 58,
     "attack": 16,
@@ -20,7 +21,9 @@
     "basic_attack",
     "mon_poison_shot"
   ],
-  "passive_ids": ["mon_venomous"],
+  "passive_ids": [
+    "mon_venomous"
+  ],
   "loot_table_id": "lt_spider_parts",
   "gold_drop_min": 8,
   "gold_drop_max": 18,

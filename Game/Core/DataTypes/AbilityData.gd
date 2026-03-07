@@ -73,6 +73,10 @@ var reflect_percent: int = 0  # Damage reflection (e.g., light_refraction)
 # Dual effect (damage + heal, e.g., life_drain)
 var heal_target_rule: String = ""  # Target rule for heal portion of damage_and_heal
 
+# AoE (Grid Combat v1)
+var aoe_shape: String = "none"  # "none", "square"
+var aoe_size: int = 0           # 0=single tile (1x1), 1=3x3, 2=5x5
+
 # Visual
 var icon_path: String = ""
 var animation_id: String = ""
@@ -146,6 +150,10 @@ static func from_dict(data: Dictionary) -> AbilityData:
 	instance.shield_duration = int(data.get("shield_duration", 0))
 	instance.reflect_percent = int(data.get("reflect_percent", 0))
 	instance.heal_target_rule = data.get("heal_target_rule", "")
+
+	# AoE (Grid Combat v1)
+	instance.aoe_shape = data.get("aoe_shape", "none")
+	instance.aoe_size = int(data.get("aoe_size", 0))
 
 	instance.icon_path = data.get("icon_path", "")
 	instance.animation_id = data.get("animation_id", "")

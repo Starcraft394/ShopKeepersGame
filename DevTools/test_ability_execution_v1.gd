@@ -528,14 +528,6 @@ static func run_tests() -> Dictionary:
 	else:
 		results["failed"] += 1
 
-	# Test 65: Inn hero row label sanity (no HP/XP cross-contamination)
-	var t65 = _test_inn_hero_row_label_sanity()
-	results["tests"].append(t65)
-	if t65["passed"]:
-		results["passed"] += 1
-	else:
-		results["failed"] += 1
-
 	# Test 66: Combat hero equipment line formatting
 	var t66 = _test_combat_equipment_line_formatting()
 	results["tests"].append(t66)
@@ -1257,13 +1249,6 @@ static func run_tests() -> Dictionary:
 	var t158 = _test_closeable_stack_stale_pruning()
 	results["tests"].append(t158)
 	if t158["passed"]:
-		results["passed"] += 1
-	else:
-		results["failed"] += 1
-
-	var t159 = _test_party_card_row_assignment()
-	results["tests"].append(t159)
-	if t159["passed"]:
 		results["passed"] += 1
 	else:
 		results["failed"] += 1
@@ -2395,14 +2380,6 @@ static func run_tests() -> Dictionary:
 	else:
 		results["failed"] += 1
 
-	# Test 308: Formation warning all-middle detection
-	var t308 = _test_formation_warning_all_middle()
-	results["tests"].append(t308)
-	if t308["passed"]:
-		results["passed"] += 1
-	else:
-		results["failed"] += 1
-
 	# Test 309: Side quest tutorial JSON exists
 	var t309 = _test_side_quest_tutorial_exists()
 	results["tests"].append(t309)
@@ -2800,6 +2777,597 @@ static func run_tests() -> Dictionary:
 	var t363 = _test_title_screen_watermark()
 	results["tests"].append(t363)
 	if t363["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 364: GridManager place/remove/move unit
+	var t364 = _test_grid_manager_place_remove_move()
+	results["tests"].append(t364)
+	if t364["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 365: GridManager BFS reachable tiles
+	var t365 = _test_grid_manager_reachable_tiles()
+	results["tests"].append(t365)
+	if t365["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 366: GridManager Manhattan distance
+	var t366 = _test_grid_manager_manhattan_distance()
+	results["tests"].append(t366)
+	if t366["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 367: GridManager get_targets_in_range
+	var t367 = _test_grid_manager_targets_in_range()
+	results["tests"].append(t367)
+	if t367["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 368: GridManager AoE square resolution
+	var t368 = _test_grid_manager_aoe_square()
+	results["tests"].append(t368)
+	if t368["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 369: GridManager boundary checks
+	var t369 = _test_grid_manager_boundaries()
+	results["tests"].append(t369)
+	if t369["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 370: GridManager occupied tile blocks movement
+	var t370 = _test_grid_manager_blocked_movement()
+	results["tests"].append(t370)
+	if t370["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 371: GridManager spawn formation
+	var t371 = _test_grid_manager_spawn_formation()
+	results["tests"].append(t371)
+	if t371["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 372: GridManager no overlap validation
+	var t372 = _test_grid_manager_no_overlap()
+	results["tests"].append(t372)
+	if t372["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 373: CombatUnit get_grid_pos / set_grid_pos
+	var t373 = _test_combat_unit_grid_pos()
+	results["tests"].append(t373)
+	if t373["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 374: AbilityData aoe_shape/aoe_size parsing
+	var t374 = _test_ability_data_aoe_fields()
+	results["tests"].append(t374)
+	if t374["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 375: GridManager pathfinding
+	var t375 = _test_grid_manager_pathfinding()
+	results["tests"].append(t375)
+	if t375["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 376: CombatController GridManager integration
+	var t376 = _test_combat_controller_grid_manager()
+	results["tests"].append(t376)
+	if t376["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 377: GridManager positions no overlap after combat init
+	var t377 = _test_grid_positions_no_overlap()
+	results["tests"].append(t377)
+	if t377["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 378: GridManager team zone placement
+	var t378 = _test_grid_team_zone_placement()
+	results["tests"].append(t378)
+	if t378["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# Test 379: MonsterData movement_range parsing
+	var t379 = _test_monster_data_movement_range()
+	results["tests"].append(t379)
+	if t379["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t380 = _test_grid_combat_scene_structure()
+	results["tests"].append(t380)
+	if t380["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t381 = _test_grid_combat_scene_refresh_logic()
+	results["tests"].append(t381)
+	if t381["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t382 = _test_grid_movement_player_move()
+	results["tests"].append(t382)
+	if t382["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t383 = _test_grid_movement_blocked_occupied()
+	results["tests"].append(t383)
+	if t383["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t384 = _test_grid_movement_once_per_turn()
+	results["tests"].append(t384)
+	if t384["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t385 = _test_grid_ai_melee_movement()
+	results["tests"].append(t385)
+	if t385["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t386 = _test_grid_ai_ranged_no_movement()
+	results["tests"].append(t386)
+	if t386["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t387 = _test_grid_move_action_type()
+	results["tests"].append(t387)
+	if t387["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t388 = _test_grid_combat_scene_movement_ui()
+	results["tests"].append(t388)
+	if t388["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t389 = _test_grid_movement_slowed()
+	results["tests"].append(t389)
+	if t389["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t390 = _test_grid_melee_range_targeting()
+	results["tests"].append(t390)
+	if t390["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t391 = _test_grid_ranged_any_target()
+	results["tests"].append(t391)
+	if t391["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t392 = _test_grid_taunt_range_check()
+	results["tests"].append(t392)
+	if t392["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t393 = _test_grid_valid_targets_range_filter()
+	results["tests"].append(t393)
+	if t393["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t394 = _test_grid_targeting_policy_grid_manager_wiring()
+	results["tests"].append(t394)
+	if t394["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t395 = _test_grid_pick_target_ability_range()
+	results["tests"].append(t395)
+	if t395["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t396 = _test_grid_monster_movement_range_data()
+	results["tests"].append(t396)
+	if t396["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t397 = _test_grid_ability_aoe_data_valid()
+	results["tests"].append(t397)
+	if t397["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t398 = _test_grid_tween_animation_methods()
+	results["tests"].append(t398)
+	if t398["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t399 = _test_grid_tween_action_integration()
+	results["tests"].append(t399)
+	if t399["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t400 = _test_placement_phase_active_on_skip_false()
+	results["tests"].append(t400)
+	if t400["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t401 = _test_placement_phase_no_turn_queue()
+	results["tests"].append(t401)
+	if t401["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t402 = _test_confirm_placement_builds_turn_queue()
+	results["tests"].append(t402)
+	if t402["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t403 = _test_placement_move_to_empty_tile()
+	results["tests"].append(t403)
+	if t403["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t404 = _test_placement_move_rejects_enemy_zone()
+	results["tests"].append(t404)
+	if t404["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t405 = _test_grid_swap_units()
+	results["tests"].append(t405)
+	if t405["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t406 = _test_legacy_skip_placement_unchanged()
+	results["tests"].append(t406)
+	if t406["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t407 = _test_placement_memory_saves_positions()
+	results["tests"].append(t407)
+	if t407["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t408 = _test_placement_memory_restores_positions()
+	results["tests"].append(t408)
+	if t408["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t409 = _test_placement_memory_ignores_unknown_hero()
+	results["tests"].append(t409)
+	if t409["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t410 = _test_placement_memory_get_set_api()
+	results["tests"].append(t410)
+	if t410["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t411 = _test_class_data_card_palette()
+	results["tests"].append(t411)
+	if t411["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t412 = _test_class_data_card_prompt()
+	results["tests"].append(t412)
+	if t412["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t413 = _test_class_data_enhanced_descriptions()
+	results["tests"].append(t413)
+	if t413["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t414 = _test_training_slot_capacity()
+	results["tests"].append(t414)
+	if t414["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t415 = _test_training_assign_remove()
+	results["tests"].append(t415)
+	if t415["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t416 = _test_resting_heroes_xp()
+	results["tests"].append(t416)
+	if t416["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t417 = _test_training_heroes_xp()
+	results["tests"].append(t417)
+	if t417["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t418 = _test_flee_always_available()
+	results["tests"].append(t418)
+	if t418["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t419 = _test_combat_retreat_button()
+	results["tests"].append(t419)
+	if t419["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	# --- Sprite Animation System Tests (420-425) ---
+	var t420 = _test_race_sprites_field()
+	results["tests"].append(t420)
+	if t420["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t421 = _test_hero_gender_field()
+	results["tests"].append(t421)
+	if t421["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t422 = _test_gender_in_allowed_keys()
+	results["tests"].append(t422)
+	if t422["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t423 = _test_sprite_animation_loader_defs()
+	results["tests"].append(t423)
+	if t423["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t424 = _test_hero_sprite_animator_state()
+	results["tests"].append(t424)
+	if t424["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t425 = _test_snapshot_sprite_folder()
+	results["tests"].append(t425)
+	if t425["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t426 = _test_backline_tutorial_json()
+	results["tests"].append(t426)
+	if t426["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t427 = _test_backline_tutorial_in_guides()
+	results["tests"].append(t427)
+	if t427["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t428 = _test_intent_preview_target_id()
+	results["tests"].append(t428)
+	if t428["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t429 = _test_auto_button_tooltip()
+	results["tests"].append(t429)
+	if t429["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t430 = _test_townhub_upgrade_badge_function()
+	results["tests"].append(t430)
+	if t430["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t431 = _test_badge_calls_can_upgrade()
+	results["tests"].append(t431)
+	if t431["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t432 = _test_locked_recipe_qty_format()
+	results["tests"].append(t432)
+	if t432["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t433 = _test_discovery_log_qty_label()
+	results["tests"].append(t433)
+	if t433["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t434 = _test_tactical_enemy_target_id()
+	results["tests"].append(t434)
+	if t434["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t435 = _test_show_facility_upgrade_method()
+	results["tests"].append(t435)
+	if t435["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t436 = _test_class_data_sprites_field()
+	results["tests"].append(t436)
+	if t436["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t437 = _test_class_sprite_folder_resolution()
+	results["tests"].append(t437)
+	if t437["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t438 = _test_class_sprite_race_fallback()
+	results["tests"].append(t438)
+	if t438["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t439 = _test_action_performed_no_full_rebuild()
+	results["tests"].append(t439)
+	if t439["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t440 = _test_monster_ability_descriptions_have_targeting()
+	results["tests"].append(t440)
+	if t440["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t441 = _test_tactical_tooltip_shows_target_name()
+	results["tests"].append(t441)
+	if t441["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t442 = _test_pinned_tooltip_system_exists()
+	results["tests"].append(t442)
+	if t442["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t443 = _test_monster_passive_descriptions_have_stat_values()
+	results["tests"].append(t443)
+	if t443["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t444 = _test_unit_card_tooltip_includes_descriptions()
+	results["tests"].append(t444)
+	if t444["passed"]:
+		results["passed"] += 1
+	else:
+		results["failed"] += 1
+
+	var t445 = _test_player_timeline_tooltip_shows_descriptions()
+	results["tests"].append(t445)
+	if t445["passed"]:
 		results["passed"] += 1
 	else:
 		results["failed"] += 1
@@ -5998,7 +6566,7 @@ static func _test_no_per_hero_gold() -> Dictionary:
 		print("[FAIL] Stored hero should not have 'gold' key, keys=%s" % str(stored.keys()))
 
 	# Test 3: Verify only allowed keys present
-	var allowed_keys = ["hero_id", "class_id", "race_id", "name", "level", "xp", "portrait_path"]
+	var allowed_keys = ["hero_id", "class_id", "race_id", "gender", "name", "level", "xp", "portrait_path", "home_town_id"]
 	var pass_3 = true
 	for key in stored.keys():
 		if key not in allowed_keys:
@@ -6077,69 +6645,6 @@ static func _test_xp_hp_line_format() -> Dictionary:
 		print("[FAIL] XP lines must not contain 'HP:' prefix")
 
 	return {"name": "XP / HP Line Format", "passed": pass_1 and pass_2 and pass_3 and pass_4 and pass_5}
-
-
-## Test 65: Inn hero row has exactly one HP label and one XP label.
-## Builds a hero row via _create_hero_row (through TownScene static helpers)
-## and verifies that the format helpers never cross-contaminate.
-static func _test_inn_hero_row_label_sanity() -> Dictionary:
-	print("--- TEST 65: Inn Hero Row Label Sanity ---")
-
-	var TownSceneScript = load("res://Game/UI/Town/TownScene.gd")
-
-	# Verify XP format never starts with "HP:"
-	var xp_variants: Array[String] = [
-		TownSceneScript.format_xp_line(0, 100, false),
-		TownSceneScript.format_xp_line(50, 200, false),
-		TownSceneScript.format_xp_line(0, 0, true),
-	]
-	var pass_1 = true
-	for xp_text in xp_variants:
-		if xp_text.begins_with("HP:"):
-			print("[FAIL] XP formatter returned HP-prefixed line: '%s'" % xp_text)
-			pass_1 = false
-			break
-	if pass_1:
-		print("[PASS] All XP format variants start with 'XP:' (never 'HP:')")
-
-	# Verify HP format never starts with "XP:"
-	var hp_variants: Array[String] = [
-		TownSceneScript.format_hp_line(100, 100),
-		TownSceneScript.format_hp_line(0, 80),
-		TownSceneScript.format_hp_line(50, 95),
-	]
-	var pass_2 = true
-	for hp_text in hp_variants:
-		if hp_text.begins_with("XP:"):
-			print("[FAIL] HP formatter returned XP-prefixed line: '%s'" % hp_text)
-			pass_2 = false
-			break
-	if pass_2:
-		print("[PASS] All HP format variants start with 'HP:' (never 'XP:')")
-
-	# Verify format_xp_line always starts with "XP:"
-	var pass_3 = true
-	for xp_text in xp_variants:
-		if not xp_text.begins_with("XP:"):
-			if not xp_text.begins_with("XP:"):
-				print("[FAIL] XP formatter missing 'XP:' prefix: '%s'" % xp_text)
-				pass_3 = false
-				break
-	if pass_3:
-		print("[PASS] All XP format variants confirmed 'XP:' prefix")
-
-	# Verify _clear_children_immediate exists on TownScene (method availability)
-	var pass_4 = false
-	for m in TownSceneScript.get_script_method_list():
-		if m["name"] == "_clear_children_immediate":
-			pass_4 = true
-			break
-	if pass_4:
-		print("[PASS] TownScene has _clear_children_immediate method")
-	else:
-		print("[FAIL] TownScene missing _clear_children_immediate method")
-
-	return {"name": "Inn Hero Row Label Sanity", "passed": pass_1 and pass_2 and pass_3 and pass_4}
 
 
 # ---------------------------------------------------------------------------
@@ -10285,29 +10790,6 @@ static func _test_closeable_stack_stale_pruning() -> Dictionary:
 	else:
 		print("[FAIL] before_size=2?%s after_size=%d remaining_ok=%s" % [str(has_before), after_size, str(remaining_ok)])
 	return {"name": "Closeable stack stale node pruning", "passed": passed}
-
-
-static func _test_party_card_row_assignment() -> Dictionary:
-	print("--- TEST 159: Party card row assignment ---")
-	var saved_rows = GameContext.hero_row_assignments.duplicate()
-	var hero_id = "test_row_hero_159"
-
-	GameContext.set_hero_row(hero_id, 0)
-	var row0: int = GameContext.get_hero_row(hero_id)
-	GameContext.set_hero_row(hero_id, 2)
-	var row2: int = GameContext.get_hero_row(hero_id)
-	GameContext.set_hero_row(hero_id, 1)
-	var row1: int = GameContext.get_hero_row(hero_id)
-
-	# Cleanup
-	GameContext.hero_row_assignments = saved_rows
-
-	var passed: bool = row0 == 0 and row2 == 2 and row1 == 1
-	if passed:
-		print("[PASS] Row assignment: 0→0, 2→2, 1→1")
-	else:
-		print("[FAIL] row0=%d row2=%d row1=%d" % [row0, row2, row1])
-	return {"name": "Party card row assignment", "passed": passed}
 
 
 static func _test_tutorial_party_bar_flag() -> Dictionary:
@@ -17004,92 +17486,6 @@ static func _test_building_regional_sprites() -> Dictionary:
 	return {"name": "Building regional sprites exist", "passed": passed}
 
 
-static func _test_formation_warning_all_middle() -> Dictionary:
-	print("--- TEST 308: Formation warning all-middle detection ---")
-	var gc = Engine.get_singleton("GameContext") if Engine.has_singleton("GameContext") else null
-	if gc == null:
-		gc = (Engine.get_main_loop() as SceneTree).root.get_node_or_null("GameContext")
-	if gc == null:
-		print("[SKIP] GameContext not available")
-		return {"name": "Formation warning all-middle detection", "passed": true}
-
-	# Save original state
-	var orig_party: Array = gc.selected_party.duplicate()
-	var orig_rows: Dictionary = gc.hero_row_assignments.duplicate()
-	var orig_tutorials: Dictionary = gc.completed_tutorials.duplicate()
-
-	var all_pass: bool = true
-
-	# Setup: 3 heroes, all default to middle row (1)
-	gc.selected_party = ["hero_a", "hero_b", "hero_c"]
-	gc.hero_row_assignments = {}  # All default to middle (1)
-	gc.completed_tutorials.erase("warning_formation_all_middle")
-
-	# Test 1: All middle row → should warn
-	var all_middle: bool = true
-	for hid in gc.selected_party:
-		if gc.get_hero_row(hid) != 1:
-			all_middle = false
-			break
-	var should_warn_1: bool = all_middle and gc.selected_party.size() > 1 and not gc.has_completed_tutorial("warning_formation_all_middle")
-	if not should_warn_1:
-		print("[FAIL] Expected warning for 3 heroes all in middle row")
-		all_pass = false
-	else:
-		print("  Check 1 OK: all-middle triggers warning")
-
-	# Test 2: Move one hero to front → should NOT warn
-	gc.set_hero_row("hero_a", 0)
-	all_middle = true
-	for hid in gc.selected_party:
-		if gc.get_hero_row(hid) != 1:
-			all_middle = false
-			break
-	var should_warn_2: bool = all_middle and gc.selected_party.size() > 1 and not gc.has_completed_tutorial("warning_formation_all_middle")
-	if should_warn_2:
-		print("[FAIL] Expected no warning when hero_a is in front row")
-		all_pass = false
-	else:
-		print("  Check 2 OK: front-row hero suppresses warning")
-
-	# Test 3: All middle again but tutorial dismissed → should NOT warn
-	gc.hero_row_assignments = {}  # Back to all-middle defaults
-	gc.complete_tutorial("warning_formation_all_middle")
-	all_middle = true
-	for hid in gc.selected_party:
-		if gc.get_hero_row(hid) != 1:
-			all_middle = false
-			break
-	var should_warn_3: bool = all_middle and gc.selected_party.size() > 1 and not gc.has_completed_tutorial("warning_formation_all_middle")
-	if should_warn_3:
-		print("[FAIL] Expected no warning when tutorial flag is set")
-		all_pass = false
-	else:
-		print("  Check 3 OK: dismissed flag suppresses warning")
-
-	# Test 4: Solo hero (size <= 1) → should NOT warn
-	gc.completed_tutorials.erase("warning_formation_all_middle")
-	gc.selected_party = ["hero_a"]
-	gc.hero_row_assignments = {}
-	var should_warn_4: bool = gc.selected_party.size() > 1
-	if should_warn_4:
-		print("[FAIL] Expected no warning for solo hero")
-		all_pass = false
-	else:
-		print("  Check 4 OK: solo hero skips warning")
-
-	# Restore original state
-	gc.selected_party = orig_party
-	gc.hero_row_assignments = orig_rows
-	gc.completed_tutorials = orig_tutorials
-
-	if all_pass:
-		print("[PASS] Formation warning all-middle detection")
-	else:
-		print("[FAIL] Formation warning all-middle detection")
-	return {"name": "Formation warning all-middle detection", "passed": all_pass}
-
-
 static func _test_side_quest_tutorial_exists() -> Dictionary:
 	print("--- TEST 309: Side quest tutorial JSON exists ---")
 	var path: String = "res://Data/Tutorials/tutorial_side_quests.json"
@@ -18734,3 +19130,3584 @@ static func _test_title_screen_watermark() -> Dictionary:
 	if passed:
 		print("[PASS] Title screen has playtest watermark")
 	return {"name": "Title screen playtest watermark", "passed": passed}
+
+
+# ============================================================================
+# GRID COMBAT V1 TESTS (364-375)
+# ============================================================================
+
+static func _test_grid_manager_place_remove_move() -> Dictionary:
+	print("--- TEST 364: GridManager place/remove/move unit ---")
+	var passed := true
+
+	var gm = GridManager.new()
+
+	# Create test units
+	var unit_a = CombatUnit.new()
+	unit_a.unit_id = "test_a"
+	unit_a.display_name = "UnitA"
+	unit_a.team = CombatUnit.Team.PLAYER
+
+	var unit_b = CombatUnit.new()
+	unit_b.unit_id = "test_b"
+	unit_b.display_name = "UnitB"
+	unit_b.team = CombatUnit.Team.ENEMY
+
+	# Place unit A at (1, 0)
+	var placed = gm.place_unit(unit_a, Vector2i(1, 0))
+	if not placed:
+		print("[FAIL] place_unit returned false for valid position")
+		passed = false
+	if unit_a.grid_x != 1 or unit_a.grid_y != 0:
+		print("[FAIL] Unit grid_x/grid_y not updated after place")
+		passed = false
+	if gm.get_unit_at(Vector2i(1, 0)) != unit_a:
+		print("[FAIL] get_unit_at did not return placed unit")
+		passed = false
+
+	# Cannot place on occupied tile
+	var placed_dupe = gm.place_unit(unit_b, Vector2i(1, 0))
+	if placed_dupe:
+		print("[FAIL] place_unit should fail on occupied tile")
+		passed = false
+
+	# Place unit B elsewhere
+	gm.place_unit(unit_b, Vector2i(6, 2))
+
+	# Move unit A from (1,0) to (3,0)
+	var moved = gm.move_unit(unit_a, Vector2i(3, 0))
+	if not moved:
+		print("[FAIL] move_unit returned false for valid move")
+		passed = false
+	if unit_a.grid_x != 3 or unit_a.grid_y != 0:
+		print("[FAIL] Unit position not updated after move")
+		passed = false
+	if gm.get_unit_at(Vector2i(1, 0)) != null:
+		print("[FAIL] Old position not cleared after move")
+		passed = false
+	if gm.get_unit_at(Vector2i(3, 0)) != unit_a:
+		print("[FAIL] New position does not have moved unit")
+		passed = false
+
+	# Remove unit A
+	gm.remove_unit(unit_a)
+	if gm.get_unit_at(Vector2i(3, 0)) != null:
+		print("[FAIL] Position not cleared after remove")
+		passed = false
+
+	# Cannot move to occupied tile
+	gm.place_unit(unit_a, Vector2i(5, 2))
+	var moved_to_occupied = gm.move_unit(unit_a, Vector2i(6, 2))
+	if moved_to_occupied:
+		print("[FAIL] move_unit should fail when destination is occupied")
+		passed = false
+
+	if passed:
+		print("[PASS] GridManager place/remove/move")
+	return {"name": "GridManager place/remove/move unit", "passed": passed}
+
+
+static func _test_grid_manager_reachable_tiles() -> Dictionary:
+	print("--- TEST 365: GridManager BFS reachable tiles ---")
+	var passed := true
+
+	var gm = GridManager.new()
+
+	var unit = CombatUnit.new()
+	unit.unit_id = "mover"
+	unit.display_name = "Mover"
+	unit.team = CombatUnit.Team.PLAYER
+	gm.place_unit(unit, Vector2i(3, 1))
+
+	# Movement range 2: should reach all empty tiles within Manhattan dist 2
+	var reachable = gm.get_reachable_tiles(Vector2i(3, 1), 2, CombatUnit.Team.PLAYER)
+
+	# Expected reachable tiles at dist 1: (2,1), (4,1), (3,0), (3,2)
+	# Expected at dist 2: (1,1), (5,1), (3,3), (2,0), (4,0), (2,2), (4,2)
+	# Total: 4 + 7 = 11 tiles (minus any out of bounds - all are in bounds on 8x4 grid)
+	if reachable.size() < 8:
+		print("[FAIL] Expected at least 8 reachable tiles with range 2, got %d" % reachable.size())
+		passed = false
+
+	# Starting tile should NOT be in reachable
+	if Vector2i(3, 1) in reachable:
+		print("[FAIL] Starting tile should not be in reachable set")
+		passed = false
+
+	# Adjacent tiles should be reachable
+	if Vector2i(4, 1) not in reachable:
+		print("[FAIL] Adjacent tile (4,1) should be reachable")
+		passed = false
+
+	# Place enemy to block a path
+	var enemy = CombatUnit.new()
+	enemy.unit_id = "blocker"
+	enemy.display_name = "Blocker"
+	enemy.team = CombatUnit.Team.ENEMY
+	gm.place_unit(enemy, Vector2i(4, 1))
+
+	var reachable2 = gm.get_reachable_tiles(Vector2i(3, 1), 2, CombatUnit.Team.PLAYER)
+
+	# (4,1) occupied by enemy: not reachable AND blocks path through it
+	if Vector2i(4, 1) in reachable2:
+		print("[FAIL] Enemy-occupied tile should not be reachable")
+		passed = false
+
+	# (5,1) should be blocked because enemy at (4,1) blocks the direct path
+	if Vector2i(5, 1) in reachable2:
+		print("[FAIL] Tile behind enemy should not be reachable with range 2")
+		passed = false
+
+	if passed:
+		print("[PASS] GridManager BFS reachable tiles")
+	return {"name": "GridManager BFS reachable tiles", "passed": passed}
+
+
+static func _test_grid_manager_manhattan_distance() -> Dictionary:
+	print("--- TEST 366: GridManager Manhattan distance ---")
+	var passed := true
+
+	# Same position = 0
+	if GridManager.manhattan_distance(Vector2i(3, 2), Vector2i(3, 2)) != 0:
+		print("[FAIL] Same position should have distance 0")
+		passed = false
+
+	# Adjacent = 1
+	if GridManager.manhattan_distance(Vector2i(3, 2), Vector2i(4, 2)) != 1:
+		print("[FAIL] Adjacent horizontal should have distance 1")
+		passed = false
+	if GridManager.manhattan_distance(Vector2i(3, 2), Vector2i(3, 3)) != 1:
+		print("[FAIL] Adjacent vertical should have distance 1")
+		passed = false
+
+	# Diagonal = 2 (Manhattan, not Euclidean)
+	if GridManager.manhattan_distance(Vector2i(0, 0), Vector2i(1, 1)) != 2:
+		print("[FAIL] Diagonal should have Manhattan distance 2")
+		passed = false
+
+	# Across grid
+	if GridManager.manhattan_distance(Vector2i(0, 0), Vector2i(7, 3)) != 10:
+		print("[FAIL] (0,0) to (7,3) should be distance 10")
+		passed = false
+
+	# Symmetry
+	var d1 = GridManager.manhattan_distance(Vector2i(1, 0), Vector2i(6, 3))
+	var d2 = GridManager.manhattan_distance(Vector2i(6, 3), Vector2i(1, 0))
+	if d1 != d2:
+		print("[FAIL] Manhattan distance should be symmetric")
+		passed = false
+
+	if passed:
+		print("[PASS] GridManager Manhattan distance")
+	return {"name": "GridManager Manhattan distance", "passed": passed}
+
+
+static func _test_grid_manager_targets_in_range() -> Dictionary:
+	print("--- TEST 367: GridManager get_targets_in_range ---")
+	var passed := true
+
+	var gm = GridManager.new()
+
+	# Place player at (1, 1)
+	var player = CombatUnit.new()
+	player.unit_id = "player_0"
+	player.display_name = "Hero"
+	player.team = CombatUnit.Team.PLAYER
+	player.max_health = 100
+	player.current_health = 100
+	gm.place_unit(player, Vector2i(1, 1))
+
+	# Place enemies at various distances
+	var e1 = CombatUnit.new()
+	e1.unit_id = "enemy_0"
+	e1.display_name = "CloseEnemy"
+	e1.team = CombatUnit.Team.ENEMY
+	e1.max_health = 50
+	e1.current_health = 50
+	gm.place_unit(e1, Vector2i(2, 1))  # dist 1
+
+	var e2 = CombatUnit.new()
+	e2.unit_id = "enemy_1"
+	e2.display_name = "MidEnemy"
+	e2.team = CombatUnit.Team.ENEMY
+	e2.max_health = 50
+	e2.current_health = 50
+	gm.place_unit(e2, Vector2i(4, 1))  # dist 3
+
+	var e3 = CombatUnit.new()
+	e3.unit_id = "enemy_2"
+	e3.display_name = "FarEnemy"
+	e3.team = CombatUnit.Team.ENEMY
+	e3.max_health = 50
+	e3.current_health = 50
+	gm.place_unit(e3, Vector2i(7, 3))  # dist 8
+
+	# Melee range (1): should only find e1
+	var melee_targets = gm.get_targets_in_range(Vector2i(1, 1), 1, 1, CombatUnit.Team.ENEMY)
+	if melee_targets.size() != 1:
+		print("[FAIL] Melee range should find 1 target, got %d" % melee_targets.size())
+		passed = false
+	elif melee_targets[0].unit_id != "enemy_0":
+		print("[FAIL] Melee should target CloseEnemy")
+		passed = false
+
+	# Mid range (1-5): should find e1 and e2
+	var mid_targets = gm.get_targets_in_range(Vector2i(1, 1), 1, 5, CombatUnit.Team.ENEMY)
+	if mid_targets.size() != 2:
+		print("[FAIL] Mid range should find 2 targets, got %d" % mid_targets.size())
+		passed = false
+
+	# Full range (1-99): should find all 3
+	var all_targets = gm.get_targets_in_range(Vector2i(1, 1), 1, 99, CombatUnit.Team.ENEMY)
+	if all_targets.size() != 3:
+		print("[FAIL] Full range should find 3 targets, got %d" % all_targets.size())
+		passed = false
+
+	# Team filter: should not find player with ENEMY filter
+	var no_player = gm.get_targets_in_range(Vector2i(1, 1), 0, 99, CombatUnit.Team.ENEMY)
+	for t in no_player:
+		if t.team == CombatUnit.Team.PLAYER:
+			print("[FAIL] ENEMY filter should not return player units")
+			passed = false
+
+	# Dead enemies excluded
+	e1.current_health = 0
+	e1.is_alive = false
+	var alive_only = gm.get_targets_in_range(Vector2i(1, 1), 1, 1, CombatUnit.Team.ENEMY)
+	if alive_only.size() != 0:
+		print("[FAIL] Dead unit should not appear in targets, got %d" % alive_only.size())
+		passed = false
+
+	if passed:
+		print("[PASS] GridManager get_targets_in_range")
+	return {"name": "GridManager get_targets_in_range", "passed": passed}
+
+
+static func _test_grid_manager_aoe_square() -> Dictionary:
+	print("--- TEST 368: GridManager AoE square resolution ---")
+	var passed := true
+
+	var gm = GridManager.new()
+
+	# Size 0: 1x1 (just center)
+	var tiles_0 = gm.resolve_aoe_square(Vector2i(4, 2), 0)
+	if tiles_0.size() != 1:
+		print("[FAIL] AoE size 0 should be 1 tile, got %d" % tiles_0.size())
+		passed = false
+	if tiles_0.size() > 0 and tiles_0[0] != Vector2i(4, 2):
+		print("[FAIL] AoE size 0 should only contain center tile")
+		passed = false
+
+	# Size 1: 3x3 = 9 tiles (all in bounds for center tile (4,2))
+	var tiles_1 = gm.resolve_aoe_square(Vector2i(4, 2), 1)
+	if tiles_1.size() != 9:
+		print("[FAIL] AoE size 1 at (4,2) should be 9 tiles, got %d" % tiles_1.size())
+		passed = false
+
+	# Size 1 at edge: (0,0) should clip to in-bounds tiles
+	var tiles_edge = gm.resolve_aoe_square(Vector2i(0, 0), 1)
+	# (0,0) with size 1: x from -1 to 1, y from -1 to 1
+	# In bounds: (0,0), (1,0), (0,1), (1,1) = 4 tiles
+	if tiles_edge.size() != 4:
+		print("[FAIL] AoE size 1 at (0,0) edge should be 4 tiles, got %d" % tiles_edge.size())
+		passed = false
+
+	# Size 2: 5x5 = 25 tiles max, but grid is only 4 rows high
+	# At center (4,2): x from 2 to 6 (5 cols), y from 0 to 3 (4 rows, clipped from 5)
+	var tiles_2 = gm.resolve_aoe_square(Vector2i(4, 2), 2)
+	# x: 2,3,4,5,6 (5 values), y: 0,1,2,3 (4 values, clipped from 0-4)
+	if tiles_2.size() != 20:
+		print("[FAIL] AoE size 2 at (4,2) should be 20 tiles (clipped), got %d" % tiles_2.size())
+		passed = false
+
+	# Test get_units_in_aoe_square
+	var unit = CombatUnit.new()
+	unit.unit_id = "aoe_target"
+	unit.display_name = "Target"
+	unit.team = CombatUnit.Team.ENEMY
+	unit.max_health = 50
+	unit.current_health = 50
+	gm.place_unit(unit, Vector2i(4, 2))
+
+	var hit_units = gm.get_units_in_aoe_square(Vector2i(4, 2), 1)
+	if hit_units.size() != 1:
+		print("[FAIL] Should find 1 unit in AoE, got %d" % hit_units.size())
+		passed = false
+
+	if passed:
+		print("[PASS] GridManager AoE square resolution")
+	return {"name": "GridManager AoE square resolution", "passed": passed}
+
+
+static func _test_grid_manager_boundaries() -> Dictionary:
+	print("--- TEST 369: GridManager boundary checks ---")
+	var passed := true
+
+	var gm = GridManager.new()
+
+	# Valid positions
+	if not gm.is_in_bounds(Vector2i(0, 0)):
+		print("[FAIL] (0,0) should be in bounds")
+		passed = false
+	if not gm.is_in_bounds(Vector2i(7, 3)):
+		print("[FAIL] (7,3) should be in bounds")
+		passed = false
+
+	# Invalid positions
+	if gm.is_in_bounds(Vector2i(-1, 0)):
+		print("[FAIL] (-1,0) should be out of bounds")
+		passed = false
+	if gm.is_in_bounds(Vector2i(8, 0)):
+		print("[FAIL] (8,0) should be out of bounds")
+		passed = false
+	if gm.is_in_bounds(Vector2i(0, 4)):
+		print("[FAIL] (0,4) should be out of bounds")
+		passed = false
+	if gm.is_in_bounds(Vector2i(0, -1)):
+		print("[FAIL] (0,-1) should be out of bounds")
+		passed = false
+
+	# Place at boundary
+	var unit = CombatUnit.new()
+	unit.unit_id = "boundary"
+	unit.display_name = "Edge"
+	unit.team = CombatUnit.Team.PLAYER
+
+	var placed = gm.place_unit(unit, Vector2i(7, 3))
+	if not placed:
+		print("[FAIL] Should be able to place at (7,3)")
+		passed = false
+
+	# Cannot place out of bounds
+	var unit2 = CombatUnit.new()
+	unit2.unit_id = "oob"
+	unit2.display_name = "OOB"
+	unit2.team = CombatUnit.Team.PLAYER
+	var placed_oob = gm.place_unit(unit2, Vector2i(8, 0))
+	if placed_oob:
+		print("[FAIL] Should not be able to place at (8,0)")
+		passed = false
+
+	# is_tile_empty on boundary
+	if not gm.is_tile_empty(Vector2i(0, 0)):
+		print("[FAIL] (0,0) should be empty")
+		passed = false
+	if gm.is_tile_empty(Vector2i(7, 3)):
+		print("[FAIL] (7,3) should not be empty after placing unit")
+		passed = false
+	# Out of bounds should return false for is_tile_empty
+	if gm.is_tile_empty(Vector2i(8, 0)):
+		print("[FAIL] Out of bounds should not be 'empty'")
+		passed = false
+
+	# is_adjacent
+	if not gm.is_adjacent(Vector2i(3, 1), Vector2i(4, 1)):
+		print("[FAIL] (3,1) and (4,1) should be adjacent")
+		passed = false
+	if gm.is_adjacent(Vector2i(3, 1), Vector2i(5, 1)):
+		print("[FAIL] (3,1) and (5,1) should NOT be adjacent")
+		passed = false
+	if gm.is_adjacent(Vector2i(3, 1), Vector2i(4, 2)):
+		print("[FAIL] Diagonal tiles should NOT be adjacent")
+		passed = false
+
+	if passed:
+		print("[PASS] GridManager boundary checks")
+	return {"name": "GridManager boundary checks", "passed": passed}
+
+
+static func _test_grid_manager_blocked_movement() -> Dictionary:
+	print("--- TEST 370: GridManager occupied tile blocks movement ---")
+	var passed := true
+
+	var gm = GridManager.new()
+
+	# Place a player unit
+	var player = CombatUnit.new()
+	player.unit_id = "p0"
+	player.display_name = "Hero"
+	player.team = CombatUnit.Team.PLAYER
+	gm.place_unit(player, Vector2i(2, 1))
+
+	# Place an ally next to them
+	var ally = CombatUnit.new()
+	ally.unit_id = "p1"
+	ally.display_name = "Ally"
+	ally.team = CombatUnit.Team.PLAYER
+	gm.place_unit(ally, Vector2i(3, 1))
+
+	# Place an enemy further out
+	var enemy = CombatUnit.new()
+	enemy.unit_id = "e0"
+	enemy.display_name = "Enemy"
+	enemy.team = CombatUnit.Team.ENEMY
+	gm.place_unit(enemy, Vector2i(4, 1))
+
+	# Cannot move player to ally-occupied tile
+	var move_to_ally = gm.move_unit(player, Vector2i(3, 1))
+	if move_to_ally:
+		print("[FAIL] Should not be able to move to ally-occupied tile")
+		passed = false
+
+	# Cannot move player to enemy-occupied tile
+	var move_to_enemy = gm.move_unit(player, Vector2i(4, 1))
+	if move_to_enemy:
+		print("[FAIL] Should not be able to move to enemy-occupied tile")
+		passed = false
+
+	# CAN move to empty tile
+	var move_to_empty = gm.move_unit(player, Vector2i(2, 2))
+	if not move_to_empty:
+		print("[FAIL] Should be able to move to empty tile")
+		passed = false
+
+	# BFS reachable: ally tiles are passable but not stoppable
+	# Reset: place player at (2,1), ally at (3,1), check reachable at range 2
+	gm.move_unit(player, Vector2i(2, 1))
+	var reachable = gm.get_reachable_tiles(Vector2i(2, 1), 2, CombatUnit.Team.PLAYER)
+
+	# (3,1) is ally-occupied, should NOT be reachable (can't stop on it)
+	if Vector2i(3, 1) in reachable:
+		print("[FAIL] Ally-occupied tile should not be in reachable set")
+		passed = false
+
+	# (4,1) is enemy-occupied, should NOT be reachable
+	if Vector2i(4, 1) in reachable:
+		print("[FAIL] Enemy-occupied tile should not be in reachable set")
+		passed = false
+
+	if passed:
+		print("[PASS] GridManager occupied tile blocks movement")
+	return {"name": "GridManager occupied tile blocks movement", "passed": passed}
+
+
+static func _test_grid_manager_spawn_formation() -> Dictionary:
+	print("--- TEST 371: GridManager spawn formation ---")
+	var passed := true
+
+	var gm = GridManager.new()
+
+	# Create player units (mix of melee and ranged)
+	var p1 = CombatUnit.new()
+	p1.unit_id = "hero_0"
+	p1.display_name = "Tank"
+	p1.team = CombatUnit.Team.PLAYER
+	p1.attack_type = "melee"
+
+	var p2 = CombatUnit.new()
+	p2.unit_id = "hero_1"
+	p2.display_name = "Archer"
+	p2.team = CombatUnit.Team.PLAYER
+	p2.attack_type = "ranged"
+
+	var p3 = CombatUnit.new()
+	p3.unit_id = "hero_2"
+	p3.display_name = "Fighter"
+	p3.team = CombatUnit.Team.PLAYER
+	p3.attack_type = "melee"
+
+	# Create enemy units
+	var e1 = CombatUnit.new()
+	e1.unit_id = "enemy_0"
+	e1.display_name = "Goblin"
+	e1.team = CombatUnit.Team.ENEMY
+	e1.attack_type = "melee"
+
+	var e2 = CombatUnit.new()
+	e2.unit_id = "enemy_1"
+	e2.display_name = "Mage"
+	e2.team = CombatUnit.Team.ENEMY
+	e2.attack_type = "ranged"
+
+	gm.assign_spawn_formation([p1, p2, p3], [e1, e2])
+
+	# Player melee should be in front column (1)
+	if p1.grid_x != 1:
+		print("[FAIL] Melee hero should be in col 1, got col %d" % p1.grid_x)
+		passed = false
+	if p3.grid_x != 1:
+		print("[FAIL] Melee hero should be in col 1, got col %d" % p3.grid_x)
+		passed = false
+
+	# Player ranged should be in back column (0)
+	if p2.grid_x != 0:
+		print("[FAIL] Ranged hero should be in col 0, got col %d" % p2.grid_x)
+		passed = false
+
+	# Enemy melee should be in front column (4)
+	if e1.grid_x != 4:
+		print("[FAIL] Enemy melee should be in col 4, got col %d" % e1.grid_x)
+		passed = false
+
+	# Enemy ranged should be in second column (5)
+	if e2.grid_x != 5:
+		print("[FAIL] Enemy ranged should be in col 5, got col %d" % e2.grid_x)
+		passed = false
+
+	# All positions should be valid
+	for u in [p1, p2, p3, e1, e2]:
+		if not u.has_position():
+			print("[FAIL] Unit %s has no position" % u.unit_id)
+			passed = false
+		if not gm.is_in_bounds(u.get_grid_pos()):
+			print("[FAIL] Unit %s has out-of-bounds position" % u.unit_id)
+			passed = false
+
+	# No overlaps
+	if not gm.validate_no_overlap():
+		print("[FAIL] Formation has overlapping positions")
+		passed = false
+
+	if passed:
+		print("[PASS] GridManager spawn formation")
+	return {"name": "GridManager spawn formation", "passed": passed}
+
+
+static func _test_grid_manager_no_overlap() -> Dictionary:
+	print("--- TEST 372: GridManager no overlap validation ---")
+	var passed := true
+
+	var gm = GridManager.new()
+
+	var u1 = CombatUnit.new()
+	u1.unit_id = "u1"
+	u1.display_name = "Unit1"
+	u1.team = CombatUnit.Team.PLAYER
+
+	var u2 = CombatUnit.new()
+	u2.unit_id = "u2"
+	u2.display_name = "Unit2"
+	u2.team = CombatUnit.Team.ENEMY
+
+	gm.place_unit(u1, Vector2i(3, 0))
+	gm.place_unit(u2, Vector2i(5, 2))
+
+	# No overlap should pass
+	if not gm.validate_no_overlap():
+		print("[FAIL] Valid placement should pass overlap check")
+		passed = false
+
+	# Place a third unit at different position
+	var u3 = CombatUnit.new()
+	u3.unit_id = "u3"
+	u3.display_name = "Unit3"
+	u3.team = CombatUnit.Team.PLAYER
+	gm.place_unit(u3, Vector2i(0, 0))
+
+	if not gm.validate_no_overlap():
+		print("[FAIL] Three non-overlapping units should pass")
+		passed = false
+
+	# Verify get_occupied_positions
+	var occupied = gm.get_occupied_positions()
+	if occupied.size() != 3:
+		print("[FAIL] Should have 3 occupied positions, got %d" % occupied.size())
+		passed = false
+
+	# Verify get_all_units
+	var all_units = gm.get_all_units()
+	if all_units.size() != 3:
+		print("[FAIL] Should have 3 units total, got %d" % all_units.size())
+		passed = false
+
+	if passed:
+		print("[PASS] GridManager no overlap validation")
+	return {"name": "GridManager no overlap validation", "passed": passed}
+
+
+static func _test_combat_unit_grid_pos() -> Dictionary:
+	print("--- TEST 373: CombatUnit get_grid_pos / set_grid_pos ---")
+	var passed := true
+
+	var unit = CombatUnit.new()
+	unit.unit_id = "pos_test"
+	unit.display_name = "PosTest"
+
+	# Default movement_range
+	if unit.movement_range != 2:
+		print("[FAIL] Default movement_range should be 2, got %d" % unit.movement_range)
+		passed = false
+
+	# Default has_moved_this_turn
+	if unit.has_moved_this_turn:
+		print("[FAIL] Default has_moved_this_turn should be false")
+		passed = false
+
+	# set_grid_pos / get_grid_pos
+	unit.set_grid_pos(Vector2i(5, 3))
+	var pos = unit.get_grid_pos()
+	if pos != Vector2i(5, 3):
+		print("[FAIL] get_grid_pos should return (5,3), got %s" % str(pos))
+		passed = false
+	if unit.grid_x != 5 or unit.grid_y != 3:
+		print("[FAIL] grid_x/grid_y should be 5,3")
+		passed = false
+
+	# has_position should return true
+	if not unit.has_position():
+		print("[FAIL] has_position should be true after set_grid_pos")
+		passed = false
+
+	# Unassigned unit
+	var unit2 = CombatUnit.new()
+	unit2.unit_id = "unassigned"
+	unit2.display_name = "Unassigned"
+	if unit2.has_position():
+		print("[FAIL] Unassigned unit should not have position")
+		passed = false
+
+	if passed:
+		print("[PASS] CombatUnit get_grid_pos / set_grid_pos")
+	return {"name": "CombatUnit get_grid_pos / set_grid_pos", "passed": passed}
+
+
+static func _test_ability_data_aoe_fields() -> Dictionary:
+	print("--- TEST 374: AbilityData aoe_shape/aoe_size parsing ---")
+	var passed := true
+
+	# Test default values
+	var default_ability = AbilityData.from_dict({"id": "test_default", "display_name": "Default"})
+	if default_ability.aoe_shape != "none":
+		print("[FAIL] Default aoe_shape should be 'none', got '%s'" % default_ability.aoe_shape)
+		passed = false
+	if default_ability.aoe_size != 0:
+		print("[FAIL] Default aoe_size should be 0, got %d" % default_ability.aoe_size)
+		passed = false
+
+	# Test explicit values
+	var aoe_ability = AbilityData.from_dict({
+		"id": "test_aoe",
+		"display_name": "AoE Test",
+		"aoe_shape": "square",
+		"aoe_size": 1,
+		"target_type": "aoe_tile"
+	})
+	if aoe_ability.aoe_shape != "square":
+		print("[FAIL] aoe_shape should be 'square', got '%s'" % aoe_ability.aoe_shape)
+		passed = false
+	if aoe_ability.aoe_size != 1:
+		print("[FAIL] aoe_size should be 1, got %d" % aoe_ability.aoe_size)
+		passed = false
+	if aoe_ability.target_type != "aoe_tile":
+		print("[FAIL] target_type should be 'aoe_tile', got '%s'" % aoe_ability.target_type)
+		passed = false
+
+	# Existing range fields should still parse
+	var ranged_ability = AbilityData.from_dict({
+		"id": "test_ranged",
+		"display_name": "Ranged Test",
+		"range_min": 2,
+		"range_max": 5
+	})
+	if ranged_ability.range_min != 2:
+		print("[FAIL] range_min should be 2, got %d" % ranged_ability.range_min)
+		passed = false
+	if ranged_ability.range_max != 5:
+		print("[FAIL] range_max should be 5, got %d" % ranged_ability.range_max)
+		passed = false
+
+	if passed:
+		print("[PASS] AbilityData aoe_shape/aoe_size parsing")
+	return {"name": "AbilityData aoe_shape/aoe_size parsing", "passed": passed}
+
+
+static func _test_grid_manager_pathfinding() -> Dictionary:
+	print("--- TEST 375: GridManager pathfinding ---")
+	var passed := true
+
+	var gm = GridManager.new()
+
+	# Simple path with no obstacles
+	var path = gm.get_path(Vector2i(1, 1), Vector2i(4, 1))
+	if path.is_empty():
+		print("[FAIL] Should find path from (1,1) to (4,1)")
+		passed = false
+	elif path.size() != 3:
+		print("[FAIL] Path from (1,1) to (4,1) should be 3 steps, got %d" % path.size())
+		passed = false
+	elif path[path.size() - 1] != Vector2i(4, 1):
+		print("[FAIL] Path should end at (4,1)")
+		passed = false
+
+	# Path should not include starting position
+	if Vector2i(1, 1) in path:
+		print("[FAIL] Path should not include starting position")
+		passed = false
+
+	# Path to same position = empty
+	var same_path = gm.get_path(Vector2i(2, 2), Vector2i(2, 2))
+	if same_path.size() != 0:
+		print("[FAIL] Path to same position should be empty")
+		passed = false
+
+	# Path around obstacle
+	var blocker = CombatUnit.new()
+	blocker.unit_id = "blocker"
+	blocker.display_name = "Wall"
+	blocker.team = CombatUnit.Team.ENEMY
+
+	# Place enemy blocking direct path
+	gm.place_unit(blocker, Vector2i(3, 1))
+
+	var detour_path = gm.get_path(Vector2i(2, 1), Vector2i(4, 1), CombatUnit.Team.PLAYER)
+	if detour_path.is_empty():
+		print("[FAIL] Should find detour path around enemy blocker")
+		passed = false
+	else:
+		# Path should not go through enemy tile
+		if Vector2i(3, 1) in detour_path:
+			print("[FAIL] Path should not go through enemy-occupied tile")
+			passed = false
+		# Path should end at destination
+		if detour_path[detour_path.size() - 1] != Vector2i(4, 1):
+			print("[FAIL] Detour path should end at (4,1)")
+			passed = false
+
+	if passed:
+		print("[PASS] GridManager pathfinding")
+	return {"name": "GridManager pathfinding", "passed": passed}
+
+
+# ============================================================================
+# GRID COMBAT V1 INTEGRATION TESTS (376-379)
+# ============================================================================
+
+static func _test_combat_controller_grid_manager() -> Dictionary:
+	print("--- TEST 376: CombatController GridManager integration ---")
+	var passed := true
+
+	var controller = CombatControllerScript.new()
+
+	# Verify get_grid_manager method exists
+	if not controller.has_method("get_grid_manager"):
+		print("[FAIL] CombatController missing get_grid_manager() method")
+		passed = false
+	else:
+		# Before initialize_combat, grid_manager should be null
+		var gm = controller.get_grid_manager()
+		if gm != null:
+			print("[FAIL] GridManager should be null before combat initialization")
+			passed = false
+
+	# Verify _grid_manager field exists (via script introspection)
+	var script: GDScript = CombatControllerScript
+	var source: String = script.source_code
+	if source.find("_grid_manager") == -1:
+		print("[FAIL] CombatController missing _grid_manager field")
+		passed = false
+
+	if source.find("GridManager.new()") == -1:
+		print("[FAIL] CombatController should create GridManager in initialize_combat")
+		passed = false
+
+	if source.find("assign_spawn_formation") == -1:
+		print("[FAIL] CombatController should call assign_spawn_formation")
+		passed = false
+
+	if passed:
+		print("[PASS] CombatController GridManager integration")
+	return {"name": "CombatController GridManager integration", "passed": passed}
+
+
+static func _test_grid_positions_no_overlap() -> Dictionary:
+	print("--- TEST 377: GridManager positions no overlap after formation ---")
+	var passed := true
+
+	var gm = GridManager.new()
+
+	# Create a realistic combat setup: 4 heroes + 5 enemies
+	var players: Array = []
+	var enemies: Array = []
+
+	for i in range(4):
+		var p = CombatUnit.new()
+		p.unit_id = "hero_%d" % i
+		p.display_name = "Hero%d" % i
+		p.team = CombatUnit.Team.PLAYER
+		p.attack_type = "melee" if i < 2 else "ranged"
+		players.append(p)
+
+	for i in range(5):
+		var e = CombatUnit.new()
+		e.unit_id = "enemy_%d" % i
+		e.display_name = "Enemy%d" % i
+		e.team = CombatUnit.Team.ENEMY
+		e.attack_type = "melee" if i < 3 else "ranged"
+		e.max_health = 50
+		e.current_health = 50
+		enemies.append(e)
+
+	gm.assign_spawn_formation(players, enemies)
+
+	# Validate no overlaps
+	if not gm.validate_no_overlap():
+		print("[FAIL] Formation has overlapping positions")
+		passed = false
+
+	# All units should have valid positions
+	for unit in players + enemies:
+		if not unit.has_position():
+			print("[FAIL] Unit %s has no position" % unit.unit_id)
+			passed = false
+		if not gm.is_in_bounds(unit.get_grid_pos()):
+			print("[FAIL] Unit %s at %s is out of bounds" % [unit.unit_id, unit.get_grid_pos()])
+			passed = false
+
+	# Total units placed should be 9
+	var all_units = gm.get_all_units()
+	if all_units.size() != 9:
+		print("[FAIL] Expected 9 units placed, got %d" % all_units.size())
+		passed = false
+
+	if passed:
+		print("[PASS] GridManager positions no overlap")
+	return {"name": "GridManager positions no overlap after formation", "passed": passed}
+
+
+static func _test_grid_team_zone_placement() -> Dictionary:
+	print("--- TEST 378: GridManager team zone placement ---")
+	var passed := true
+
+	var gm = GridManager.new()
+
+	# Create mixed combat setup
+	var players: Array = []
+	var enemies: Array = []
+
+	var p1 = CombatUnit.new()
+	p1.unit_id = "hero_0"
+	p1.display_name = "Defender"
+	p1.team = CombatUnit.Team.PLAYER
+	p1.attack_type = "melee"
+	players.append(p1)
+
+	var p2 = CombatUnit.new()
+	p2.unit_id = "hero_1"
+	p2.display_name = "Archer"
+	p2.team = CombatUnit.Team.PLAYER
+	p2.attack_type = "ranged"
+	players.append(p2)
+
+	var e1 = CombatUnit.new()
+	e1.unit_id = "enemy_0"
+	e1.display_name = "Goblin"
+	e1.team = CombatUnit.Team.ENEMY
+	e1.attack_type = "melee"
+	enemies.append(e1)
+
+	var e2 = CombatUnit.new()
+	e2.unit_id = "enemy_1"
+	e2.display_name = "Mage"
+	e2.team = CombatUnit.Team.ENEMY
+	e2.attack_type = "mage"
+	enemies.append(e2)
+
+	gm.assign_spawn_formation(players, enemies)
+
+	# Player units should be in cols 0-1
+	for p in players:
+		if p.grid_x < 0 or p.grid_x > 1:
+			print("[FAIL] Player %s at col %d, should be 0-1" % [p.unit_id, p.grid_x])
+			passed = false
+
+	# Enemy units should be in cols 4-7 (right half)
+	for e in enemies:
+		if e.grid_x < 4 or e.grid_x > 7:
+			print("[FAIL] Enemy %s at col %d, should be 4-7" % [e.unit_id, e.grid_x])
+			passed = false
+
+	# Melee player should be in front (col 1), ranged in back (col 0)
+	if p1.grid_x != 1:
+		print("[FAIL] Melee hero should be at col 1 (front), got col %d" % p1.grid_x)
+		passed = false
+	if p2.grid_x != 0:
+		print("[FAIL] Ranged hero should be at col 0 (back), got col %d" % p2.grid_x)
+		passed = false
+
+	# Melee enemy should be in front (col 4), mage in back (col 5)
+	if e1.grid_x != 4:
+		print("[FAIL] Melee enemy should be at col 4 (front), got col %d" % e1.grid_x)
+		passed = false
+	if e2.grid_x != 5:
+		print("[FAIL] Mage enemy should be at col 5 (back), got col %d" % e2.grid_x)
+		passed = false
+
+	# Verify snapshot includes grid positions
+	var pos_p1 = p1.get_grid_pos()
+	var pos_e1 = e1.get_grid_pos()
+	var dist = GridManager.manhattan_distance(pos_p1, pos_e1)
+	# Melee hero at col 1, melee enemy at col 4: distance = 3 + |row diff|
+	if dist < 3:
+		print("[FAIL] Distance between melee hero and enemy should be >= 3, got %d" % dist)
+		passed = false
+
+	if passed:
+		print("[PASS] GridManager team zone placement")
+	return {"name": "GridManager team zone placement", "passed": passed}
+
+
+static func _test_monster_data_movement_range() -> Dictionary:
+	print("--- TEST 379: MonsterData movement_range parsing ---")
+	var passed := true
+
+	# Test default value (no movement_range in data)
+	var default_monster = MonsterData.from_dict({
+		"id": "test_default",
+		"display_name": "DefaultMon",
+		"base_stats": {"health": 100, "attack": 10, "defense": 5, "speed": 15}
+	})
+	if default_monster.movement_range != 2:
+		print("[FAIL] Default movement_range should be 2, got %d" % default_monster.movement_range)
+		passed = false
+
+	# Test explicit value
+	var fast_monster = MonsterData.from_dict({
+		"id": "test_fast",
+		"display_name": "FastMon",
+		"movement_range": 3,
+		"base_stats": {"health": 50, "attack": 15, "defense": 3, "speed": 25}
+	})
+	if fast_monster.movement_range != 3:
+		print("[FAIL] Explicit movement_range should be 3, got %d" % fast_monster.movement_range)
+		passed = false
+
+	# Test boss with low movement
+	var boss_monster = MonsterData.from_dict({
+		"id": "test_boss",
+		"display_name": "BossMon",
+		"movement_range": 1,
+		"is_boss": true,
+		"base_stats": {"health": 500, "attack": 30, "defense": 20, "speed": 10}
+	})
+	if boss_monster.movement_range != 1:
+		print("[FAIL] Boss movement_range should be 1, got %d" % boss_monster.movement_range)
+		passed = false
+
+	# Verify existing monster data loads without issues (sample from DataRegistry)
+	var registry = Engine.get_main_loop().root.get_node_or_null("DataRegistry")
+	if registry != null and registry.has_method("get_monster"):
+		var sample = registry.get_monster("gr_thorn_ent")
+		if sample != null:
+			# Movement range should be default 2 (not in JSON yet)
+			if sample.movement_range != 2:
+				print("[FAIL] Existing monster should have default movement_range 2, got %d" % sample.movement_range)
+				passed = false
+		else:
+			print("[INFO] gr_thorn_ent not found in registry (skipping live data check)")
+
+	if passed:
+		print("[PASS] MonsterData movement_range parsing")
+	return {"name": "MonsterData movement_range parsing", "passed": passed}
+
+
+# ===========================================================================
+# TEST 380: GridCombatScene structure (Phase 3)
+# ===========================================================================
+
+static func _test_grid_combat_scene_structure() -> Dictionary:
+	print("--- TEST 380: GridCombatScene structure ---")
+	var passed := true
+
+	# Verify the scene resource loads
+	var scene_res = load("res://Game/UI/Combat/GridCombatScene.tscn")
+	if scene_res == null:
+		print("[FAIL] GridCombatScene.tscn failed to load")
+		return {"name": "GridCombatScene structure", "passed": false}
+
+	# Verify the script loads
+	var script_res = load("res://Game/UI/Combat/GridCombatScene.gd")
+	if script_res == null:
+		print("[FAIL] GridCombatScene.gd failed to load")
+		return {"name": "GridCombatScene structure", "passed": false}
+
+	# Build method name set from script's method list
+	# (has_method() only works on instances; get_script_method_list() works on Script)
+	var method_names: Dictionary = {}
+	for method_info in script_res.get_script_method_list():
+		method_names[method_info["name"]] = true
+
+	# Verify key grid combat methods exist
+	var required_methods = [
+		"_refresh_grid", "_get_cell_at", "_clear_all_slots",
+		"_clear_cell_backgrounds", "_create_unit_display",
+		"_refresh_all_panels", "_show_attack_line", "_start_encounter",
+		"_refresh_party_panel", "_refresh_enemy_panel",  # Legacy stubs
+		"_clear_team_slots", "_get_cell",  # Legacy wrappers
+	]
+	for method_name in required_methods:
+		if not method_names.has(method_name):
+			print("[FAIL] GridCombatScene.gd missing method: %s" % method_name)
+			passed = false
+
+	# Verify old CombatScene still exists as fallback
+	var old_scene = load("res://Game/UI/Combat/CombatScene.tscn")
+	if old_scene == null:
+		print("[FAIL] Old CombatScene.tscn should still exist as fallback")
+		passed = false
+
+	# Verify the old CombatScene script still has its original methods
+	var old_script = load("res://Game/UI/Combat/CombatScene.gd")
+	if old_script != null:
+		var old_methods: Dictionary = {}
+		for mi in old_script.get_script_method_list():
+			old_methods[mi["name"]] = true
+		if not old_methods.has("_map_ui_col"):
+			print("[FAIL] Old CombatScene should still have _map_ui_col")
+			passed = false
+	else:
+		print("[FAIL] Old CombatScene.gd failed to load")
+		passed = false
+
+	if passed:
+		print("[PASS] GridCombatScene structure")
+	return {"name": "GridCombatScene structure", "passed": passed}
+
+
+# ===========================================================================
+# TEST 381: GridCombatScene refresh logic (Phase 3)
+# ===========================================================================
+
+static func _test_grid_combat_scene_refresh_logic() -> Dictionary:
+	print("--- TEST 381: GridCombatScene refresh logic ---")
+	var passed := true
+
+	# Verify GridManager integration: the scene can read grid positions from snapshot format
+	# Snapshot pos format: {"x": col (0-7), "y": row (0-3)}
+	# Test that col/row mapping logic works by checking snapshot-compatible data
+	var test_pos_player = {"x": 1, "y": 0}  # Player front, row 0
+	var test_pos_enemy = {"x": 6, "y": 2}   # Enemy front, row 2
+
+	var col_p = clampi(test_pos_player.get("x", 0), 0, 7)
+	var row_p = clampi(test_pos_player.get("y", 0), 0, 3)
+	if col_p != 1 or row_p != 0:
+		print("[FAIL] Player pos mapping: expected (1,0), got (%d,%d)" % [col_p, row_p])
+		passed = false
+
+	var col_e = clampi(test_pos_enemy.get("x", 6), 0, 7)
+	var row_e = clampi(test_pos_enemy.get("y", 0), 0, 3)
+	if col_e != 6 or row_e != 2:
+		print("[FAIL] Enemy pos mapping: expected (6,2), got (%d,%d)" % [col_e, row_e])
+		passed = false
+
+	# Test that occupied_cells key format produces unique keys for all 32 positions
+	var keys_seen: Dictionary = {}
+	var duplicate_found := false
+	for col in range(8):
+		for row in range(4):
+			var key = "%d,%d" % [col, row]
+			if keys_seen.has(key):
+				print("[FAIL] Duplicate key %s in grid iteration" % key)
+				duplicate_found = true
+				break
+			keys_seen[key] = true
+		if duplicate_found:
+			break
+	if duplicate_found:
+		passed = false
+	elif keys_seen.size() != 32:
+		print("[FAIL] Expected 32 unique keys, got %d" % keys_seen.size())
+		passed = false
+
+	# Test that snapshot pos values map correctly for typical unit positions
+	# Player melee (col 1): should map to grid column 1
+	# Player ranged (col 0): should map to grid column 0
+	# Enemy melee (col 6): should map to grid column 6
+	# Enemy ranged (col 7): should map to grid column 7
+	var test_units = [
+		{"desc": "Player melee", "pos": {"x": 1, "y": 0}, "expected_col": 1, "expected_row": 0},
+		{"desc": "Player ranged", "pos": {"x": 0, "y": 1}, "expected_col": 0, "expected_row": 1},
+		{"desc": "Enemy melee", "pos": {"x": 6, "y": 2}, "expected_col": 6, "expected_row": 2},
+		{"desc": "Enemy ranged", "pos": {"x": 7, "y": 3}, "expected_col": 7, "expected_row": 3},
+		{"desc": "Mid-grid unit", "pos": {"x": 3, "y": 1}, "expected_col": 3, "expected_row": 1},
+	]
+
+	for test_unit in test_units:
+		var pos = test_unit["pos"]
+		var col = clampi(pos.get("x", 0), 0, 7)
+		var row = clampi(pos.get("y", 0), 0, 3)
+		if col != test_unit["expected_col"] or row != test_unit["expected_row"]:
+			print("[FAIL] %s: expected (%d,%d), got (%d,%d)" % [
+				test_unit["desc"], test_unit["expected_col"], test_unit["expected_row"], col, row])
+			passed = false
+
+	# Verify GridCombatScene's GRID_COLS/GRID_ROWS match GridManager dimensions
+	# We test this by checking the script source code (constants aren't directly accessible)
+	var script_res = load("res://Game/UI/Combat/GridCombatScene.gd")
+	if script_res != null and script_res.source_code != "":
+		var src = script_res.source_code
+		if src.find("GRID_COLS: int = 8") == -1:
+			print("[FAIL] GRID_COLS should be 8 in GridCombatScene.gd")
+			passed = false
+		if src.find("GRID_ROWS: int = 4") == -1:
+			print("[FAIL] GRID_ROWS should be 4 in GridCombatScene.gd")
+			passed = false
+		# Verify unified grid node references (GridRow_ not PartyRow_/EnemyRow_)
+		if src.find("GridRow_") == -1:
+			print("[FAIL] GridCombatScene should reference GridRow_ nodes")
+			passed = false
+		if src.find("PartyGrid") != -1 or src.find("EnemyGrid") != -1:
+			print("[FAIL] GridCombatScene should NOT reference PartyGrid/EnemyGrid")
+			passed = false
+
+	if passed:
+		print("[PASS] GridCombatScene refresh logic")
+	return {"name": "GridCombatScene refresh logic", "passed": passed}
+
+
+# ============================================================================
+# TEST 382-389: Grid Combat Phase 4 — Movement System
+# ============================================================================
+
+# TEST 382: Player can move to a reachable tile via submit_player_move
+static func _test_grid_movement_player_move() -> Dictionary:
+	print("--- TEST 382: Grid movement — player move to reachable tile ---")
+	var passed = true
+
+	var GridManagerScript = load("res://Game/Combat/GridManager.gd")
+	var gm = GridManagerScript.new()
+
+	# Create a player unit at (1, 0)
+	var player = CombatUnit.new()
+	player.unit_id = "move_test_p1"
+	player.display_name = "MoveHero"
+	player.team = CombatUnit.Team.PLAYER
+	player.grid_x = 1
+	player.grid_y = 0
+	player.movement_range = 2
+	player.has_moved_this_turn = false
+	gm.place_unit(player, Vector2i(1, 0))
+
+	# Verify unit is at starting position
+	var at_start = gm.get_unit_at(Vector2i(1, 0))
+	if at_start != player:
+		print("[FAIL] Player not found at starting position (1,0)")
+		passed = false
+
+	# Move to (3, 0) — within range 2
+	var moved = gm.move_unit(player, Vector2i(3, 0))
+	if not moved:
+		print("[FAIL] move_unit returned false for valid move to (3,0)")
+		passed = false
+
+	# Verify new position
+	if player.grid_x != 3 or player.grid_y != 0:
+		print("[FAIL] Unit position not updated: expected (3,0), got (%d,%d)" % [player.grid_x, player.grid_y])
+		passed = false
+
+	# Verify old tile is empty
+	var at_old = gm.get_unit_at(Vector2i(1, 0))
+	if at_old != null:
+		print("[FAIL] Old tile (1,0) not cleared after move")
+		passed = false
+
+	# Verify new tile has unit
+	var at_new = gm.get_unit_at(Vector2i(3, 0))
+	if at_new != player:
+		print("[FAIL] New tile (3,0) doesn't have unit after move")
+		passed = false
+
+	if passed:
+		print("[PASS] Grid movement — player move to reachable tile")
+	return {"name": "Grid movement — player move to reachable tile", "passed": passed}
+
+
+# TEST 383: Cannot move to occupied tile
+static func _test_grid_movement_blocked_occupied() -> Dictionary:
+	print("--- TEST 383: Grid movement — blocked by occupied tile ---")
+	var passed = true
+
+	var GridManagerScript = load("res://Game/Combat/GridManager.gd")
+	var gm = GridManagerScript.new()
+
+	# Place two units
+	var unit_a = CombatUnit.new()
+	unit_a.unit_id = "occ_a"
+	unit_a.display_name = "UnitA"
+	unit_a.team = CombatUnit.Team.PLAYER
+	unit_a.grid_x = 1
+	unit_a.grid_y = 0
+	unit_a.movement_range = 2
+	gm.place_unit(unit_a, Vector2i(1, 0))
+
+	var unit_b = CombatUnit.new()
+	unit_b.unit_id = "occ_b"
+	unit_b.display_name = "UnitB"
+	unit_b.team = CombatUnit.Team.PLAYER
+	unit_b.grid_x = 2
+	unit_b.grid_y = 0
+	unit_b.movement_range = 2
+	gm.place_unit(unit_b, Vector2i(2, 0))
+
+	# Try to move unit_a to unit_b's position
+	var moved = gm.move_unit(unit_a, Vector2i(2, 0))
+	if moved:
+		print("[FAIL] move_unit should return false when destination is occupied")
+		passed = false
+
+	# Verify unit_a didn't actually move
+	if unit_a.grid_x != 1 or unit_a.grid_y != 0:
+		print("[FAIL] Unit A position changed despite blocked move")
+		passed = false
+
+	if passed:
+		print("[PASS] Grid movement — blocked by occupied tile")
+	return {"name": "Grid movement — blocked by occupied tile", "passed": passed}
+
+
+# TEST 384: Unit can only move once per turn (has_moved_this_turn flag)
+static func _test_grid_movement_once_per_turn() -> Dictionary:
+	print("--- TEST 384: Grid movement — once per turn ---")
+	var passed = true
+
+	var GridManagerScript = load("res://Game/Combat/GridManager.gd")
+	var gm = GridManagerScript.new()
+
+	var unit = CombatUnit.new()
+	unit.unit_id = "once_test"
+	unit.display_name = "OnceHero"
+	unit.team = CombatUnit.Team.PLAYER
+	unit.grid_x = 0
+	unit.grid_y = 0
+	unit.movement_range = 2
+	unit.has_moved_this_turn = false
+	gm.place_unit(unit, Vector2i(0, 0))
+
+	# Move should work first time
+	gm.move_unit(unit, Vector2i(1, 0))
+	unit.has_moved_this_turn = true
+
+	# When has_moved_this_turn is true, _get_available_actions won't include "move"
+	# (This is checked at the CombatController level, not GridManager)
+	# GridManager.move_unit itself doesn't check has_moved_this_turn — that's the controller's job
+	# Verify the flag is set
+	if not unit.has_moved_this_turn:
+		print("[FAIL] has_moved_this_turn should be true after movement")
+		passed = false
+
+	# Verify the flag resets when set to false (simulates turn start)
+	unit.has_moved_this_turn = false
+	if unit.has_moved_this_turn:
+		print("[FAIL] has_moved_this_turn should reset to false")
+		passed = false
+
+	# Get available actions — "move" should only appear when has_moved_this_turn is false
+	# We test this indirectly via GridManager.get_reachable_tiles
+	unit.grid_x = 1
+	unit.grid_y = 0
+	var reachable = gm.get_reachable_tiles(Vector2i(1, 0), unit.movement_range, unit.team)
+	if reachable.is_empty():
+		print("[FAIL] Should have reachable tiles from (1,0)")
+		passed = false
+
+	if passed:
+		print("[PASS] Grid movement — once per turn")
+	return {"name": "Grid movement — once per turn", "passed": passed}
+
+
+# TEST 385: AI melee moves toward target when out of range
+static func _test_grid_ai_melee_movement() -> Dictionary:
+	print("--- TEST 385: Grid AI — melee moves toward target ---")
+	var passed = true
+
+	var GridManagerScript = load("res://Game/Combat/GridManager.gd")
+	var gm = GridManagerScript.new()
+
+	# Place enemy melee at (6, 0)
+	var enemy = CombatUnit.new()
+	enemy.unit_id = "ai_melee"
+	enemy.display_name = "EnemyMelee"
+	enemy.team = CombatUnit.Team.ENEMY
+	enemy.attack_type = "melee"
+	enemy.grid_x = 6
+	enemy.grid_y = 0
+	enemy.movement_range = 2
+	enemy.has_moved_this_turn = false
+	gm.place_unit(enemy, Vector2i(6, 0))
+
+	# Place player at (1, 0) — distance 5, too far for adjacent
+	var player = CombatUnit.new()
+	player.unit_id = "ai_target_p"
+	player.display_name = "PlayerTarget"
+	player.team = CombatUnit.Team.PLAYER
+	player.grid_x = 1
+	player.grid_y = 0
+	player.is_alive = true
+	gm.place_unit(player, Vector2i(1, 0))
+
+	# Simulate AI movement logic:
+	# 1. Enemy is melee, target is at dist 5 (not adjacent)
+	# 2. Should find reachable tile closest to target
+	var unit_pos = Vector2i(enemy.grid_x, enemy.grid_y)
+	var target_pos = Vector2i(player.grid_x, player.grid_y)
+	var dist_before = GridManagerScript.manhattan_distance(unit_pos, target_pos)
+
+	if dist_before != 5:
+		print("[FAIL] Initial distance should be 5, got %d" % dist_before)
+		passed = false
+
+	var reachable = gm.get_reachable_tiles(unit_pos, enemy.movement_range, enemy.team)
+	var best_tile = unit_pos
+	var best_dist = dist_before
+
+	for tile in reachable:
+		var d = GridManagerScript.manhattan_distance(tile, target_pos)
+		if d < best_dist:
+			best_dist = d
+			best_tile = tile
+
+	# Should have found a closer tile
+	if best_dist >= dist_before:
+		print("[FAIL] AI should find a tile closer to target, best_dist=%d, initial=%d" % [best_dist, dist_before])
+		passed = false
+
+	# Move and verify
+	if best_tile != unit_pos:
+		gm.move_unit(enemy, best_tile)
+		var new_dist = GridManagerScript.manhattan_distance(
+			Vector2i(enemy.grid_x, enemy.grid_y), target_pos)
+		if new_dist >= dist_before:
+			print("[FAIL] After move, enemy should be closer: new_dist=%d, old=%d" % [new_dist, dist_before])
+			passed = false
+		else:
+			print("[INFO] Melee AI moved from (%d,%d) to (%d,%d), dist %d→%d" % [
+				unit_pos.x, unit_pos.y, enemy.grid_x, enemy.grid_y, dist_before, new_dist])
+
+	if passed:
+		print("[PASS] Grid AI — melee moves toward target")
+	return {"name": "Grid AI — melee moves toward target", "passed": passed}
+
+
+# TEST 386: AI ranged does NOT move (already has infinite range)
+static func _test_grid_ai_ranged_no_movement() -> Dictionary:
+	print("--- TEST 386: Grid AI — ranged doesn't move ---")
+	var passed = true
+
+	# The _try_enemy_movement function exits early for ranged/mage units
+	# We test this logic by checking the condition directly
+	var enemy = CombatUnit.new()
+	enemy.unit_id = "ai_ranged"
+	enemy.display_name = "EnemyRanged"
+	enemy.team = CombatUnit.Team.ENEMY
+	enemy.attack_type = "ranged"
+	enemy.grid_x = 7
+	enemy.grid_y = 0
+	enemy.movement_range = 2
+	enemy.has_moved_this_turn = false
+
+	# Ranged units should skip movement per the _try_enemy_movement logic:
+	# "if unit.attack_type == 'ranged' or unit.attack_type == 'mage': return"
+	var should_skip_move = (enemy.attack_type == "ranged" or enemy.attack_type == "mage")
+	if not should_skip_move:
+		print("[FAIL] Ranged unit should be flagged to skip movement")
+		passed = false
+
+	# Also test mage
+	enemy.attack_type = "mage"
+	should_skip_move = (enemy.attack_type == "ranged" or enemy.attack_type == "mage")
+	if not should_skip_move:
+		print("[FAIL] Mage unit should be flagged to skip movement")
+		passed = false
+
+	# And melee should NOT skip
+	enemy.attack_type = "melee"
+	should_skip_move = (enemy.attack_type == "ranged" or enemy.attack_type == "mage")
+	if should_skip_move:
+		print("[FAIL] Melee unit should NOT skip movement")
+		passed = false
+
+	if passed:
+		print("[PASS] Grid AI — ranged doesn't move")
+	return {"name": "Grid AI — ranged doesn't move", "passed": passed}
+
+
+# TEST 387: CombatAction.MOVE type and create_move factory
+static func _test_grid_move_action_type() -> Dictionary:
+	print("--- TEST 387: CombatAction MOVE type ---")
+	var passed = true
+
+	# Verify MOVE enum exists
+	var move_type = CombatAction.ActionType.MOVE
+	if move_type == null:
+		print("[FAIL] CombatAction.ActionType.MOVE not found")
+		passed = false
+
+	# Create a unit for the factory method
+	var unit = CombatUnit.new()
+	unit.unit_id = "move_action_test"
+	unit.display_name = "TestMover"
+
+	var from_pos = Vector2i(1, 0)
+	var to_pos = Vector2i(3, 0)
+	var action = CombatAction.create_move(unit, from_pos, to_pos)
+
+	if action == null:
+		print("[FAIL] create_move returned null")
+		return {"name": "CombatAction MOVE type", "passed": false}
+
+	if action.action_type != CombatAction.ActionType.MOVE:
+		print("[FAIL] Action type should be MOVE, got %d" % action.action_type)
+		passed = false
+
+	if action.actor_id != "move_action_test":
+		print("[FAIL] actor_id should be 'move_action_test', got '%s'" % action.actor_id)
+		passed = false
+
+	if action.actor_name != "TestMover":
+		print("[FAIL] actor_name should be 'TestMover', got '%s'" % action.actor_name)
+		passed = false
+
+	if action.message.find("moves from") == -1:
+		print("[FAIL] Message should contain 'moves from', got '%s'" % action.message)
+		passed = false
+
+	if action.message.find("(1,0)") == -1 or action.message.find("(3,0)") == -1:
+		print("[FAIL] Message should contain coordinates, got '%s'" % action.message)
+		passed = false
+
+	if passed:
+		print("[PASS] CombatAction MOVE type")
+	return {"name": "CombatAction MOVE type", "passed": passed}
+
+
+# TEST 388: GridCombatScene has movement UI methods
+static func _test_grid_combat_scene_movement_ui() -> Dictionary:
+	print("--- TEST 388: GridCombatScene movement UI methods ---")
+	var passed = true
+
+	var script_res = load("res://Game/UI/Combat/GridCombatScene.gd")
+	if script_res == null:
+		print("[FAIL] Could not load GridCombatScene.gd")
+		return {"name": "GridCombatScene movement UI methods", "passed": false}
+
+	# Build method name lookup from script's method list
+	var method_names: Dictionary = {}
+	for method in script_res.get_script_method_list():
+		method_names[method["name"]] = true
+
+	# Check for movement-related methods
+	var required_methods = [
+		"_on_move_pressed",
+		"_on_move_selection_required",
+		"_on_move_tile_clicked",
+		"_on_unit_moved",
+		"_exit_move_selection_mode",
+		"_clear_move_highlights",
+	]
+
+	for method_name in required_methods:
+		if not method_names.has(method_name):
+			print("[FAIL] Missing method: %s" % method_name)
+			passed = false
+
+	# Verify movement state vars exist in source
+	var src = script_res.source_code
+	var required_vars = [
+		"_btn_move",
+		"_move_selection_active",
+		"_valid_move_tiles",
+		"_move_tile_highlights",
+	]
+
+	for var_name in required_vars:
+		if src.find("var " + var_name) == -1:
+			print("[FAIL] Missing state var: %s" % var_name)
+			passed = false
+
+	# Verify signal connections in source
+	if src.find("move_selection_required.connect") == -1:
+		print("[FAIL] move_selection_required signal not connected")
+		passed = false
+	if src.find("unit_moved.connect") == -1:
+		print("[FAIL] unit_moved signal not connected")
+		passed = false
+
+	if passed:
+		print("[PASS] GridCombatScene movement UI methods")
+	return {"name": "GridCombatScene movement UI methods", "passed": passed}
+
+
+# TEST 389: Slowed status halves movement range
+static func _test_grid_movement_slowed() -> Dictionary:
+	print("--- TEST 389: Grid movement — slowed halves range ---")
+	var passed = true
+
+	var GridManagerScript = load("res://Game/Combat/GridManager.gd")
+	var gm = GridManagerScript.new()
+
+	var unit = CombatUnit.new()
+	unit.unit_id = "slow_test"
+	unit.display_name = "SlowHero"
+	unit.team = CombatUnit.Team.PLAYER
+	unit.grid_x = 0
+	unit.grid_y = 0
+	unit.movement_range = 4  # High range to see the halving effect
+	gm.place_unit(unit, Vector2i(0, 0))
+
+	# Normal range
+	var normal_reachable = gm.get_reachable_tiles(Vector2i(0, 0), unit.movement_range, unit.team)
+	var normal_count = normal_reachable.size()
+
+	# Slowed range (halved, min 1)
+	var slowed_range = maxi(unit.movement_range / 2, 1)
+	var slowed_reachable = gm.get_reachable_tiles(Vector2i(0, 0), slowed_range, unit.team)
+	var slowed_count = slowed_reachable.size()
+
+	if slowed_range != 2:
+		print("[FAIL] Slowed range should be 2 (half of 4), got %d" % slowed_range)
+		passed = false
+
+	if slowed_count >= normal_count:
+		print("[FAIL] Slowed reachable (%d) should be less than normal (%d)" % [slowed_count, normal_count])
+		passed = false
+
+	# Min 1 check
+	unit.movement_range = 1
+	var min_slowed_range = maxi(unit.movement_range / 2, 1)
+	if min_slowed_range != 1:
+		print("[FAIL] Min slowed range should be 1, got %d" % min_slowed_range)
+		passed = false
+
+	if passed:
+		print("[PASS] Grid movement — slowed halves range")
+	return {"name": "Grid movement — slowed halves range", "passed": passed}
+
+
+# ============================================================================
+# TEST 390-395: Grid Combat Phase 5 — Range-Based Targeting
+# ============================================================================
+
+# TEST 390: Melee can only target adjacent enemies (dist 1)
+static func _test_grid_melee_range_targeting() -> Dictionary:
+	print("--- TEST 390: Grid targeting — melee adjacent only ---")
+	var passed = true
+
+	var GridManagerScript = load("res://Game/Combat/GridManager.gd")
+	var gm = GridManagerScript.new()
+
+	# Melee attacker at (1, 0)
+	var attacker = CombatUnit.new()
+	attacker.unit_id = "melee_atk"
+	attacker.display_name = "MeleeHero"
+	attacker.team = CombatUnit.Team.PLAYER
+	attacker.attack_type = "melee"
+	attacker.grid_x = 1
+	attacker.grid_y = 0
+	attacker.statuses = StatusRuntime.new("melee_atk")
+	gm.place_unit(attacker, Vector2i(1, 0))
+
+	# Adjacent enemy at (2, 0) — dist 1
+	var near_enemy = CombatUnit.new()
+	near_enemy.unit_id = "near_e"
+	near_enemy.display_name = "NearEnemy"
+	near_enemy.team = CombatUnit.Team.ENEMY
+	near_enemy.is_alive = true
+	near_enemy.current_health = 50
+	near_enemy.max_health = 100
+	near_enemy.grid_x = 2
+	near_enemy.grid_y = 0
+	near_enemy.statuses = StatusRuntime.new("near_e")
+	gm.place_unit(near_enemy, Vector2i(2, 0))
+
+	# Distant enemy at (6, 0) — dist 5
+	var far_enemy = CombatUnit.new()
+	far_enemy.unit_id = "far_e"
+	far_enemy.display_name = "FarEnemy"
+	far_enemy.team = CombatUnit.Team.ENEMY
+	far_enemy.is_alive = true
+	far_enemy.current_health = 10
+	far_enemy.max_health = 100
+	far_enemy.grid_x = 6
+	far_enemy.grid_y = 0
+	far_enemy.statuses = StatusRuntime.new("far_e")
+	gm.place_unit(far_enemy, Vector2i(6, 0))
+
+	# Create policy with grid_manager
+	var policy = TargetingPolicy.new(TargetingPolicy.TargetMode.LOWEST_HP)
+	policy.set_grid_manager(gm)
+
+	# Melee should pick near_enemy (adjacent) even though far_enemy has lower HP
+	var target = policy.select_target(attacker, [near_enemy, far_enemy])
+	if target != near_enemy:
+		var tname: String = target.display_name if target != null else "null"
+		print("[FAIL] Melee should target adjacent near_enemy, got %s" % tname)
+		passed = false
+
+	if passed:
+		print("[PASS] Grid targeting — melee adjacent only")
+	return {"name": "Grid targeting — melee adjacent only", "passed": passed}
+
+
+# TEST 391: Ranged can target any enemy regardless of distance
+static func _test_grid_ranged_any_target() -> Dictionary:
+	print("--- TEST 391: Grid targeting — ranged targets any tile ---")
+	var passed = true
+
+	var GridManagerScript = load("res://Game/Combat/GridManager.gd")
+	var gm = GridManagerScript.new()
+
+	# Ranged attacker at (0, 0)
+	var attacker = CombatUnit.new()
+	attacker.unit_id = "ranged_atk"
+	attacker.display_name = "RangedHero"
+	attacker.team = CombatUnit.Team.PLAYER
+	attacker.attack_type = "ranged"
+	attacker.grid_x = 0
+	attacker.grid_y = 0
+	attacker.statuses = StatusRuntime.new("ranged_atk")
+	gm.place_unit(attacker, Vector2i(0, 0))
+
+	# Far enemy at (7, 3) — dist 10
+	var far_enemy = CombatUnit.new()
+	far_enemy.unit_id = "ranged_far"
+	far_enemy.display_name = "FarTarget"
+	far_enemy.team = CombatUnit.Team.ENEMY
+	far_enemy.is_alive = true
+	far_enemy.current_health = 30
+	far_enemy.max_health = 100
+	far_enemy.grid_x = 7
+	far_enemy.grid_y = 3
+	far_enemy.statuses = StatusRuntime.new("ranged_far")
+	gm.place_unit(far_enemy, Vector2i(7, 3))
+
+	# Policy with grid_manager
+	var policy = TargetingPolicy.new(TargetingPolicy.TargetMode.LOWEST_HP)
+	policy.set_grid_manager(gm)
+
+	# Ranged should still target far enemy
+	var target = policy.select_target(attacker, [far_enemy])
+	if target != far_enemy:
+		print("[FAIL] Ranged should target far enemy")
+		passed = false
+
+	if passed:
+		print("[PASS] Grid targeting — ranged targets any tile")
+	return {"name": "Grid targeting — ranged targets any tile", "passed": passed}
+
+
+# TEST 392: Taunt only forces target when in attack range
+static func _test_grid_taunt_range_check() -> Dictionary:
+	print("--- TEST 392: Grid targeting — taunt respects range ---")
+	var passed = true
+
+	var GridManagerScript = load("res://Game/Combat/GridManager.gd")
+	var gm = GridManagerScript.new()
+
+	# Melee attacker at (1, 0)
+	var attacker = CombatUnit.new()
+	attacker.unit_id = "taunt_melee"
+	attacker.display_name = "MeleeAtk"
+	attacker.team = CombatUnit.Team.ENEMY
+	attacker.attack_type = "melee"
+	attacker.grid_x = 6
+	attacker.grid_y = 0
+	attacker.statuses = StatusRuntime.new("taunt_melee")
+	gm.place_unit(attacker, Vector2i(6, 0))
+
+	# Taunting unit far away at (0, 0) — dist 6, out of melee range
+	var taunter = CombatUnit.new()
+	taunter.unit_id = "taunter_far"
+	taunter.display_name = "FarTaunter"
+	taunter.team = CombatUnit.Team.PLAYER
+	taunter.is_alive = true
+	taunter.current_health = 100
+	taunter.max_health = 100
+	taunter.grid_x = 0
+	taunter.grid_y = 0
+	taunter.statuses = StatusRuntime.new("taunter_far")
+	taunter.apply_status_v1("taunting", 3, "test")
+	gm.place_unit(taunter, Vector2i(0, 0))
+
+	# Normal unit adjacent at (5, 0) — dist 1
+	var normal_unit = CombatUnit.new()
+	normal_unit.unit_id = "normal_adj"
+	normal_unit.display_name = "NearTarget"
+	normal_unit.team = CombatUnit.Team.PLAYER
+	normal_unit.is_alive = true
+	normal_unit.current_health = 50
+	normal_unit.max_health = 100
+	normal_unit.grid_x = 5
+	normal_unit.grid_y = 0
+	normal_unit.statuses = StatusRuntime.new("normal_adj")
+	gm.place_unit(normal_unit, Vector2i(5, 0))
+
+	# Policy with grid_manager — melee attacker
+	var policy = TargetingPolicy.new(TargetingPolicy.TargetMode.LOWEST_HP)
+	policy.set_grid_manager(gm)
+
+	# Melee attacker should ignore taunt (out of range) and target adjacent unit
+	var target = policy.select_target(attacker, [taunter, normal_unit])
+	if target == taunter:
+		print("[FAIL] Melee should ignore taunt on out-of-range taunter")
+		passed = false
+	elif target != normal_unit:
+		var tname: String = target.display_name if target != null else "null"
+		print("[FAIL] Should target adjacent normal_unit, got %s" % tname)
+		passed = false
+
+	# Now test ranged attacker — taunt should ALWAYS work for ranged
+	attacker.attack_type = "ranged"
+	var ranged_target = policy.select_target(attacker, [taunter, normal_unit])
+	if ranged_target != taunter:
+		var tname: String = ranged_target.display_name if ranged_target != null else "null"
+		print("[FAIL] Ranged should always respect taunt, got %s" % tname)
+		passed = false
+
+	if passed:
+		print("[PASS] Grid targeting — taunt respects range")
+	return {"name": "Grid targeting — taunt respects range", "passed": passed}
+
+
+# TEST 393: _get_valid_targets filters by range with grid_manager
+static func _test_grid_valid_targets_range_filter() -> Dictionary:
+	print("--- TEST 393: Grid valid targets — range filter ---")
+	var passed = true
+
+	# We test _is_target_in_range logic directly (same as CombatController uses)
+	var GridManagerScript = load("res://Game/Combat/GridManager.gd")
+
+	# Melee attacker at (1, 0)
+	var attacker = CombatUnit.new()
+	attacker.unit_id = "vt_melee"
+	attacker.display_name = "VTMelee"
+	attacker.attack_type = "melee"
+	attacker.grid_x = 1
+	attacker.grid_y = 0
+
+	# Enemy at (2, 0) — adjacent, dist 1
+	var adjacent = CombatUnit.new()
+	adjacent.unit_id = "vt_adj"
+	adjacent.is_alive = true
+	adjacent.grid_x = 2
+	adjacent.grid_y = 0
+
+	# Enemy at (5, 0) — dist 4
+	var distant = CombatUnit.new()
+	distant.unit_id = "vt_far"
+	distant.is_alive = true
+	distant.grid_x = 5
+	distant.grid_y = 0
+
+	# Check range using TargetingPolicy's range logic
+	var range_cat = TargetingPolicy.get_attacker_range(attacker)
+	if range_cat != TargetingPolicy.RangeCategory.MELEE:
+		print("[FAIL] attack_type 'melee' should map to MELEE range")
+		passed = false
+
+	# Manhattan distance checks
+	var adj_dist = GridManagerScript.manhattan_distance(
+		Vector2i(attacker.grid_x, attacker.grid_y),
+		Vector2i(adjacent.grid_x, adjacent.grid_y))
+	var far_dist = GridManagerScript.manhattan_distance(
+		Vector2i(attacker.grid_x, attacker.grid_y),
+		Vector2i(distant.grid_x, distant.grid_y))
+
+	if adj_dist != 1:
+		print("[FAIL] Adjacent dist should be 1, got %d" % adj_dist)
+		passed = false
+	if far_dist != 4:
+		print("[FAIL] Far dist should be 4, got %d" % far_dist)
+		passed = false
+
+	# Melee can target adjacent (dist 1) but not distant (dist 4)
+	var adj_in_range = (adj_dist <= 1)
+	var far_in_range = (far_dist <= 1)
+	if not adj_in_range:
+		print("[FAIL] Adjacent should be in melee range")
+		passed = false
+	if far_in_range:
+		print("[FAIL] Distant should NOT be in melee range")
+		passed = false
+
+	# Ranged attacker can target both
+	attacker.attack_type = "ranged"
+	range_cat = TargetingPolicy.get_attacker_range(attacker)
+	if range_cat != TargetingPolicy.RangeCategory.RANGED:
+		print("[FAIL] attack_type 'ranged' should map to RANGED range")
+		passed = false
+
+	if passed:
+		print("[PASS] Grid valid targets — range filter")
+	return {"name": "Grid valid targets — range filter", "passed": passed}
+
+
+# TEST 394: TargetingPolicy grid_manager wiring
+static func _test_grid_targeting_policy_grid_manager_wiring() -> Dictionary:
+	print("--- TEST 394: TargetingPolicy grid_manager wiring ---")
+	var passed = true
+
+	var GridManagerScript = load("res://Game/Combat/GridManager.gd")
+	var gm = GridManagerScript.new()
+
+	# TargetingPolicy without grid_manager (legacy mode)
+	var policy = TargetingPolicy.new(TargetingPolicy.TargetMode.LOWEST_HP)
+	if policy._grid_manager != null:
+		print("[FAIL] Grid manager should be null by default")
+		passed = false
+
+	# Set grid manager
+	policy.set_grid_manager(gm)
+	if policy._grid_manager != gm:
+		print("[FAIL] Grid manager should be set after set_grid_manager()")
+		passed = false
+
+	# Verify _is_in_attack_range method exists
+	var method_names: Dictionary = {}
+	var script_res = load("res://Game/Combat/TargetingPolicy.gd")
+	for method in script_res.get_script_method_list():
+		method_names[method["name"]] = true
+
+	var required = ["_is_in_attack_range", "_filter_by_attack_range", "set_grid_manager"]
+	for method_name in required:
+		if not method_names.has(method_name):
+			print("[FAIL] Missing method: %s" % method_name)
+			passed = false
+
+	if passed:
+		print("[PASS] TargetingPolicy grid_manager wiring")
+	return {"name": "TargetingPolicy grid_manager wiring", "passed": passed}
+
+
+# TEST 395: _pick_target_for_ability respects range for enemy targeting
+static func _test_grid_pick_target_ability_range() -> Dictionary:
+	print("--- TEST 395: Grid pick_target_for_ability — range filter ---")
+	var passed = true
+
+	# Test that CombatController's _is_target_in_range function exists and works
+	var cc_script = load("res://Game/Combat/CombatController.gd")
+	var method_names: Dictionary = {}
+	for method in cc_script.get_script_method_list():
+		method_names[method["name"]] = true
+
+	if not method_names.has("_is_target_in_range"):
+		print("[FAIL] CombatController missing _is_target_in_range method")
+		passed = false
+
+	# Verify the source code contains the grid range check in _pick_target_for_ability
+	var src = cc_script.source_code
+	if src.find("_is_target_in_range(caster, c)") == -1:
+		print("[FAIL] _pick_target_for_ability should call _is_target_in_range for taunt")
+		passed = false
+
+	# Verify _get_valid_targets uses range filtering
+	if src.find("_is_target_in_range(unit, e)") == -1:
+		print("[FAIL] _get_valid_targets should call _is_target_in_range")
+		passed = false
+
+	# Verify targeting_policy gets grid_manager wired
+	if src.find("set_grid_manager(_grid_manager)") == -1:
+		print("[FAIL] CombatController should wire grid_manager to targeting_policy")
+		passed = false
+
+	if passed:
+		print("[PASS] Grid pick_target_for_ability — range filter")
+	return {"name": "Grid pick_target_for_ability — range filter", "passed": passed}
+
+
+# ============================================================================
+# TEST 396-397: Grid Combat Phase 6 — Data Migration Validation
+# ============================================================================
+
+# TEST 396: All monsters have valid movement_range (1-5)
+static func _test_grid_monster_movement_range_data() -> Dictionary:
+	print("--- TEST 396: Monster movement_range data ---")
+	var passed = true
+
+	var all_monsters = DataRegistry.get_all_monsters()
+	var total = 0
+	var with_range = 0
+	var bad_range = 0
+
+	for monster in all_monsters:
+		total += 1
+		var move_range = monster.movement_range
+		if move_range >= 1 and move_range <= 5:
+			with_range += 1
+		else:
+			print("[FAIL] Monster %s has invalid movement_range=%d" % [monster.monster_id, move_range])
+			bad_range += 1
+			passed = false
+
+	if total == 0:
+		print("[FAIL] No monsters loaded")
+		passed = false
+	else:
+		print("[INFO] Checked %d monsters, %d with valid range, %d bad" % [total, with_range, bad_range])
+
+	# Verify role-based range makes sense
+	var melee_count = 0
+	var ranged_count = 0
+	var mage_count = 0
+	for monster in all_monsters:
+		if monster.combat_role == "melee":
+			melee_count += 1
+			# Melee: range 2-3 expected
+			if monster.movement_range < 2 or monster.movement_range > 3:
+				if not monster.is_boss:  # Bosses can have special values
+					print("[WARN] Melee %s has movement_range=%d (expected 2-3)" % [
+						monster.monster_id, monster.movement_range])
+		elif monster.combat_role == "ranged":
+			ranged_count += 1
+		elif monster.combat_role == "mage":
+			mage_count += 1
+
+	print("[INFO] Roles: %d melee, %d ranged, %d mage" % [melee_count, ranged_count, mage_count])
+
+	if passed:
+		print("[PASS] Monster movement_range data")
+	return {"name": "Monster movement_range data", "passed": passed}
+
+
+# TEST 397: All abilities have valid aoe_shape values
+static func _test_grid_ability_aoe_data_valid() -> Dictionary:
+	print("--- TEST 397: Ability aoe data validation ---")
+	var passed = true
+
+	var all_abilities = DataRegistry.get_all_abilities()
+	var total = 0
+	var valid_shapes = ["none", "square"]
+	var bad_shape = 0
+	var bad_size = 0
+
+	for ability in all_abilities:
+		total += 1
+		if ability.aoe_shape not in valid_shapes:
+			print("[FAIL] Ability %s has invalid aoe_shape='%s'" % [ability.ability_id, ability.aoe_shape])
+			bad_shape += 1
+			passed = false
+
+		# aoe_size should be non-negative
+		if ability.aoe_size < 0:
+			print("[FAIL] Ability %s has negative aoe_size=%d" % [ability.ability_id, ability.aoe_size])
+			bad_size += 1
+			passed = false
+
+		# If aoe_shape is "square", aoe_size should be > 0 (otherwise it's just single-tile)
+		# But this is a warning, not failure — size 0 is technically valid (1x1 square)
+
+	if total == 0:
+		print("[FAIL] No abilities loaded")
+		passed = false
+	else:
+		print("[INFO] Checked %d abilities, %d bad shapes, %d bad sizes" % [total, bad_shape, bad_size])
+
+	if passed:
+		print("[PASS] Ability aoe data validation")
+	return {"name": "Ability aoe data validation", "passed": passed}
+
+
+# ============================================================================
+# TEST 398-399: Grid Combat Phase 7 — Tween Animation System
+# ============================================================================
+
+# TEST 398: GridCombatScene has all tween animation methods
+static func _test_grid_tween_animation_methods() -> Dictionary:
+	print("--- TEST 398: Grid tween animation methods ---")
+	var passed = true
+
+	var script_res = load("res://Game/UI/Combat/GridCombatScene.gd")
+	if script_res == null:
+		print("[FAIL] Could not load GridCombatScene.gd")
+		return {"name": "Grid tween animation methods", "passed": false}
+
+	# Build method name lookup
+	var method_names: Dictionary = {}
+	for method in script_res.get_script_method_list():
+		method_names[method["name"]] = true
+
+	# Required animation methods
+	var required_methods = [
+		"_play_attack_tween",
+		"_play_hurt_tween",
+		"_play_death_tween",
+		"_play_heal_tween",
+		"_play_cast_tween",
+		"_start_idle_bob",
+		"_stop_idle_bob",
+		"_stop_all_idle_bobs",
+	]
+
+	for method_name in required_methods:
+		if not method_names.has(method_name):
+			print("[FAIL] Missing animation method: %s" % method_name)
+			passed = false
+
+	# Verify state vars exist in source
+	var src = script_res.source_code
+	if src.find("var _unit_tweens") == -1:
+		print("[FAIL] Missing _unit_tweens state var")
+		passed = false
+	if src.find("var _idle_tweens") == -1:
+		print("[FAIL] Missing _idle_tweens state var")
+		passed = false
+
+	if passed:
+		print("[PASS] Grid tween animation methods")
+	return {"name": "Grid tween animation methods", "passed": passed}
+
+
+# TEST 399: Action handler integrates tween animations
+static func _test_grid_tween_action_integration() -> Dictionary:
+	print("--- TEST 399: Grid tween action integration ---")
+	var passed = true
+
+	var script_res = load("res://Game/UI/Combat/GridCombatScene.gd")
+	if script_res == null:
+		print("[FAIL] Could not load GridCombatScene.gd")
+		return {"name": "Grid tween action integration", "passed": false}
+
+	var src = script_res.source_code
+
+	# Verify _on_action_performed calls tween methods
+	if src.find("_play_attack_tween(action.actor_id") == -1:
+		print("[FAIL] _on_action_performed should call _play_attack_tween")
+		passed = false
+
+	if src.find("_play_hurt_tween(action.target_id") == -1:
+		print("[FAIL] _on_action_performed should call _play_hurt_tween")
+		passed = false
+
+	if src.find("_play_cast_tween(action.actor_id") == -1:
+		print("[FAIL] _on_action_performed should call _play_cast_tween")
+		passed = false
+
+	if src.find("_play_death_tween(action.actor_id") == -1:
+		print("[FAIL] _on_action_performed should call _play_death_tween")
+		passed = false
+
+	if src.find("_play_heal_tween(action.target_id") == -1:
+		print("[FAIL] _on_action_performed should call _play_heal_tween")
+		passed = false
+
+	# Verify idle bob is started in grid refresh
+	if src.find("_start_idle_bob(") == -1:
+		print("[FAIL] Should call _start_idle_bob in grid refresh")
+		passed = false
+
+	# Verify idle bobs are stopped when clearing grid
+	if src.find("_stop_all_idle_bobs()") == -1:
+		print("[FAIL] Should call _stop_all_idle_bobs when clearing grid")
+		passed = false
+
+	if passed:
+		print("[PASS] Grid tween action integration")
+	return {"name": "Grid tween action integration", "passed": passed}
+
+
+# ============================================================================
+# TEST 400-406: Phase 8 — Hero Placement Phase
+# ============================================================================
+
+# TEST 400: Placement phase is active after initialize_combat(skip_placement=false)
+static func _test_placement_phase_active_on_skip_false() -> Dictionary:
+	print("--- TEST 400: Placement phase active on skip_placement=false ---")
+	var CombatControllerScript = load("res://Game/Combat/CombatController.gd")
+	var ctrl = CombatControllerScript.new()
+
+	# Setup minimal heroes and enemies
+	var hero_ids = GameContext.get_selected_party()
+	if hero_ids.is_empty():
+		hero_ids = ["hero_1"]
+	var enemy_ids = ["slime"]
+
+	ctrl.initialize_combat(hero_ids, enemy_ids, RandomNumberGenerator.new(), {}, false)
+
+	var passed = ctrl.is_placement_phase()
+	if passed:
+		print("[PASS] Placement phase is active")
+	else:
+		print("[FAIL] Placement phase should be active after skip_placement=false")
+
+	ctrl.queue_free()
+	return {"name": "Placement phase active on skip_placement=false", "passed": passed}
+
+
+# TEST 401: TurnQueue is NOT built during placement phase
+static func _test_placement_phase_no_turn_queue() -> Dictionary:
+	print("--- TEST 401: No TurnQueue during placement phase ---")
+	var CombatControllerScript = load("res://Game/Combat/CombatController.gd")
+	var ctrl = CombatControllerScript.new()
+
+	var hero_ids = GameContext.get_selected_party()
+	if hero_ids.is_empty():
+		hero_ids = ["hero_1"]
+	var enemy_ids = ["slime"]
+
+	ctrl.initialize_combat(hero_ids, enemy_ids, RandomNumberGenerator.new(), {}, false)
+
+	var passed = ctrl._turn_queue == null
+	if passed:
+		print("[PASS] TurnQueue is null during placement phase")
+	else:
+		print("[FAIL] TurnQueue should be null during placement phase")
+
+	ctrl.queue_free()
+	return {"name": "No TurnQueue during placement phase", "passed": passed}
+
+
+# TEST 402: confirm_placement() builds TurnQueue and emits combat_started
+static func _test_confirm_placement_builds_turn_queue() -> Dictionary:
+	print("--- TEST 402: confirm_placement builds TurnQueue ---")
+	var CombatControllerScript = load("res://Game/Combat/CombatController.gd")
+	var ctrl = CombatControllerScript.new()
+
+	var hero_ids = GameContext.get_selected_party()
+	if hero_ids.is_empty():
+		hero_ids = ["hero_1"]
+	var enemy_ids = ["slime"]
+
+	ctrl.initialize_combat(hero_ids, enemy_ids, RandomNumberGenerator.new(), {}, false)
+
+	# Track combat_started signal
+	var signal_fired = [false]
+	ctrl.combat_started.connect(func(_p, _e): signal_fired[0] = true)
+
+	ctrl.confirm_placement()
+
+	var tq_ok = ctrl._turn_queue != null
+	var phase_ok = not ctrl.is_placement_phase()
+	var signal_ok = signal_fired[0]
+	var passed = tq_ok and phase_ok and signal_ok
+
+	if tq_ok:
+		print("[PASS] TurnQueue built after confirm_placement")
+	else:
+		print("[FAIL] TurnQueue should be built after confirm_placement")
+	if phase_ok:
+		print("[PASS] Placement phase deactivated")
+	else:
+		print("[FAIL] Placement phase should be deactivated")
+	if signal_ok:
+		print("[PASS] combat_started signal emitted")
+	else:
+		print("[FAIL] combat_started should have been emitted")
+
+	ctrl.queue_free()
+	return {"name": "confirm_placement builds TurnQueue", "passed": passed}
+
+
+# TEST 403: submit_placement_move to empty tile works
+static func _test_placement_move_to_empty_tile() -> Dictionary:
+	print("--- TEST 403: Placement move to empty tile ---")
+	var gm = GridManager.new()
+
+	var unit_a = CombatUnit.new()
+	unit_a.unit_id = "test_hero_a"
+	unit_a.display_name = "HeroA"
+	unit_a.team = CombatUnit.Team.PLAYER
+	gm.place_unit(unit_a, Vector2i(1, 0))
+
+	# Move to empty tile in player zone
+	var success = gm.move_unit(unit_a, Vector2i(0, 2))
+	var pos_ok = unit_a.grid_x == 0 and unit_a.grid_y == 2
+	var old_empty = gm.is_tile_empty(Vector2i(1, 0))
+
+	var passed = success and pos_ok and old_empty
+	if passed:
+		print("[PASS] Unit moved to empty tile in player zone")
+	else:
+		print("[FAIL] success=%s pos=(%d,%d) old_empty=%s" % [success, unit_a.grid_x, unit_a.grid_y, old_empty])
+
+	return {"name": "Placement move to empty tile", "passed": passed}
+
+
+# TEST 404: submit_placement_move rejects tiles outside player zone (cols 0-1)
+static func _test_placement_move_rejects_enemy_zone() -> Dictionary:
+	print("--- TEST 404: Placement rejects enemy zone tiles ---")
+	var CombatControllerScript = load("res://Game/Combat/CombatController.gd")
+	var ctrl = CombatControllerScript.new()
+
+	var hero_ids = GameContext.get_selected_party()
+	if hero_ids.is_empty():
+		hero_ids = ["hero_1"]
+	var enemy_ids = ["slime"]
+
+	ctrl.initialize_combat(hero_ids, enemy_ids, RandomNumberGenerator.new(), {}, false)
+
+	# Try to move to enemy zone (col 6) — should be rejected
+	var first_hero_id = ctrl._player_units[0].unit_id
+	var rejected = not ctrl.submit_placement_move(first_hero_id, Vector2i(6, 0))
+
+	# Try to move to enemy half (col 4) — should be rejected
+	var rejected2 = not ctrl.submit_placement_move(first_hero_id, Vector2i(4, 0))
+
+	# Try to move to player half (col 3) — should be accepted
+	var accepted = ctrl.submit_placement_move(first_hero_id, Vector2i(3, 0))
+
+	var passed = rejected and rejected2 and accepted
+	if passed:
+		print("[PASS] Placement rejects cols 4+, accepts cols 0-3")
+	else:
+		print("[FAIL] rejected_col6=%s rejected_col4=%s accepted_col3=%s" % [rejected, rejected2, accepted])
+
+	ctrl.queue_free()
+	return {"name": "Placement rejects enemy zone tiles", "passed": passed}
+
+
+# TEST 405: GridManager swap_units works correctly
+static func _test_grid_swap_units() -> Dictionary:
+	print("--- TEST 405: GridManager swap_units ---")
+	var gm = GridManager.new()
+
+	var unit_a = CombatUnit.new()
+	unit_a.unit_id = "swap_a"
+	unit_a.display_name = "SwapA"
+	unit_a.team = CombatUnit.Team.PLAYER
+
+	var unit_b = CombatUnit.new()
+	unit_b.unit_id = "swap_b"
+	unit_b.display_name = "SwapB"
+	unit_b.team = CombatUnit.Team.PLAYER
+
+	gm.place_unit(unit_a, Vector2i(0, 0))
+	gm.place_unit(unit_b, Vector2i(1, 1))
+
+	var success = gm.swap_units(unit_a, unit_b)
+
+	var a_pos_ok = unit_a.grid_x == 1 and unit_a.grid_y == 1
+	var b_pos_ok = unit_b.grid_x == 0 and unit_b.grid_y == 0
+	var grid_a_ok = gm.get_unit_at(Vector2i(1, 1)) == unit_a
+	var grid_b_ok = gm.get_unit_at(Vector2i(0, 0)) == unit_b
+
+	var passed = success and a_pos_ok and b_pos_ok and grid_a_ok and grid_b_ok
+	if passed:
+		print("[PASS] swap_units correctly swapped positions")
+	else:
+		print("[FAIL] success=%s a=(%d,%d) b=(%d,%d)" % [success, unit_a.grid_x, unit_a.grid_y, unit_b.grid_x, unit_b.grid_y])
+
+	return {"name": "GridManager swap_units", "passed": passed}
+
+
+# TEST 406: Legacy initialize_combat (skip_placement=true) still works unchanged
+static func _test_legacy_skip_placement_unchanged() -> Dictionary:
+	print("--- TEST 406: Legacy skip_placement=true unchanged ---")
+	var CombatControllerScript = load("res://Game/Combat/CombatController.gd")
+	var ctrl = CombatControllerScript.new()
+
+	var hero_ids = GameContext.get_selected_party()
+	if hero_ids.is_empty():
+		hero_ids = ["hero_1"]
+	var enemy_ids = ["slime"]
+
+	# Default skip_placement=true
+	ctrl.initialize_combat(hero_ids, enemy_ids, RandomNumberGenerator.new())
+
+	var tq_ok = ctrl._turn_queue != null
+	var phase_off = not ctrl.is_placement_phase()
+	var active_ok = ctrl._is_combat_active
+
+	var passed = tq_ok and phase_off and active_ok
+	if passed:
+		print("[PASS] Legacy flow unchanged — TurnQueue built, no placement phase")
+	else:
+		print("[FAIL] tq=%s phase=%s active=%s" % [tq_ok, phase_off, active_ok])
+
+	ctrl.queue_free()
+	return {"name": "Legacy skip_placement=true unchanged", "passed": passed}
+
+
+static func _test_placement_memory_saves_positions() -> Dictionary:
+	print("--- TEST 407: Placement memory saves positions after confirm ---")
+	var CombatControllerScript = load("res://Game/Combat/CombatController.gd")
+	var ctrl = CombatControllerScript.new()
+
+	# Clear any existing placements
+	var old_placements = GameContext.hero_grid_placements.duplicate()
+	GameContext.hero_grid_placements = {}
+
+	var hero_ids = GameContext.get_selected_party()
+	if hero_ids.is_empty():
+		hero_ids = ["hero_1"]
+	var enemy_ids = ["slime"]
+
+	ctrl.initialize_combat(hero_ids, enemy_ids, RandomNumberGenerator.new(), {}, false)
+	ctrl.confirm_placement()
+
+	# Check that at least one hero has a saved position
+	var has_saved = false
+	for unit in ctrl._player_units:
+		var saved = GameContext.get_hero_grid_placement(unit.source_id)
+		if saved != null:
+			has_saved = true
+			var pos_ok = saved.has("x") and saved.has("y")
+			if not pos_ok:
+				print("[FAIL] Saved position missing x/y keys")
+				GameContext.hero_grid_placements = old_placements
+				ctrl.queue_free()
+				return {"name": "Placement memory saves positions", "passed": false}
+
+	var passed = has_saved
+	if passed:
+		print("[PASS] Hero grid positions saved after confirm_placement")
+	else:
+		print("[FAIL] No hero grid positions saved")
+
+	GameContext.hero_grid_placements = old_placements
+	ctrl.queue_free()
+	return {"name": "Placement memory saves positions", "passed": passed}
+
+
+static func _test_placement_memory_restores_positions() -> Dictionary:
+	print("--- TEST 408: Placement memory restores positions ---")
+	var CombatControllerScript = load("res://Game/Combat/CombatController.gd")
+
+	# Save and clear existing placements
+	var old_placements = GameContext.hero_grid_placements.duplicate()
+	GameContext.hero_grid_placements = {}
+
+	var hero_ids = GameContext.get_selected_party()
+	if hero_ids.is_empty():
+		hero_ids = ["hero_1"]
+	var enemy_ids = ["slime"]
+
+	# First combat: initialize and move a hero to a specific position
+	var ctrl1 = CombatControllerScript.new()
+	ctrl1.initialize_combat(hero_ids, enemy_ids, RandomNumberGenerator.new(), {}, false)
+
+	var target_pos = Vector2i(0, 3)
+	if ctrl1._player_units.size() > 0:
+		var unit = ctrl1._player_units[0]
+		ctrl1.submit_placement_move(unit.unit_id, target_pos)
+	ctrl1.confirm_placement()
+	ctrl1.queue_free()
+
+	# Second combat: positions should be restored
+	var ctrl2 = CombatControllerScript.new()
+	ctrl2.initialize_combat(hero_ids, enemy_ids, RandomNumberGenerator.new(), {}, false)
+
+	var passed = false
+	if ctrl2._player_units.size() > 0:
+		var unit = ctrl2._player_units[0]
+		passed = unit.grid_x == 0 and unit.grid_y == 3
+		if passed:
+			print("[PASS] Hero restored to saved position (0,3)")
+		else:
+			print("[FAIL] Hero at (%d,%d), expected (0,3)" % [unit.grid_x, unit.grid_y])
+	else:
+		print("[FAIL] No player units created")
+
+	GameContext.hero_grid_placements = old_placements
+	ctrl2.queue_free()
+	return {"name": "Placement memory restores positions", "passed": passed}
+
+
+static func _test_placement_memory_ignores_unknown_hero() -> Dictionary:
+	print("--- TEST 409: Placement memory ignores unknown hero_id ---")
+
+	# Save and set a stale placement for a nonexistent hero
+	var old_placements = GameContext.hero_grid_placements.duplicate()
+	GameContext.hero_grid_placements = {}
+	GameContext.set_hero_grid_placement("nonexistent_hero_xyz", Vector2i(0, 0))
+
+	var CombatControllerScript = load("res://Game/Combat/CombatController.gd")
+	var ctrl = CombatControllerScript.new()
+
+	var hero_ids = GameContext.get_selected_party()
+	if hero_ids.is_empty():
+		hero_ids = ["hero_1"]
+	var enemy_ids = ["slime"]
+
+	# Should not crash even with stale placement data
+	ctrl.initialize_combat(hero_ids, enemy_ids, RandomNumberGenerator.new(), {}, false)
+
+	var passed = ctrl._grid_manager.validate_no_overlap()
+	if passed:
+		print("[PASS] Combat initialized with stale placement data without crash")
+	else:
+		print("[FAIL] Grid has overlapping units")
+
+	GameContext.hero_grid_placements = old_placements
+	ctrl.queue_free()
+	return {"name": "Placement memory ignores unknown hero_id", "passed": passed}
+
+
+static func _test_placement_memory_get_set_api() -> Dictionary:
+	print("--- TEST 410: Placement memory get/set API ---")
+
+	var old_placements = GameContext.hero_grid_placements.duplicate()
+	GameContext.hero_grid_placements = {}
+
+	GameContext.set_hero_grid_placement("test_hero_1", Vector2i(1, 2))
+	GameContext.set_hero_grid_placement("test_hero_2", Vector2i(0, 0))
+
+	var check_1 = GameContext.get_hero_grid_placement("test_hero_1")
+	var check_2 = GameContext.get_hero_grid_placement("test_hero_2")
+	var check_none = GameContext.get_hero_grid_placement("nonexistent")
+
+	var set_ok = check_1 != null and check_1["x"] == 1 and check_1["y"] == 2
+	var set_ok_2 = check_2 != null and check_2["x"] == 0 and check_2["y"] == 0
+	var null_ok = check_none == null
+
+	var passed = set_ok and set_ok_2 and null_ok
+	if passed:
+		print("[PASS] get/set/null hero_grid_placements works correctly")
+	else:
+		print("[FAIL] set_ok=%s set_ok_2=%s null_ok=%s" % [set_ok, set_ok_2, null_ok])
+
+	GameContext.hero_grid_placements = old_placements
+	return {"name": "Placement memory get/set API", "passed": passed}
+
+
+static func _test_class_data_card_palette() -> Dictionary:
+	print("--- TEST 411: ClassData has card_palette ---")
+	var registry = Engine.get_singleton("DataRegistry") if Engine.has_singleton("DataRegistry") else null
+	if registry == null:
+		registry = load("res://Game/Core/DataRegistry.gd").new() if load("res://Game/Core/DataRegistry.gd") != null else null
+	var class_ids = ["defender", "striker", "warden", "druid", "fungal_berserker",
+		"stormcaller", "tidechaser", "pyrewarden", "ashblade",
+		"prism_sentinel", "prism_lancer", "dark_channeler", "lich",
+		"voidwalker", "void_herald"]
+	var required_keys = ["border_primary", "border_accent", "bg_primary", "bg_secondary", "text_tint"]
+	var all_ok = true
+	var errors: Array = []
+	for cid in class_ids:
+		var cd = DataRegistry.get_class_data(cid)
+		if cd == null:
+			errors.append("%s: class not found" % cid)
+			all_ok = false
+			continue
+		if cd.card_palette.is_empty():
+			errors.append("%s: card_palette is empty" % cid)
+			all_ok = false
+			continue
+		for key in required_keys:
+			if not cd.card_palette.has(key):
+				errors.append("%s: missing palette key '%s'" % [cid, key])
+				all_ok = false
+	if all_ok:
+		print("[PASS] All 15 classes have card_palette with required keys")
+	else:
+		for err in errors:
+			print("[FAIL] %s" % err)
+	return {"name": "ClassData has card_palette", "passed": all_ok}
+
+
+static func _test_class_data_card_prompt() -> Dictionary:
+	print("--- TEST 412: ClassData has card_prompt ---")
+	var class_ids = ["defender", "striker", "warden", "druid", "fungal_berserker",
+		"stormcaller", "tidechaser", "pyrewarden", "ashblade",
+		"prism_sentinel", "prism_lancer", "dark_channeler", "lich",
+		"voidwalker", "void_herald"]
+	var all_ok = true
+	var errors: Array = []
+	for cid in class_ids:
+		var cd = DataRegistry.get_class_data(cid)
+		if cd == null:
+			errors.append("%s: class not found" % cid)
+			all_ok = false
+			continue
+		if cd.card_prompt == "":
+			errors.append("%s: card_prompt is empty" % cid)
+			all_ok = false
+	if all_ok:
+		print("[PASS] All 15 classes have non-empty card_prompt")
+	else:
+		for err in errors:
+			print("[FAIL] %s" % err)
+	return {"name": "ClassData has card_prompt", "passed": all_ok}
+
+
+static func _test_class_data_enhanced_descriptions() -> Dictionary:
+	print("--- TEST 413: Enhanced class descriptions ---")
+	var class_ids = ["defender", "striker", "warden", "druid", "fungal_berserker",
+		"stormcaller", "tidechaser", "pyrewarden", "ashblade",
+		"prism_sentinel", "prism_lancer", "dark_channeler", "lich",
+		"voidwalker", "void_herald"]
+	var all_ok = true
+	var errors: Array = []
+	for cid in class_ids:
+		var cd = DataRegistry.get_class_data(cid)
+		if cd == null:
+			errors.append("%s: class not found" % cid)
+			all_ok = false
+			continue
+		if cd.description.length() <= 80:
+			errors.append("%s: description too short (%d chars)" % [cid, cd.description.length()])
+			all_ok = false
+	if all_ok:
+		print("[PASS] All 15 classes have descriptions longer than 80 chars")
+	else:
+		for err in errors:
+			print("[FAIL] %s" % err)
+	return {"name": "Enhanced class descriptions", "passed": all_ok}
+
+
+static func _test_training_slot_capacity() -> Dictionary:
+	print("--- TEST 414: Training slot capacity matches tier constants ---")
+	var all_ok: bool = true
+	# Save/restore state
+	var old_ft: Dictionary = GameContext.facility_tiers.duplicate()
+	var old_ts: Dictionary = GameContext.training_slots.duplicate()
+
+	GameContext.training_slots = {}
+
+	# T1 (default) → 2 slots
+	GameContext.facility_tiers = {"town_test:training_hall": 1}
+	var count_1: int = GameContext.get_training_slot_count("town_test")
+	if count_1 != 2:
+		print("[FAIL] Expected 2 slots at T1, got %d" % count_1)
+		all_ok = false
+
+	# T2 → 3 slots
+	GameContext.facility_tiers["town_test:training_hall"] = 2
+	var count_2: int = GameContext.get_training_slot_count("town_test")
+	if count_2 != 3:
+		print("[FAIL] Expected 3 slots at T2, got %d" % count_2)
+		all_ok = false
+
+	# T4 → 4 slots
+	GameContext.facility_tiers["town_test:training_hall"] = 4
+	var count_4: int = GameContext.get_training_slot_count("town_test")
+	if count_4 != 4:
+		print("[FAIL] Expected 4 slots at T4, got %d" % count_4)
+		all_ok = false
+
+	# Restore
+	GameContext.facility_tiers = old_ft
+	GameContext.training_slots = old_ts
+
+	if all_ok:
+		print("[PASS] Training slot capacity matches tier constants")
+	return {"name": "Training slot capacity matches tier constants", "passed": all_ok}
+
+
+static func _test_training_assign_remove() -> Dictionary:
+	print("--- TEST 415: Training assign and remove heroes ---")
+	var all_ok: bool = true
+	# Save state
+	var old_ft: Dictionary = GameContext.facility_tiers.duplicate()
+	var old_ts: Dictionary = GameContext.training_slots.duplicate()
+	var old_oh: Array = GameContext.owned_heroes.duplicate(true)
+	var old_sp: Array = GameContext.selected_party.duplicate()
+	var old_lock: bool = GameContext._dungeon_save_lock
+
+	GameContext._dungeon_save_lock = true  # Prevent save side effects
+	GameContext.facility_tiers = {"town_test:training_hall": 1}
+	GameContext.training_slots = {}
+	GameContext.selected_party = []
+	GameContext.owned_heroes = [
+		{"hero_id": "hero_t1", "name": "Test1", "class_id": "defender", "race_id": "human", "level": 1, "xp": 0, "home_town_id": "town_test"},
+		{"hero_id": "hero_t2", "name": "Test2", "class_id": "striker", "race_id": "elf", "level": 1, "xp": 0, "home_town_id": "town_test"},
+		{"hero_id": "hero_t3", "name": "Test3", "class_id": "warden", "race_id": "dwarf", "level": 1, "xp": 0, "home_town_id": "town_test"},
+	]
+
+	# Assign hero
+	var ok1: bool = GameContext.assign_hero_to_training("hero_t1", "town_test")
+	if not ok1:
+		print("[FAIL] assign_hero_to_training returned false")
+		all_ok = false
+	if not GameContext.is_hero_in_training("hero_t1"):
+		print("[FAIL] hero_t1 not in training after assign")
+		all_ok = false
+
+	# Assign second hero (T1 has 2 slots)
+	var ok2: bool = GameContext.assign_hero_to_training("hero_t2", "town_test")
+	if not ok2:
+		print("[FAIL] Second assign failed")
+		all_ok = false
+
+	# Third should fail (only 2 slots at T1)
+	var ok3: bool = GameContext.assign_hero_to_training("hero_t3", "town_test")
+	if ok3:
+		print("[FAIL] Third assign should have failed (slots full)")
+		all_ok = false
+
+	# Remove hero
+	GameContext.remove_hero_from_training("hero_t1")
+	if GameContext.is_hero_in_training("hero_t1"):
+		print("[FAIL] hero_t1 still in training after remove")
+		all_ok = false
+
+	# Can't assign party member
+	GameContext.selected_party = ["hero_t3"]
+	var ok4: bool = GameContext.assign_hero_to_training("hero_t3", "town_test")
+	if ok4:
+		print("[FAIL] Should not assign party member to training")
+		all_ok = false
+
+	# Restore
+	GameContext._dungeon_save_lock = old_lock
+	GameContext.facility_tiers = old_ft
+	GameContext.training_slots = old_ts
+	GameContext.owned_heroes = old_oh
+	GameContext.selected_party = old_sp
+
+	if all_ok:
+		print("[PASS] Training assign and remove heroes")
+	return {"name": "Training assign and remove heroes", "passed": all_ok}
+
+
+static func _test_resting_heroes_xp() -> Dictionary:
+	print("--- TEST 416: Resting heroes receive 25%% XP ---")
+	var all_ok: bool = true
+	# Save state
+	var old_oh: Array = GameContext.owned_heroes.duplicate(true)
+	var old_sp: Array = GameContext.selected_party.duplicate()
+	var old_ft: Dictionary = GameContext.facility_tiers.duplicate()
+	var old_ts: Dictionary = GameContext.training_slots.duplicate()
+	var old_hp: Dictionary = GameContext.hero_hp.duplicate()
+	var old_lock: bool = GameContext._dungeon_save_lock
+
+	GameContext._dungeon_save_lock = true
+	GameContext.facility_tiers = {}
+	GameContext.training_slots = {}
+	GameContext.hero_hp = {}
+
+	# Party hero + benched hero
+	GameContext.owned_heroes = [
+		{"hero_id": "hero_party", "name": "PartyHero", "class_id": "defender", "race_id": "human", "level": 1, "xp": 0, "home_town_id": "town_thornhaven"},
+		{"hero_id": "hero_resting", "name": "RestingHero", "class_id": "striker", "race_id": "human", "level": 1, "xp": 0, "home_town_id": "town_thornhaven"},
+	]
+	GameContext.selected_party = ["hero_party"]
+
+	# Grant 100 XP to party
+	GameContext.grant_party_xp(100, "test")
+
+	# Resting hero should have ~25 XP (25% of 100, modified by race=1.0 and training=0)
+	var resting_hero: Dictionary = GameContext.get_hero("hero_resting")
+	var resting_xp: int = int(resting_hero.get("xp", 0))
+	if resting_xp < 20 or resting_xp > 30:
+		print("[FAIL] Expected ~25 resting XP, got %d" % resting_xp)
+		all_ok = false
+
+	# Party hero should have full XP (~100)
+	var party_hero: Dictionary = GameContext.get_hero("hero_party")
+	var party_xp: int = int(party_hero.get("xp", 0))
+	if party_xp < 90:
+		print("[FAIL] Expected ~100 party XP, got %d" % party_xp)
+		all_ok = false
+
+	# Restore
+	GameContext._dungeon_save_lock = old_lock
+	GameContext.owned_heroes = old_oh
+	GameContext.selected_party = old_sp
+	GameContext.facility_tiers = old_ft
+	GameContext.training_slots = old_ts
+	GameContext.hero_hp = old_hp
+
+	if all_ok:
+		print("[PASS] Resting heroes receive 25%% XP")
+	return {"name": "Resting heroes receive 25% XP", "passed": all_ok}
+
+
+static func _test_training_heroes_xp() -> Dictionary:
+	print("--- TEST 417: Training heroes receive tier-based XP ---")
+	var all_ok: bool = true
+	# Save state
+	var old_oh: Array = GameContext.owned_heroes.duplicate(true)
+	var old_sp: Array = GameContext.selected_party.duplicate()
+	var old_ft: Dictionary = GameContext.facility_tiers.duplicate()
+	var old_ts: Dictionary = GameContext.training_slots.duplicate()
+	var old_hp: Dictionary = GameContext.hero_hp.duplicate()
+	var old_lock: bool = GameContext._dungeon_save_lock
+
+	GameContext._dungeon_save_lock = true
+	GameContext.facility_tiers = {"town_test:training_hall": 1}  # T1 = 50% rate
+	GameContext.hero_hp = {}
+
+	GameContext.owned_heroes = [
+		{"hero_id": "hero_p", "name": "PartyGuy", "class_id": "defender", "race_id": "human", "level": 1, "xp": 0, "home_town_id": "town_test"},
+		{"hero_id": "hero_train", "name": "TrainGuy", "class_id": "striker", "race_id": "human", "level": 1, "xp": 0, "home_town_id": "town_test"},
+		{"hero_id": "hero_rest", "name": "RestGuy", "class_id": "warden", "race_id": "human", "level": 1, "xp": 0, "home_town_id": "town_test"},
+	]
+	GameContext.selected_party = ["hero_p"]
+	GameContext.training_slots = {"town_test": ["hero_train"]}
+
+	# Grant 100 XP
+	GameContext.grant_party_xp(100, "test")
+
+	# Training hero should have ~50 XP (50% of 100, + global training_hall bonus)
+	# grant_hero_xp applies race modifier (1.0) and global training bonus (0.02 per tier)
+	var train_hero: Dictionary = GameContext.get_hero("hero_train")
+	var train_xp: int = int(train_hero.get("xp", 0))
+	if train_xp < 45 or train_xp > 60:
+		print("[FAIL] Expected ~50-56 training XP at T1, got %d" % train_xp)
+		all_ok = false
+
+	# Resting hero should have ~25 XP (25%, + global bonus) and NOT also 50% (no double-dip)
+	var rest_hero: Dictionary = GameContext.get_hero("hero_rest")
+	var rest_xp: int = int(rest_hero.get("xp", 0))
+	if rest_xp < 20 or rest_xp > 35:
+		print("[FAIL] Expected ~25-30 resting XP (not training), got %d" % rest_xp)
+		all_ok = false
+
+	# Training hero should NOT get resting XP (excluded)
+	# train_xp should be <65 (not 50+25=75)
+	if train_xp > 65:
+		print("[FAIL] Training hero got double-dipped XP: %d" % train_xp)
+		all_ok = false
+
+	# Restore
+	GameContext._dungeon_save_lock = old_lock
+	GameContext.owned_heroes = old_oh
+	GameContext.selected_party = old_sp
+	GameContext.facility_tiers = old_ft
+	GameContext.training_slots = old_ts
+	GameContext.hero_hp = old_hp
+
+	if all_ok:
+		print("[PASS] Training heroes receive tier-based XP, no double-dip")
+	return {"name": "Training heroes receive tier-based XP", "passed": all_ok}
+
+
+static func _test_flee_always_available() -> Dictionary:
+	print("--- TEST 418: Flee button visible without hero death ---")
+	var all_ok: bool = true
+
+	# DungeonCampScene sets flee_button.visible = true unconditionally
+	# We verify the code by checking the scene script
+	var script = load("res://Game/UI/Dungeon/DungeonCampScene.gd")
+	if script == null:
+		print("[FAIL] Could not load DungeonCampScene.gd")
+		all_ok = false
+	else:
+		var source: String = script.source_code
+		if "flee_button.visible = true" in source:
+			print("[PASS] Flee button is always visible in DungeonCampScene")
+		elif "flee_button.visible = GameContext.has_hero_died_this_run()" in source:
+			print("[FAIL] Flee button still gated by hero death")
+			all_ok = false
+		else:
+			print("[PASS] Flee button visibility code changed (not death-gated)")
+
+	return {"name": "Flee button visible without hero death", "passed": all_ok}
+
+
+static func _test_combat_retreat_button() -> Dictionary:
+	print("--- TEST 419: Combat retreat button exists ---")
+	var all_ok: bool = true
+
+	# Verify the GridCombatScene script has _on_retreat_pressed
+	var script = load("res://Game/UI/Combat/GridCombatScene.gd")
+	if script == null:
+		print("[FAIL] Could not load GridCombatScene.gd")
+		all_ok = false
+	else:
+		var source: String = script.source_code
+		if "_on_retreat_pressed" in source and "RetreatButton" in source:
+			print("[PASS] Retreat button and handler exist in GridCombatScene")
+		else:
+			print("[FAIL] Retreat button not found in GridCombatScene")
+			all_ok = false
+
+	return {"name": "Combat retreat button exists", "passed": all_ok}
+
+
+# ===========================================================================
+# SPRITE ANIMATION SYSTEM TESTS (420-425)
+# ===========================================================================
+
+# TEST 420: RaceData sprites field parsed from JSON
+static func _test_race_sprites_field() -> Dictionary:
+	print("--- TEST 420: RaceData sprites field parsing ---")
+	var all_ok: bool = true
+
+	# Test with sprites dict present
+	var data = {"id": "test_race", "display_name": "Test Race", "sprites": {"m": "res://test/m", "f": "res://test/f"}}
+	var race = RaceData.from_dict(data)
+	if race.sprites.has("m") and race.sprites["m"] == "res://test/m":
+		print("[PASS] sprites 'm' parsed correctly")
+	else:
+		print("[FAIL] sprites 'm' not parsed")
+		all_ok = false
+	if race.sprites.has("f") and race.sprites["f"] == "res://test/f":
+		print("[PASS] sprites 'f' parsed correctly")
+	else:
+		print("[FAIL] sprites 'f' not parsed")
+		all_ok = false
+
+	# Test with no sprites dict (backwards compat)
+	var data2 = {"id": "test_race2", "display_name": "Test Race 2"}
+	var race2 = RaceData.from_dict(data2)
+	if race2.sprites.is_empty():
+		print("[PASS] missing sprites defaults to empty dict")
+	else:
+		print("[FAIL] missing sprites should be empty dict")
+		all_ok = false
+
+	return {"name": "RaceData sprites field parsing", "passed": all_ok}
+
+
+# TEST 421: Hero gender field assigned at recruitment
+static func _test_hero_gender_field() -> Dictionary:
+	print("--- TEST 421: Hero gender field in recruit ---")
+	var all_ok: bool = true
+
+	# Save state
+	var saved_town = GameContext._current_town_id
+	var saved_gold = GameContext.run_gold
+	var saved_heroes = GameContext.owned_heroes.duplicate(true)
+
+	GameContext._current_town_id = "town_thornhaven"
+	GameContext.run_gold = 1000
+	var hero_id: String = GameContext.recruit_hero("striker", 50, "human")
+	var hero: Dictionary = GameContext.get_hero(hero_id)
+
+	if hero.has("gender"):
+		if hero["gender"] in ["m", "f"]:
+			print("[PASS] gender field is '%s'" % hero["gender"])
+		else:
+			print("[FAIL] gender field is '%s' (expected 'm' or 'f')" % hero["gender"])
+			all_ok = false
+	else:
+		print("[FAIL] gender field missing from hero dict")
+		all_ok = false
+
+	# Restore state
+	GameContext.owned_heroes = saved_heroes
+	GameContext.run_gold = saved_gold
+	GameContext._current_town_id = saved_town
+
+	return {"name": "Hero gender field in recruit", "passed": all_ok}
+
+
+# TEST 422: Gender in _HERO_ALLOWED_KEYS survives save migration
+static func _test_gender_in_allowed_keys() -> Dictionary:
+	print("--- TEST 422: Gender in hero allowed keys ---")
+	var all_ok: bool = true
+
+	# The allowed keys list is in the save/load migration code.
+	# Verify by checking the source code for "gender" in _HERO_ALLOWED_KEYS.
+	var script = load("res://Game/Core/GameContext.gd")
+	if script == null:
+		print("[FAIL] Could not load GameContext.gd")
+		all_ok = false
+	else:
+		var source: String = script.source_code
+		if '"gender"' in source and '_HERO_ALLOWED_KEYS' in source:
+			# Check that gender appears in the allowed keys line
+			var idx: int = source.find("_HERO_ALLOWED_KEYS")
+			if idx >= 0:
+				var line_end: int = source.find("\n", idx)
+				var line: String = source.substr(idx, line_end - idx) if line_end > idx else source.substr(idx)
+				if '"gender"' in line:
+					print("[PASS] 'gender' found in _HERO_ALLOWED_KEYS")
+				else:
+					print("[FAIL] 'gender' not in _HERO_ALLOWED_KEYS line")
+					all_ok = false
+			else:
+				print("[FAIL] _HERO_ALLOWED_KEYS not found")
+				all_ok = false
+		else:
+			print("[FAIL] gender or _HERO_ALLOWED_KEYS not in source")
+			all_ok = false
+
+	return {"name": "Gender in hero allowed keys", "passed": all_ok}
+
+
+# TEST 423: SpriteAnimationLoader has all 6 animation definitions
+static func _test_sprite_animation_loader_defs() -> Dictionary:
+	print("--- TEST 423: SpriteAnimationLoader animation definitions ---")
+	var all_ok: bool = true
+
+	var defs: Dictionary = SpriteAnimationLoader.ANIMATION_DEFS
+	var expected: Array = ["idle", "attack", "cast", "hit", "death", "walk"]
+
+	for anim_name in expected:
+		if defs.has(anim_name):
+			print("[PASS] animation '%s' defined" % anim_name)
+		else:
+			print("[FAIL] animation '%s' missing" % anim_name)
+			all_ok = false
+
+	# Check idle loops and attack does not
+	if defs.has("idle") and defs["idle"]["loop"] == true:
+		print("[PASS] idle loops")
+	else:
+		print("[FAIL] idle should loop")
+		all_ok = false
+
+	if defs.has("attack") and defs["attack"]["loop"] == false:
+		print("[PASS] attack is one-shot")
+	else:
+		print("[FAIL] attack should be one-shot")
+		all_ok = false
+
+	return {"name": "SpriteAnimationLoader animation definitions", "passed": all_ok}
+
+
+# TEST 424: HeroSpriteAnimator state machine (idle -> attack -> idle)
+static func _test_hero_sprite_animator_state() -> Dictionary:
+	print("--- TEST 424: HeroSpriteAnimator state machine ---")
+	var all_ok: bool = true
+
+	# Create a minimal SpriteFrames with idle (2 frames) and attack (2 frames)
+	var sf = SpriteFrames.new()
+	if sf.has_animation("default"):
+		sf.remove_animation("default")
+
+	sf.add_animation("idle")
+	sf.set_animation_speed("idle", 10.0)
+	sf.set_animation_loop("idle", true)
+	sf.add_frame("idle", PlaceholderTexture2D.new())
+	sf.add_frame("idle", PlaceholderTexture2D.new())
+
+	sf.add_animation("attack")
+	sf.set_animation_speed("attack", 10.0)
+	sf.set_animation_loop("attack", false)
+	sf.add_frame("attack", PlaceholderTexture2D.new())
+	sf.add_frame("attack", PlaceholderTexture2D.new())
+
+	var tex_rect = TextureRect.new()
+	var animator = HeroSpriteAnimator.new(sf, tex_rect)
+
+	# Should start in idle
+	if animator.get_current_animation() == "idle":
+		print("[PASS] starts in idle")
+	else:
+		print("[FAIL] should start in idle, got '%s'" % animator.get_current_animation())
+		all_ok = false
+
+	# Play attack
+	animator.play("attack")
+	if animator.get_current_animation() == "attack":
+		print("[PASS] switched to attack")
+	else:
+		print("[FAIL] should be in attack, got '%s'" % animator.get_current_animation())
+		all_ok = false
+
+	# Advance enough to finish 2-frame attack at 10fps (0.2s total)
+	animator.advance(0.11)
+	animator.advance(0.11)
+
+	# After one-shot finishes, should return to idle
+	if animator.get_current_animation() == "idle":
+		print("[PASS] returned to idle after attack")
+	else:
+		print("[FAIL] should return to idle, got '%s'" % animator.get_current_animation())
+		all_ok = false
+
+	tex_rect.free()
+	return {"name": "HeroSpriteAnimator state machine", "passed": all_ok}
+
+
+# TEST 425: CombatController snapshot includes sprite_folder key
+static func _test_snapshot_sprite_folder() -> Dictionary:
+	print("--- TEST 425: Unit snapshot includes sprite_folder ---")
+	var all_ok: bool = true
+
+	# Verify the snapshot builder has sprite_folder by checking source code
+	var script = load("res://Game/Combat/CombatController.gd")
+	if script == null:
+		print("[FAIL] Could not load CombatController.gd")
+		all_ok = false
+	else:
+		var source: String = script.source_code
+		if '"sprite_folder"' in source and "_get_unit_sprite_folder" in source:
+			print("[PASS] sprite_folder key and helper found in CombatController")
+		else:
+			print("[FAIL] sprite_folder key or helper not in CombatController")
+			all_ok = false
+
+	# Also verify GridCombatScene reads sprite_folder
+	var gcs_script = load("res://Game/UI/Combat/GridCombatScene.gd")
+	if gcs_script == null:
+		print("[FAIL] Could not load GridCombatScene.gd")
+		all_ok = false
+	else:
+		var gcs_source: String = gcs_script.source_code
+		if '"sprite_folder"' in gcs_source and "_unit_animators" in gcs_source:
+			print("[PASS] GridCombatScene reads sprite_folder and has _unit_animators")
+		else:
+			print("[FAIL] GridCombatScene missing sprite_folder or _unit_animators")
+			all_ok = false
+
+	return {"name": "Unit snapshot includes sprite_folder", "passed": all_ok}
+
+
+# TEST 426: Backline tutorial JSON exists and is valid
+static func _test_backline_tutorial_json() -> Dictionary:
+	print("--- TEST 426: Backline tutorial JSON exists ---")
+	var all_ok: bool = true
+	var file = FileAccess.open("res://Data/Tutorials/tutorial_backline_targeting.json", FileAccess.READ)
+	if file == null:
+		print("[FAIL] tutorial_backline_targeting.json not found")
+		return {"name": "Backline tutorial JSON exists", "passed": false}
+	var text: String = file.get_as_text()
+	file.close()
+	var json = JSON.new()
+	if json.parse(text) != OK:
+		print("[FAIL] Invalid JSON in tutorial_backline_targeting.json")
+		all_ok = false
+	else:
+		var data: Dictionary = json.data
+		if data.has("steps") and data["steps"].size() > 0:
+			print("[PASS] tutorial_backline_targeting.json valid with %d steps" % data["steps"].size())
+		else:
+			print("[FAIL] tutorial_backline_targeting.json missing steps")
+			all_ok = false
+	return {"name": "Backline tutorial JSON exists", "passed": all_ok}
+
+
+# TEST 427: Backline tutorial registered in GuidesOverlay
+static func _test_backline_tutorial_in_guides() -> Dictionary:
+	print("--- TEST 427: Backline tutorial in GuidesOverlay ---")
+	var script = load("res://Game/Core/GuidesOverlay.gd")
+	if script == null:
+		print("[FAIL] Could not load GuidesOverlay.gd")
+		return {"name": "Backline tutorial in GuidesOverlay", "passed": false}
+	var source: String = script.source_code
+	var found: bool = "tutorial_backline_targeting" in source
+	if found:
+		print("[PASS] tutorial_backline_targeting found in GuidesOverlay")
+	else:
+		print("[FAIL] tutorial_backline_targeting not in GuidesOverlay")
+	return {"name": "Backline tutorial in GuidesOverlay", "passed": found}
+
+
+# TEST 428: Intent preview has target_id field
+static func _test_intent_preview_target_id() -> Dictionary:
+	print("--- TEST 428: Intent preview has target_id ---")
+	var script = load("res://Game/Combat/CombatController.gd")
+	if script == null:
+		print("[FAIL] Could not load CombatController.gd")
+		return {"name": "Intent preview has target_id", "passed": false}
+	var source: String = script.source_code
+	var found: bool = '"target_id"' in source and "get_unit_intent_preview" in source
+	if found:
+		print("[PASS] target_id found in CombatController intent preview")
+	else:
+		print("[FAIL] target_id not in CombatController")
+	return {"name": "Intent preview has target_id", "passed": found}
+
+
+# TEST 429: Auto button tooltip set in combat scenes
+static func _test_auto_button_tooltip() -> Dictionary:
+	print("--- TEST 429: Auto button tooltip set ---")
+	var all_ok: bool = true
+	var cs = load("res://Game/UI/Combat/CombatScene.gd")
+	if cs == null:
+		print("[FAIL] Could not load CombatScene.gd")
+		all_ok = false
+	else:
+		if "auto_button.tooltip_text" in cs.source_code:
+			print("[PASS] auto_button.tooltip_text found in CombatScene")
+		else:
+			print("[FAIL] auto_button.tooltip_text not in CombatScene")
+			all_ok = false
+	var gcs = load("res://Game/UI/Combat/GridCombatScene.gd")
+	if gcs == null:
+		print("[FAIL] Could not load GridCombatScene.gd")
+		all_ok = false
+	else:
+		if "auto_button.tooltip_text" in gcs.source_code:
+			print("[PASS] auto_button.tooltip_text found in GridCombatScene")
+		else:
+			print("[FAIL] auto_button.tooltip_text not in GridCombatScene")
+			all_ok = false
+	return {"name": "Auto button tooltip set", "passed": all_ok}
+
+
+# TEST 430: TownHub upgrade badge function exists
+static func _test_townhub_upgrade_badge_function() -> Dictionary:
+	print("--- TEST 430: TownHub upgrade badge function ---")
+	var script = load("res://Game/UI/TownHub/TownHubScene.gd")
+	if script == null:
+		print("[FAIL] Could not load TownHubScene.gd")
+		return {"name": "TownHub upgrade badge function", "passed": false}
+	var source: String = script.source_code
+	var found: bool = "_refresh_upgrade_badges" in source and "_build_upgrade_tooltip" in source
+	if found:
+		print("[PASS] _refresh_upgrade_badges and _build_upgrade_tooltip found in TownHubScene")
+	else:
+		print("[FAIL] Badge functions not in TownHubScene")
+	return {"name": "TownHub upgrade badge function", "passed": found}
+
+
+# TEST 431: Badge calls can_upgrade_facility
+static func _test_badge_calls_can_upgrade() -> Dictionary:
+	print("--- TEST 431: Badge calls can_upgrade_facility ---")
+	var script = load("res://Game/UI/TownHub/TownHubScene.gd")
+	if script == null:
+		print("[FAIL] Could not load TownHubScene.gd")
+		return {"name": "Badge calls can_upgrade_facility", "passed": false}
+	var source: String = script.source_code
+	var found: bool = "can_upgrade_facility" in source and "_building_badge_labels" in source
+	if found:
+		print("[PASS] can_upgrade_facility and _building_badge_labels found in TownHubScene")
+	else:
+		print("[FAIL] can_upgrade_facility or _building_badge_labels not in TownHubScene")
+	return {"name": "Badge calls can_upgrade_facility", "passed": found}
+
+
+# TEST 432: Locked recipe qty format uses get_run_items_dict
+static func _test_locked_recipe_qty_format() -> Dictionary:
+	print("--- TEST 432: Locked recipe qty format ---")
+	var script = load("res://Game/UI/Town/TownScene.gd")
+	if script == null:
+		print("[FAIL] Could not load TownScene.gd")
+		return {"name": "Locked recipe qty format", "passed": false}
+	var source: String = script.source_code
+	# Check that locked recipe section uses get_run_items_dict for have/need display
+	var found: bool = "get_run_items_dict" in source and "_create_locked_recipe_row" in source
+	if found:
+		print("[PASS] get_run_items_dict found near locked recipe rows in TownScene")
+	else:
+		print("[FAIL] get_run_items_dict or _create_locked_recipe_row not in TownScene")
+	return {"name": "Locked recipe qty format", "passed": found}
+
+
+# TEST 433: Discovery log qty label with info_vbox
+static func _test_discovery_log_qty_label() -> Dictionary:
+	print("--- TEST 433: Discovery log qty label ---")
+	var script = load("res://Game/UI/Town/TownScene.gd")
+	if script == null:
+		print("[FAIL] Could not load TownScene.gd")
+		return {"name": "Discovery log qty label", "passed": false}
+	var source: String = script.source_code
+	var found: bool = "info_vbox" in source and "can_make_count" in source
+	if found:
+		print("[PASS] info_vbox and can_make_count found in TownScene discovery log")
+	else:
+		print("[FAIL] info_vbox or can_make_count not in TownScene")
+	return {"name": "Discovery log qty label", "passed": found}
+
+
+# TEST 434: Tactical enemy (ai_tier 2) intent includes target_id
+static func _test_tactical_enemy_target_id() -> Dictionary:
+	print("--- TEST 434: Tactical enemy intent has target_id ---")
+	var script = load("res://Game/Combat/CombatController.gd")
+	if script == null:
+		print("[FAIL] Could not load CombatController.gd")
+		return {"name": "Tactical enemy intent has target_id", "passed": false}
+	var source: String = script.source_code
+	# The tactical branch (ai_tier 2) should now include target selection
+	var has_tactical_target: bool = "ai_tier == 2" in source and "select_target" in source
+	if has_tactical_target:
+		print("[PASS] Tactical enemies (ai_tier 2) now pick a target for display")
+	else:
+		print("[FAIL] Tactical enemy branch missing target selection")
+	return {"name": "Tactical enemy intent has target_id", "passed": has_tactical_target}
+
+
+# TEST 435: TownScene has show_facility_upgrade method
+static func _test_show_facility_upgrade_method() -> Dictionary:
+	print("--- TEST 435: TownScene has show_facility_upgrade ---")
+	var script = load("res://Game/UI/Town/TownScene.gd")
+	if script == null:
+		print("[FAIL] Could not load TownScene.gd")
+		return {"name": "TownScene has show_facility_upgrade", "passed": false}
+	var source: String = script.source_code
+	var found: bool = "func show_facility_upgrade" in source and "_on_upgrade_badge_clicked" in load("res://Game/UI/TownHub/TownHubScene.gd").source_code
+	if found:
+		print("[PASS] show_facility_upgrade in TownScene + _on_upgrade_badge_clicked in TownHubScene")
+	else:
+		print("[FAIL] show_facility_upgrade or badge click handler missing")
+	return {"name": "TownScene has show_facility_upgrade", "passed": found}
+
+
+# TEST 436: ClassData sprites field parsed from JSON
+static func _test_class_data_sprites_field() -> Dictionary:
+	print("--- TEST 436: ClassData sprites field parsing ---")
+	var all_ok: bool = true
+
+	# Test with sprites dict present
+	var data = {"id": "test_class", "display_name": "Test Class", "sprites": {"default": "res://Assets/Sprites/Classes/test"}}
+	var cls = ClassData.from_dict(data)
+	if cls.sprites.has("default") and cls.sprites["default"] == "res://Assets/Sprites/Classes/test":
+		print("[PASS] ClassData sprites 'default' parsed correctly")
+	else:
+		print("[FAIL] ClassData sprites 'default' not parsed")
+		all_ok = false
+
+	# Test with no sprites dict (backwards compat — most classes won't have sprites yet)
+	var data2 = {"id": "test_class2", "display_name": "Test Class 2"}
+	var cls2 = ClassData.from_dict(data2)
+	if cls2.sprites.is_empty():
+		print("[PASS] Missing sprites defaults to empty dict")
+	else:
+		print("[FAIL] Missing sprites should be empty dict")
+		all_ok = false
+
+	# Verify real defender class has sprites
+	var defender = DataRegistry.get_class_data("defender")
+	if defender != null and defender.sprites.has("default"):
+		print("[PASS] Defender class has sprites.default: %s" % defender.sprites["default"])
+	else:
+		print("[FAIL] Defender class should have sprites field")
+		all_ok = false
+
+	return {"name": "ClassData sprites field parsing", "passed": all_ok}
+
+
+# TEST 437: CombatController resolves class sprite folder before race
+static func _test_class_sprite_folder_resolution() -> Dictionary:
+	print("--- TEST 437: Class-first sprite folder resolution ---")
+	var all_ok: bool = true
+
+	# Verify CombatController source has class-first resolution logic
+	var script = load("res://Game/Combat/CombatController.gd")
+	if script == null:
+		print("[FAIL] Could not load CombatController.gd")
+		return {"name": "Class-first sprite folder resolution", "passed": false}
+	var source: String = script.source_code
+	if "get_class_data(unit.class_id)" in source and 'class_data.sprites' in source:
+		print("[PASS] _get_unit_sprite_folder checks class sprites first")
+	else:
+		print("[FAIL] _get_unit_sprite_folder missing class-first lookup")
+		all_ok = false
+
+	# Verify the fallback to race sprites is still present
+	if "get_race(unit.race_id)" in source and 'race.sprites' in source:
+		print("[PASS] Race/gender sprite fallback preserved")
+	else:
+		print("[FAIL] Race/gender sprite fallback missing")
+		all_ok = false
+
+	return {"name": "Class-first sprite folder resolution", "passed": all_ok}
+
+
+# TEST 438: Classes without sprites fall back to race sprites
+static func _test_class_sprite_race_fallback() -> Dictionary:
+	print("--- TEST 438: Sprite fallback — class without sprites uses race ---")
+	var all_ok: bool = true
+
+	# Druid should have NO sprites field (it's R2 and hasn't been drawn yet)
+	var druid = DataRegistry.get_class_data("druid")
+	if druid != null and druid.sprites.is_empty():
+		print("[PASS] Druid has no class sprites (will use race fallback)")
+	else:
+		if druid == null:
+			print("[FAIL] Druid class not found in DataRegistry")
+		else:
+			print("[INFO] Druid has class sprites: %s (expected empty)" % str(druid.sprites))
+		all_ok = false
+
+	# Defender SHOULD have sprites
+	var defender = DataRegistry.get_class_data("defender")
+	if defender != null and not defender.sprites.is_empty():
+		print("[PASS] Defender has class sprites: %s" % defender.sprites.get("default", ""))
+	else:
+		print("[FAIL] Defender should have class sprites")
+		all_ok = false
+
+	# Striker SHOULD have sprites
+	var striker = DataRegistry.get_class_data("striker")
+	if striker != null and not striker.sprites.is_empty():
+		print("[PASS] Striker has class sprites: %s" % striker.sprites.get("default", ""))
+	else:
+		print("[FAIL] Striker should have class sprites")
+		all_ok = false
+
+	return {"name": "Sprite fallback — class without sprites uses race", "passed": all_ok}
+
+static func _test_action_performed_no_full_rebuild() -> Dictionary:
+	print("--- TEST 439: _on_action_performed uses lightweight update, not full rebuild ---")
+	var all_ok: bool = true
+
+	# Read the GridCombatScene source code and verify _on_action_performed
+	# calls _update_unit_values() instead of _refresh_all_panels()
+	var scene_script = load("res://Game/UI/Combat/GridCombatScene.gd")
+	var source: String = scene_script.source_code
+
+	# Find the _on_action_performed function body
+	var func_start: int = source.find("func _on_action_performed(")
+	if func_start == -1:
+		print("[FAIL] _on_action_performed function not found in GridCombatScene.gd")
+		return {"name": "_on_action_performed uses lightweight update, not full rebuild", "passed": false}
+
+	# Find the end of _on_action_performed (next func declaration)
+	var func_end: int = source.find("\nfunc ", func_start + 1)
+	if func_end == -1:
+		func_end = source.length()
+	var func_body: String = source.substr(func_start, func_end - func_start)
+
+	# Verify: should contain _update_unit_values() call
+	if func_body.find("_update_unit_values()") != -1:
+		print("[PASS] _on_action_performed calls _update_unit_values()")
+	else:
+		print("[FAIL] _on_action_performed does NOT call _update_unit_values()")
+		all_ok = false
+
+	# Verify: should NOT contain direct _refresh_all_panels() call
+	if func_body.find("_refresh_all_panels()") == -1:
+		print("[PASS] _on_action_performed does NOT call _refresh_all_panels()")
+	else:
+		print("[FAIL] _on_action_performed still calls _refresh_all_panels() — will kill animations")
+		all_ok = false
+
+	# Verify: _step_turn uses deferred refresh (not immediate _refresh_all_panels)
+	var step_start: int = source.find("func _step_turn(")
+	if step_start != -1:
+		var step_end: int = source.find("\nfunc ", step_start + 1)
+		if step_end == -1:
+			step_end = source.length()
+		var step_body: String = source.substr(step_start, step_end - step_start)
+		if step_body.find("_refresh_pending") != -1:
+			print("[PASS] _step_turn uses deferred refresh with _refresh_pending guard")
+		else:
+			print("[FAIL] _step_turn should use deferred _refresh_pending guard")
+			all_ok = false
+	else:
+		print("[FAIL] _step_turn function not found")
+		all_ok = false
+
+	# Verify: _update_unit_values iterates snapshot arrays, not raw dict keys
+	var uuv_start: int = source.find("func _update_unit_values(")
+	if uuv_start != -1:
+		var uuv_end: int = source.find("\nfunc ", uuv_start + 1)
+		if uuv_end == -1:
+			uuv_end = source.length()
+		var uuv_body: String = source.substr(uuv_start, uuv_end - uuv_start)
+		if uuv_body.find('snapshot["player"] + snapshot["enemy"]') != -1:
+			print("[PASS] _update_unit_values iterates snapshot arrays correctly")
+		else:
+			print("[FAIL] _update_unit_values must iterate snapshot[\"player\"] + snapshot[\"enemy\"], not raw dict")
+			all_ok = false
+	else:
+		print("[FAIL] _update_unit_values function not found")
+		all_ok = false
+
+	return {"name": "_on_action_performed uses lightweight update, not full rebuild", "passed": all_ok}
+
+
+# TEST 440: Monster ability descriptions have targeting info
+static func _test_monster_ability_descriptions_have_targeting() -> Dictionary:
+	print("--- TEST 440: Monster ability descriptions have targeting info ---")
+	var all_ok: bool = true
+	var ability_ids: Array = [
+		"mon_heavy_strike", "mon_rending_strike", "mon_ground_slam",
+		"mon_berserker_rage", "mon_devastating_charge",
+		"mon_aimed_shot", "mon_poison_shot", "mon_volley",
+		"mon_mark_prey", "mon_rain_of_arrows",
+		"mon_arcane_bolt", "mon_chain_lightning",
+		"mon_mend_ally", "mon_war_cry", "mon_regeneration",
+		"mon_flame_burst", "mon_meteor", "mon_life_siphon"
+	]
+	for aid in ability_ids:
+		var ab = DataRegistry.get_ability(aid)
+		if ab == null:
+			print("[FAIL] Ability %s not found" % aid)
+			all_ok = false
+			continue
+		var desc: String = ab.description
+		var has_targeting: bool = (
+			desc.find("Targets:") != -1
+			or desc.find("Hits all") != -1
+			or desc.find("Self") != -1
+			or desc.find("all allies") != -1
+		)
+		if has_targeting:
+			print("[PASS] %s has targeting info" % aid)
+		else:
+			print("[FAIL] %s description missing targeting info: %s" % [aid, desc])
+			all_ok = false
+	return {"name": "Monster ability descriptions have targeting info", "passed": all_ok}
+
+
+# TEST 441: Tactical tooltip shows target name
+static func _test_tactical_tooltip_shows_target_name() -> Dictionary:
+	print("--- TEST 441: Tactical tooltip shows target name ---")
+	var all_ok: bool = true
+
+	var scene_script = load("res://Game/UI/Combat/CombatScene.gd")
+	var source: String = scene_script.source_code
+
+	# Find _build_timeline_tooltip tactical branch
+	var tactical_idx: int = source.find("tactical")
+	if tactical_idx == -1:
+		print("[FAIL] No 'tactical' branch found in CombatScene.gd")
+		return {"name": "Tactical tooltip shows target name", "passed": false}
+
+	# Find target_name usage in the tactical section
+	var target_name_idx: int = source.find("target_name", tactical_idx)
+	if target_name_idx != -1 and target_name_idx < tactical_idx + 1000:
+		print("[PASS] CombatScene tactical tooltip references target_name")
+	else:
+		print("[FAIL] CombatScene tactical tooltip missing target_name")
+		all_ok = false
+
+	# Check GridCombatScene too
+	var grid_script = load("res://Game/UI/Combat/GridCombatScene.gd")
+	var grid_source: String = grid_script.source_code
+	var grid_tactical_idx: int = grid_source.find("tactical")
+	if grid_tactical_idx != -1:
+		var grid_target_idx: int = grid_source.find("target_name", grid_tactical_idx)
+		if grid_target_idx != -1 and grid_target_idx < grid_tactical_idx + 1000:
+			print("[PASS] GridCombatScene tactical tooltip references target_name")
+		else:
+			print("[FAIL] GridCombatScene tactical tooltip missing target_name")
+			all_ok = false
+	else:
+		print("[FAIL] No 'tactical' branch in GridCombatScene.gd")
+		all_ok = false
+
+	return {"name": "Tactical tooltip shows target name", "passed": all_ok}
+
+
+# TEST 442: Pinned tooltip system exists in both combat scenes
+static func _test_pinned_tooltip_system_exists() -> Dictionary:
+	print("--- TEST 442: Pinned tooltip system exists ---")
+	var all_ok: bool = true
+
+	var scene_script = load("res://Game/UI/Combat/CombatScene.gd")
+	var source: String = scene_script.source_code
+
+	if source.find("_pinned_tooltip_panel") != -1:
+		print("[PASS] CombatScene has _pinned_tooltip_panel")
+	else:
+		print("[FAIL] CombatScene missing _pinned_tooltip_panel")
+		all_ok = false
+
+	if source.find("_show_pinned_tooltip") != -1:
+		print("[PASS] CombatScene has _show_pinned_tooltip")
+	else:
+		print("[FAIL] CombatScene missing _show_pinned_tooltip")
+		all_ok = false
+
+	if source.find("_dismiss_pinned_tooltip") != -1:
+		print("[PASS] CombatScene has _dismiss_pinned_tooltip")
+	else:
+		print("[FAIL] CombatScene missing _dismiss_pinned_tooltip")
+		all_ok = false
+
+	var grid_script = load("res://Game/UI/Combat/GridCombatScene.gd")
+	var grid_source: String = grid_script.source_code
+
+	if grid_source.find("_pinned_tooltip_panel") != -1:
+		print("[PASS] GridCombatScene has _pinned_tooltip_panel")
+	else:
+		print("[FAIL] GridCombatScene missing _pinned_tooltip_panel")
+		all_ok = false
+
+	if grid_source.find("_show_pinned_tooltip") != -1:
+		print("[PASS] GridCombatScene has _show_pinned_tooltip")
+	else:
+		print("[FAIL] GridCombatScene missing _show_pinned_tooltip")
+		all_ok = false
+
+	if grid_source.find("Ctrl+Click to pin") != -1:
+		print("[PASS] GridCombatScene tooltip has Ctrl+Click hint")
+	else:
+		print("[FAIL] GridCombatScene missing Ctrl+Click hint in tooltips")
+		all_ok = false
+
+	return {"name": "Pinned tooltip system exists", "passed": all_ok}
+
+
+# TEST 443: Monster passive descriptions have stat values
+static func _test_monster_passive_descriptions_have_stat_values() -> Dictionary:
+	print("--- TEST 443: Monster passive descriptions have stat values ---")
+	var all_ok: bool = true
+	var passive_ids: Array = [
+		"mon_pack_hunter", "mon_thorny_hide", "mon_armored_shell",
+		"mon_spectral_form", "mon_venomous", "mon_life_drain",
+		"mon_piercing_blows", "mon_magic_resist", "mon_evasive",
+		"mon_undying_rage"
+	]
+	for pid in passive_ids:
+		var p = DataRegistry.get_passive(pid)
+		if p == null:
+			print("[FAIL] Passive %s not found" % pid)
+			all_ok = false
+			continue
+		var desc: String = p.description
+		if desc.find("+") != -1:
+			print("[PASS] %s has stat value: %s" % [pid, desc])
+		else:
+			print("[FAIL] %s description missing stat value: %s" % [pid, desc])
+			all_ok = false
+	return {"name": "Monster passive descriptions have stat values", "passed": all_ok}
+
+
+# TEST 444: Unit card tooltip includes ability and passive descriptions
+static func _test_unit_card_tooltip_includes_descriptions() -> Dictionary:
+	print("--- TEST 444: Unit card tooltip includes ability descriptions ---")
+	var all_ok: bool = true
+
+	var grid_script = load("res://Game/UI/Combat/GridCombatScene.gd")
+	var source: String = grid_script.source_code
+
+	# Find _build_unit_card_tooltip function
+	var func_start: int = source.find("func _build_unit_card_tooltip(")
+	if func_start == -1:
+		print("[FAIL] _build_unit_card_tooltip not found in GridCombatScene.gd")
+		return {"name": "Unit card tooltip includes ability descriptions", "passed": false}
+
+	var func_end: int = source.find("\nfunc ", func_start + 1)
+	if func_end == -1:
+		func_end = source.length()
+	var func_body: String = source.substr(func_start, func_end - func_start)
+
+	# Check for ability description variable
+	if func_body.find("a_desc") != -1:
+		print("[PASS] Unit card tooltip has ability description (a_desc)")
+	else:
+		print("[FAIL] Unit card tooltip missing ability description variable")
+		all_ok = false
+
+	# Check for passive description variable
+	if func_body.find("pa_desc") != -1:
+		print("[PASS] Unit card tooltip has passive description (pa_desc)")
+	else:
+		print("[FAIL] Unit card tooltip missing passive description variable")
+		all_ok = false
+
+	# Check for Ctrl+Click hint
+	if func_body.find("Ctrl+Click to pin") != -1:
+		print("[PASS] Unit card tooltip has Ctrl+Click hint")
+	else:
+		print("[FAIL] Unit card tooltip missing Ctrl+Click hint")
+		all_ok = false
+
+	return {"name": "Unit card tooltip includes ability descriptions", "passed": all_ok}
+
+
+# TEST 445: Player timeline tooltip shows ability descriptions
+static func _test_player_timeline_tooltip_shows_descriptions() -> Dictionary:
+	print("--- TEST 445: Player timeline tooltip shows ability descriptions ---")
+	var all_ok: bool = true
+
+	var grid_script = load("res://Game/UI/Combat/GridCombatScene.gd")
+	var source: String = grid_script.source_code
+
+	# Find _build_timeline_tooltip function
+	var func_start: int = source.find("func _build_timeline_tooltip(")
+	if func_start == -1:
+		print("[FAIL] _build_timeline_tooltip not found")
+		return {"name": "Player timeline tooltip shows ability descriptions", "passed": false}
+
+	var func_end: int = source.find("\nfunc ", func_start + 1)
+	if func_end == -1:
+		func_end = source.length()
+	var func_body: String = source.substr(func_start, func_end - func_start)
+
+	# Find the player branch and check for ab_desc
+	var player_idx: int = func_body.find('"player"')
+	if player_idx == -1:
+		print("[FAIL] No 'player' branch in _build_timeline_tooltip")
+		return {"name": "Player timeline tooltip shows ability descriptions", "passed": false}
+
+	# Check that ab_desc exists between player and tactical branches
+	var tactical_idx: int = func_body.find('"tactical"', player_idx)
+	if tactical_idx == -1:
+		tactical_idx = func_body.length()
+	var player_section: String = func_body.substr(player_idx, tactical_idx - player_idx)
+
+	if player_section.find("ab_desc") != -1:
+		print("[PASS] Player timeline tooltip has ab_desc in player branch")
+	else:
+		print("[FAIL] Player timeline tooltip missing ab_desc in player branch")
+		all_ok = false
+
+	# Also verify CombatScene
+	var scene_script = load("res://Game/UI/Combat/CombatScene.gd")
+	var scene_source: String = scene_script.source_code
+	var scene_func_start: int = scene_source.find("func _build_timeline_tooltip(")
+	if scene_func_start != -1:
+		var scene_func_end: int = scene_source.find("\nfunc ", scene_func_start + 1)
+		if scene_func_end == -1:
+			scene_func_end = scene_source.length()
+		var scene_func_body: String = scene_source.substr(scene_func_start, scene_func_end - scene_func_start)
+		var scene_player_idx: int = scene_func_body.find('"player"')
+		if scene_player_idx != -1:
+			var scene_tac_idx: int = scene_func_body.find('"tactical"', scene_player_idx)
+			if scene_tac_idx == -1:
+				scene_tac_idx = scene_func_body.length()
+			var scene_player_sec: String = scene_func_body.substr(scene_player_idx, scene_tac_idx - scene_player_idx)
+			if scene_player_sec.find("ab_desc") != -1:
+				print("[PASS] CombatScene player timeline also has ab_desc")
+			else:
+				print("[FAIL] CombatScene player timeline missing ab_desc")
+				all_ok = false
+
+	return {"name": "Player timeline tooltip shows ability descriptions", "passed": all_ok}

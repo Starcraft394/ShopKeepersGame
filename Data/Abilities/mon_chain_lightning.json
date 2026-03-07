@@ -1,7 +1,7 @@
 {
   "id": "mon_chain_lightning",
   "display_name": "Chain Lightning",
-  "description": "Unleashes a bolt of lightning that arcs between all enemies.",
+  "description": "Deals 5 + 40% ATK magical damage. Inflicts Shocked (1 stack, 2 turns). Hits all enemies. Cooldown: 4 turns.",
   "icon_hint": "branching blue-white lightning bolt arcing between multiple targets",
   "ability_type": "monster",
   "source_class_id": "",

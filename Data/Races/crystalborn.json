@@ -16,6 +16,10 @@
     "crystalline",
     "prismatic"
   ],
+  "sprites": {
+    "m": "res://Assets/Sprites/Heroes/crystalborn_m",
+    "f": "res://Assets/Sprites/Heroes/crystalborn_f"
+  },
   "portraits": [
     "res://Assets/_ArtPacks/Avatars_Crystalborn_PNG/Icon5.png",
     "res://Assets/_ArtPacks/Avatars_Crystalborn_PNG/Icon6.png",

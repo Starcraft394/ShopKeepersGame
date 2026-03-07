@@ -253,10 +253,6 @@ class _NGPlusPanel extends CanvasLayer:
 		card_style.border_color = Color(0.4, 0.4, 0.5, 0.5)
 		card_style.set_border_width_all(1)
 		card_style.set_corner_radius_all(6)
-		card_style.content_margin_left = 8
-		card_style.content_margin_right = 8
-		card_style.content_margin_top = 6
-		card_style.content_margin_bottom = 6
 		card.add_theme_stylebox_override("panel", card_style)
 
 		var hbox := HBoxContainer.new()

@@ -9,6 +9,7 @@
   "ai_tier": 2,
   "attack_type": "melee",
   "combat_role": "melee",
+  "movement_range": 3,
   "base_stats": {
     "health": 110,
     "attack": 24,
@@ -22,7 +23,9 @@
     "mon_rending_strike",
     "mon_heavy_strike"
   ],
-  "passive_ids": ["mon_piercing_blows"],
+  "passive_ids": [
+    "mon_piercing_blows"
+  ],
   "loot_table_id": "lt_region1_elite",
   "gold_drop_min": 30,
   "gold_drop_max": 55,

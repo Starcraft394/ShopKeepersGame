@@ -1,0 +1,18 @@
+{
+  "id": "tutorial_grid_placement",
+  "steps": [
+    {
+      "speaker": "Thalric",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
+      "title": "Choose Your Ground",
+      "body": "Before the fight begins, you can position your heroes on the battlefield. Defenders up front absorb hits, while ranged heroes deal damage safely from the back.\n\nClick a hero portrait, then click an empty tile to move them. Click two heroes to swap their positions."
+    },
+    {
+      "speaker": "Thalric",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
+      "title": "Fog of War",
+      "body": "The enemy half of the field is hidden until you confirm your positions and the battle begins. Once you're satisfied with your formation, hit Start Battle.\n\nPlacement matters — heroes closer to the front will be targeted first by melee enemies.",
+      "button_text": "Ready to fight!"
+    }
+  ]
+}

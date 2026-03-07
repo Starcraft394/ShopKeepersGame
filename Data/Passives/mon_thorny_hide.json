@@ -1,7 +1,7 @@
 {
   "id": "mon_thorny_hide",
   "display_name": "Thorny Hide",
-  "description": "Natural thorns deal damage to melee attackers.",
+  "description": "+5 Thorns. Reflects damage to melee attackers.",
   "icon_hint": "bark-covered hide with protruding thorns",
   "passive_type": "stat_bonus",
   "trigger": "combat_start",

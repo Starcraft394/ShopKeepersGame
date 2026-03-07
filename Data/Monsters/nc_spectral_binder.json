@@ -1,35 +1,36 @@
 {
-	"id": "nc_spectral_binder",
-	"display_name": "Spectral Binder",
-	"description": "A necromancer's ghost that chains fallen souls, forcing them to fight as thralls.",
-	"icon_hint": "ghostly robed necromancer with spectral chains extending from hands binding smaller spirits",
-	"family": "necro",
-	"region_id": "region_6",
-	"tier": 2,
-	"ai_tier": 2,
-	"attack_type": "ranged",
-	"combat_role": "mage",
-	"base_stats": {
-		"health": 410,
-		"attack": 84,
-		"defense": 29,
-		"speed": 39,
-		"evasion": 12,
-		"resist": 10
-	},
-	"ability_ids": [
-		"basic_attack",
-		"mon_chain_lightning",
-		"mon_regeneration"
-	],
-	"passive_ids": [
-		"mon_spectral_form"
-	],
-	"loot_table_id": "lt_region6_uncommon",
-	"gold_drop_min": 27,
-	"gold_drop_max": 44,
-	"sprite_path": "",
-	"is_elite": false,
-	"is_boss": false,
-	"portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/nc_spectral_binder.png"
+  "id": "nc_spectral_binder",
+  "display_name": "Spectral Binder",
+  "description": "A necromancer's ghost that chains fallen souls, forcing them to fight as thralls.",
+  "icon_hint": "ghostly robed necromancer with spectral chains extending from hands binding smaller spirits",
+  "family": "necro",
+  "region_id": "region_6",
+  "tier": 2,
+  "ai_tier": 2,
+  "attack_type": "ranged",
+  "combat_role": "mage",
+  "movement_range": 1,
+  "base_stats": {
+    "health": 410,
+    "attack": 84,
+    "defense": 29,
+    "speed": 39,
+    "evasion": 12,
+    "resist": 10
+  },
+  "ability_ids": [
+    "basic_attack",
+    "mon_chain_lightning",
+    "mon_regeneration"
+  ],
+  "passive_ids": [
+    "mon_spectral_form"
+  ],
+  "loot_table_id": "lt_region6_uncommon",
+  "gold_drop_min": 27,
+  "gold_drop_max": 44,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/nc_spectral_binder.png"
 }

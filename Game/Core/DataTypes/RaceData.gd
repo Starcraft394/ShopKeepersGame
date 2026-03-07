@@ -27,6 +27,7 @@ var trait_tags: Array[String] = []
 # Visual/Thematic
 var portrait_path: String = ""
 var portraits: Array[String] = []  # Available portrait icon paths for this race
+var sprites: Dictionary = {}  # Gender -> sprite folder path (e.g., {"m": "res://Assets/Sprites/Heroes/human_m", "f": "res://..."})
 
 # Factory method
 static func from_dict(data: Dictionary) -> RaceData:
@@ -43,6 +44,10 @@ static func from_dict(data: Dictionary) -> RaceData:
 	instance.racial_passive_id = data.get("racial_passive_id", data.get("passive_id", ""))
 	instance.xp_modifier = float(data.get("xp_modifier", 1.0))
 	instance.portrait_path = data.get("portrait_path", "")
+
+	# Parse sprites dictionary (gender -> folder path)
+	var sprites_val = data.get("sprites", {})
+	instance.sprites = sprites_val if sprites_val is Dictionary else {}
 
 	# Parse portraits array
 	instance.portraits.clear()

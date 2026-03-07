@@ -1,7 +1,7 @@
 {
   "id": "voidwalker",
   "display_name": "Voidwalker",
-  "description": "A dimensional warrior who phases between planes to absorb attacks and confuse enemies.",
+  "description": "A dimensional warrior who stepped through Voidreach's rift and returned forever half-phased, flickering between planes to absorb attacks that pass through their shifting form.",
   "icon_hint": "heavy shield half-phased into a dark purple void rift",
   "archetype": "vanguard",
   "unlock_region": 7,
@@ -21,5 +21,13 @@
   "ability_b_id": "phase_strike",
   "passive_a_id": "dimensional_shift",
   "passive_b_id": "void_shell",
-  "weapon_types": ["sword", "axe", "dagger"]
+  "weapon_types": ["sword", "axe", "dagger"],
+  "card_prompt": "Pixel art, SNES style. A decorative card frame background for a fantasy voidwalker dimensional warrior class. Heavy dark border half-phased into void, left side solid iron, right side dissolving into purple void particles. Deep space black center with swirling dark purple void energy and dimensional rift cracks. Small half-phased shield at bottom. Color palette: void black, deep purple, dimensional blue. No characters, no text.",
+  "card_palette": {
+    "border_primary": "#0a0a1a",
+    "border_accent": "#7d3c98",
+    "bg_primary": "#0a0a1a",
+    "bg_secondary": "#05050d",
+    "text_tint": "#5dade2"
+  }
 }

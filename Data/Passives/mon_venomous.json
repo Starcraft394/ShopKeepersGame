@@ -1,7 +1,7 @@
 {
   "id": "mon_venomous",
   "display_name": "Venomous",
-  "description": "Venomous strikes find weak points more often.",
+  "description": "+12% Critical Chance on attacks.",
   "icon_hint": "dripping fang with green venom and a critical hit marker",
   "passive_type": "stat_bonus",
   "trigger": "combat_start",

@@ -1,7 +1,7 @@
 {
   "id": "mon_evasive",
   "display_name": "Evasive",
-  "description": "Small and nimble, difficult to hit with direct attacks.",
+  "description": "+10% Evasion. Harder to hit with attacks.",
   "icon_hint": "small creature dodging between attack lines",
   "passive_type": "stat_bonus",
   "trigger": "combat_start",

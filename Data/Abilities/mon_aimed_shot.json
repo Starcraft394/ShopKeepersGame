@@ -1,7 +1,7 @@
 {
   "id": "mon_aimed_shot",
   "display_name": "Aimed Shot",
-  "description": "A carefully aimed projectile that deals precise physical damage.",
+  "description": "Deals 7 + 60% ATK physical damage to one enemy. Targets: Lowest HP. Cooldown: 3 turns.",
   "icon_hint": "crossbow bolt flying straight with motion blur trail",
   "ability_type": "monster",
   "source_class_id": "",

@@ -1,7 +1,7 @@
 {
   "id": "striker",
   "display_name": "Striker",
-  "description": "A swift damage dealer who excels at eliminating enemies quickly. Dual-path DPS with flexible weapon choices.",
+  "description": "A bladedancer trained in the shadow groves of Thornhaven, who strikes with the speed of a diving hawk. Their twin blades flash like autumn leaves in a storm.",
   "icon_hint": "crossed daggers over a red slashing arc with speed lines",
   "archetype": "striker",
   "unlock_region": 1,
@@ -21,5 +21,14 @@
   "ability_b_id": "shadowstep",
   "passive_a_id": "killer_instinct",
   "passive_b_id": "finishers_instinct",
-  "weapon_types": ["sword", "dagger", "bow"]
+  "weapon_types": ["sword", "dagger", "bow"],
+  "sprites": {"default": "res://Assets/Sprites/Classes/striker"},
+  "card_prompt": "Pixel art, SNES style. A decorative card frame background for a fantasy striker assassin class. Dark leather strap border with brass buckle corners and red stitching. Charcoal-grey brushed leather center with faint crossed-blade watermark. Small crimson slash marks at bottom. Color palette: dark brown leather, deep crimson, brass. No characters, no text.",
+  "card_palette": {
+    "border_primary": "#3d2b1f",
+    "border_accent": "#b08d57",
+    "bg_primary": "#3d2b1f",
+    "bg_secondary": "#1a1410",
+    "text_tint": "#8b0000"
+  }
 }

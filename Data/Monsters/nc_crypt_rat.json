@@ -1,31 +1,32 @@
 {
-	"id": "nc_crypt_rat",
-	"display_name": "Crypt Rat",
-	"description": "An oversized rodent bloated with necrotic energy whose bite spreads grave-rot.",
-	"icon_hint": "oversized rat with patchy fur and glowing necrotic purple veins visible under skin",
-	"family": "necro",
-	"region_id": "region_6",
-	"tier": 1,
-	"ai_tier": 1,
-	"attack_type": "melee",
-	"combat_role": "melee",
-	"base_stats": {
-		"health": 254,
-		"attack": 61,
-		"defense": 18,
-		"speed": 39,
-		"evasion": 8
-	},
-	"ability_ids": [
-		"basic_attack",
-		"mon_heavy_strike"
-	],
-	"passive_ids": [],
-	"loot_table_id": "lt_region6_common",
-	"gold_drop_min": 14,
-	"gold_drop_max": 26,
-	"sprite_path": "",
-	"is_elite": false,
-	"is_boss": false,
-	"portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/nc_crypt_rat.png"
+  "id": "nc_crypt_rat",
+  "display_name": "Crypt Rat",
+  "description": "An oversized rodent bloated with necrotic energy whose bite spreads grave-rot.",
+  "icon_hint": "oversized rat with patchy fur and glowing necrotic purple veins visible under skin",
+  "family": "necro",
+  "region_id": "region_6",
+  "tier": 1,
+  "ai_tier": 1,
+  "attack_type": "melee",
+  "combat_role": "melee",
+  "movement_range": 2,
+  "base_stats": {
+    "health": 254,
+    "attack": 61,
+    "defense": 18,
+    "speed": 39,
+    "evasion": 8
+  },
+  "ability_ids": [
+    "basic_attack",
+    "mon_heavy_strike"
+  ],
+  "passive_ids": [],
+  "loot_table_id": "lt_region6_common",
+  "gold_drop_min": 14,
+  "gold_drop_max": 26,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/nc_crypt_rat.png"
 }

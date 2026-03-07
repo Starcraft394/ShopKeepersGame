@@ -1,37 +1,38 @@
 {
-	"id": "fr_prime_corruptor",
-	"display_name": "The Prime Corruptor",
-	"description": "The source of all corruption — an entity of pure entropy that seeks to unmake reality.",
-	"icon_hint": "colossal entity of pure void energy with reality unraveling around it in all directions",
-	"family": "void",
-	"region_id": "region_7",
-	"tier": 3,
-	"ai_tier": 3,
-	"attack_type": "ranged",
-	"combat_role": "mage",
-	"base_stats": {
-		"health": 3900,
-		"attack": 248,
-		"defense": 78,
-		"speed": 60,
-		"resist": 18,
-		"armor_penetration": 12,
-		"crit_chance": 10
-	},
-	"ability_ids": [
-		"basic_attack",
-		"mon_meteor",
-		"mon_chain_lightning"
-	],
-	"passive_ids": [
-		"mon_magic_resist",
-		"mon_piercing_blows"
-	],
-	"loot_table_id": "lt_region7_boss",
-	"gold_drop_min": 120,
-	"gold_drop_max": 165,
-	"sprite_path": "",
-	"is_elite": false,
-	"is_boss": true,
-	"portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fr_prime_corruptor.png"
+  "id": "fr_prime_corruptor",
+  "display_name": "The Prime Corruptor",
+  "description": "The source of all corruption — an entity of pure entropy that seeks to unmake reality.",
+  "icon_hint": "colossal entity of pure void energy with reality unraveling around it in all directions",
+  "family": "void",
+  "region_id": "region_7",
+  "tier": 3,
+  "ai_tier": 3,
+  "attack_type": "ranged",
+  "combat_role": "mage",
+  "movement_range": 2,
+  "base_stats": {
+    "health": 3900,
+    "attack": 248,
+    "defense": 78,
+    "speed": 60,
+    "resist": 18,
+    "armor_penetration": 12,
+    "crit_chance": 10
+  },
+  "ability_ids": [
+    "basic_attack",
+    "mon_meteor",
+    "mon_chain_lightning"
+  ],
+  "passive_ids": [
+    "mon_magic_resist",
+    "mon_piercing_blows"
+  ],
+  "loot_table_id": "lt_region7_boss",
+  "gold_drop_min": 120,
+  "gold_drop_max": 165,
+  "sprite_path": "",
+  "is_elite": false,
+  "is_boss": true,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/fr_prime_corruptor.png"
 }

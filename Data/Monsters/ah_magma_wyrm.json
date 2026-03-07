@@ -9,6 +9,7 @@
   "ai_tier": 3,
   "attack_type": "melee",
   "combat_role": "melee",
+  "movement_range": 2,
   "base_stats": {
     "health": 680,
     "attack": 58,
@@ -23,7 +24,10 @@
     "mon_ground_slam",
     "mon_berserker_rage"
   ],
-  "passive_ids": ["mon_thorny_hide", "mon_piercing_blows"],
+  "passive_ids": [
+    "mon_thorny_hide",
+    "mon_piercing_blows"
+  ],
   "loot_table_id": "lt_region4_boss",
   "gold_drop_min": 55,
   "gold_drop_max": 85,

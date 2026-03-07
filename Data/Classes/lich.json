@@ -1,7 +1,7 @@
 {
   "id": "lich",
   "display_name": "Lich",
-  "description": "A master of death magic who raises the fallen and unleashes necrotic devastation upon the living.",
+  "description": "An undying master of Duskhollow's death magic who has transcended mortality, commanding necrotic forces that wither the living and puppet the dead. Their phylactery pulses with stolen souls.",
   "icon_hint": "necrotic green skull wreathed in dark flame atop a bone staff",
   "archetype": "dps",
   "unlock_region": 6,
@@ -21,5 +21,13 @@
   "ability_b_id": "raise_dead",
   "passive_a_id": "phylactery",
   "passive_b_id": "necrotic_aura",
-  "weapon_types": ["staff", "focus"]
+  "weapon_types": ["staff", "focus"],
+  "card_prompt": "Pixel art, SNES style. A decorative card frame background for a fantasy lich necromancer class. Bleached bone border with soul-fire green flames along edges and skull motif corners. Black crypt wall center with necrotic green energy veins and floating spectral rune fragments. Small skull wreathed in green flame at bottom. Color palette: crypt black, soul-fire green, bleached bone white. No characters, no text.",
+  "card_palette": {
+    "border_primary": "#0d0d0d",
+    "border_accent": "#27ae60",
+    "bg_primary": "#0d0d0d",
+    "bg_secondary": "#060606",
+    "text_tint": "#f0e6d2"
+  }
 }

@@ -9,6 +9,7 @@
   "ai_tier": 3,
   "attack_type": "melee",
   "combat_role": "melee",
+  "movement_range": 2,
   "base_stats": {
     "health": 750,
     "attack": 62,
@@ -23,7 +24,10 @@
     "mon_devastating_charge",
     "mon_ground_slam"
   ],
-  "passive_ids": ["mon_magic_resist", "mon_undying_rage"],
+  "passive_ids": [
+    "mon_magic_resist",
+    "mon_undying_rage"
+  ],
   "loot_table_id": "lt_region4_boss",
   "gold_drop_min": 60,
   "gold_drop_max": 90,

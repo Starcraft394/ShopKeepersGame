@@ -1,7 +1,7 @@
 {
   "id": "mon_mark_prey",
   "display_name": "Mark Prey",
-  "description": "Marks a target, reducing their defenses and making them vulnerable.",
+  "description": "Reduces one enemy's Defense by 5 for 3 turns. Targets: Highest ATK. Cooldown: 4 turns.",
   "icon_hint": "glowing red crosshair mark on a silhouetted target",
   "ability_type": "monster",
   "source_class_id": "",

@@ -1,7 +1,7 @@
 {
   "id": "stormcaller",
   "display_name": "Stormcaller",
-  "description": "A tempest mage who commands lightning and wind to devastate enemies with elemental fury.",
+  "description": "A tempest mage born of Shelldrift's eternal storms, who calls down lightning from the grey coastal skies. Thunder follows where they point.",
   "icon_hint": "crackling electric blue storm cloud with lightning bolts arcing downward",
   "archetype": "dps",
   "unlock_region": 3,
@@ -21,5 +21,13 @@
   "ability_b_id": "storm_surge",
   "passive_a_id": "static_charge",
   "passive_b_id": "eye_of_storm",
-  "weapon_types": ["staff", "focus"]
+  "weapon_types": ["staff", "focus"],
+  "card_prompt": "Pixel art, SNES style. A decorative card frame background for a fantasy stormcaller lightning mage class on a misty coast. Weathered driftwood border crackling with blue-white lightning at corners. Dark storm-cloud grey center with electric blue lightning veins branching across. Small crackling storm cloud at bottom. Color palette: dark storm grey, electric blue, white lightning. No characters, no text.",
+  "card_palette": {
+    "border_primary": "#2c3e50",
+    "border_accent": "#3498db",
+    "bg_primary": "#2c3e50",
+    "bg_secondary": "#1a252f",
+    "text_tint": "#ecf0f1"
+  }
 }

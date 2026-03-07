@@ -29,6 +29,13 @@ var passive_b_id: String = ""
 # Equipment Restrictions
 var weapon_types: Array[String] = []
 
+# Card Visuals (for combat tile backgrounds)
+var card_prompt: String = ""
+var card_palette: Dictionary = {}
+
+# Sprite folders (class-based sprites, keyed by variant e.g. "default")
+var sprites: Dictionary = {}
+
 # Factory method to create from dictionary (JSON data)
 static func from_dict(data: Dictionary) -> ClassData:
 	var instance = ClassData.new()
@@ -48,6 +55,15 @@ static func from_dict(data: Dictionary) -> ClassData:
 	instance.ability_b_id = data.get("ability_b_id", "")
 	instance.passive_a_id = data.get("passive_a_id", "")
 	instance.passive_b_id = data.get("passive_b_id", "")
+
+	# Card visuals
+	instance.card_prompt = data.get("card_prompt", "")
+	var palette_val = data.get("card_palette", {})
+	instance.card_palette = palette_val if palette_val is Dictionary else {}
+
+	# Sprites
+	var sprites_val = data.get("sprites", {})
+	instance.sprites = sprites_val if sprites_val is Dictionary else {}
 
 	# Convert typed arrays (clear + append pattern for safety)
 	instance.weapon_types.clear()

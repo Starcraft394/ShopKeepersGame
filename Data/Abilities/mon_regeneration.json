@@ -1,7 +1,7 @@
 {
   "id": "mon_regeneration",
   "display_name": "Regeneration Aura",
-  "description": "Radiates a healing aura that restores health to all allies.",
+  "description": "Heals all allies for 10 HP. Cooldown: 5 turns.",
   "icon_hint": "pulsing green circle of healing energy radiating outward",
   "ability_type": "monster",
   "source_class_id": "",

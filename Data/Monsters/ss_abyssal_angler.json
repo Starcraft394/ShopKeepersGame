@@ -9,6 +9,7 @@
   "ai_tier": 2,
   "attack_type": "ranged",
   "combat_role": "ranged",
+  "movement_range": 1,
   "base_stats": {
     "health": 165,
     "attack": 40,
@@ -21,7 +22,9 @@
     "basic_attack",
     "mon_poison_shot"
   ],
-  "passive_ids": ["mon_life_drain"],
+  "passive_ids": [
+    "mon_life_drain"
+  ],
   "loot_table_id": "lt_region3_uncommon",
   "gold_drop_min": 21,
   "gold_drop_max": 35,

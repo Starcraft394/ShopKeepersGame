@@ -1,37 +1,38 @@
 {
-	"id": "se_astral_colossus",
-	"display_name": "Astral Colossus",
-	"description": "A towering giant of fused meteorite whose footfalls warp the fabric of local space.",
-	"icon_hint": "towering giant of dark fused meteorite with blue cosmic energy coursing through cracks",
-	"family": "crystal",
-	"region_id": "region_5",
-	"tier": 2,
-	"ai_tier": 2,
-	"attack_type": "melee",
-	"combat_role": "melee",
-	"base_stats": {
-		"health": 414,
-		"attack": 60,
-		"defense": 27,
-		"speed": 36,
-		"armor_penetration": 12,
-		"resist": 12,
-		"thorns": 8
-	},
-	"ability_ids": [
-		"basic_attack",
-		"mon_ground_slam",
-		"mon_berserker_rage"
-	],
-	"passive_ids": [
-		"mon_piercing_blows",
-		"mon_armored_shell"
-	],
-	"loot_table_id": "lt_region5_elite",
-	"gold_drop_min": 38,
-	"gold_drop_max": 60,
-	"sprite_path": "",
-	"is_elite": true,
-	"is_boss": false,
-	"portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/se_astral_colossus.png"
+  "id": "se_astral_colossus",
+  "display_name": "Astral Colossus",
+  "description": "A towering giant of fused meteorite whose footfalls warp the fabric of local space.",
+  "icon_hint": "towering giant of dark fused meteorite with blue cosmic energy coursing through cracks",
+  "family": "crystal",
+  "region_id": "region_5",
+  "tier": 2,
+  "ai_tier": 2,
+  "attack_type": "melee",
+  "combat_role": "melee",
+  "movement_range": 3,
+  "base_stats": {
+    "health": 414,
+    "attack": 60,
+    "defense": 27,
+    "speed": 36,
+    "armor_penetration": 12,
+    "resist": 12,
+    "thorns": 8
+  },
+  "ability_ids": [
+    "basic_attack",
+    "mon_ground_slam",
+    "mon_berserker_rage"
+  ],
+  "passive_ids": [
+    "mon_piercing_blows",
+    "mon_armored_shell"
+  ],
+  "loot_table_id": "lt_region5_elite",
+  "gold_drop_min": 38,
+  "gold_drop_max": 60,
+  "sprite_path": "",
+  "is_elite": true,
+  "is_boss": false,
+  "portrait_path": "res://Assets/_ArtPacks/Monsters_Recolored/se_astral_colossus.png"
 }

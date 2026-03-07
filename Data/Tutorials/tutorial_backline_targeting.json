@@ -1,0 +1,18 @@
+{
+  "id": "tutorial_backline_targeting",
+  "steps": [
+    {
+      "speaker": "Thalric",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
+      "title": "Your Backline Is Not Safe!",
+      "body": "Even heroes in the back row can be hit — ranged attackers and spellcasters ignore row positioning entirely. Some abilities can also reach back row targets.\n\nDon't assume your back row is protected. Spread healing and defensive buffs across your whole party."
+    },
+    {
+      "speaker": "Thalric",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
+      "title": "Row Strategy",
+      "body": "Front row heroes absorb melee attacks first. Back row heroes are safer from basic melee, but keep an eye on ranged and mage enemies — they can reach anyone.\n\nPlace your tankiest heroes up front and keep healing ready for the whole party.",
+      "button_text": "Understood"
+    }
+  ]
+}

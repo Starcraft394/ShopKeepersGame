@@ -9,6 +9,7 @@
   "ai_tier": 2,
   "attack_type": "melee",
   "combat_role": "melee",
+  "movement_range": 2,
   "base_stats": {
     "health": 104,
     "attack": 24,
@@ -21,7 +22,9 @@
     "basic_attack",
     "mon_rending_strike"
   ],
-  "passive_ids": ["mon_thorny_hide"],
+  "passive_ids": [
+    "mon_thorny_hide"
+  ],
   "loot_table_id": "lt_region1_uncommon",
   "gold_drop_min": 18,
   "gold_drop_max": 32,

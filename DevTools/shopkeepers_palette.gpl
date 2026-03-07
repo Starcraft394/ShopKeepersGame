@@ -1,0 +1,118 @@
+GIMP Palette
+Name: ShopKeepers Game
+Columns: 8
+#
+# === BASICS ===
+  0   0   0	Black
+ 26  26  46	Near-Black Navy
+ 38  38  74	Dark Navy
+ 13  13  31	Void Black
+255 255 255	White
+224 230 240	Cool White (UI text)
+245 232 209	Warm Cream (CraftPix text)
+200 200 210	Light Grey
+#
+# === UI CHROME ===
+ 38  38  51	Panel BG Dark
+ 77  89 115	Panel Border
+ 64  71  89	Button Normal
+102 114 140	Button Border
+ 89 102 128	Button Hover
+128 153 191	Button Hover Border
+153 204 255	Focus Glow
+ 26  26  31	Input BG
+#
+# === REGION THEMES ===
+ 74 122  90	R1 Thornhaven Theme
+106 170 122	R1 Thornhaven Accent
+ 74 107  58	R2 Fungal Marshes Theme
+139 195  74	R2 Fungal Marshes Accent
+ 44 110 122	R3 Sunken Shoals Theme
+ 74 144 164	R3 Sunken Shoals Accent
+139  58  42	R4 Ashen Horizons Theme
+212  98  42	R4 Ashen Horizons Accent
+ 74  58 139	R5 Starfall Expanse Theme
+156 106 191	R5 Starfall Expanse Accent
+ 58  58  74	R6 Necropolis Theme
+109  76 110	R6 Necropolis Accent
+ 26  26  46	R7 Fractured Realm Theme
+ 74  42 107	R7 Fractured Realm Accent
+#
+# === SKIN TONES ===
+255 204 153	Human Peach
+240 210 180	Elf Fair
+204 140 120	Dwarf Ruddy
+ 90 140  80	Mossfolk Green
+ 60 130 120	Mossfolk Dark
+ 80 180 170	Tideling Teal
+100 200 190	Tideling Light
+180  60  50	Dragonkin Red Scale
+200  80  60	Dragonkin Orange
+200 220 240	Crystalborn Blue-White
+220 200 230	Crystalborn Pink-White
+160 180 150	Undead Grey-Green
+140 160 170	Undead Grey-Blue
+ 80  50 100	Voidwalker Purple-Black
+100  70 120	Voidwalker Grey-Purple
+#
+# === HAIR / FEATURES ===
+120  80  50	Brown Hair
+180 140 100	Auburn Hair
+230 220 180	Pale Blonde
+210 210 220	Silver-White
+160  80  60	Red-Brown Beard
+190 150 110	Copper Hair
+ 50  80  40	Dark Green Vine
+ 40  60  50	Moss Dark
+ 60 100 100	Dark Blue-Green
+ 80  60  50	Dark Horns
+#
+# === MATERIALS ===
+160 140 100	Leather Brown
+120 100  70	Dark Leather
+100  95  90	Iron Grey
+140 135 130	Steel
+200 170  80	Gold
+170 140  60	Dark Gold
+255 204 102	Gold Accent (UI)
+ 90  70  50	Wood Dark
+130 110  80	Wood Medium
+170 150 120	Wood Light
+150 145 140	Stone Grey
+110 105 100	Stone Dark
+#
+# === ELEMENTAL: FIRE ===
+230  75  60	Fire Red
+230 125  50	Ember Orange
+255 160  40	Flame Yellow
+180  50  40	Dark Fire
+120  30  20	Scorched
+#
+# === ELEMENTAL: WATER ===
+ 70 150 180	Ocean Teal
+ 50 120 160	Deep Water Blue
+100 190 180	Shallow Teal
+ 40  90 130	Abyss Blue
+180 220 230	Sea Foam
+#
+# === ELEMENTAL: NATURE ===
+ 60 140  70	Forest Green
+ 90 180  90	Bright Green
+ 40 100  50	Dark Forest
+140 180  60	Lime Green
+ 57 255  20	Neon Green (Spore)
+#
+# === ELEMENTAL: VOID / COSMIC ===
+120  70 170	Void Purple
+ 80  40 130	Dark Purple
+160 100 200	Starfall Lavender
+200 170 230	Crystal Pink
+100 140 220	Cosmic Blue
+ 70 100 180	Deep Indigo
+#
+# === ELEMENTAL: NECROTIC ===
+110 140 100	Necrotic Green
+ 80 110  80	Rot Green
+180 170 150	Bone
+200 195 180	Pale Bone
+ 60  60  80	Shadow

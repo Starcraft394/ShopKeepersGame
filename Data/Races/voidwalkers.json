@@ -16,6 +16,10 @@
     "void",
     "dimensional"
   ],
+  "sprites": {
+    "m": "res://Assets/Sprites/Heroes/voidwalkers_m",
+    "f": "res://Assets/Sprites/Heroes/voidwalkers_f"
+  },
   "portraits": [
     "res://Assets/_ArtPacks/Avatars_Voidwalkers_PNG/Icon1.png",
     "res://Assets/_ArtPacks/Avatars_Voidwalkers_PNG/Icon2.png",

@@ -103,7 +103,7 @@ func _ready() -> void:
 	choice_c_button.focus_mode = Control.FOCUS_ALL
 	extract_button.focus_mode = Control.FOCUS_ALL
 	flee_button.focus_mode = Control.FOCUS_ALL
-	flee_button.visible = GameContext.has_hero_died_this_run()
+	flee_button.visible = true  # Flee always available during dungeon run
 	# Hide room type legend (not needed)
 	var legend_label = get_node_or_null("MainVBox/MapSection/LegendLabel")
 	if legend_label:
@@ -226,21 +226,11 @@ func _apply_region_theme() -> void:
 func _apply_section_panel(section: Control, bg_color: Color, border_color: Color) -> void:
 	if section == null:
 		return
-	var style = StyleBoxFlat.new()
-	style.bg_color = bg_color
-	style.border_color = border_color
-	style.set_border_width_all(1)
-	style.set_corner_radius_all(4)
-	style.content_margin_left = 10
-	style.content_margin_right = 10
-	style.content_margin_top = 6
-	style.content_margin_bottom = 6
-
 	# Wrap in a PanelContainer if not already
 	var parent = section.get_parent()
 	var idx = section.get_index()
 	var panel = PanelContainer.new()
-	panel.add_theme_stylebox_override("panel", style)
+	panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_main(_region_palette.get("ui_tint", Color.WHITE)))
 	panel.layout_mode = 2
 	parent.remove_child(section)
 	panel.add_child(section)
@@ -249,20 +239,8 @@ func _apply_section_panel(section: Control, bg_color: Color, border_color: Color
 
 
 func _style_themed_button(btn: Button, tint: Color) -> void:
-	var style = StyleBoxFlat.new()
-	style.bg_color = Color(tint.r * 0.3, tint.g * 0.3, tint.b * 0.3, 0.8)
-	style.border_color = Color(tint.r * 0.6, tint.g * 0.6, tint.b * 0.6, 0.7)
-	style.set_border_width_all(1)
-	style.set_corner_radius_all(3)
-	style.content_margin_left = 8
-	style.content_margin_right = 8
-	style.content_margin_top = 4
-	style.content_margin_bottom = 4
-	btn.add_theme_stylebox_override("normal", style)
-
-	var hover_style = style.duplicate()
-	hover_style.bg_color = Color(tint.r * 0.45, tint.g * 0.45, tint.b * 0.45, 0.9)
-	btn.add_theme_stylebox_override("hover", hover_style)
+	btn.add_theme_stylebox_override("normal", RPGPackStyles.btn_normal(tint))
+	btn.add_theme_stylebox_override("hover", RPGPackStyles.btn_hover(tint))
 
 
 # ============================================================================
@@ -547,13 +525,7 @@ func _on_flee_pressed() -> void:
 	_flee_confirm_overlay.add_child(center)
 
 	var panel = PanelContainer.new()
-	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.12, 0.08, 0.05, 0.95)
-	style.border_color = Color(0.9, 0.5, 0.3, 0.8)
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(24)
-	panel.add_theme_stylebox_override("panel", style)
+	panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_modal(_region_palette.get("ui_tint", Color.WHITE)))
 	panel.custom_minimum_size = Vector2(420, 0)
 	center.add_child(panel)
 
@@ -848,33 +820,11 @@ func _create_hero_row(hero_id: String, party_idx: int = 0, party_size: int = 1) 
 
 	# Card panel
 	var card = PanelContainer.new()
-	var card_style = StyleBoxFlat.new()
-	var bg_medium: Color = _region_palette.get("bg_medium", Color(0.15, 0.18, 0.22, 0.9))
-	card_style.bg_color = Color(bg_medium.r * 0.85, bg_medium.g * 0.85, bg_medium.b * 0.85, 0.7)
-	card_style.border_color = _region_palette.get("border", Color(0.3, 0.3, 0.3, 0.3))
-	card_style.set_border_width_all(1)
-	card_style.set_corner_radius_all(3)
-	card_style.content_margin_left = 6
-	card_style.content_margin_right = 6
-	card_style.content_margin_top = 4
-	card_style.content_margin_bottom = 4
-	card.add_theme_stylebox_override("panel", card_style)
+	card.add_theme_stylebox_override("panel", RPGPackStyles.panel_main(_region_palette.get("ui_tint", Color.WHITE)))
 
 	var row = HBoxContainer.new()
 	row.add_theme_constant_override("separation", 8)
 	card.add_child(row)
-
-	# Combat row selector (Front/Middle/Back)
-	var row_select = OptionButton.new()
-	row_select.custom_minimum_size = Vector2(65, 26)
-	row_select.add_theme_font_size_override("font_size", GameContext.fs(12))
-	row_select.add_item("Front", 0)
-	row_select.add_item("Mid", 1)
-	row_select.add_item("Back", 2)
-	row_select.selected = GameContext.get_hero_row(hero_id)
-	row_select.tooltip_text = "Combat row position\nFront: Targeted first by melee\nMiddle: Targeted after Front\nBack: Targeted last by melee"
-	row_select.item_selected.connect(_on_hero_row_changed.bind(hero_id))
-	row.add_child(row_select)
 
 	# Portrait (28x28)
 	var portrait_rect = TextureRect.new()
@@ -1205,16 +1155,7 @@ func _show_hero_picker_for_consumable(item_id: String, source_hero_id: String, s
 
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(280, 0)
-	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.12, 0.14, 0.18, 0.95)
-	style.border_color = Color(0.3, 0.6, 0.3, 0.7)
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(6)
-	style.content_margin_left = 12
-	style.content_margin_right = 12
-	style.content_margin_top = 10
-	style.content_margin_bottom = 10
-	panel.add_theme_stylebox_override("panel", style)
+	panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_modal(_region_palette.get("ui_tint", Color.WHITE)))
 	center.add_child(panel)
 
 	var vbox = VBoxContainer.new()
@@ -1332,13 +1273,6 @@ func _on_consumable_picker_backdrop(event: InputEvent) -> void:
 		_close_consumable_picker()
 
 
-## Handle hero row assignment change (combat position: Front/Middle/Back).
-func _on_hero_row_changed(row_index: int, hero_id: String) -> void:
-	GameContext.set_hero_row(hero_id, row_index)
-	var row_names = ["Front", "Middle", "Back"]
-	print("[Camp] Hero %s assigned to %s row" % [hero_id, row_names[row_index]])
-
-
 ## Show hero info overlay (stats, equipment, abilities, etc.)
 ## Uses CanvasLayer overlay instead of Window (avoids Godot 4 Window embedding issues).
 func _on_hero_info_pressed(hero_id: String) -> void:
@@ -1395,18 +1329,7 @@ func _on_hero_info_pressed(hero_id: String) -> void:
 	# Panel
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(340, 0)
-	var panel_style = StyleBoxFlat.new()
-	panel_style.bg_color = _region_palette.get("bg_dark", Color(0.08, 0.08, 0.12, 0.97))
-	panel_style.border_color = _region_palette.get("border", Color(0.4, 0.4, 0.4, 0.7))
-	panel_style.set_border_width_all(2)
-	panel_style.set_corner_radius_all(8)
-	panel_style.shadow_color = Color(0, 0, 0, 0.4)
-	panel_style.shadow_size = 6
-	panel_style.content_margin_left = 16
-	panel_style.content_margin_right = 16
-	panel_style.content_margin_top = 12
-	panel_style.content_margin_bottom = 12
-	panel.add_theme_stylebox_override("panel", panel_style)
+	panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_modal(_region_palette.get("ui_tint", Color.WHITE)))
 	center.add_child(panel)
 
 	# Scroll container for content
@@ -1465,41 +1388,6 @@ func _on_hero_info_pressed(hero_id: String) -> void:
 	var sep2 = HSeparator.new()
 	vbox.add_child(sep2)
 
-	# === EQUIPMENT ===
-	var equip_title = Label.new()
-	equip_title.text = "Equipment"
-	equip_title.add_theme_font_size_override("font_size", GameContext.fs(16))
-	equip_title.add_theme_color_override("font_color", Color(accent.r * 1.4, accent.g * 1.4, accent.b * 1.4, 1.0))
-	vbox.add_child(equip_title)
-
-	var equipment = GameContext.get_hero_equipment(hero_id)
-	var slots = ["weapon", "offhand", "helmet", "armor", "legs", "ring", "amulet"]
-	var slot_names = {"weapon": "Weapon", "offhand": "Offhand", "helmet": "Helmet", "armor": "Armor", "legs": "Legs", "ring": "Ring", "amulet": "Amulet"}
-
-	for slot in slots:
-		var slot_data = equipment.get(slot, {})
-		var item_id = slot_data.get("id", "") if slot_data is Dictionary else ""
-		var quality = int(slot_data.get("quality", 0)) if slot_data is Dictionary else 0
-		var slot_display = slot_names.get(slot, slot.capitalize())
-		var slot_text = "(empty)"
-		var tooltip_text = ""
-		if item_id != "":
-			var tpl = DataRegistry.get_item_template(item_id)
-			if tpl != null:
-				slot_text = tpl.display_name
-				tooltip_text = _build_camp_item_tooltip(tpl, quality)
-			else:
-				slot_text = item_id
-		var equip_color: Color = Color.DIM_GRAY
-		if item_id != "" and quality > 0:
-			equip_color = ItemInstance.QUALITY_COLORS[clampi(quality, 0, 3)]
-		elif item_id != "":
-			equip_color = Color.SANDY_BROWN
-		_add_camp_equipment_line(vbox, slot_display, slot_text, equip_color, tooltip_text)
-
-	var sep3 = HSeparator.new()
-	vbox.add_child(sep3)
-
 	# === ABILITIES ===
 	var ability_title = Label.new()
 	ability_title.text = "Abilities"
@@ -1540,6 +1428,68 @@ func _on_hero_info_pressed(hero_id: String) -> void:
 		none_lbl.add_theme_color_override("font_color", Color.DIM_GRAY)
 		vbox.add_child(none_lbl)
 
+	# === PASSIVES ===
+	var passive_ids: Array = []
+	if cls_data != null:
+		if cls_data.passive_a_id != "":
+			passive_ids.append(cls_data.passive_a_id)
+		if cls_data.passive_b_id != "":
+			passive_ids.append(cls_data.passive_b_id)
+	if race_data != null and race_data.racial_passive_id != "":
+		passive_ids.append(race_data.racial_passive_id)
+
+	if not passive_ids.is_empty():
+		var sep_p = HSeparator.new()
+		vbox.add_child(sep_p)
+
+		var passives_title = Label.new()
+		passives_title.text = "Passives"
+		passives_title.add_theme_font_size_override("font_size", GameContext.fs(16))
+		passives_title.add_theme_color_override("font_color", Color(accent.r * 1.4, accent.g * 1.4, accent.b * 1.4, 1.0))
+		vbox.add_child(passives_title)
+
+		for pid in passive_ids:
+			var passive = DataRegistry.get_passive(pid)
+			if passive != null:
+				_add_camp_ability_line(vbox, passive.display_name, passive.description, Color(0.7, 0.85, 0.7, 1.0))
+
+	var sep3 = HSeparator.new()
+	vbox.add_child(sep3)
+
+	# === EQUIPMENT ===
+	var equip_title = Label.new()
+	equip_title.text = "Equipment"
+	equip_title.add_theme_font_size_override("font_size", GameContext.fs(16))
+	equip_title.add_theme_color_override("font_color", Color(accent.r * 1.4, accent.g * 1.4, accent.b * 1.4, 1.0))
+	vbox.add_child(equip_title)
+
+	var equipment = GameContext.get_hero_equipment(hero_id)
+	var equip_slots = ["weapon", "offhand", "helmet", "armor", "legs", "ring", "amulet"]
+	var slot_names = {"weapon": "Weapon", "offhand": "Offhand", "helmet": "Helmet", "armor": "Armor", "legs": "Legs", "ring": "Ring", "amulet": "Amulet"}
+
+	for slot in equip_slots:
+		var slot_data = equipment.get(slot, {})
+		var item_id = slot_data.get("id", "") if slot_data is Dictionary else ""
+		var quality = int(slot_data.get("quality", 0)) if slot_data is Dictionary else 0
+		var slot_display = slot_names.get(slot, slot.capitalize())
+		var slot_text = "(empty)"
+		var tooltip_text = ""
+		var icon_ctrl: Control = null
+		if item_id != "":
+			var tpl = DataRegistry.get_item_template(item_id)
+			if tpl != null:
+				slot_text = tpl.display_name
+				tooltip_text = _build_camp_item_tooltip(tpl, quality)
+				icon_ctrl = tpl.create_bordered_icon(20, quality)
+			else:
+				slot_text = item_id
+		var equip_color: Color = Color.DIM_GRAY
+		if item_id != "" and quality > 0:
+			equip_color = ItemInstance.QUALITY_COLORS[clampi(quality, 0, 3)]
+		elif item_id != "":
+			equip_color = Color.SANDY_BROWN
+		_add_camp_equipment_line(vbox, slot_display, slot_text, equip_color, tooltip_text, icon_ctrl)
+
 	# === CLOSE BUTTON ===
 	var sep4 = HSeparator.new()
 	vbox.add_child(sep4)
@@ -1573,6 +1523,9 @@ func _add_camp_stat_line(container: VBoxContainer, stat_name: String, value: Str
 	name_lbl.text = stat_name + ":"
 	name_lbl.custom_minimum_size = Vector2(80, 0)
 	name_lbl.add_theme_font_size_override("font_size", GameContext.fs(14))
+	if tooltip != "":
+		name_lbl.tooltip_text = tooltip
+		name_lbl.mouse_filter = Control.MOUSE_FILTER_STOP
 	hbox.add_child(name_lbl)
 
 	var val_lbl = Label.new()
@@ -1621,15 +1574,18 @@ func _get_item_display_name(item_id: String) -> String:
 
 
 ## Helper: Add an equipment line with tooltip support
-func _add_camp_equipment_line(container: VBoxContainer, slot_name: String, value: String, color: Color, tooltip: String = "") -> void:
+func _add_camp_equipment_line(container: VBoxContainer, slot_name: String, value: String, color: Color, tooltip: String = "", icon: Control = null) -> void:
 	var hbox = HBoxContainer.new()
-	hbox.add_theme_constant_override("separation", 8)
+	hbox.add_theme_constant_override("separation", 4)
 
 	var name_lbl = Label.new()
 	name_lbl.text = slot_name + ":"
-	name_lbl.custom_minimum_size = Vector2(80, 0)
+	name_lbl.custom_minimum_size = Vector2(70, 0)
 	name_lbl.add_theme_font_size_override("font_size", GameContext.fs(14))
 	hbox.add_child(name_lbl)
+
+	if icon != null:
+		hbox.add_child(icon)
 
 	var val_lbl = Label.new()
 	val_lbl.text = value
@@ -1637,7 +1593,7 @@ func _add_camp_equipment_line(container: VBoxContainer, slot_name: String, value
 	val_lbl.add_theme_color_override("font_color", color)
 	if tooltip != "":
 		val_lbl.tooltip_text = tooltip
-		val_lbl.mouse_filter = Control.MOUSE_FILTER_STOP
+		val_lbl.mouse_filter = Control.MOUSE_FILTER_PASS
 	hbox.add_child(val_lbl)
 
 	container.add_child(hbox)

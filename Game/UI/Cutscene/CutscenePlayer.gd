@@ -14,9 +14,9 @@ signal cutscene_finished
 
 const TEXT_PANEL_STYLE_BG := Color(0.04, 0.03, 0.06, 0.88)
 const TEXT_PANEL_BORDER := Color(0.75, 0.6, 0.3, 0.6)
-const SPEAKER_COLOR := Color(1.0, 0.85, 0.4, 1)
-const TEXT_COLOR := Color(0.92, 0.90, 0.85, 1)
-const TITLE_COLOR := Color(1.0, 0.85, 0.4, 1)
+const SPEAKER_COLOR := Color(0.6, 0.4, 0.15, 1)
+const TEXT_COLOR := Color(0.2, 0.18, 0.15, 1)
+const TITLE_COLOR := Color(0.6, 0.4, 0.15, 1)
 const DEFAULT_BG_COLOR := Color(0.02, 0.02, 0.04)
 
 # Skip visible from this panel index onward (0-based)
@@ -180,13 +180,7 @@ func _build_ui() -> void:
 	_root.add_child(margin)
 
 	_text_panel = PanelContainer.new()
-	var style = StyleBoxFlat.new()
-	style.bg_color = TEXT_PANEL_STYLE_BG
-	style.set_border_width_all(1)
-	style.border_color = TEXT_PANEL_BORDER
-	style.set_corner_radius_all(6)
-	style.set_content_margin_all(20)
-	_text_panel.add_theme_stylebox_override("panel", style)
+	_text_panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_main(Color.WHITE))
 	margin.add_child(_text_panel)
 
 	var text_vbox = VBoxContainer.new()

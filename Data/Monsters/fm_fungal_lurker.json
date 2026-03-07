@@ -9,6 +9,7 @@
   "ai_tier": 2,
   "attack_type": "melee",
   "combat_role": "melee",
+  "movement_range": 2,
   "base_stats": {
     "health": 100,
     "attack": 25,
@@ -21,7 +22,9 @@
     "basic_attack",
     "mon_rending_strike"
   ],
-  "passive_ids": ["mon_evasive"],
+  "passive_ids": [
+    "mon_evasive"
+  ],
   "loot_table_id": "lt_region2_uncommon",
   "gold_drop_min": 10,
   "gold_drop_max": 22,

@@ -1,0 +1,18 @@
+{
+  "id": "tutorial_loot_routing",
+  "steps": [
+    {
+      "speaker": "Pemberton",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon12.png",
+      "title": "Sorting the Spoils",
+      "body": "After each fight, you'll divide the loot. Each item needs a home — click a hero's bag or the shopkeeper bag to route it there.\n\nHero bags have limited space based on their backpack. The shopkeeper bag holds overflow, and the first 3 slots are insured if you have to flee."
+    },
+    {
+      "speaker": "Pemberton",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon12.png",
+      "title": "Don't Leave Anything Behind",
+      "body": "You must route every item before moving on — nothing gets left on the ground. If bags are full, you can discard items you don't want (hold the discard button to confirm).\n\nEquipment can be equipped directly onto heroes during loot routing. Anything valuable should go in the shopkeeper bag for safe extraction later.",
+      "button_text": "Got it!"
+    }
+  ]
+}

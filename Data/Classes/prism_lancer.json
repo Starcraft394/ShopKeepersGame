@@ -1,7 +1,7 @@
 {
   "id": "prism_lancer",
   "display_name": "Prism Lancer",
-  "description": "A radiant warrior who channels focused light into devastating piercing attacks.",
+  "description": "A radiant warrior who channels Crystalhearth's starlight through a crystalline lance, focusing it into devastating piercing beams. Where they aim, light becomes lethal.",
   "icon_hint": "crystalline lance refracting a focused beam of prismatic light",
   "archetype": "dps",
   "unlock_region": 5,
@@ -21,5 +21,13 @@
   "ability_b_id": "prismatic_burst",
   "passive_a_id": "focused_light",
   "passive_b_id": "crystal_resonance",
-  "weapon_types": ["sword", "bow", "dagger"]
+  "weapon_types": ["sword", "bow", "dagger"],
+  "card_prompt": "Pixel art, SNES style. A decorative card frame background for a fantasy prism lancer light warrior class. Sharp angular crystal border with focused light beams running along edges. Dark indigo center with bright prismatic light beam cutting diagonally and crystal dust. Small crystalline lance with light trail at bottom. Color palette: deep indigo, prismatic lavender, gold-white light. No characters, no text.",
+  "card_palette": {
+    "border_primary": "#1a0a3e",
+    "border_accent": "#e8daef",
+    "bg_primary": "#1a0a3e",
+    "bg_secondary": "#0d051f",
+    "text_tint": "#f9e79f"
+  }
 }

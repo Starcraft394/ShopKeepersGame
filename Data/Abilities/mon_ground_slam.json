@@ -1,7 +1,7 @@
 {
   "id": "mon_ground_slam",
   "display_name": "Ground Slam",
-  "description": "Slams the ground with tremendous force, damaging all enemies.",
+  "description": "Deals 4 + 50% ATK physical damage. Hits all enemies. Cooldown: 4 turns.",
   "icon_hint": "massive fist smashing earth with radiating shockwave cracks",
   "ability_type": "monster",
   "source_class_id": "",

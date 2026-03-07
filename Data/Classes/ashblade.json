@@ -1,7 +1,7 @@
 {
   "id": "ashblade",
   "display_name": "Ashblade",
-  "description": "A swift assassin wreathed in smoke and cinders, striking from shadows with burning precision.",
+  "description": "A swift assassin born from Embercradle's ash storms, who vanishes into smoke and reappears with burning precision. Embers trail their every strike.",
   "icon_hint": "curved dagger trailing gray smoke and glowing ember sparks",
   "archetype": "dps",
   "unlock_region": 4,
@@ -21,5 +21,13 @@
   "ability_b_id": "smoke_dash",
   "passive_a_id": "ash_veil",
   "passive_b_id": "burning_wounds",
-  "weapon_types": ["dagger", "sword"]
+  "weapon_types": ["dagger", "sword"],
+  "card_prompt": "Pixel art, SNES style. A decorative card frame background for a fantasy ashblade smoke assassin class. Scorched dark metal border with trailing grey smoke wisps and ember spark corners. Ashen grey-black center with drifting cinder particles and faint heat shimmer. Small smoke-trailing dagger silhouette at bottom. Color palette: ash grey, cinder orange, smoke grey. No characters, no text.",
+  "card_palette": {
+    "border_primary": "#2c2c2c",
+    "border_accent": "#e67e22",
+    "bg_primary": "#2c2c2c",
+    "bg_secondary": "#161616",
+    "text_tint": "#e67e22"
+  }
 }

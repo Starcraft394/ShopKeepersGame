@@ -1,7 +1,7 @@
 {
   "id": "mon_arcane_bolt",
   "display_name": "Arcane Bolt",
-  "description": "Hurls a bolt of raw magical energy at the target.",
+  "description": "Deals 8 + 50% ATK magical damage to one enemy. Targets: Lowest HP. Cooldown: 3 turns.",
   "icon_hint": "swirling blue-purple energy bolt streaking forward",
   "ability_type": "monster",
   "source_class_id": "",

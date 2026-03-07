@@ -1,7 +1,7 @@
 {
   "id": "fm_spiral_mycelium",
   "display_name": "The Spiral Mycelium",
-  "description": "The hivemind of the Fungalmire \u2014 a vast fungal network given terrible will.",
+  "description": "The hivemind of the Fungalmire — a vast fungal network given terrible will.",
   "icon_hint": "massive spiraling mass of interconnected fungi with a pulsing central core and tendrils spreading in all directions",
   "family": "spore",
   "region_id": "region_2",
@@ -9,6 +9,7 @@
   "ai_tier": 3,
   "attack_type": "ranged",
   "combat_role": "mage",
+  "movement_range": 2,
   "base_stats": {
     "health": 450,
     "attack": 42,
@@ -22,7 +23,9 @@
     "mon_meteor",
     "mon_mend_ally"
   ],
-  "passive_ids": ["mon_thorny_hide"],
+  "passive_ids": [
+    "mon_thorny_hide"
+  ],
   "loot_table_id": "lt_region2_boss",
   "gold_drop_min": 52,
   "gold_drop_max": 98,

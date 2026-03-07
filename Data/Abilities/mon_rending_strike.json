@@ -1,7 +1,7 @@
 {
   "id": "mon_rending_strike",
   "display_name": "Rending Strike",
-  "description": "A vicious slashing attack that leaves the target bleeding.",
+  "description": "Deals 5 + 80% ATK physical damage. Inflicts Bleeding (2 stacks, 3 turns). Targets: Lowest HP. Cooldown: 3 turns.",
   "icon_hint": "jagged claw slash trailing red blood droplets",
   "ability_type": "monster",
   "source_class_id": "",

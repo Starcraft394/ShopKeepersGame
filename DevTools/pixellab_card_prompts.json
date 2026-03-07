@@ -1,0 +1,105 @@
+{
+  "settings": {
+    "width": 120,
+    "height": 141,
+    "outline": "selective outline",
+    "shading": "medium shading",
+    "detail": "highly detailed",
+    "view": "side",
+    "no_background": false,
+    "text_guidance_scale": 8.0,
+    "negative_description": "No characters, no monsters, no creatures, no text, no letters, no words, no UI, no modern objects, no anime, no photorealism, no bright white, no neon"
+  },
+  "cards": [
+    {
+      "card_id": "card_defender",
+      "class_id": "defender",
+      "region": 1,
+      "description": "Pixel art, SNES style. A decorative card frame background for a fantasy defender class. Heavy iron-riveted border with oak plank corners and gold nail heads. Dark stone wall center with faint green moss veins. Small golden shield rune etched at bottom center. Color palette: iron grey, deep forest green, warm gold accents. No characters, no text."
+    },
+    {
+      "card_id": "card_striker",
+      "class_id": "striker",
+      "region": 1,
+      "description": "Pixel art, SNES style. A decorative card frame background for a fantasy striker assassin class. Dark leather strap border with brass buckle corners and red stitching. Charcoal-grey brushed leather center with faint crossed-blade watermark. Small crimson slash marks at bottom. Color palette: dark brown leather, deep crimson, brass. No characters, no text."
+    },
+    {
+      "card_id": "card_warden",
+      "class_id": "warden",
+      "region": 1,
+      "description": "Pixel art, SNES style. A decorative card frame background for a fantasy warden nature healer class. Gnarled vine-wrapped bark border with small green leaves at corners. Warm heartwood grain center with soft golden-green healing glow. Small glowing oak leaf cluster at bottom. Color palette: warm bark brown, verdant green, golden glow. No characters, no text."
+    },
+    {
+      "card_id": "card_druid",
+      "class_id": "druid",
+      "region": 2,
+      "description": "Pixel art, SNES style. A decorative card frame background for a fantasy druid healer class in a bioluminescent fungal cavern. Organic mycelium-thread border with tiny glowing blue mushroom caps at corners. Dark cavern wall center with floating bioluminescent spore particles and faint flower silhouettes. Small blooming flower with moss at bottom. Color palette: deep cavern blue, bioluminescent teal, soft purple. No characters, no text."
+    },
+    {
+      "card_id": "card_fungal_berserker",
+      "class_id": "fungal_berserker",
+      "region": 2,
+      "description": "Pixel art, SNES style. A decorative card frame background for a fantasy fungal berserker rage warrior class. Jagged torn mushroom-cap border with toxic green dripping pustules at corners. Dark purple-black organic mass center with pulsing toxic green veins and purple mushroom growths. Spiked fungal fist silhouette at bottom. Color palette: dark purple, toxic neon green, organic brown. No characters, no text."
+    },
+    {
+      "card_id": "card_stormcaller",
+      "class_id": "stormcaller",
+      "region": 3,
+      "description": "Pixel art, SNES style. A decorative card frame background for a fantasy stormcaller lightning mage class on a misty coast. Weathered driftwood border crackling with blue-white lightning at corners. Dark storm-cloud grey center with electric blue lightning veins branching across. Small crackling storm cloud at bottom. Color palette: dark storm grey, electric blue, white lightning. No characters, no text."
+    },
+    {
+      "card_id": "card_tidechaser",
+      "class_id": "tidechaser",
+      "region": 3,
+      "description": "Pixel art, SNES style. A decorative card frame background for a fantasy tidechaser water healer class. Smooth coral and seashell border with small pearls at corners. Deep teal-blue water center with gentle wave patterns and soft glowing pearl light. Small wave crest with glowing pearl at bottom. Color palette: deep ocean blue, healing teal, warm pearl white. No characters, no text."
+    },
+    {
+      "card_id": "card_pyrewarden",
+      "class_id": "pyrewarden",
+      "region": 4,
+      "description": "Pixel art, SNES style. A decorative card frame background for a fantasy pyrewarden flame tank class in a volcanic wasteland. Cracked obsidian border with glowing orange lava seeping through cracks and ember sparks at corners. Dark volcanic rock center with pulsing orange-red magma veins. Small molten shield silhouette at bottom. Color palette: obsidian black, molten red, ember orange. No characters, no text."
+    },
+    {
+      "card_id": "card_ashblade",
+      "class_id": "ashblade",
+      "region": 4,
+      "description": "Pixel art, SNES style. A decorative card frame background for a fantasy ashblade smoke assassin class. Scorched dark metal border with trailing grey smoke wisps and ember spark corners. Ashen grey-black center with drifting cinder particles and faint heat shimmer. Small smoke-trailing dagger silhouette at bottom. Color palette: ash grey, cinder orange, smoke grey. No characters, no text."
+    },
+    {
+      "card_id": "card_prism_sentinel",
+      "class_id": "prism_sentinel",
+      "region": 5,
+      "description": "Pixel art, SNES style. A decorative card frame background for a fantasy prism sentinel crystal guardian class. Faceted crystal shard border refracting rainbow light at corners with pale blue glow. Deep purple-blue crystalline surface center with prismatic light fragments and rainbow refractions. Small crystal shield at bottom. Color palette: deep purple, crystal blue, prismatic white-rainbow. No characters, no text."
+    },
+    {
+      "card_id": "card_prism_lancer",
+      "class_id": "prism_lancer",
+      "region": 5,
+      "description": "Pixel art, SNES style. A decorative card frame background for a fantasy prism lancer light warrior class. Sharp angular crystal border with focused light beams running along edges. Dark indigo center with bright prismatic light beam cutting diagonally and crystal dust. Small crystalline lance with light trail at bottom. Color palette: deep indigo, prismatic lavender, gold-white light. No characters, no text."
+    },
+    {
+      "card_id": "card_dark_channeler",
+      "class_id": "dark_channeler",
+      "region": 6,
+      "description": "Pixel art, SNES style. A decorative card frame background for a fantasy dark channeler shadow healer class in a necrotic crypt. Bone-fragment border wrapped in shadow tendrils with faint green healing wisps at corners. Dark grey-green crypt stone center with shadow threads and soft green healing light pulses. Small dark tome with healing glow at bottom. Color palette: dark crypt green, shadow purple, faint healing green. No characters, no text."
+    },
+    {
+      "card_id": "card_lich",
+      "class_id": "lich",
+      "region": 6,
+      "description": "Pixel art, SNES style. A decorative card frame background for a fantasy lich necromancer class. Bleached bone border with soul-fire green flames along edges and skull motif corners. Black crypt wall center with necrotic green energy veins and floating spectral rune fragments. Small skull wreathed in green flame at bottom. Color palette: crypt black, soul-fire green, bleached bone white. No characters, no text."
+    },
+    {
+      "card_id": "card_voidwalker",
+      "class_id": "voidwalker",
+      "region": 7,
+      "description": "Pixel art, SNES style. A decorative card frame background for a fantasy voidwalker dimensional warrior class. Heavy dark border half-phased into void, left side solid iron, right side dissolving into purple void particles. Deep space black center with swirling dark purple void energy and dimensional rift cracks. Small half-phased shield at bottom. Color palette: void black, deep purple, dimensional blue. No characters, no text."
+    },
+    {
+      "card_id": "card_void_herald",
+      "class_id": "void_herald",
+      "region": 7,
+      "description": "Pixel art, SNES style. A decorative card frame background for a fantasy void herald entropy mage class. Jagged unstable border with crackling purple energy tears at corners and warping edges. Pitch black center with violent purple-red entropy tears ripping across surface and unstable energy arcs. Small jagged dimensional tear at bottom leaking purple light. Color palette: pitch black, entropy purple, rift red. No characters, no text."
+    }
+  ]
+}

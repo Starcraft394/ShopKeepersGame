@@ -121,7 +121,7 @@ var _shop_view: String = "buy"  # "buy", "upgrade"
 var _temp_shop_allocations: Dictionary = {}  # facility_id -> slot count (unstocked state only)
 
 # Training Hall view state
-var _training_view: String = "books"  # "books", "assign", "upgrade"
+var _training_view: String = "books"  # "books", "assign", "upgrade", "training"
 
 # Production (Chef/Alchemist) view state — per-facility to avoid cross-panel bleed
 var _production_views: Dictionary = {}  # facility_id -> view string (default "mix")
@@ -174,11 +174,7 @@ func _clear_children_immediate(node: Node) -> void:
 
 ## Apply gold-bordered "selected" style to a button (replaces disabled+green pattern)
 static func _apply_selected_button_style(btn: Button) -> void:
-	var sel = StyleBoxFlat.new()
-	sel.bg_color = Color(0.18, 0.22, 0.15, 0.9)
-	sel.set_border_width_all(2)
-	sel.border_color = Color(0.6, 0.5, 0.3, 0.8)
-	sel.set_corner_radius_all(3)
+	var sel: StyleBoxTexture = RPGPackStyles.btn_hover(Color(0.8, 0.75, 0.65, 1))
 	btn.add_theme_stylebox_override("normal", sel)
 	btn.add_theme_stylebox_override("hover", sel)
 	btn.add_theme_stylebox_override("pressed", sel)
@@ -217,14 +213,8 @@ func _create_facility_panel(facility_id: String) -> Dictionary:
 	else:
 		panel.theme = preload("res://Themes/game_theme.tres")
 
-	# Region-tinted panel background for text readability
-	var panel_body_style = StyleBoxFlat.new()
-	panel_body_style.bg_color = _region_palette.get("bg_dark", Color(0.14, 0.12, 0.10, 0.95))
-	panel_body_style.border_color = _region_palette.get("border", Color(0.35, 0.30, 0.22, 0.8))
-	panel_body_style.set_border_width_all(1)
-	panel_body_style.set_corner_radius_all(4)
-	panel_body_style.set_content_margin_all(4)
-	panel.add_theme_stylebox_override("panel", panel_body_style)
+	# Region-tinted panel background (RPG UI Pack texture)
+	panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_main(_region_palette.get("ui_tint", Color.WHITE)))
 
 	# Position set in _show_facility_panel() after insertion
 	panel.position = Vector2.ZERO
@@ -257,17 +247,9 @@ func _create_facility_panel(facility_id: String) -> Dictionary:
 	title_bar.add_theme_constant_override("separation", 4)
 	title_bar.mouse_filter = Control.MOUSE_FILTER_STOP
 
-	# Title bar background for visibility (region-tinted)
-	var title_style = StyleBoxFlat.new()
-	title_style.bg_color = _region_palette.get("title_bar", Color(0.18, 0.22, 0.3, 0.9))
-	title_style.content_margin_left = 8
-	title_style.content_margin_top = 4
-	title_style.content_margin_right = 4
-	title_style.content_margin_bottom = 4
-	title_style.set_corner_radius_all(2)
-
+	# Title bar background (RPG UI Pack banner)
 	var title_panel = PanelContainer.new()
-	title_panel.add_theme_stylebox_override("panel", title_style)
+	title_panel.add_theme_stylebox_override("panel", RPGPackStyles.banner_header(_region_palette.get("ui_tint", Color.WHITE)))
 	title_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	main_vbox.add_child(title_panel)
 
@@ -472,11 +454,7 @@ func _on_close_facility_panel(facility_id: String) -> void:
 	# Exit move mode if this panel was being moved
 	if _move_mode_panel_id == facility_id:
 		_exit_move_mode()
-	# Block Inn close during first launch until player has at least 1 party member
-	if facility_id == "inn" and not GameContext.has_completed_tutorial("tutorial_party_bar"):
-		if GameContext.selected_party.size() == 0:
-			_show_inn_recruit_reminder()
-			return
+	# Inn tutorial lock removed — Party Bar handles hero assignment
 	var was_inn: bool = (facility_id == "inn")
 	var info = _open_panels[facility_id]
 	var panel = info.get("panel")
@@ -512,7 +490,7 @@ func _on_close_facility_panel(facility_id: String) -> void:
 
 ## Show a timed warning when the player tries to close the Inn without a party member.
 func _show_inn_recruit_reminder() -> void:
-	if _facility_actions_container == null:
+	if _facility_actions_container == null or not is_instance_valid(_facility_actions_container):
 		return
 	var existing = _facility_actions_container.get_node_or_null("RecruitReminder")
 	if existing != null:
@@ -810,12 +788,8 @@ func _craftpix_wrap_section(parent: VBoxContainer, section_name: String, header_
 	var panel := PanelContainer.new()
 	panel.name = section_name + "Panel"
 	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	# Region-tinted section background (slightly lighter than main panel)
-	var section_style = StyleBoxFlat.new()
-	section_style.bg_color = _region_palette.get("bg_medium", Color(0.15, 0.18, 0.22, 0.9))
-	section_style.set_corner_radius_all(3)
-	section_style.set_content_margin_all(2)
-	panel.add_theme_stylebox_override("panel", section_style)
+	# Region-tinted section background (RPG UI Pack texture)
+	panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_main(_region_palette.get("ui_tint", Color.WHITE)))
 
 	var inner_margin := MarginContainer.new()
 	inner_margin.add_theme_constant_override("margin_left", 8)
@@ -1133,137 +1107,6 @@ func _populate_stash_list() -> void:
 # BUTTON HANDLERS
 # ============================================================================
 
-## Check if all party heroes are in the middle row and warning not yet dismissed.
-func _check_formation_warning() -> bool:
-	if GameContext.has_completed_tutorial("warning_formation_all_middle"):
-		return false
-	var party: Array = GameContext.selected_party
-	if party.size() <= 1:
-		return false  # Solo hero — row positioning less critical
-	for hero_id in party:
-		if GameContext.get_hero_row(hero_id) != 1:
-			return false  # At least one hero is NOT in middle row
-	return true
-
-
-## Show formation warning overlay. Returns true if user chose to continue anyway.
-func _show_formation_warning() -> bool:
-	var user_continue: bool = false
-
-	# Overlay
-	var overlay := CanvasLayer.new()
-	overlay.layer = 11
-
-	# Full-screen backdrop
-	var backdrop := ColorRect.new()
-	backdrop.color = Color(0, 0, 0, 0.6)
-	backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
-	backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
-	overlay.add_child(backdrop)
-
-	# Center container
-	var center := CenterContainer.new()
-	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	overlay.add_child(center)
-
-	# Panel
-	var panel := PanelContainer.new()
-	panel.custom_minimum_size = Vector2(460, 0)
-	center.add_child(panel)
-
-	# Content VBox
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 12)
-	panel.add_child(vbox)
-
-	# Margin inside panel
-	var margin := MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 20)
-	margin.add_theme_constant_override("margin_right", 20)
-	margin.add_theme_constant_override("margin_top", 16)
-	margin.add_theme_constant_override("margin_bottom", 16)
-	panel.add_child(margin)
-
-	var inner_vbox := VBoxContainer.new()
-	inner_vbox.add_theme_constant_override("separation", 12)
-	margin.add_child(inner_vbox)
-
-	# Title
-	var title := Label.new()
-	title.text = "Formation Warning"
-	title.add_theme_font_size_override("font_size", GameContext.fs(18))
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	inner_vbox.add_child(title)
-
-	# Separator
-	var sep := HSeparator.new()
-	inner_vbox.add_child(sep)
-
-	# Message
-	var msg := Label.new()
-	msg.text = "All your heroes are positioned in the Middle row. Consider moving some to the Front row (to absorb melee hits) or Back row (to protect ranged/mage heroes).\n\nYou can change positions using the [F] [M] [B] buttons on hero cards."
-	msg.add_theme_font_size_override("font_size", GameContext.fs(14))
-	msg.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	inner_vbox.add_child(msg)
-
-	# Checkbox
-	var checkbox := CheckBox.new()
-	checkbox.text = "Don't show this again"
-	checkbox.add_theme_font_size_override("font_size", GameContext.fs(13))
-	inner_vbox.add_child(checkbox)
-
-	# Button row
-	var btn_row := HBoxContainer.new()
-	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
-	btn_row.add_theme_constant_override("separation", 16)
-	inner_vbox.add_child(btn_row)
-
-	var back_btn := Button.new()
-	back_btn.text = "Go Back"
-	back_btn.custom_minimum_size = Vector2(120, 36)
-	back_btn.add_theme_font_size_override("font_size", GameContext.fs(14))
-	btn_row.add_child(back_btn)
-
-	var continue_btn := Button.new()
-	continue_btn.text = "Continue Anyway"
-	continue_btn.custom_minimum_size = Vector2(160, 36)
-	continue_btn.add_theme_font_size_override("font_size", GameContext.fs(14))
-	btn_row.add_child(continue_btn)
-
-	# Wire D-pad LEFT/RIGHT between Go Back and Continue
-	InputManager.wire_focus_grid([[back_btn, continue_btn]])
-
-	add_child(overlay)
-
-	# Await user response
-	var clicked_continue: bool = false
-	var done_signal: Signal = back_btn.pressed  # placeholder
-
-	back_btn.pressed.connect(func():
-		clicked_continue = false
-		overlay.set_meta("done", true)
-	)
-	continue_btn.pressed.connect(func():
-		clicked_continue = true
-		overlay.set_meta("done", true)
-	)
-
-	# Poll until a button is pressed (overlay.set_meta triggers exit)
-	while not overlay.has_meta("done"):
-		await get_tree().process_frame
-
-	# Handle dismiss checkbox
-	if clicked_continue and checkbox.button_pressed:
-		GameContext.complete_tutorial("warning_formation_all_middle")
-		print("[TownUI] Formation warning dismissed permanently")
-
-	user_continue = clicked_continue
-	overlay.queue_free()
-
-	print("[TownUI] Formation warning -> %s" % ("continue" if user_continue else "go back"))
-	return user_continue
-
-
 func _on_enter_dungeon_pressed() -> void:
 	var town_id = GameContext.get_current_town_id()
 	var town = DataRegistry.get_town(town_id) if DataRegistry.has_method("get_town") else null
@@ -1278,12 +1121,6 @@ func _on_enter_dungeon_pressed() -> void:
 		progress_label.text = "Need at least 1 hero! Visit Inn to recruit."
 		progress_label.modulate = Color(1, 0.5, 0.5, 1)
 		return
-
-	# Formation warning: all heroes in middle row
-	if _check_formation_warning():
-		var proceed: bool = await _show_formation_warning()
-		if not proceed:
-			return
 
 	# Tutorial before first dungeon run
 	var overlay = TutorialOverlay.try_show(self, "tutorial_first_dungeon")
@@ -1419,7 +1256,7 @@ func _on_add_gold_pressed() -> void:
 	# Update gold labels in open facility panels without full rebuild
 	for fid in _open_panels:
 		var gold_lbl = _open_panels[fid].get("gold_label")
-		if gold_lbl:
+		if gold_lbl and is_instance_valid(gold_lbl):
 			gold_lbl.text = "Gold: %d" % new_gold
 
 
@@ -1517,6 +1354,22 @@ func show_facility_by_id(facility_id: String) -> void:
 	_show_facility_panel(facility_id)
 
 
+## Public API: open a facility directly to its upgrade view (used by TownHub badge click).
+func show_facility_upgrade(facility_id: String) -> void:
+	_show_facility_panel(facility_id)
+	var facility = DataRegistry.get_facility(facility_id) if DataRegistry.has_method("get_facility") else null
+	var ftype: String = facility.facility_type if facility else ""
+	match ftype:
+		"storage": _storage_view = "upgrade"
+		"equipment": _equipment_view = "upgrade"
+		"shop": _shop_view = "upgrade"
+		"inn": _inn_view = "upgrade"
+		"training_hall": _training_view = "upgrade"
+		"production": _production_views[facility_id] = "upgrade"
+		_: _storage_view = "upgrade"
+	_refresh_facility_panel()
+
+
 ## Public API: switch to another town (used by TownHub travel buttons).
 func switch_town(new_town_id: String) -> void:
 	_switch_town(new_town_id)
@@ -1600,7 +1453,7 @@ func _show_facility_panel(facility_id: String) -> void:
 
 func _create_facility_actions(facility) -> void:
 	# Clear actions container and repopulate
-	if _facility_actions_container == null:
+	if _facility_actions_container == null or not is_instance_valid(_facility_actions_container):
 		return
 	_clear_children_immediate(_facility_actions_container)
 
@@ -2148,12 +2001,7 @@ func _build_storage_equipment_ui() -> void:
 	party_tab.add_theme_font_size_override("font_size", GameContext.fs(13))
 	party_tab.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	if _storage_hero_filter == "party":
-		var tab_style = StyleBoxFlat.new()
-		tab_style.bg_color = Color(0.1, 0.2, 0.15, 0.9)
-		tab_style.border_color = Color(0.3, 0.8, 0.6, 0.9)
-		tab_style.set_border_width_all(2)
-		tab_style.set_corner_radius_all(4)
-		party_tab.add_theme_stylebox_override("normal", tab_style)
+		party_tab.add_theme_stylebox_override("normal", RPGPackStyles.btn_hover(Color(0.5, 0.8, 0.6, 1)))
 	party_tab.pressed.connect(func():
 		_storage_hero_filter = "party"
 		_storage_selected_hero_id = ""
@@ -2179,12 +2027,7 @@ func _build_storage_equipment_ui() -> void:
 			tab_btn.add_theme_font_size_override("font_size", GameContext.fs(12))
 			tab_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 			if _storage_hero_filter == town_id:
-				var tab_style = StyleBoxFlat.new()
-				tab_style.bg_color = Color(0.1, 0.2, 0.15, 0.9)
-				tab_style.border_color = Color(0.3, 0.8, 0.6, 0.9)
-				tab_style.set_border_width_all(2)
-				tab_style.set_corner_radius_all(4)
-				tab_btn.add_theme_stylebox_override("normal", tab_style)
+				tab_btn.add_theme_stylebox_override("normal", RPGPackStyles.btn_hover(Color(0.5, 0.8, 0.6, 1)))
 			var bound_town: String = town_id
 			tab_btn.pressed.connect(func():
 				_storage_hero_filter = bound_town
@@ -2248,12 +2091,7 @@ func _build_storage_equipment_ui() -> void:
 		else:
 			portrait_btn.text = hid.left(2).to_upper()
 		if is_selected:
-			var sel_style = StyleBoxFlat.new()
-			sel_style.bg_color = Color(0.1, 0.2, 0.15, 0.9)
-			sel_style.border_color = Color(0.3, 0.8, 0.6, 0.9)
-			sel_style.set_border_width_all(2)
-			sel_style.set_corner_radius_all(4)
-			portrait_btn.add_theme_stylebox_override("normal", sel_style)
+			portrait_btn.add_theme_stylebox_override("normal", RPGPackStyles.btn_hover(Color(0.5, 0.8, 0.6, 1)))
 		portrait_btn.pressed.connect(_on_storage_hero_selected.bind(hid))
 		hero_btn_vbox.add_child(portrait_btn)
 
@@ -3458,13 +3296,7 @@ func _show_sell_window() -> void:
 
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(420, 400)
-	var style = StyleBoxFlat.new()
-	style.bg_color = _region_palette.get("bg_dark", Color(0.14, 0.12, 0.10, 0.95))
-	style.set_border_width_all(2)
-	style.border_color = _region_palette.get("border", Color(0.55, 0.4, 0.25, 0.8))
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(16)
-	panel.add_theme_stylebox_override("panel", style)
+	panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_modal(_region_palette.get("ui_tint", Color.WHITE)))
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	center.add_child(panel)
 
@@ -4015,14 +3847,8 @@ func _on_shop_compare_pressed(item_id: String, quality_tier: int, affix_data: Di
 	else:
 		panel.theme = preload("res://Themes/game_theme.tres")
 
-	# Panel styling (solid background)
-	var panel_body_style = StyleBoxFlat.new()
-	panel_body_style.bg_color = _region_palette.get("bg_dark", Color(0.14, 0.12, 0.10, 0.95))
-	panel_body_style.border_color = _region_palette.get("border", Color(0.35, 0.30, 0.22, 0.8))
-	panel_body_style.set_border_width_all(1)
-	panel_body_style.set_corner_radius_all(4)
-	panel_body_style.set_content_margin_all(4)
-	panel.add_theme_stylebox_override("panel", panel_body_style)
+	# Panel styling (RPG UI Pack modal texture)
+	panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_modal(_region_palette.get("ui_tint", Color.WHITE)))
 
 	# Position set in _show_facility_panel() after insertion
 	panel.position = Vector2.ZERO
@@ -4032,17 +3858,9 @@ func _on_shop_compare_pressed(item_id: String, quality_tier: int, affix_data: Di
 	main_vbox.add_theme_constant_override("separation", 4)
 	panel.add_child(main_vbox)
 
-	# --- Title bar (drag handle) ---
-	var title_style = StyleBoxFlat.new()
-	title_style.bg_color = _region_palette.get("title_bar", Color(0.18, 0.22, 0.3, 0.9))
-	title_style.content_margin_left = 8
-	title_style.content_margin_top = 4
-	title_style.content_margin_right = 4
-	title_style.content_margin_bottom = 4
-	title_style.set_corner_radius_all(2)
-
+	# --- Title bar (RPG UI Pack banner) ---
 	var title_panel = PanelContainer.new()
-	title_panel.add_theme_stylebox_override("panel", title_style)
+	title_panel.add_theme_stylebox_override("panel", RPGPackStyles.banner_header(_region_palette.get("ui_tint", Color.WHITE)))
 	title_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	main_vbox.add_child(title_panel)
 
@@ -5377,12 +5195,7 @@ func _build_equipment_slot_tooltip(slot: String, item_id: String, quality: int, 
 func _create_empty_equip_slot(abbrev: String, slot_size: int) -> PanelContainer:
 	var empty_panel = PanelContainer.new()
 	empty_panel.custom_minimum_size = Vector2(slot_size, slot_size)
-	var empty_style = StyleBoxFlat.new()
-	empty_style.bg_color = Color(0.2, 0.2, 0.2, 0.8)
-	empty_style.border_color = Color(0.4, 0.4, 0.4, 0.5)
-	empty_style.set_border_width_all(1)
-	empty_style.set_corner_radius_all(2)
-	empty_panel.add_theme_stylebox_override("panel", empty_style)
+	empty_panel.add_theme_stylebox_override("panel", RPGPackStyles.slot_empty(Color.WHITE))
 	var empty_lbl = Label.new()
 	empty_lbl.text = abbrev
 	var font_sz: int = GameContext.fs(8) if slot_size <= 32 else GameContext.fs(10)
@@ -5564,8 +5377,16 @@ func _create_crafting_recipe_row(recipe: Dictionary) -> VBoxContainer:
 				if qty_have < qty_needed:
 					can_craft = false
 
+			var can_make_count: int = 999
+			for ci in inputs:
+				var ci_qty: int = ci.get("qty", 1)
+				if ci_qty > 0:
+					can_make_count = mini(can_make_count, run_items_dict.get(ci.get("item_id", ""), 0) / ci_qty)
+			if can_make_count == 999:
+				can_make_count = 0
+
 			var cost_label = Label.new()
-			cost_label.text = "  Craft cost: %s" % ", ".join(cost_parts)
+			cost_label.text = "  Craft cost: %s (can make: %d)" % [", ".join(cost_parts), can_make_count]
 			cost_label.add_theme_font_size_override("font_size", GameContext.fs(13))
 			cost_label.modulate = Color(0.8, 0.8, 0.8, 1) if can_craft else Color(1, 0.5, 0.5, 1)
 			container.add_child(cost_label)
@@ -5663,16 +5484,18 @@ func _create_locked_recipe_row(recipe: Dictionary) -> VBoxContainer:
 	name_label.add_theme_color_override("font_color", Color(0.78, 0.78, 0.78, 1))
 	container.add_child(name_label)
 
-	# Cost display (grayed, for preview)
+	# Cost display (grayed, for preview — show have/need)
 	var cost_parts = []
+	var run_items_dict: Dictionary = GameContext.get_run_items_dict()
 	for input_item in inputs:
 		var item_id = input_item.get("item_id", "")
 		var qty_needed = input_item.get("qty", 1)
+		var qty_have: int = run_items_dict.get(item_id, 0)
 		var item_name = item_id
 		var item_template = DataRegistry.get_item_template(item_id)
 		if item_template != null and item_template.display_name != "":
 			item_name = item_template.display_name
-		cost_parts.append("%s x%d" % [item_name, qty_needed])
+		cost_parts.append("%s %d/%d" % [item_name, qty_have, qty_needed])
 
 	var cost_label = Label.new()
 	var cost_text = "  Cost: %s" % ", ".join(cost_parts)
@@ -5860,6 +5683,7 @@ func _build_training_ui() -> void:
 	var menu = [
 		{"view": "books", "label": "Class Books"},
 		{"view": "assign", "label": "Assign Class"},
+		{"view": "training", "label": "Training"},
 		{"view": "upgrade", "label": "Upgrade Hall"},
 	]
 	_build_npc_header(facility, menu, _training_view, _on_training_view_pressed)
@@ -5873,6 +5697,8 @@ func _build_training_ui() -> void:
 			_build_training_books_view(facility, current_tier)
 		"assign":
 			_build_training_assign_view(facility, current_tier)
+		"training":
+			_build_training_slots_view(facility, current_tier)
 		"upgrade":
 			_build_training_upgrade_view(facility, current_tier)
 
@@ -6026,6 +5852,193 @@ func _build_training_books_view(facility, current_tier: int) -> void:
 			label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			row.add_child(label)
 			owned_grid.add_child(row)
+
+
+## Training slots view: assign heroes to training for passive XP during dungeon runs
+func _build_training_slots_view(facility, current_tier: int) -> void:
+	var town_id: String = GameContext.get_current_town_id()
+	var max_slots: int = GameContext.get_training_slot_count(town_id)
+	var training_heroes: Array = GameContext.get_training_heroes(town_id)
+	var xp_rate: float = GameContext.get_training_xp_rate(town_id)
+
+	if current_tier <= 0:
+		var locked_label = Label.new()
+		locked_label.text = "(Training Hall not yet built)"
+		locked_label.modulate = Color(0.78, 0.78, 0.78, 1)
+		_facility_actions_container.add_child(locked_label)
+		return
+
+	# Header with slot count and XP rate
+	var header = Label.new()
+	header.text = "Training Slots: %d / %d" % [training_heroes.size(), max_slots]
+	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	header.add_theme_font_size_override("font_size", GameContext.fs(16))
+	header.modulate = Color(0.5, 1.0, 0.8, 1)
+	_facility_actions_container.add_child(header)
+
+	var rate_label = Label.new()
+	rate_label.text = "Heroes in training earn %d%% of dungeon combat XP" % int(xp_rate * 100)
+	rate_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	rate_label.add_theme_font_size_override("font_size", GameContext.fs(13))
+	rate_label.modulate = Color(0.7, 0.9, 0.7, 0.8)
+	_facility_actions_container.add_child(rate_label)
+
+	var sep1 = HSeparator.new()
+	_facility_actions_container.add_child(sep1)
+
+	# List heroes currently in training
+	if training_heroes.size() > 0:
+		var in_training_header = Label.new()
+		in_training_header.text = "-- In Training --"
+		in_training_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		in_training_header.modulate = Color(0.7, 0.7, 0.7, 1)
+		_facility_actions_container.add_child(in_training_header)
+
+		for hero_id in training_heroes:
+			var hero: Dictionary = GameContext.get_hero(hero_id)
+			if hero.is_empty():
+				continue
+			var row = HBoxContainer.new()
+			row.add_theme_constant_override("separation", 8)
+
+			var hero_name: String = hero.get("name", hero_id)
+			var class_id: String = hero.get("class_id", "none")
+			var hero_level: int = int(hero.get("level", 1))
+
+			# Portrait icon
+			var t_portrait_path: String = hero.get("portrait_path", "")
+			if t_portrait_path != "" and ResourceLoader.exists(t_portrait_path):
+				var ptex: Texture2D = ResourceLoader.load(t_portrait_path)
+				if ptex != null:
+					var portrait = TextureRect.new()
+					portrait.texture = ptex
+					portrait.custom_minimum_size = Vector2(24, 24)
+					portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+					portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+					portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
+					row.add_child(portrait)
+
+			var info_col = VBoxContainer.new()
+			info_col.add_theme_constant_override("separation", 0)
+			info_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+			var info = Label.new()
+			info.text = "%s (%s Lv%d)" % [hero_name, class_id.capitalize(), hero_level]
+			info.modulate = Color(0.5, 1.0, 0.8, 1)
+			info_col.add_child(info)
+
+			var t_hero_xp: int = int(hero.get("xp", 0))
+			var t_is_max: bool = hero_level >= GameContext.MAX_HERO_LEVEL
+			var xp_lbl = Label.new()
+			if t_is_max:
+				xp_lbl.text = "XP: MAX"
+				xp_lbl.modulate = Color(1.0, 0.85, 0.3, 0.8)
+			else:
+				var next_xp: int = GameContext.get_xp_for_level(hero_level + 1)
+				xp_lbl.text = "XP: %d / %d" % [t_hero_xp, next_xp]
+				xp_lbl.modulate = Color(0.5, 0.8, 1.0, 0.8)
+			xp_lbl.add_theme_font_size_override("font_size", GameContext.fs(11))
+			info_col.add_child(xp_lbl)
+			row.add_child(info_col)
+
+			var remove_btn = Button.new()
+			remove_btn.text = "Remove"
+			remove_btn.custom_minimum_size = Vector2(80, 26)
+			remove_btn.focus_mode = Control.FOCUS_ALL
+			remove_btn.pressed.connect(_on_remove_from_training.bind(hero_id))
+			row.add_child(remove_btn)
+
+			_facility_actions_container.add_child(row)
+
+	# Assign button (if slots available)
+	if training_heroes.size() < max_slots:
+		var sep2 = HSeparator.new()
+		_facility_actions_container.add_child(sep2)
+
+		var assign_header = Label.new()
+		assign_header.text = "-- Available for Training --"
+		assign_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		assign_header.modulate = Color(0.7, 0.7, 0.7, 1)
+		_facility_actions_container.add_child(assign_header)
+
+		# Show bench heroes at this town who aren't in party or already training
+		var bench_heroes: Array = GameContext.get_inn_bench_heroes(town_id)
+		var available_count: int = 0
+		for hero in bench_heroes:
+			var hero_id: String = hero.get("hero_id", "")
+			if GameContext.is_in_party(hero_id):
+				continue
+			if GameContext.is_hero_in_training(hero_id):
+				continue
+			available_count += 1
+
+			var row = HBoxContainer.new()
+			row.add_theme_constant_override("separation", 8)
+
+			var hero_name: String = hero.get("name", hero_id)
+			var class_id: String = hero.get("class_id", "none")
+			var hero_level: int = int(hero.get("level", 1))
+
+			# Portrait icon
+			var a_portrait_path: String = hero.get("portrait_path", "")
+			if a_portrait_path != "" and ResourceLoader.exists(a_portrait_path):
+				var ptex: Texture2D = ResourceLoader.load(a_portrait_path)
+				if ptex != null:
+					var portrait = TextureRect.new()
+					portrait.texture = ptex
+					portrait.custom_minimum_size = Vector2(24, 24)
+					portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+					portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+					portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
+					row.add_child(portrait)
+
+			var info_col2 = VBoxContainer.new()
+			info_col2.add_theme_constant_override("separation", 0)
+			info_col2.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+			var info = Label.new()
+			info.text = "%s (%s Lv%d)" % [hero_name, class_id.capitalize(), hero_level]
+			info_col2.add_child(info)
+
+			var a_hero_xp: int = int(hero.get("xp", 0))
+			var a_is_max: bool = hero_level >= GameContext.MAX_HERO_LEVEL
+			var a_xp_lbl = Label.new()
+			if a_is_max:
+				a_xp_lbl.text = "XP: MAX"
+				a_xp_lbl.modulate = Color(1.0, 0.85, 0.3, 0.8)
+			else:
+				var a_next_xp: int = GameContext.get_xp_for_level(hero_level + 1)
+				a_xp_lbl.text = "XP: %d / %d" % [a_hero_xp, a_next_xp]
+				a_xp_lbl.modulate = Color(0.5, 0.8, 1.0, 0.8)
+			a_xp_lbl.add_theme_font_size_override("font_size", GameContext.fs(11))
+			info_col2.add_child(a_xp_lbl)
+			row.add_child(info_col2)
+
+			var assign_btn = Button.new()
+			assign_btn.text = "Train"
+			assign_btn.custom_minimum_size = Vector2(80, 26)
+			assign_btn.focus_mode = Control.FOCUS_ALL
+			assign_btn.pressed.connect(_on_assign_to_training.bind(hero_id, town_id))
+			row.add_child(assign_btn)
+
+			_facility_actions_container.add_child(row)
+
+		if available_count == 0:
+			var no_heroes = Label.new()
+			no_heroes.text = "(No available heroes — recruit or bench heroes at this Inn)"
+			no_heroes.modulate = Color(0.78, 0.78, 0.78, 1)
+			_facility_actions_container.add_child(no_heroes)
+
+
+func _on_assign_to_training(hero_id: String, town_id: String) -> void:
+	var success: bool = GameContext.assign_hero_to_training(hero_id, town_id)
+	if success:
+		_refresh_facility_panel()
+
+
+func _on_remove_from_training(hero_id: String) -> void:
+	GameContext.remove_hero_from_training(hero_id)
+	_refresh_facility_panel()
 
 
 ## Training assign view: hero selection + book assignment
@@ -6442,49 +6455,35 @@ func _create_party_card(hero_id: String) -> PanelContainer:
 
 	# Card container (region-tinted)
 	var card = PanelContainer.new()
-	var card_style = StyleBoxFlat.new()
-	card_style.bg_color = _region_palette.get("bg_medium", Color(0.15, 0.18, 0.22, 0.9))
-	card_style.border_width_left = 1
-	card_style.border_width_top = 1
-	card_style.border_width_right = 1
-	card_style.border_width_bottom = 1
-	card_style.border_color = Color(0.3, 0.5, 0.3, 0.6)
-	card_style.set_corner_radius_all(4)
-	card_style.content_margin_left = 6
-	card_style.content_margin_top = 4
-	card_style.content_margin_right = 6
-	card_style.content_margin_bottom = 4
+	var card_style: StyleBoxTexture = RPGPackStyles.panel_main(_region_palette.get("ui_tint", Color.WHITE))
 	card.add_theme_stylebox_override("panel", card_style)
 	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	card.tooltip_text = _build_hero_tooltip(hero_id)
 	card.mouse_filter = Control.MOUSE_FILTER_STOP
+	card.clip_contents = true
+
+	# Class card background texture (behind all content)
+	if class_id != "":
+		var card_tex_path: String = "res://Assets/UI/Cards/card_%s.png" % class_id
+		if ResourceLoader.exists(card_tex_path):
+			var card_tex: Texture2D = load(card_tex_path)
+			if card_tex != null:
+				var card_bg := TextureRect.new()
+				card_bg.name = "CardBackground"
+				card_bg.texture = card_tex
+				card_bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+				card_bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+				card_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+				card_bg.modulate.a = 0.35
+				card_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				card.add_child(card_bg)
+				# Lower PanelContainer background opacity so card texture shows through
+				card_style.modulate_color.a = 0.5
 
 	var card_hbox = HBoxContainer.new()
 	card_hbox.add_theme_constant_override("separation", 4)
 	card_hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(card_hbox)
-
-	# Row selector (vertical F/M/B buttons on the left)
-	var row_vbox = VBoxContainer.new()
-	row_vbox.add_theme_constant_override("separation", 2)
-	row_vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	var row_names = ["F", "M", "B"]
-	var row_tips = ["Front — Targeted first by melee", "Middle — Targeted after Front", "Back — Targeted last by melee"]
-	var current_row: int = GameContext.get_hero_row(hero_id)
-	for i in range(3):
-		var rbtn = Button.new()
-		rbtn.text = row_names[i]
-		rbtn.add_theme_font_size_override("font_size", GameContext.fs(11))
-		rbtn.custom_minimum_size = Vector2(22, 0)
-		rbtn.size_flags_vertical = Control.SIZE_EXPAND_FILL
-		rbtn.tooltip_text = row_tips[i]
-		if i == current_row:
-			_apply_selected_button_style(rbtn)
-		else:
-			rbtn.modulate = Color(1, 1, 1, 1)
-		rbtn.pressed.connect(_on_party_card_row_changed.bind(i, hero_id))
-		row_vbox.add_child(rbtn)
-	card_hbox.add_child(row_vbox)
 
 	var card_vbox = VBoxContainer.new()
 	card_vbox.add_theme_constant_override("separation", 2)
@@ -6759,13 +6758,7 @@ func _open_bench_picker_overlay() -> void:
 
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(420, 0)
-	var style = StyleBoxFlat.new()
-	style.bg_color = _region_palette.get("bg_dark", Color(0.14, 0.12, 0.10, 0.95))
-	style.set_border_width_all(2)
-	style.border_color = _region_palette.get("border", Color(0.55, 0.4, 0.25, 0.8))
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(16)
-	panel.add_theme_stylebox_override("panel", style)
+	panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_modal(_region_palette.get("ui_tint", Color.WHITE)))
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	center.add_child(panel)
 
@@ -6833,13 +6826,7 @@ func _create_bench_picker_row(hero: Dictionary) -> PanelContainer:
 		cls_name = class_data.display_name
 
 	var row_panel = PanelContainer.new()
-	var style = StyleBoxFlat.new()
-	style.bg_color = _region_palette.get("bg_medium", Color(0.15, 0.18, 0.22, 0.9))
-	style.border_color = _region_palette.get("border", Color(0.55, 0.4, 0.25, 0.8))
-	style.set_border_width_all(1)
-	style.set_corner_radius_all(4)
-	style.set_content_margin_all(8)
-	row_panel.add_theme_stylebox_override("panel", style)
+	row_panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_main(_region_palette.get("ui_tint", Color.WHITE)))
 
 	var hbox = HBoxContainer.new()
 	hbox.add_theme_constant_override("separation", 10)
@@ -7241,7 +7228,7 @@ func _build_inn_ui() -> void:
 	# NPC header: portrait + greeting + menu options
 	var menu = [
 		{"view": "recruit", "label": "Recruit Heroes"},
-		{"view": "roster", "label": "Manage Roster"},
+		{"view": "roster", "label": "Resting Heroes"},
 		{"view": "upgrade", "label": "Upgrade Inn"},
 	]
 	_build_npc_header(facility, menu, _inn_view, _on_inn_view_pressed)
@@ -7946,21 +7933,6 @@ func _on_remove_from_party_pressed(hero_id: String) -> void:
 	_refresh_facility_panel()
 
 
-## Handle hero row assignment change (3-Row Formation v1)
-func _on_hero_row_changed(row_index: int, hero_id: String) -> void:
-	GameContext.set_hero_row(hero_id, row_index)
-	var row_names = ["Front", "Middle", "Back"]
-	print("[Inn] Hero %s assigned to %s row" % [hero_id, row_names[row_index]])
-
-
-## Handle hero row assignment change from party bar card.
-func _on_party_card_row_changed(row_index: int, hero_id: String) -> void:
-	GameContext.set_hero_row(hero_id, row_index)
-	var row_names = ["Front", "Middle", "Back"]
-	print("[PartyBar] Hero %s assigned to %s row" % [hero_id, row_names[row_index]])
-	_populate_heroes_section()
-
-
 func _on_equip_slot_pressed(hero_id: String, slot: String) -> void:
 	# Show equip selection popup for this hero and slot
 	_show_equip_selection_popup(hero_id, slot)
@@ -7997,13 +7969,7 @@ func _open_manage_gear_overlay() -> void:
 	_manage_gear_panel = PanelContainer.new()
 	var panel: PanelContainer = _manage_gear_panel
 	panel.custom_minimum_size = Vector2(480, 0)
-	var style = StyleBoxFlat.new()
-	style.bg_color = _region_palette.get("bg_dark", Color(0.14, 0.12, 0.10, 0.95))
-	style.set_border_width_all(2)
-	style.border_color = _region_palette.get("border", Color(0.55, 0.4, 0.25, 0.8))
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(16)
-	panel.add_theme_stylebox_override("panel", style)
+	panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_modal(_region_palette.get("ui_tint", Color.WHITE)))
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	center.add_child(panel)
 
@@ -8049,12 +8015,7 @@ func _build_manage_gear_content() -> void:
 	party_tab.custom_minimum_size = Vector2(60, 26)
 	party_tab.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	if _manage_gear_filter == "party":
-		var tab_style = StyleBoxFlat.new()
-		tab_style.bg_color = Color(0.1, 0.2, 0.15, 0.9)
-		tab_style.border_color = Color(0.3, 0.8, 0.6, 0.9)
-		tab_style.set_border_width_all(2)
-		tab_style.set_corner_radius_all(4)
-		party_tab.add_theme_stylebox_override("normal", tab_style)
+		party_tab.add_theme_stylebox_override("normal", RPGPackStyles.btn_hover(Color(0.5, 0.8, 0.6, 1)))
 	party_tab.pressed.connect(func():
 		_manage_gear_filter = "party"
 		_manage_gear_hero_id = ""
@@ -8080,12 +8041,7 @@ func _build_manage_gear_content() -> void:
 			tab_btn.add_theme_font_size_override("font_size", GameContext.fs(12))
 			tab_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 			if _manage_gear_filter == town_id:
-				var tab_style = StyleBoxFlat.new()
-				tab_style.bg_color = Color(0.1, 0.2, 0.15, 0.9)
-				tab_style.border_color = Color(0.3, 0.8, 0.6, 0.9)
-				tab_style.set_border_width_all(2)
-				tab_style.set_corner_radius_all(4)
-				tab_btn.add_theme_stylebox_override("normal", tab_style)
+				tab_btn.add_theme_stylebox_override("normal", RPGPackStyles.btn_hover(Color(0.5, 0.8, 0.6, 1)))
 			var bound_town: String = town_id
 			tab_btn.pressed.connect(func():
 				_manage_gear_filter = bound_town
@@ -8151,12 +8107,7 @@ func _build_manage_gear_content() -> void:
 		else:
 			portrait_btn.text = hid.left(2).to_upper()
 		if is_selected:
-			var sel_style = StyleBoxFlat.new()
-			sel_style.bg_color = Color(0.1, 0.2, 0.15, 0.9)
-			sel_style.border_color = Color(0.3, 0.8, 0.6, 0.9)
-			sel_style.set_border_width_all(2)
-			sel_style.set_corner_radius_all(4)
-			portrait_btn.add_theme_stylebox_override("normal", sel_style)
+			portrait_btn.add_theme_stylebox_override("normal", RPGPackStyles.btn_hover(Color(0.5, 0.8, 0.6, 1)))
 		portrait_btn.pressed.connect(func():
 			_manage_gear_hero_id = hid
 			_build_manage_gear_content()
@@ -8573,13 +8524,7 @@ func _on_party_card_bag_pressed(hero_id: String) -> void:
 
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(380, 0)
-	var style = StyleBoxFlat.new()
-	style.bg_color = _region_palette.get("bg_dark", Color(0.14, 0.12, 0.10, 0.95))
-	style.set_border_width_all(2)
-	style.border_color = _region_palette.get("border", Color(0.55, 0.4, 0.25, 0.8))
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
-	panel.add_theme_stylebox_override("panel", style)
+	panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_modal(_region_palette.get("ui_tint", Color.WHITE)))
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	center.add_child(panel)
 
@@ -9057,10 +9002,12 @@ func _on_recruit_hero_pressed(class_id: String, cost: int, race_id: String = "hu
 			GameContext.mark_shop_slot_purchased(_get_inn_shop_id(), slot_key)
 			# Auto-restock: if all recruit slots are now purchased, refresh with new candidates
 			_check_inn_auto_restock()
-		# Highlight "Manage Roster" tab after first hire
+		# Highlight "Resting Heroes" tab after first hire
 		if not GameContext.has_completed_tutorial("visited_roster_after_hire"):
 			_highlight_roster_tab = true
 	_refresh_facility_panel()
+	# Refresh party bar so empty slots update to "+ Add Hero" when bench heroes exist
+	_populate_heroes_section()
 
 
 ## Auto-restock Inn when all recruit slots have been purchased.
@@ -9168,6 +9115,7 @@ func _on_inn_dismiss_hero_pressed(hero_id: String) -> void:
 		GameContext.add_run_gold(25)
 		print("[Inn] dismissed %s (no gear), refunded 25g" % hname)
 		_refresh_facility_panel()
+		_populate_heroes_section()
 
 
 ## Compute total sell value of all gear on a hero (equipment + bag items).
@@ -9260,13 +9208,7 @@ func _show_dismiss_warning_overlay(hero_id: String) -> void:
 
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(420, 0)
-	var pstyle = StyleBoxFlat.new()
-	pstyle.bg_color = _region_palette.get("bg_dark", Color(0.14, 0.12, 0.10, 0.95))
-	pstyle.set_border_width_all(2)
-	pstyle.border_color = _region_palette.get("border", Color(0.55, 0.4, 0.25, 0.8))
-	pstyle.set_corner_radius_all(8)
-	pstyle.set_content_margin_all(16)
-	panel.add_theme_stylebox_override("panel", pstyle)
+	panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_modal(_region_palette.get("ui_tint", Color.WHITE)))
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	center.add_child(panel)
 
@@ -9312,6 +9254,7 @@ func _show_dismiss_warning_overlay(hero_id: String) -> void:
 		print("[Inn] %s dismissed — gear returned to stash, refunded 25g" % hname)
 		_close_dismiss_warning_overlay()
 		_refresh_facility_panel()
+		_populate_heroes_section()
 	)
 	btn_vbox.add_child(bank_btn)
 
@@ -9326,6 +9269,7 @@ func _show_dismiss_warning_overlay(hero_id: String) -> void:
 		print("[Inn] %s dismissed — gear sold for %dg, refunded 25g" % [hname, earned])
 		_close_dismiss_warning_overlay()
 		_refresh_facility_panel()
+		_populate_heroes_section()
 	)
 	btn_vbox.add_child(sell_btn)
 
@@ -9719,7 +9663,8 @@ func _add_mix_slot_button(parent: HBoxContainer, slot: String, current_item: Str
 		var tpl = DataRegistry.get_item_template(current_item)
 		if tpl != null:
 			btn.text = tpl.display_name.substr(0, 6)
-			btn.tooltip_text = tpl.display_name
+			var qty_in_stash: int = GameContext.get_run_items_dict().get(current_item, 0)
+			btn.tooltip_text = "%s (have: %d)" % [tpl.display_name, qty_in_stash]
 			var icon_rect = tpl.create_icon_rect(32)
 			if icon_rect != null:
 				btn.icon = icon_rect.texture if icon_rect is TextureRect else null
@@ -10018,30 +9963,50 @@ func _build_discovery_log_view(facility, facility_id: String, town_id: String, c
 			var name_a: String = tpl_a.display_name if tpl_a != null else input_a
 			var name_b: String = tpl_b.display_name if tpl_b != null else input_b
 			var name_out: String = tpl_out.display_name if tpl_out != null else output_id
-			var text: String = "%s + %s" % [name_a, name_b]
-			if input_c != "":
-				var tpl_c = DataRegistry.get_item_template(input_c)
-				var name_c: String = tpl_c.display_name if tpl_c != null else input_c
-				text += " + %s" % name_c
-			text += " = %s" % name_out
-			var label = Label.new()
-			label.text = text
-			label.add_theme_font_size_override("font_size", GameContext.fs(12))
-			label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			label.modulate = Color(0.8, 1.0, 0.8, 1)
-			row.add_child(label)
 
-			# Craft button — check if ingredients available
+			# Compute ingredient needs and can_make_count
 			var run_items: Dictionary = GameContext.get_run_items_dict()
 			var need: Dictionary = {}
 			for iid in [input_a, input_b, input_c]:
 				if iid != "":
 					need[iid] = need.get(iid, 0) + 1
 			var can_craft: bool = true
+			var can_make_count: int = 999
 			for iid in need:
-				if run_items.get(iid, 0) < need[iid]:
+				var have_qty: int = run_items.get(iid, 0)
+				if have_qty < need[iid]:
 					can_craft = false
-					break
+				can_make_count = mini(can_make_count, have_qty / need[iid])
+			if can_make_count == 999:
+				can_make_count = 0
+
+			var formula_text: String = "%s + %s" % [name_a, name_b]
+			if input_c != "":
+				var tpl_c = DataRegistry.get_item_template(input_c)
+				var name_c: String = tpl_c.display_name if tpl_c != null else input_c
+				formula_text += " + %s" % name_c
+			formula_text += " = %s (can make: %d)" % [name_out, can_make_count]
+
+			# Info VBox with formula + per-ingredient quantities
+			var info_vbox = VBoxContainer.new()
+			info_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			var formula_label = Label.new()
+			formula_label.text = formula_text
+			formula_label.add_theme_font_size_override("font_size", GameContext.fs(12))
+			formula_label.modulate = Color(0.8, 1.0, 0.8, 1)
+			info_vbox.add_child(formula_label)
+			var qty_parts: Array = []
+			for iid in need:
+				var itpl = DataRegistry.get_item_template(iid)
+				var iname: String = itpl.display_name if itpl != null else iid
+				qty_parts.append("%s: %d/%d" % [iname, run_items.get(iid, 0), need[iid]])
+			var qty_label = Label.new()
+			qty_label.text = "  " + "  ".join(qty_parts)
+			qty_label.add_theme_font_size_override("font_size", GameContext.fs(11))
+			qty_label.modulate = Color(0.6, 0.9, 0.6, 1) if can_craft else Color(1.0, 0.6, 0.5, 1)
+			info_vbox.add_child(qty_label)
+			row.add_child(info_vbox)
+
 			var craft_btn = Button.new()
 			craft_btn.text = "Craft"
 			craft_btn.custom_minimum_size = Vector2(50, 22)
@@ -10725,12 +10690,6 @@ func _on_dungeon_enter_pressed(dungeon_id: String) -> void:
 			_facility_actions_container.add_child(error_label)
 		return
 
-	# Formation warning: all heroes in middle row
-	if _check_formation_warning():
-		var proceed: bool = await _show_formation_warning()
-		if not proceed:
-			return
-
 	GameContext.enter_dungeon(dungeon_id)
 	GameContext.set_phase(GameContext.GamePhase.COMBAT)
 	print("[DungeonFacility] Entering %s at floor %d" % [dungeon_id, GameContext.get_current_floor()])
@@ -10868,19 +10827,7 @@ func _build_equip_hero_picker_ui() -> void:
 
 		# Card panel for each hero (region-tinted)
 		var card = PanelContainer.new()
-		var card_style = StyleBoxFlat.new()
-		card_style.bg_color = _region_palette.get("bg_medium", Color(0.15, 0.18, 0.22, 0.9))
-		card_style.border_width_left = 1
-		card_style.border_width_top = 1
-		card_style.border_width_right = 1
-		card_style.border_width_bottom = 1
-		card_style.border_color = Color(0.3, 0.5, 0.3, 0.6) if is_in_party else Color(0.3, 0.3, 0.3, 0.4)
-		card_style.set_corner_radius_all(4)
-		card_style.content_margin_left = 8
-		card_style.content_margin_top = 6
-		card_style.content_margin_right = 8
-		card_style.content_margin_bottom = 6
-		card.add_theme_stylebox_override("panel", card_style)
+		card.add_theme_stylebox_override("panel", RPGPackStyles.panel_main(_region_palette.get("ui_tint", Color.WHITE)))
 		_facility_actions_container.add_child(card)
 
 		var card_hbox = HBoxContainer.new()
@@ -11000,19 +10947,7 @@ func _build_equip_comparison_ui() -> void:
 
 	# Comparison panel
 	var comp_panel = PanelContainer.new()
-	var comp_style = StyleBoxFlat.new()
-	comp_style.bg_color = Color(0.12, 0.14, 0.18, 0.9)
-	comp_style.border_width_left = 1
-	comp_style.border_width_top = 1
-	comp_style.border_width_right = 1
-	comp_style.border_width_bottom = 1
-	comp_style.border_color = Color(0.4, 0.4, 0.5, 0.6)
-	comp_style.set_corner_radius_all(4)
-	comp_style.content_margin_left = 12
-	comp_style.content_margin_top = 8
-	comp_style.content_margin_right = 12
-	comp_style.content_margin_bottom = 8
-	comp_panel.add_theme_stylebox_override("panel", comp_style)
+	comp_panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_main(_region_palette.get("ui_tint", Color.WHITE)))
 	_facility_actions_container.add_child(comp_panel)
 
 	var comp_vbox = VBoxContainer.new()
@@ -11275,19 +11210,7 @@ func _build_bag_transfer_hero_picker_ui() -> void:
 		var bag_full: bool = bag_used >= bag_cap
 
 		var card = PanelContainer.new()
-		var card_style = StyleBoxFlat.new()
-		card_style.bg_color = _region_palette.get("bg_medium", Color(0.15, 0.18, 0.22, 0.9))
-		card_style.border_width_left = 1
-		card_style.border_width_top = 1
-		card_style.border_width_right = 1
-		card_style.border_width_bottom = 1
-		card_style.border_color = Color(0.3, 0.5, 0.3, 0.6) if is_in_party else Color(0.3, 0.3, 0.3, 0.4)
-		card_style.set_corner_radius_all(4)
-		card_style.content_margin_left = 8
-		card_style.content_margin_top = 6
-		card_style.content_margin_right = 8
-		card_style.content_margin_bottom = 6
-		card.add_theme_stylebox_override("panel", card_style)
+		card.add_theme_stylebox_override("panel", RPGPackStyles.panel_main(_region_palette.get("ui_tint", Color.WHITE)))
 		_facility_actions_container.add_child(card)
 
 		var card_hbox = HBoxContainer.new()
@@ -11454,12 +11377,15 @@ func _refresh_facility_panel() -> void:
 	var facility = DataRegistry.get_facility(_current_facility_id) if DataRegistry.has_method("get_facility") else null
 	_current_facility = facility
 
-	# Update title bar (tier + gold)
-	if facility != null:
+	# Update title bar (tier + gold) — guard against freed nodes
+	var title_lbl = info.get("title_label")
+	var gold_lbl = info.get("gold_label")
+	if facility != null and title_lbl and is_instance_valid(title_lbl):
 		var town_id = GameContext.get_current_town_id()
 		var current_tier = GameContext.get_facility_tier(town_id, _current_facility_id)
-		info["title_label"].text = "%s T%d" % [facility.display_name, current_tier]
-	info["gold_label"].text = "Gold: %d" % GameContext.get_run_gold()
+		title_lbl.text = "%s T%d" % [facility.display_name, current_tier]
+	if gold_lbl and is_instance_valid(gold_lbl):
+		gold_lbl.text = "Gold: %d" % GameContext.get_run_gold()
 
 	if facility != null:
 		_create_facility_actions(facility)

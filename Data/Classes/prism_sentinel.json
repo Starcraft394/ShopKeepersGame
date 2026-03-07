@@ -1,7 +1,7 @@
 {
   "id": "prism_sentinel",
   "display_name": "Prism Sentinel",
-  "description": "A crystalline guardian who refracts damage and creates protective barriers of light.",
+  "description": "A crystalline guardian who absorbed Crystalhearth's prismatic light into their very body, refracting incoming damage into harmless rainbows. They are a living fortress of light.",
   "icon_hint": "faceted crystal tower shield radiating prismatic light barriers",
   "archetype": "vanguard",
   "unlock_region": 5,
@@ -21,5 +21,13 @@
   "ability_b_id": "light_refraction",
   "passive_a_id": "crystal_shell",
   "passive_b_id": "prismatic_ward",
-  "weapon_types": ["mace", "sword", "axe"]
+  "weapon_types": ["mace", "sword", "axe"],
+  "card_prompt": "Pixel art, SNES style. A decorative card frame background for a fantasy prism sentinel crystal guardian class. Faceted crystal shard border refracting rainbow light at corners with pale blue glow. Deep purple-blue crystalline surface center with prismatic light fragments and rainbow refractions. Small crystal shield at bottom. Color palette: deep purple, crystal blue, prismatic white-rainbow. No characters, no text.",
+  "card_palette": {
+    "border_primary": "#2c1654",
+    "border_accent": "#aed6f1",
+    "bg_primary": "#2c1654",
+    "bg_secondary": "#160b2a",
+    "text_tint": "#ffffff"
+  }
 }

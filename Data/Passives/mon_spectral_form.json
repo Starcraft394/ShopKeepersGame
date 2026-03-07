@@ -1,7 +1,7 @@
 {
   "id": "mon_spectral_form",
   "display_name": "Spectral Form",
-  "description": "Partially incorporeal, making physical attacks harder to land.",
+  "description": "+15% Evasion. Harder to hit with attacks.",
   "icon_hint": "translucent ghostly silhouette phasing through attacks",
   "passive_type": "stat_bonus",
   "trigger": "combat_start",

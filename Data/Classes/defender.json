@@ -1,7 +1,7 @@
 {
   "id": "defender",
   "display_name": "Defender",
-  "description": "A stalwart protector who excels at absorbing damage and protecting allies.",
+  "description": "A stalwart protector forged in the iron quarries of Thornhaven, who stands as an immovable wall between danger and the innocent. Their oak-and-steel shield bears the old forest runes of protection.",
   "icon_hint": "heavy iron tower shield with golden trim and protection rune",
   "archetype": "vanguard",
   "unlock_region": 1,
@@ -21,5 +21,14 @@
   "ability_b_id": "aegis_slam",
   "passive_a_id": "bulwark_stance",
   "passive_b_id": "shielding_presence",
-  "weapon_types": ["sword", "axe", "mace"]
+  "weapon_types": ["sword", "axe", "mace"],
+  "sprites": {"default": "res://Assets/Sprites/Classes/defender"},
+  "card_prompt": "Pixel art, SNES style. A decorative card frame background for a fantasy defender class. Heavy iron-riveted border with oak plank corners and gold nail heads. Dark stone wall center with faint green moss veins. Small golden shield rune etched at bottom center. Color palette: iron grey, deep forest green, warm gold accents. No characters, no text.",
+  "card_palette": {
+    "border_primary": "#4a5568",
+    "border_accent": "#c9a94e",
+    "bg_primary": "#2d4a2e",
+    "bg_secondary": "#1a2e1a",
+    "text_tint": "#c9a94e"
+  }
 }

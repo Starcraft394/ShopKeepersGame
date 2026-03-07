@@ -1,7 +1,7 @@
 {
   "id": "tidechaser",
   "display_name": "Tidechaser",
-  "description": "A water-attuned healer who manipulates currents to restore allies and wash away afflictions.",
+  "description": "A water-attuned healer who communes with Shelldrift's restless tides, washing away afflictions with saltwater and pearl-light. The ocean's rhythm is their heartbeat.",
   "icon_hint": "flowing teal wave crest encircling a glowing pearl of healing light",
   "archetype": "healer",
   "unlock_region": 3,
@@ -21,5 +21,13 @@
   "ability_b_id": "cleansing_wave",
   "passive_a_id": "tidal_flow",
   "passive_b_id": "ocean_blessing",
-  "weapon_types": ["staff", "focus"]
+  "weapon_types": ["staff", "focus"],
+  "card_prompt": "Pixel art, SNES style. A decorative card frame background for a fantasy tidechaser water healer class. Smooth coral and seashell border with small pearls at corners. Deep teal-blue water center with gentle wave patterns and soft glowing pearl light. Small wave crest with glowing pearl at bottom. Color palette: deep ocean blue, healing teal, warm pearl white. No characters, no text.",
+  "card_palette": {
+    "border_primary": "#1a5276",
+    "border_accent": "#48c9b0",
+    "bg_primary": "#1a5276",
+    "bg_secondary": "#0d2b3e",
+    "text_tint": "#f8e8d0"
+  }
 }

@@ -146,12 +146,17 @@ var _active_unit_id: String = ""
 var _highlight_log_emitted: bool = false  # v1.9B.1: Rate-limit debug logs
 var _hero_input_highlight_active: bool = false  # v2.0: Track if hero input highlight is active
 var _hero_input_pulse_tween: Tween = null  # v2.0: Tween for pulsing animation
+var _active_pill_tween: Tween = null  # v2.1: Active pill border pulse
+var _pinned_tooltip_panel: PanelContainer = null  # v2.1: Ctrl+Click pinned tooltip
 
 # v2.0: Hero input highlight colors (brighter and more visible)
 const HERO_INPUT_HIGHLIGHT_COLOR: Color = Color(1.0, 0.9, 0.2, 0.5)  # Bright golden yellow
 const HERO_INPUT_HIGHLIGHT_PULSE_MIN: Color = Color(1.0, 0.85, 0.1, 0.35)  # Dimmer pulse
 const HERO_INPUT_HIGHLIGHT_PULSE_MAX: Color = Color(1.0, 0.95, 0.3, 0.65)  # Brighter pulse
 const NORMAL_HIGHLIGHT_COLOR: Color = Color(1.0, 0.85, 0.0, 0.25)  # Original subtle gold tint
+const ACTIVE_HIGHLIGHT_COLOR: Color = Color(1.0, 0.6, 0.1, 0.45)  # v2.1: Enemy/auto turn highlight
+const ACTIVE_PILL_BORDER_MIN: Color = Color(1.0, 0.80, 0.3, 0.85)
+const ACTIVE_PILL_BORDER_MAX: Color = Color(1.0, 1.00, 0.9, 1.0)
 
 # Pop text pooling
 var _pop_text_pool: Array = []  # Pool of Label nodes
@@ -415,6 +420,7 @@ func _ready() -> void:
 	# Connect button signals
 	step_button.pressed.connect(_on_step_pressed)
 	auto_button.pressed.connect(_on_auto_pressed)
+	auto_button.tooltip_text = "Auto-battle: heroes use basic attacks only. Abilities are not used and targeting may not be optimal."
 	reset_button.pressed.connect(_on_reset_pressed)
 
 	# Attack Line v1: Create overlay layer for action lines
@@ -1344,6 +1350,9 @@ func _build_unit_card_tooltip(unit_data: Dictionary) -> String:
 				var cd_a = unit_data.get("ability_a_cooldown", 0)
 				var cd_str = " (CD: %d)" % cd_a if cd_a > 0 else " (Ready)"
 				lines.append("[A] %s%s" % [a_name, cd_str])
+				var a_desc: String = ability_a.description if ability_a else ""
+				if a_desc != "":
+					lines.append("  %s" % a_desc)
 			else:
 				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("ability_a", 5)
 				lines.append("[A] %s (Lv %d)" % [a_name, req_lv])
@@ -1351,6 +1360,9 @@ func _build_unit_card_tooltip(unit_data: Dictionary) -> String:
 			var cd_a = unit_data.get("ability_a_cooldown", 0)
 			var cd_str = " (CD: %d)" % cd_a if cd_a > 0 else " (Ready)"
 			lines.append("[A] %s%s" % [a_name, cd_str])
+			var a_desc: String = ability_a.description if ability_a else ""
+			if a_desc != "":
+				lines.append("  %s" % a_desc)
 
 	var ability_b_id = unit_data.get("ability_b_id", "")
 	if ability_b_id != "":
@@ -1361,6 +1373,9 @@ func _build_unit_card_tooltip(unit_data: Dictionary) -> String:
 				var cd_b = unit_data.get("ability_b_cooldown", 0)
 				var cd_str = " (CD: %d)" % cd_b if cd_b > 0 else " (Ready)"
 				lines.append("[B] %s%s" % [b_name, cd_str])
+				var b_desc: String = ability_b.description if ability_b else ""
+				if b_desc != "":
+					lines.append("  %s" % b_desc)
 			else:
 				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("ability_b", 25)
 				lines.append("[B] %s (Lv %d)" % [b_name, req_lv])
@@ -1368,6 +1383,9 @@ func _build_unit_card_tooltip(unit_data: Dictionary) -> String:
 			var cd_b = unit_data.get("ability_b_cooldown", 0)
 			var cd_str = " (CD: %d)" % cd_b if cd_b > 0 else " (Ready)"
 			lines.append("[B] %s%s" % [b_name, cd_str])
+			var b_desc: String = ability_b.description if ability_b else ""
+			if b_desc != "":
+				lines.append("  %s" % b_desc)
 
 	# Passives (all units)
 	var passive_a_id = unit_data.get("passive_a_id", "")
@@ -1377,11 +1395,17 @@ func _build_unit_card_tooltip(unit_data: Dictionary) -> String:
 		if tt_is_hero:
 			if GameContext.is_ability_slot_unlocked("passive_a", tt_hero_level):
 				lines.append("[P] %s" % pa_name)
+				var pa_desc: String = passive_a.description if passive_a else ""
+				if pa_desc != "":
+					lines.append("  %s" % pa_desc)
 			else:
 				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("passive_a", 15)
 				lines.append("[P] %s (Lv %d)" % [pa_name, req_lv])
 		else:
 			lines.append("[P] %s" % pa_name)
+			var pa_desc: String = passive_a.description if passive_a else ""
+			if pa_desc != "":
+				lines.append("  %s" % pa_desc)
 
 	var passive_b_id = unit_data.get("passive_b_id", "")
 	if passive_b_id != "":
@@ -1390,11 +1414,17 @@ func _build_unit_card_tooltip(unit_data: Dictionary) -> String:
 		if tt_is_hero:
 			if GameContext.is_ability_slot_unlocked("passive_b", tt_hero_level):
 				lines.append("[P] %s" % pb_name)
+				var pb_desc: String = passive_b.description if passive_b else ""
+				if pb_desc != "":
+					lines.append("  %s" % pb_desc)
 			else:
 				var req_lv: int = GameContext.ABILITY_UNLOCK_LEVELS.get("passive_b", 40)
 				lines.append("[P] %s (Lv %d)" % [pb_name, req_lv])
 		else:
 			lines.append("[P] %s" % pb_name)
+			var pb_desc: String = passive_b.description if passive_b else ""
+			if pb_desc != "":
+				lines.append("  %s" % pb_desc)
 
 	# Bag (heroes only)
 	if tt_is_hero:
@@ -1405,6 +1435,8 @@ func _build_unit_card_tooltip(unit_data: Dictionary) -> String:
 	if not unit_data["is_alive"]:
 		lines.append("[DEAD]")
 
+	lines.append("")
+	lines.append("Ctrl+Click to pin")
 	return "\n".join(lines)
 
 
@@ -2212,6 +2244,7 @@ func _on_combat_ended(_result) -> void:
 	auto_button.text = "Auto"
 	auto_button.disabled = true
 	step_button.disabled = true
+	_dismiss_pinned_tooltip()
 
 	# v1.9A: Clear active unit highlight
 	_set_active_unit("")
@@ -2425,23 +2458,9 @@ func _show_loot_panel() -> void:
 	_loot_panel.focus_mode = Control.FOCUS_ALL
 	_loot_panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	_loot_panel.gui_input.connect(_on_loot_panel_gui_input)
-	var popup_style = StyleBoxFlat.new()
-	popup_style.bg_color = _region_palette.get("bg_dark", Color(0.14, 0.11, 0.09, 0.95))
-	popup_style.border_width_left = 2
-	popup_style.border_width_top = 2
-	popup_style.border_width_right = 2
-	popup_style.border_width_bottom = 2
-	popup_style.border_color = _region_palette.get("border", Color(0.55, 0.4, 0.25, 0.8))
-	popup_style.corner_radius_top_left = 6
-	popup_style.corner_radius_top_right = 6
-	popup_style.corner_radius_bottom_left = 6
-	popup_style.corner_radius_bottom_right = 6
-	popup_style.content_margin_left = 16.0
-	popup_style.content_margin_top = 12.0
-	popup_style.content_margin_right = 16.0
-	popup_style.content_margin_bottom = 12.0
-	_loot_panel.add_theme_stylebox_override("panel", popup_style)
+	_loot_panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_modal(_region_palette.get("ui_tint", Color.WHITE)))
 	_loot_overlay.add_child(_loot_panel)
+	TutorialOverlay.try_show(self, "tutorial_loot_routing")
 
 	var scroll = ScrollContainer.new()
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -3673,13 +3692,7 @@ func _show_flee_dialog(fallen_name: String) -> void:
 	_flee_dialog.add_child(center)
 
 	var panel = PanelContainer.new()
-	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.15, 0.08, 0.08, 0.95)
-	style.border_color = Color(0.7, 0.3, 0.2)
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(24)
-	panel.add_theme_stylebox_override("panel", style)
+	panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_modal(Color(0.8, 0.5, 0.4, 1)))
 	panel.custom_minimum_size = Vector2(450, 0)
 	center.add_child(panel)
 
@@ -3806,13 +3819,7 @@ func _show_victory_panel() -> void:
 	_victory_panel.add_child(center)
 
 	var panel = PanelContainer.new()
-	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.12, 0.10, 0.04, 0.95)
-	style.border_color = Color(0.8, 0.65, 0.2)
-	style.set_border_width_all(3)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(30)
-	panel.add_theme_stylebox_override("panel", style)
+	panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_modal(Color(0.9, 0.8, 0.5, 1)))
 	panel.custom_minimum_size = Vector2(500, 300)
 	center.add_child(panel)
 
@@ -3898,10 +3905,7 @@ func _show_defeat_panel() -> void:
 	_defeat_panel.offset_bottom = 0
 
 	# Dark red background style
-	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.15, 0.05, 0.05, 0.95)
-	style.set_content_margin_all(20)
-	_defeat_panel.add_theme_stylebox_override("panel", style)
+	_defeat_panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_modal(Color(0.7, 0.3, 0.3, 1)))
 
 	var scroll = ScrollContainer.new()
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -4014,13 +4018,7 @@ func _show_defeat_panel() -> void:
 func _create_lost_hero_panel(hero_id: String) -> PanelContainer:
 	var panel = PanelContainer.new()
 
-	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.2, 0.1, 0.1, 0.8)
-	style.border_color = Color(0.5, 0.2, 0.2)
-	style.set_border_width_all(1)
-	style.set_corner_radius_all(4)
-	style.set_content_margin_all(10)
-	panel.add_theme_stylebox_override("panel", style)
+	panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_main(Color(0.7, 0.4, 0.4, 1)))
 
 	var vbox = VBoxContainer.new()
 	vbox.add_theme_constant_override("separation", 4)
@@ -4388,6 +4386,7 @@ func _apply_active_highlight(display: Control) -> void:
 	var highlight = display.get_node_or_null("HighlightFrame")
 	if highlight != null:
 		highlight.visible = true
+		highlight.color = ACTIVE_HIGHLIGHT_COLOR
 		# v1.9B.1: Rate-limited debug log
 		if not _highlight_log_emitted:
 			print("[UI] highlight_set unit_id=%s node_ok=true" % display.name)
@@ -4679,6 +4678,11 @@ func _on_action_performed(action: CombatAction) -> void:
 		if action.was_critical:
 			kind = "crit"
 		_show_pop_text(action.target_id, "-%d" % action.damage_dealt, kind)
+		# Backline tutorial — first time a back-row hero takes damage
+		if action.target_id.begins_with("hero_") and _combat_controller != null:
+			var target_unit = _combat_controller.get_unit_by_id(action.target_id)
+			if target_unit != null and target_unit.is_back_row():
+				TutorialOverlay.try_show(self, "tutorial_backline_targeting")
 
 	# Healing pop text (on target)
 	if action.healing_done > 0:
@@ -4799,16 +4803,7 @@ func _create_v19b_ui() -> void:
 	_timeline_panel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 
 	# Style the panel background (region-tinted)
-	var panel_style = StyleBoxFlat.new()
-	panel_style.bg_color = _region_palette.get("bg_dark", Color(0.14, 0.12, 0.10, 0.95))
-	panel_style.border_color = _region_palette.get("border", Color(0.35, 0.30, 0.22, 1.0))
-	panel_style.border_width_bottom = 1
-	panel_style.content_margin_left = 8
-	panel_style.content_margin_right = 8
-	panel_style.content_margin_top = 3
-	panel_style.content_margin_bottom = 3
-	panel_style.set_corner_radius_all(3)
-	_timeline_panel.add_theme_stylebox_override("panel", panel_style)
+	_timeline_panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_main(_region_palette.get("ui_tint", Color.WHITE)))
 	add_child(_timeline_panel)
 
 	# Create timeline HBox inside panel
@@ -4839,17 +4834,8 @@ func _create_v19b_ui() -> void:
 	_log_overlay_panel.offset_bottom = -205
 	_log_overlay_panel.custom_minimum_size = Vector2(250, 0)
 
-	# Style log overlay background (CraftPix warm tones)
-	var log_style = StyleBoxFlat.new()
-	log_style.bg_color = Color(0.10, 0.09, 0.07, 0.88)
-	log_style.border_color = Color(0.30, 0.25, 0.20, 0.6)
-	log_style.set_border_width_all(1)
-	log_style.set_corner_radius_all(4)
-	log_style.content_margin_left = 8
-	log_style.content_margin_right = 8
-	log_style.content_margin_top = 6
-	log_style.content_margin_bottom = 6
-	_log_overlay_panel.add_theme_stylebox_override("panel", log_style)
+	# Style log overlay background (RPG UI Pack)
+	_log_overlay_panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_main(_region_palette.get("ui_tint", Color.WHITE)))
 	add_child(_log_overlay_panel)
 
 	# Inner VBox for log content + pin button row
@@ -4901,6 +4887,9 @@ func _refresh_timeline() -> void:
 	if _timeline_container == null or not is_instance_valid(_timeline_container):
 		return
 
+	_stop_active_pill_pulse()
+	_dismiss_pinned_tooltip()
+
 	# Clear existing children EXCEPT the intent label (last child)
 	var children = _timeline_container.get_children()
 	for i in range(children.size() - 1):  # Skip last child (intent label)
@@ -4908,6 +4897,11 @@ func _refresh_timeline() -> void:
 
 	# Get reordered timeline: upcoming first, then acted (moved to end)
 	var timeline = _combat_controller.get_reordered_timeline_snapshot()
+
+	# Build portrait lookup for target indicators
+	var portrait_by_unit_id: Dictionary = {}
+	for entry in timeline:
+		portrait_by_unit_id[entry["unit_id"]] = entry.get("portrait_path", "")
 
 	var insert_idx = 0
 	var separator_inserted: bool = false
@@ -4919,19 +4913,25 @@ func _refresh_timeline() -> void:
 			_timeline_container.move_child(sep, insert_idx)
 			insert_idx += 1
 			separator_inserted = true
-		var pill = _create_timeline_pill(entry)
+		var pill = _create_timeline_pill(entry, portrait_by_unit_id)
 		_timeline_container.add_child(pill)
 		_timeline_container.move_child(pill, insert_idx)
 		insert_idx += 1
 
+	# Start pulsing on the active pill
+	for child in _timeline_container.get_children():
+		if child.has_meta("is_active_pill"):
+			_start_active_pill_pulse(child.get_meta("pill_style_ref"))
+			break
+
 
 ## Create a portrait-based timeline entry for a unit.
-## Shows 32x32 portrait with team-colored border and short name below.
-func _create_timeline_pill(entry: Dictionary) -> PanelContainer:
+## Shows portrait with team-colored border. Active unit gets pulse + name.
+func _create_timeline_pill(entry: Dictionary, portrait_map: Dictionary = {}) -> PanelContainer:
 	var is_active = entry["is_current"]
 	var is_player = entry["team"] == "P"
 	var has_acted: bool = entry.get("has_acted", false)
-	var pill_size: int = 40 if is_active else 36
+	var pill_size: int = 48 if is_active else 36
 
 	var pill = PanelContainer.new()
 	pill.custom_minimum_size = Vector2(pill_size, 0)
@@ -4944,7 +4944,7 @@ func _create_timeline_pill(entry: Dictionary) -> PanelContainer:
 	if is_active:
 		bg_color = Color(0.30, 0.25, 0.10, 0.95)
 		border_color = Color(1.0, 0.85, 0.4, 0.9)
-		border_width = 2
+		border_width = 3
 	elif has_acted:
 		# Dimmed style for units that already acted this round
 		bg_color = Color(0.10, 0.10, 0.10, 0.6)
@@ -4967,13 +4967,13 @@ func _create_timeline_pill(entry: Dictionary) -> PanelContainer:
 	pill_style.content_margin_bottom = 1
 	pill.add_theme_stylebox_override("panel", pill_style)
 
-	# VBox: portrait on top, name below
+	# VBox: portrait on top, indicators below
 	var vbox = VBoxContainer.new()
 	vbox.add_theme_constant_override("separation", 0)
 	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
 
-	# Portrait (32x32 for active, 28x28 for others)
-	var portrait_size: int = 32 if is_active else 28
+	# Portrait (36x36 for active, 28x28 for others)
+	var portrait_size: int = 36 if is_active else 28
 	var portrait_rect = TextureRect.new()
 	portrait_rect.custom_minimum_size = Vector2(portrait_size, portrait_size)
 	portrait_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
@@ -4987,7 +4987,7 @@ func _create_timeline_pill(entry: Dictionary) -> PanelContainer:
 
 	vbox.add_child(portrait_rect)
 
-	# Active/front indicator arrow
+	# Active indicator: arrow + name
 	if is_active:
 		var arrow = Label.new()
 		arrow.text = "▶"
@@ -4995,12 +4995,61 @@ func _create_timeline_pill(entry: Dictionary) -> PanelContainer:
 		arrow.add_theme_color_override("font_color", Color(1.0, 0.85, 0.4, 0.9))
 		arrow.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		vbox.add_child(arrow)
+		var unit_name: String = entry.get("name", "")
+		if unit_name.length() > 8:
+			unit_name = unit_name.substr(0, 7) + "."
+		var name_label = Label.new()
+		name_label.text = unit_name
+		name_label.add_theme_font_size_override("font_size", GameContext.fs(8))
+		name_label.add_theme_color_override("font_color", Color(1.0, 0.95, 0.7, 0.95))
+		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		vbox.add_child(name_label)
+		# Store style ref for pulse tween
+		pill.set_meta("is_active_pill", true)
+		pill.set_meta("pill_style_ref", pill_style)
+
+	# Target indicator: show who this enemy plans to attack
+	var intent = entry.get("intent", {})
+	if not is_player and not has_acted and not is_active:
+		var target_id: String = intent.get("target_id", "")
+		if target_id != "":
+			var target_portrait: String = portrait_map.get(target_id, "")
+			var target_hbox = HBoxContainer.new()
+			target_hbox.add_theme_constant_override("separation", 1)
+			target_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+			var arrow_lbl = Label.new()
+			arrow_lbl.text = "→"
+			arrow_lbl.add_theme_font_size_override("font_size", GameContext.fs(8))
+			arrow_lbl.add_theme_color_override("font_color", Color(1.0, 0.6, 0.4, 0.9))
+			target_hbox.add_child(arrow_lbl)
+			if target_portrait != "" and ResourceLoader.exists(target_portrait):
+				var target_tex = load(target_portrait) as Texture2D
+				if target_tex != null:
+					var target_rect = TextureRect.new()
+					target_rect.custom_minimum_size = Vector2(12, 12)
+					target_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+					target_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+					target_rect.texture = target_tex
+					target_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+					target_hbox.add_child(target_rect)
+			else:
+				var target_name: String = intent.get("target_name", "?")
+				var letter = Label.new()
+				letter.text = target_name.substr(0, 1).to_upper() if target_name != "" else "?"
+				letter.add_theme_font_size_override("font_size", GameContext.fs(8))
+				letter.add_theme_color_override("font_color", Color(0.5, 1.0, 0.5, 0.9))
+				target_hbox.add_child(letter)
+			vbox.add_child(target_hbox)
 
 	pill.add_child(vbox)
 
 	# Rich tooltip with intent preview
-	var intent = entry.get("intent", {})
 	pill.tooltip_text = _build_timeline_tooltip(entry, intent)
+	pill.gui_input.connect(func(event: InputEvent):
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT and event.ctrl_pressed:
+			_show_pinned_tooltip(pill.tooltip_text, pill)
+			get_viewport().set_input_as_handled()
+	)
 
 	return pill
 
@@ -5015,6 +5064,82 @@ func _create_timeline_separator() -> PanelContainer:
 	sep.add_theme_stylebox_override("panel", style)
 	sep.tooltip_text = "Turn order divider"
 	return sep
+
+
+## Start border color pulse on the active turn pill.
+func _start_active_pill_pulse(pill_style: StyleBoxFlat) -> void:
+	_stop_active_pill_pulse()
+	_active_pill_tween = create_tween()
+	_active_pill_tween.set_loops()
+	_active_pill_tween.tween_method(
+		func(c: Color):
+			if is_instance_valid(pill_style):
+				pill_style.border_color = c,
+		ACTIVE_PILL_BORDER_MIN, ACTIVE_PILL_BORDER_MAX, 0.5
+	)
+	_active_pill_tween.tween_method(
+		func(c: Color):
+			if is_instance_valid(pill_style):
+				pill_style.border_color = c,
+		ACTIVE_PILL_BORDER_MAX, ACTIVE_PILL_BORDER_MIN, 0.5
+	)
+
+
+## Stop and clean up active pill pulse tween.
+func _stop_active_pill_pulse() -> void:
+	if _active_pill_tween != null:
+		if _active_pill_tween.is_valid():
+			_active_pill_tween.kill()
+		_active_pill_tween = null
+
+
+## Show a pinned tooltip panel near the source control.
+func _show_pinned_tooltip(text: String, source_control: Control) -> void:
+	_dismiss_pinned_tooltip()
+	var panel = PanelContainer.new()
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.1, 0.1, 0.12, 0.95)
+	style.border_color = Color(0.8, 0.7, 0.3, 0.8)
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(4)
+	style.set_content_margin_all(8)
+	panel.add_theme_stylebox_override("panel", style)
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 4)
+	var content_label = Label.new()
+	# Strip the "Ctrl+Click to pin" hint from pinned view
+	var display_text: String = text.replace("\n\nCtrl+Click to pin", "")
+	content_label.text = display_text
+	content_label.add_theme_font_size_override("font_size", GameContext.fs(13))
+	content_label.add_theme_color_override("font_color", Color(0.95, 0.95, 0.95))
+	content_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	content_label.custom_minimum_size.x = 280
+	vbox.add_child(content_label)
+	var hint_label = Label.new()
+	hint_label.text = "Ctrl+Click to close"
+	hint_label.add_theme_font_size_override("font_size", GameContext.fs(10))
+	hint_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+	hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	vbox.add_child(hint_label)
+	panel.add_child(vbox)
+	panel.z_index = 50
+	# Position above the source control
+	var src_pos: Vector2 = source_control.global_position
+	panel.position = Vector2(src_pos.x, maxf(src_pos.y - 200, 10))
+	add_child(panel)
+	_pinned_tooltip_panel = panel
+	panel.gui_input.connect(func(event: InputEvent):
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT and event.ctrl_pressed:
+			_dismiss_pinned_tooltip()
+			get_viewport().set_input_as_handled()
+	)
+
+
+## Dismiss the pinned tooltip panel if it exists.
+func _dismiss_pinned_tooltip() -> void:
+	if _pinned_tooltip_panel != null and is_instance_valid(_pinned_tooltip_panel):
+		_pinned_tooltip_panel.queue_free()
+	_pinned_tooltip_panel = null
 
 
 ## Build a multi-line tooltip for a timeline pill showing unit info and predicted intent.
@@ -5042,6 +5167,9 @@ func _build_timeline_tooltip(entry: Dictionary, intent: Dictionary) -> String:
 			for ab in abilities:
 				var status: String = "ready" if ab.get("ready", false) else "%d cd" % ab.get("cooldown", 0)
 				lines.append("  %s (%s)" % [ab.get("name", "?"), status])
+				var ab_desc: String = ab.get("desc", "")
+				if ab_desc != "":
+					lines.append("    \"%s\"" % ab_desc)
 		else:
 			lines.append("Basic Attack")
 	elif action_type == "tactical":
@@ -5049,6 +5177,12 @@ func _build_timeline_tooltip(entry: Dictionary, intent: Dictionary) -> String:
 		lines.append("May use:")
 		for ab in abilities:
 			lines.append("  %s" % ab.get("name", "?"))
+			var ab_desc: String = ab.get("desc", "")
+			if ab_desc != "":
+				lines.append("    \"%s\"" % ab_desc)
+		var tac_target: String = intent.get("target_name", "")
+		if tac_target != "":
+			lines.append("Target: %s" % tac_target)
 	else:
 		# Deterministic enemy prediction
 		var ability_name: String = intent.get("ability_name", "Attack")
@@ -5060,6 +5194,8 @@ func _build_timeline_tooltip(entry: Dictionary, intent: Dictionary) -> String:
 		if target != "":
 			lines.append("Target: %s" % target)
 
+	lines.append("")
+	lines.append("Ctrl+Click to pin")
 	return "\n".join(lines)
 
 
@@ -5228,17 +5364,7 @@ func _create_action_panel() -> void:
 	_action_panel = PanelContainer.new()
 	_action_panel.name = "ActionPanel"
 	_action_panel.visible = false
-	var action_style = StyleBoxFlat.new()
-	action_style.bg_color = _region_palette.get("bg_medium", Color(0.18, 0.15, 0.10, 0.95))
-	var action_accent: Color = _region_palette.get("accent", Color(1.0, 0.85, 0.4, 0.7))
-	action_style.border_color = Color(action_accent.r, action_accent.g, action_accent.b, 0.7)
-	action_style.set_border_width_all(1)
-	action_style.set_corner_radius_all(3)
-	action_style.content_margin_left = 8
-	action_style.content_margin_right = 8
-	action_style.content_margin_top = 4
-	action_style.content_margin_bottom = 4
-	_action_panel.add_theme_stylebox_override("panel", action_style)
+	_action_panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_main(_region_palette.get("ui_tint", Color.WHITE)))
 
 	# VBox to hold two rows
 	var vbox = VBoxContainer.new()
@@ -6246,13 +6372,7 @@ func _show_stat_inspection(unit_id: String) -> void:
 	# Panel container
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(360, 0)
-	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.12, 0.10, 0.08, 0.95)
-	style.set_border_width_all(2)
-	style.border_color = Color(0.6, 0.5, 0.3, 0.8)
-	style.set_corner_radius_all(6)
-	style.set_content_margin_all(16)
-	panel.add_theme_stylebox_override("panel", style)
+	panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_modal(_region_palette.get("ui_tint", Color.WHITE)))
 	center.add_child(panel)
 
 	# Content
@@ -6695,16 +6815,7 @@ func _show_item_select_overlay(hero_id: String, consumables: Array) -> void:
 	# Panel
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(320, 0)
-	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.1, 0.1, 0.15, 0.97)
-	style.border_color = Color(0.4, 0.7, 0.3, 0.8)
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(6)
-	style.content_margin_left = 12
-	style.content_margin_right = 12
-	style.content_margin_top = 10
-	style.content_margin_bottom = 10
-	panel.add_theme_stylebox_override("panel", style)
+	panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_modal(_region_palette.get("ui_tint", Color.WHITE)))
 	center.add_child(panel)
 
 	var vbox = VBoxContainer.new()
@@ -6809,16 +6920,7 @@ func _show_combat_consumable_hero_picker(item_id: String, source_hero_id: String
 
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(300, 0)
-	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.1, 0.1, 0.15, 0.97)
-	style.border_color = Color(0.3, 0.7, 0.3, 0.8)
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(6)
-	style.content_margin_left = 12
-	style.content_margin_right = 12
-	style.content_margin_top = 10
-	style.content_margin_bottom = 10
-	panel.add_theme_stylebox_override("panel", style)
+	panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_modal(_region_palette.get("ui_tint", Color.WHITE)))
 	center.add_child(panel)
 
 	var vbox = VBoxContainer.new()
@@ -7478,16 +7580,7 @@ func _create_shopkeeper_bag_display() -> void:
 	_shopkeeper_bag_panel.name = "ShopkeeperBagPanel"
 
 	# Warm brown styling
-	var bag_style = StyleBoxFlat.new()
-	bag_style.bg_color = Color(0.2, 0.15, 0.08, 0.9)
-	bag_style.border_color = Color(0.5, 0.35, 0.15, 0.6)
-	bag_style.set_border_width_all(1)
-	bag_style.set_corner_radius_all(3)
-	bag_style.content_margin_left = 6
-	bag_style.content_margin_right = 6
-	bag_style.content_margin_top = 3
-	bag_style.content_margin_bottom = 3
-	_shopkeeper_bag_panel.add_theme_stylebox_override("panel", bag_style)
+	_shopkeeper_bag_panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_main(Color(0.8, 0.65, 0.45, 1)))
 
 	var vbox = VBoxContainer.new()
 	vbox.add_theme_constant_override("separation", 2)
@@ -7705,16 +7798,7 @@ func _create_hero_bag_display() -> void:
 	_hero_bag_panel = PanelContainer.new()
 	_hero_bag_panel.name = "HeroBagPanel"
 
-	var bag_style = StyleBoxFlat.new()
-	bag_style.bg_color = Color(0.12, 0.15, 0.2, 0.9)
-	bag_style.border_color = Color(0.3, 0.5, 0.7, 0.6)
-	bag_style.set_border_width_all(1)
-	bag_style.set_corner_radius_all(3)
-	bag_style.content_margin_left = 6
-	bag_style.content_margin_right = 6
-	bag_style.content_margin_top = 3
-	bag_style.content_margin_bottom = 3
-	_hero_bag_panel.add_theme_stylebox_override("panel", bag_style)
+	_hero_bag_panel.add_theme_stylebox_override("panel", RPGPackStyles.panel_main(Color(0.5, 0.65, 0.8, 1)))
 
 	var vbox = VBoxContainer.new()
 	vbox.add_theme_constant_override("separation", 2)

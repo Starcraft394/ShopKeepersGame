@@ -1,7 +1,7 @@
 {
   "id": "void_herald",
   "display_name": "Void Herald",
-  "description": "A harbinger of entropy who tears holes in reality, dealing devastating damage through unstable portals.",
+  "description": "A harbinger of Voidreach's entropy who tears unstable portals in the fabric of reality, unleashing devastating dimensional energy. Each rift they open weakens the world a little more.",
   "icon_hint": "jagged dimensional tear with unstable purple energy spilling outward",
   "archetype": "dps",
   "unlock_region": 7,
@@ -21,5 +21,13 @@
   "ability_b_id": "entropy_blast",
   "passive_a_id": "reality_warp",
   "passive_b_id": "void_resonance",
-  "weapon_types": ["staff", "focus"]
+  "weapon_types": ["staff", "focus"],
+  "card_prompt": "Pixel art, SNES style. A decorative card frame background for a fantasy void herald entropy mage class. Jagged unstable border with crackling purple energy tears at corners and warping edges. Pitch black center with violent purple-red entropy tears ripping across surface and unstable energy arcs. Small jagged dimensional tear at bottom leaking purple light. Color palette: pitch black, entropy purple, rift red. No characters, no text.",
+  "card_palette": {
+    "border_primary": "#0a0012",
+    "border_accent": "#8e44ad",
+    "bg_primary": "#0a0012",
+    "bg_secondary": "#050009",
+    "text_tint": "#e74c3c"
+  }
 }

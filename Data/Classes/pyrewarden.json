@@ -1,7 +1,7 @@
 {
   "id": "pyrewarden",
   "display_name": "Pyrewarden",
-  "description": "A flame-forged tank who draws enemy aggression and retaliates with burning vengeance.",
+  "description": "A flame-forged sentinel who bathed in the magma of Embercradle to harden their body into living volcanic rock. They draw enemy fury and answer it with burning vengeance.",
   "icon_hint": "molten iron shield engulfed in roaring orange flames with ember core",
   "archetype": "vanguard",
   "unlock_region": 4,
@@ -21,5 +21,13 @@
   "ability_b_id": "pyre_slam",
   "passive_a_id": "burning_presence",
   "passive_b_id": "ember_shield",
-  "weapon_types": ["sword", "mace", "axe"]
+  "weapon_types": ["sword", "mace", "axe"],
+  "card_prompt": "Pixel art, SNES style. A decorative card frame background for a fantasy pyrewarden flame tank class in a volcanic wasteland. Cracked obsidian border with glowing orange lava seeping through cracks and ember sparks at corners. Dark volcanic rock center with pulsing orange-red magma veins. Small molten shield silhouette at bottom. Color palette: obsidian black, molten red, ember orange. No characters, no text.",
+  "card_palette": {
+    "border_primary": "#1a1a2e",
+    "border_accent": "#f39c12",
+    "bg_primary": "#1a1a2e",
+    "bg_secondary": "#0d0d17",
+    "text_tint": "#e74c3c"
+  }
 }

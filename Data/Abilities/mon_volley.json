@@ -1,7 +1,7 @@
 {
   "id": "mon_volley",
   "display_name": "Volley",
-  "description": "Launches a barrage of projectiles at all enemies.",
+  "description": "Deals 4 + 40% ATK physical damage. Hits all enemies. Cooldown: 4 turns.",
   "icon_hint": "rain of arrows descending from above in a wide arc",
   "ability_type": "monster",
   "source_class_id": "",

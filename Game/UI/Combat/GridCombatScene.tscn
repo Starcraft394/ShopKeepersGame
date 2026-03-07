@@ -1,0 +1,336 @@
+[gd_scene format=3 uid="uid://drc8g4j5m2kn7"]
+
+[ext_resource type="Script" path="res://Game/UI/Combat/GridCombatScene.gd" id="1_script"]
+[ext_resource type="Theme" uid="uid://craftpix_ui_tinted_001" path="res://Themes/CraftPix/craftpix_ui_tinted.tres" id="2_theme"]
+
+[node name="GridCombatScene" type="Control"]
+theme = ExtResource("2_theme")
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.10, 0.09, 0.08, 1)
+
+[node name="TopBar" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 40.0
+grow_horizontal = 2
+text = "Round 1 | Current Turn: ---"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TopBarBG" type="ColorRect" parent="TopBar"]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15, 0.13, 0.11, 0.95)
+
+[node name="DungeonProgressLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 40.0
+offset_bottom = 60.0
+grow_horizontal = 2
+text = "Dungeon | Floor 0/0 | Room 0/0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MainContent" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 65.0
+offset_bottom = -200.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 4
+
+[node name="GridColLabels" type="HBoxContainer" parent="MainContent"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Label_c0" type="Label" parent="MainContent/GridColLabels"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "P-1"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.6, 0.8, 1.0, 0.7)
+
+[node name="Label_c1" type="Label" parent="MainContent/GridColLabels"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "P-2"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.6, 0.8, 1.0, 0.7)
+
+[node name="Label_c2" type="Label" parent="MainContent/GridColLabels"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "P-3"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.6, 0.8, 1.0, 0.5)
+
+[node name="Label_c3" type="Label" parent="MainContent/GridColLabels"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "P-4"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.6, 0.8, 1.0, 0.5)
+
+[node name="Label_c4" type="Label" parent="MainContent/GridColLabels"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "E-4"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(1.0, 0.6, 0.6, 0.5)
+
+[node name="Label_c5" type="Label" parent="MainContent/GridColLabels"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "E-3"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(1.0, 0.6, 0.6, 0.5)
+
+[node name="Label_c6" type="Label" parent="MainContent/GridColLabels"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "E-2"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(1.0, 0.6, 0.6, 0.7)
+
+[node name="Label_c7" type="Label" parent="MainContent/GridColLabels"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "E-1"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(1.0, 0.6, 0.6, 0.7)
+
+[node name="Battlefield" type="VBoxContainer" parent="MainContent"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 2
+
+[node name="GridRow_0" type="HBoxContainer" parent="MainContent/Battlefield"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 2
+
+[node name="Cell_c0" type="PanelContainer" parent="MainContent/Battlefield/GridRow_0"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c1" type="PanelContainer" parent="MainContent/Battlefield/GridRow_0"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c2" type="PanelContainer" parent="MainContent/Battlefield/GridRow_0"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c3" type="PanelContainer" parent="MainContent/Battlefield/GridRow_0"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c4" type="PanelContainer" parent="MainContent/Battlefield/GridRow_0"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c5" type="PanelContainer" parent="MainContent/Battlefield/GridRow_0"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c6" type="PanelContainer" parent="MainContent/Battlefield/GridRow_0"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c7" type="PanelContainer" parent="MainContent/Battlefield/GridRow_0"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GridRow_1" type="HBoxContainer" parent="MainContent/Battlefield"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 2
+
+[node name="Cell_c0" type="PanelContainer" parent="MainContent/Battlefield/GridRow_1"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c1" type="PanelContainer" parent="MainContent/Battlefield/GridRow_1"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c2" type="PanelContainer" parent="MainContent/Battlefield/GridRow_1"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c3" type="PanelContainer" parent="MainContent/Battlefield/GridRow_1"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c4" type="PanelContainer" parent="MainContent/Battlefield/GridRow_1"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c5" type="PanelContainer" parent="MainContent/Battlefield/GridRow_1"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c6" type="PanelContainer" parent="MainContent/Battlefield/GridRow_1"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c7" type="PanelContainer" parent="MainContent/Battlefield/GridRow_1"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GridRow_2" type="HBoxContainer" parent="MainContent/Battlefield"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 2
+
+[node name="Cell_c0" type="PanelContainer" parent="MainContent/Battlefield/GridRow_2"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c1" type="PanelContainer" parent="MainContent/Battlefield/GridRow_2"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c2" type="PanelContainer" parent="MainContent/Battlefield/GridRow_2"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c3" type="PanelContainer" parent="MainContent/Battlefield/GridRow_2"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c4" type="PanelContainer" parent="MainContent/Battlefield/GridRow_2"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c5" type="PanelContainer" parent="MainContent/Battlefield/GridRow_2"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c6" type="PanelContainer" parent="MainContent/Battlefield/GridRow_2"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c7" type="PanelContainer" parent="MainContent/Battlefield/GridRow_2"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GridRow_3" type="HBoxContainer" parent="MainContent/Battlefield"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 2
+
+[node name="Cell_c0" type="PanelContainer" parent="MainContent/Battlefield/GridRow_3"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c1" type="PanelContainer" parent="MainContent/Battlefield/GridRow_3"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c2" type="PanelContainer" parent="MainContent/Battlefield/GridRow_3"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c3" type="PanelContainer" parent="MainContent/Battlefield/GridRow_3"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c4" type="PanelContainer" parent="MainContent/Battlefield/GridRow_3"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c5" type="PanelContainer" parent="MainContent/Battlefield/GridRow_3"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c6" type="PanelContainer" parent="MainContent/Battlefield/GridRow_3"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cell_c7" type="PanelContainer" parent="MainContent/Battlefield/GridRow_3"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StashLabel" type="Label" parent="MainContent"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.96, 0.87, 0.7, 1)
+
+[node name="BottomPanel" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -200.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="LogLabel" type="Label" parent="BottomPanel"]
+layout_mode = 2
+text = "Combat Log:"
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.6, 0.55, 0.45, 0.7)
+
+[node name="CombatLog" type="RichTextLabel" parent="BottomPanel"]
+custom_minimum_size = Vector2(0, 85)
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+text = ""
+scroll_following = true
+
+[node name="ButtonRow" type="HBoxContainer" parent="BottomPanel"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="StepButton" type="Button" parent="BottomPanel/ButtonRow"]
+custom_minimum_size = Vector2(100, 35)
+layout_mode = 2
+text = "Step Turn"
+
+[node name="AutoButton" type="Button" parent="BottomPanel/ButtonRow"]
+custom_minimum_size = Vector2(100, 35)
+layout_mode = 2
+text = "Auto"
+
+[node name="ResetButton" type="Button" parent="BottomPanel/ButtonRow"]
+custom_minimum_size = Vector2(100, 35)
+layout_mode = 2
+text = "Reset"

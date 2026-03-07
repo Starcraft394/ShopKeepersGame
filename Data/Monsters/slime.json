@@ -8,6 +8,7 @@
   "tier": 1,
   "attack_type": "melee",
   "combat_role": "melee",
+  "movement_range": 2,
   "base_stats": {
     "health": 63,
     "attack": 8,

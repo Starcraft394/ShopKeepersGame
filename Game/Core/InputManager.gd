@@ -633,7 +633,7 @@ func _focus_zone(zone_id: String) -> void:
 		return
 	var controls: Array = _zones[zone_id].get("controls", [])
 	for c in controls:
-		if c is Control and c.focus_mode != Control.FOCUS_NONE and c.is_visible_in_tree():
+		if c != null and is_instance_valid(c) and c is Control and c.focus_mode != Control.FOCUS_NONE and c.is_visible_in_tree():
 			c.grab_focus()
 			call_deferred("_ensure_focused_visible")
 			return
@@ -659,7 +659,7 @@ func get_focused_index_in_zone(zone_id: String) -> int:
 		return -1
 	var controls: Array = _zones[zone_id].get("controls", [])
 	for i in range(controls.size()):
-		if controls[i] == focused:
+		if is_instance_valid(controls[i]) and controls[i] == focused:
 			return i
 	return -1
 

@@ -16,6 +16,10 @@
     "aquatic",
     "elemental"
   ],
+  "sprites": {
+    "m": "res://Assets/Sprites/Heroes/tidelings_m",
+    "f": "res://Assets/Sprites/Heroes/tidelings_f"
+  },
   "portraits": [
     "res://Assets/_ArtPacks/Avatars_Tidelings_PNG/Icon1.png",
     "res://Assets/_ArtPacks/Avatars_Tidelings_PNG/Icon2.png",

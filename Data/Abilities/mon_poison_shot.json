@@ -1,7 +1,7 @@
 {
   "id": "mon_poison_shot",
   "display_name": "Poison Shot",
-  "description": "A venomous projectile that poisons the target on impact.",
+  "description": "Deals 5 + 60% ATK physical damage. Inflicts Poisoned (2 stacks, 3 turns). Targets: Lowest HP. Cooldown: 3 turns.",
   "icon_hint": "green-tipped arrow dripping with bubbling venom",
   "ability_type": "monster",
   "source_class_id": "",

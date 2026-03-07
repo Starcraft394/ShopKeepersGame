@@ -34,6 +34,7 @@ enum RangeCategory {
 
 var _mode: TargetMode = TargetMode.LOWEST_HP
 var _rng: RandomNumberGenerator = null
+var _grid_manager = null  # Grid Combat v1: Optional GridManager for range-based targeting
 
 # ============================================================================
 # INITIALIZATION
@@ -47,6 +48,11 @@ func _init(mode: TargetMode = TargetMode.LOWEST_HP, rng: RandomNumberGenerator =
 ## Set targeting mode.
 func set_mode(mode: TargetMode) -> void:
 	_mode = mode
+
+
+## Grid Combat v1: Set GridManager for range-based targeting.
+func set_grid_manager(gm) -> void:
+	_grid_manager = gm
 
 
 # ============================================================================
@@ -65,22 +71,34 @@ func select_target(attacker: CombatUnit, enemies: Array) -> CombatUnit:
 	if alive_enemies.is_empty():
 		return null
 
-	# Taunt enforcement: if any enemy has "taunting" status, force target
+	# Grid Combat v1: Filter by attack range if grid_manager is available
+	var in_range_enemies: Array = alive_enemies
+	if _grid_manager != null:
+		in_range_enemies = _filter_by_attack_range(attacker, alive_enemies)
+
+	# Taunt enforcement: if any enemy has "taunting" status AND is in range, force target
 	for enemy in alive_enemies:
 		if enemy.has_status_v1("taunting"):
+			# Grid Combat v1: Melee can only be taunted if target is in range
+			if _grid_manager != null and not _is_in_attack_range(attacker, enemy):
+				continue  # Taunt ignored — out of range for melee
 			return enemy
+
+	# If grid filtering left no targets in range, fall back to all alive
+	# (this lets the AI know it should move first, but as a safety fallback)
+	var target_pool: Array = in_range_enemies if not in_range_enemies.is_empty() else alive_enemies
 
 	match _mode:
 		TargetMode.LOWEST_HP:
-			return _select_lowest_hp(alive_enemies)
+			return _select_lowest_hp(target_pool)
 		TargetMode.FIRST_ALIVE:
-			return _select_first_alive(alive_enemies)
+			return _select_first_alive(target_pool)
 		TargetMode.RANDOM:
-			return _select_random(alive_enemies)
+			return _select_random(target_pool)
 		TargetMode.GRID_DEFAULT:
-			return _select_grid_default(attacker, alive_enemies)
+			return _select_grid_default(attacker, target_pool)
 		_:
-			return _select_lowest_hp(alive_enemies)
+			return _select_lowest_hp(target_pool)
 
 
 ## Select multiple targets (for future AoE abilities).
@@ -181,7 +199,35 @@ func _select_ranged_target(enemies: Array) -> CombatUnit:
 
 
 # ============================================================================
-# GRID HELPERS
+# GRID COMBAT v1: RANGE-BASED TARGETING
+# ============================================================================
+
+## Check if attacker can reach target based on grid distance.
+## Melee: adjacent only (Manhattan distance 1). Ranged: any tile.
+func _is_in_attack_range(attacker: CombatUnit, target: CombatUnit) -> bool:
+	if _grid_manager == null:
+		return true  # No grid = always in range (legacy)
+	var range_cat = get_attacker_range(attacker)
+	if range_cat == RangeCategory.RANGED:
+		return true  # Ranged can hit any tile
+	# Melee: must be adjacent (Manhattan dist <= 1)
+	var attacker_pos = Vector2i(attacker.grid_x, attacker.grid_y)
+	var target_pos = Vector2i(target.grid_x, target.grid_y)
+	var dist = _grid_manager.manhattan_distance(attacker_pos, target_pos)
+	return dist <= 1
+
+
+## Filter enemies to only those within attack range.
+func _filter_by_attack_range(attacker: CombatUnit, enemies: Array) -> Array:
+	var in_range: Array = []
+	for enemy in enemies:
+		if _is_in_attack_range(attacker, enemy):
+			in_range.append(enemy)
+	return in_range
+
+
+# ============================================================================
+# GRID HELPERS (Legacy Row-Based)
 # ============================================================================
 
 ## Get all alive units in front row (y == 0).

@@ -46,11 +46,7 @@ func _ready() -> void:
 	var palette: Dictionary = RegionTheme.get_palette_for_current_region()
 	var backdrop = PanelContainer.new()
 	backdrop.name = "TextBackdrop"
-	var style = StyleBoxFlat.new()
-	style.bg_color = Color(palette.bg_dark.r, palette.bg_dark.g, palette.bg_dark.b, 0.7)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(16)
-	backdrop.add_theme_stylebox_override("panel", style)
+	backdrop.add_theme_stylebox_override("panel", RPGPackStyles.panel_main(palette.get("ui_tint", Color.WHITE)))
 	backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	# Reparent MainVBox into the backdrop panel

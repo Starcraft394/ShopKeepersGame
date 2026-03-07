@@ -5,7 +5,21 @@
       "speaker": "Thalric",
       "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
       "title": "New Classes",
-      "body": "Class books are available here at the Training Hall — more unlock as you open new regions. Assign a book to one of your heroes to teach them a new fighting style.\n\nUpgrade the hall and your heroes train harder — better equipment means a sharper edge on every lesson. Higher tiers grant bonus experience across all your heroes. A sharp mind wins more fights than a sharp sword.",
+      "body": "Class books are available here at the Training Hall — more unlock as you open new regions. Assign a book to one of your heroes to teach them a new fighting style.\n\nUpgrade the hall and your heroes train harder — better equipment means a sharper edge on every lesson.",
+      "highlight": "facility_panel"
+    },
+    {
+      "speaker": "Thalric",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
+      "title": "Choosing a Class",
+      "body": "Each hero can learn one class at a time — assign a book to change their fighting style, abilities, and stat growth. Classes from new regions unlock as you progress.\n\nHigher training hall tiers also grant bonus experience to all your heroes across every region. Knowledge compounds.",
+      "highlight": "facility_panel"
+    },
+    {
+      "speaker": "Thalric",
+      "portrait": "res://Assets/_ArtPacks/Avatars_MedievalPeople/PNG/Transperent/Icon20.png",
+      "title": "Training Slots",
+      "body": "Benched heroes don't have to sit idle. Assign them to a training slot and they'll earn passive experience while your party runs dungeons — no risk required.\n\nSlot capacity and XP rate improve with facility tier. At Tier 1 you get 2 slots at 50% XP rate; at Tier 4, 4 slots at 75%. A hero in training can't join the party until you remove them.",
       "highlight": "facility_panel",
       "button_text": "Show me the books"
     }

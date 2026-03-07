@@ -56,7 +56,7 @@ class _GuidesPanel extends CanvasLayer:
 		{
 			"label": "Getting Started",
 			"ids": ["tutorial_welcome", "tutorial_first_dungeon", "tutorial_first_combat",
-					"tutorial_first_camp", "tutorial_first_event", "tutorial_first_extraction"]
+					"tutorial_loot_routing", "tutorial_first_camp", "tutorial_first_event", "tutorial_first_extraction"]
 		},
 		{
 			"label": "Town & Facilities",
@@ -70,7 +70,7 @@ class _GuidesPanel extends CanvasLayer:
 		},
 		{
 			"label": "Combat",
-			"ids": ["tutorial_abilities", "tutorial_flee"]
+			"ids": ["tutorial_grid_placement", "tutorial_abilities", "tutorial_flee", "tutorial_backline_targeting"]
 		},
 		{
 			"label": "Progression",
